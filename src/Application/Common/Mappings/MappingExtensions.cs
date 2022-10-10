@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using CRM.App.Application.Common.Models;
+using CRM.Application.Common.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace CRM.App.Application.Common.Mappings;
+namespace CRM.Application.Common.Mappings;
 
 public static class MappingExtensions
 {

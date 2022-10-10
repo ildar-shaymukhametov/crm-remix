@@ -1,10 +1,10 @@
-﻿using CRM.App.Application.Common.Interfaces;
-using CRM.App.Domain.Common;
+﻿using CRM.Application.Common.Interfaces;
+using CRM.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace CRM.App.Infrastructure.Persistence.Interceptors;
+namespace CRM.Infrastructure.Persistence.Interceptors;
 
 public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
 {

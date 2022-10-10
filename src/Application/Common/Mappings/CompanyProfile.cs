@@ -1,8 +1,8 @@
 using AutoMapper;
-using CRM.App.Application.Companies.Commands.CreateCompany;
-using CRM.App.Domain.Entities;
+using CRM.Application.Companies.Commands.CreateCompany;
+using CRM.Domain.Entities;
 
-namespace CRM.App.Application.Common.Mappings;
+namespace CRM.Application.Common.Mappings;
 
 public class CompanyProfile : Profile
 {

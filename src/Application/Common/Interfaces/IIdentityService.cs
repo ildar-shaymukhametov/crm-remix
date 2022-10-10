@@ -1,6 +1,6 @@
-﻿using CRM.App.Application.Common.Models;
+﻿using CRM.Application.Common.Models;
 
-namespace CRM.App.Application.Common.Interfaces;
+namespace CRM.Application.Common.Interfaces;
 
 public interface IIdentityService
 {

@@ -1,5 +1,5 @@
-using CRM.App.Application.Companies.Commands.CreateCompany;
-using CRM.App.Application.Companies.Queries.GetCompanies;
+using CRM.Application.Companies.Commands.CreateCompany;
+using CRM.Application.Companies.Queries.GetCompanies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

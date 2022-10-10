@@ -1,4 +1,4 @@
-﻿namespace CRM.App.Domain.Entities;
+﻿namespace CRM.Domain.Entities;
 
 public class Company : BaseAuditableEntity
 {

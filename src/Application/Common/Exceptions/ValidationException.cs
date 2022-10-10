@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace CRM.App.Application.Common.Exceptions;
+namespace CRM.Application.Common.Exceptions;
 
 public class ValidationException : Exception
 {

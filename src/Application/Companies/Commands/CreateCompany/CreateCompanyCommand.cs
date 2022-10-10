@@ -1,10 +1,10 @@
 using AutoMapper;
-using CRM.App.Application.Common.Interfaces;
-using CRM.App.Domain.Entities;
-using CRM.App.Domain.Events;
+using CRM.Application.Common.Interfaces;
+using CRM.Domain.Entities;
+using CRM.Domain.Events;
 using MediatR;
 
-namespace CRM.App.Application.Companies.Commands.CreateCompany;
+namespace CRM.Application.Companies.Commands.CreateCompany;
 
 public record CreateCompanyCommand : IRequest<int>
 {

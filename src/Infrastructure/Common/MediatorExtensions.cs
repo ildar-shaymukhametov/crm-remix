@@ -1,4 +1,4 @@
-﻿using CRM.App.Domain.Common;
+﻿using CRM.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediatR;

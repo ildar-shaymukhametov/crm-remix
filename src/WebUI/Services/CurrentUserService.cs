@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using CRM.App.Application.Common.Interfaces;
+using CRM.Application.Common.Interfaces;
 
 namespace CRM.App.Services;
 

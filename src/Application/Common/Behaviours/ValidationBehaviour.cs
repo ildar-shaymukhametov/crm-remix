@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using MediatR;
-using ValidationException = CRM.App.Application.Common.Exceptions.ValidationException;
+using ValidationException = CRM.Application.Common.Exceptions.ValidationException;
 
-namespace CRM.App.Application.Common.Behaviours;
+namespace CRM.Application.Common.Behaviours;
 
 public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {

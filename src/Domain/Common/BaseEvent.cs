@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace CRM.App.Domain.Common;
+namespace CRM.Domain.Common;
 
 public abstract class BaseEvent : INotification
 {

@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace CRM.App.Application.Companies.Commands.CreateCompany;
+namespace CRM.Application.Companies.Commands.CreateCompany;
 
 public class CreateCompanyCommandValidator : AbstractValidator<CreateCompanyCommand>
 {

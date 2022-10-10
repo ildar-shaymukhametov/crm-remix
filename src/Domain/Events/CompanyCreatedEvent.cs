@@ -1,4 +1,4 @@
-﻿namespace CRM.App.Domain.Events;
+﻿namespace CRM.Domain.Events;
 
 public class CompanyCreatedEvent : BaseEvent
 {

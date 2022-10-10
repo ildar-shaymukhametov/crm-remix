@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using CRM.App.Application.Common.Behaviours;
+using CRM.Application.Common.Behaviours;
 using FluentValidation;
 using MediatR;
 

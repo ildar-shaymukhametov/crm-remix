@@ -1,7 +1,7 @@
 using System.Reflection;
 using AutoMapper;
 
-namespace CRM.App.Application.Common.Mappings;
+namespace CRM.Application.Common.Mappings;
 
 public class MappingProfile : Profile
 {

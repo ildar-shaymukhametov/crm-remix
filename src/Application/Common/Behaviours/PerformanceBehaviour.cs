@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
-using CRM.App.Application.Common.Interfaces;
+using CRM.Application.Common.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CRM.App.Application.Common.Behaviours;
+namespace CRM.Application.Common.Behaviours;
 
 public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {

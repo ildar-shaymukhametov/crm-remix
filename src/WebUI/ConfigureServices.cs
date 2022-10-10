@@ -1,4 +1,4 @@
-﻿using CRM.App.Application.Common.Interfaces;
+﻿using CRM.Application.Common.Interfaces;
 using CRM.App.Filters;
 using CRM.App.Services;
 using FluentValidation.AspNetCore;

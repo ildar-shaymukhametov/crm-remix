@@ -1,8 +1,8 @@
-﻿using CRM.App.Application.Common.Interfaces;
-using CRM.App.Infrastructure.Identity;
-using CRM.App.Infrastructure.Persistence;
-using CRM.App.Infrastructure.Persistence.Interceptors;
-using CRM.App.Infrastructure.Services;
+﻿using CRM.Application.Common.Interfaces;
+using CRM.Infrastructure.Identity;
+using CRM.Infrastructure.Persistence;
+using CRM.Infrastructure.Persistence.Interceptors;
+using CRM.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

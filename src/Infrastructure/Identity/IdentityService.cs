@@ -1,10 +1,10 @@
-﻿using CRM.App.Application.Common.Interfaces;
-using CRM.App.Application.Common.Models;
+﻿using CRM.Application.Common.Interfaces;
+using CRM.Application.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace CRM.App.Infrastructure.Identity;
+namespace CRM.Infrastructure.Identity;
 
 public class IdentityService : IIdentityService
 {

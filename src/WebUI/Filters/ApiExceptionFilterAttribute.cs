@@ -1,4 +1,4 @@
-﻿using CRM.App.Application.Common.Exceptions;
+﻿using CRM.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

@@ -1,10 +1,10 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using CRM.App.Application.Common.Interfaces;
+using CRM.Application.Common.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CRM.App.Application.Companies.Queries.GetCompanies;
+namespace CRM.Application.Companies.Queries.GetCompanies;
 
 public record GetCompaniesQuery : IRequest<CompanyDto[]>;
 

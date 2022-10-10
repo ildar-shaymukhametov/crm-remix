@@ -1,4 +1,4 @@
-using CRM.App.Infrastructure.Persistence;
+using CRM.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);

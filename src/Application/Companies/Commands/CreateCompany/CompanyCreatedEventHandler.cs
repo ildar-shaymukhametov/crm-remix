@@ -1,8 +1,8 @@
-﻿using CRM.App.Domain.Events;
+﻿using CRM.Domain.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CRM.App.Application.TodoItems.EventHandlers;
+namespace CRM.Application.TodoItems.EventHandlers;
 
 public class CompanyCreatedEventHandler : INotificationHandler<CompanyCreatedEvent>
 {

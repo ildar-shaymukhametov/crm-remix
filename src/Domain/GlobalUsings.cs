@@ -1,2 +1,2 @@
-﻿global using CRM.App.Domain.Common;
-global using CRM.App.Domain.Entities;
+﻿global using CRM.Domain.Common;
+global using CRM.Domain.Entities;

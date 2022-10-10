@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CRM.App.Domain.Common;
+namespace CRM.Domain.Common;
 
 public abstract class BaseEntity
 {

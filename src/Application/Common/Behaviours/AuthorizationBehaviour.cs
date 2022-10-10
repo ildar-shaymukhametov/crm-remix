@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
-using CRM.App.Application.Common.Exceptions;
-using CRM.App.Application.Common.Interfaces;
-using CRM.App.Application.Common.Security;
+using CRM.Application.Common.Exceptions;
+using CRM.Application.Common.Interfaces;
+using CRM.Application.Common.Security;
 using MediatR;
 
-namespace CRM.App.Application.Common.Behaviours;
+namespace CRM.Application.Common.Behaviours;
 
 public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {

@@ -1,7 +1,7 @@
-﻿using CRM.App.Domain.Entities;
+﻿using CRM.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace CRM.App.Application.Common.Interfaces;
+namespace CRM.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {

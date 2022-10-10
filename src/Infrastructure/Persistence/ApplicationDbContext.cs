@@ -2,14 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Duende.IdentityServer.EntityFramework.Options;
-using CRM.App.Infrastructure.Identity;
-using CRM.App.Application.Common.Interfaces;
+using CRM.Infrastructure.Identity;
+using CRM.Application.Common.Interfaces;
 using System.Reflection;
 using MediatR;
-using CRM.App.Domain.Entities;
-using CRM.App.Infrastructure.Persistence.Interceptors;
+using CRM.Domain.Entities;
+using CRM.Infrastructure.Persistence.Interceptors;
 
-namespace CRM.App.Infrastructure.Persistence;
+namespace CRM.Infrastructure.Persistence;
 
 public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, IApplicationDbContext
 {

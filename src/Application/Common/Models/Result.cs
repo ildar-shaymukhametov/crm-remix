@@ -1,4 +1,4 @@
-﻿namespace CRM.App.Application.Common.Models;
+﻿namespace CRM.Application.Common.Models;
 
 public class Result
 {

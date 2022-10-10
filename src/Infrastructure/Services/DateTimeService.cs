@@ -1,6 +1,6 @@
-﻿using CRM.App.Application.Common.Interfaces;
+﻿using CRM.Application.Common.Interfaces;
 
-namespace CRM.App.Infrastructure.Services;
+namespace CRM.Infrastructure.Services;
 
 public class DateTimeService : IDateTime
 {

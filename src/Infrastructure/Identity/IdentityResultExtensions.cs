@@ -1,7 +1,7 @@
-﻿using CRM.App.Application.Common.Models;
+﻿using CRM.Application.Common.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace CRM.App.Infrastructure.Identity;
+namespace CRM.Infrastructure.Identity;
 
 public static class IdentityResultExtensions
 {

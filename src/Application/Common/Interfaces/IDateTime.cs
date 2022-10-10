@@ -1,4 +1,4 @@
-﻿namespace CRM.App.Application.Common.Interfaces;
+﻿namespace CRM.Application.Common.Interfaces;
 
 public interface IDateTime
 {

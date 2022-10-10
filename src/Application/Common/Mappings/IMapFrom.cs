@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace CRM.App.Application.Common.Mappings;
+namespace CRM.Application.Common.Mappings;
 
 public interface IMapFrom<T>
 {

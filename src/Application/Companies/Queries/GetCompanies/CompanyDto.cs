@@ -1,7 +1,7 @@
-using CRM.App.Application.Common.Mappings;
-using CRM.App.Domain.Entities;
+using CRM.Application.Common.Mappings;
+using CRM.Domain.Entities;
 
-namespace CRM.App.Application.Companies.Queries.GetCompanies;
+namespace CRM.Application.Companies.Queries.GetCompanies;
 
 public class CompanyDto : IMapFrom<Company>
 {

@@ -1,9 +1,9 @@
-﻿using CRM.App.Infrastructure.Identity;
+﻿using CRM.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace CRM.App.Infrastructure.Persistence;
+namespace CRM.Infrastructure.Persistence;
 
 public class ApplicationDbContextInitialiser
 {
