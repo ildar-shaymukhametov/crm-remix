@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "CRM.WebUI": {
+    "CRM.Api": {
       "commandName": "Project",
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7119;http://localhost:5166",

@@ -4,8 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>CRM.WebUI</RootNamespace>
-    <AssemblyName>CRM.WebUI</AssemblyName>
+    <RootNamespace>CRM.Api</RootNamespace>
+    <AssemblyName>CRM.Api</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
