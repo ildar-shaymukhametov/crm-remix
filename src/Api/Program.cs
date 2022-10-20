@@ -9,7 +9,7 @@ builder.Services.AddApiServices();
 
 // todo: remove later
 // https://github.com/dotnet/core/blob/main/release-notes/6.0/known-issues.md#spa-template-issues-with-individual-authentication-when-running-in-development
-builder.Services.Configure<JwtBearerOptions>("IdentityServerJwtBearer", o => o.Authority = "https://localhost:44470");
+builder.Services.Configure<JwtBearerOptions>("IdentityServerJwtBearer", o => o.Authority = "https://localhost:5001");
 
 var app = builder.Build();
 
