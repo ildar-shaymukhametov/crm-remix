@@ -1,5 +1,4 @@
 ﻿using IdentityServer;
-using IdentityServer.Data;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -8,42 +7,37 @@ Log.Logger = new LoggerConfiguration()
 
 Log.Information("Starting up");
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddServices(builder.Configuration);
-
-builder.Host.UseSerilog((ctx, lc) => lc
-    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}")
-    .Enrich.FromLogContext()
-    .ReadFrom.Configuration(ctx.Configuration));
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+try
 {
-    using (var scope = app.Services.CreateScope())
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.Host.UseSerilog((ctx, lc) => lc
+        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}")
+        .Enrich.FromLogContext()
+        .ReadFrom.Configuration(ctx.Configuration));
+
+    var app = builder
+        .ConfigureServices()
+        .ConfigurePipeline();
+
+    // this seeding is only for the template to bootstrap the DB and users.
+    // in production you will likely want a different approach.
+    if (args.Contains("/seed"))
     {
         Log.Information("Seeding database...");
-        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-        await initialiser.InitialiseAsync();
-        await initialiser.SeedAsync();
+        SeedData.EnsureSeedData(app);
         Log.Information("Done seeding database. Exiting.");
+        return;
     }
+
+    app.Run();
 }
-
-app.UseSerilogRequestLogging();
-
-if (app.Environment.IsDevelopment())
+catch (Exception ex) when (ex.GetType().Name is not "StopTheHostException") // https://github.com/dotnet/runtime/issues/60600
 {
-    app.UseDeveloperExceptionPage();
+    Log.Fatal(ex, "Unhandled exception");
 }
-
-app.UseStaticFiles();
-app.UseRouting();
-app.UseIdentityServer();
-app.UseAuthorization();
-
-app.MapRazorPages()
-    .RequireAuthorization();
-
-app.Run();
+finally
+{
+    Log.Information("Shut down complete");
+    Log.CloseAndFlush();
+}
