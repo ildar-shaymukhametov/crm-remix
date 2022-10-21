@@ -2,15 +2,13 @@ import { createCookieSessionStorage } from "@remix-run/node";
 import { Authenticator } from "remix-auth";
 import type { OidcProfile} from "./oidc-strategy";
 import { OidcStrategy } from "./oidc-strategy";
-import dotenv from "dotenv";
-dotenv.config();
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
   throw new Error("SESSION_SECRET must be set");
 }
 
-export const storage = createCookieSessionStorage({
+const storage = createCookieSessionStorage({
   cookie: {
     name: "crm.session",
     secure: process.env.NODE_ENV === "production",
