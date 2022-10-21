@@ -27,11 +27,26 @@ public static class ConfigureServices
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
-        services.AddIdentityServer()
+        services.AddIdentityServer(options =>
+            {
+                // options.UserInteraction.LogoutUrl = "/Account/Logout";
+                options.Events.RaiseSuccessEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+            })
             .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
             {
                 options.ApiScopes.AddRange(Config.ApiScopes.ToArray());
                 options.Clients.AddRange(Config.Clients.ToArray());
+                // var client = options.Clients.AddSPA("remix", options =>
+                // {
+                //     options.WithRedirectUri("http://localhost:3000/authentication/login-callback");
+                //     options.WithLogoutRedirectUri("http://localhost:3000/authentication/logout-callback");
+                //     options.WithScopes("openid profile foo");
+                // });
+                //
+                // client.RequirePkce = false;
             });
 
         services.AddTransient<IDateTime, DateTimeService>();

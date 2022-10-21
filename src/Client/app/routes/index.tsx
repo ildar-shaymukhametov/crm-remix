@@ -1,7 +1,22 @@
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { auth } from "~/utils/auth.server";
+
+export const loader: LoaderFunction = async ({ request }) => {
+  let user = await auth.isAuthenticated(request, {
+    failureRedirect: "/login",
+  });
+  return json(user);
+};
+
 export default function Index() {
+  const user = useLoaderData();
+  console.log(user);
+
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>Welcome to Remix</h1>
+      <h1>Welcome to Remix {user ? user.id : null}</h1>
       <ul>
         <li>
           <a
@@ -24,6 +39,11 @@ export default function Index() {
         <li>
           <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
             Remix Docs
+          </a>
+        </li>
+        <li>
+          <a href="/private" rel="noreferrer">
+            Private
           </a>
         </li>
       </ul>

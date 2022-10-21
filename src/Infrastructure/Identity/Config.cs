@@ -10,7 +10,7 @@ public static class Config
         new ApiScope("company.read"),
         new ApiScope("weather.read"),
     };
-    
+
     public static IEnumerable<IdentityResource> IdentityResources => new IdentityResource[]
     {
         new IdentityResources.OpenId(),
@@ -36,7 +36,8 @@ public static class Config
             RedirectUris = { "http://localhost:3000/authentication/login-callback" },
             RequirePkce = false,
             AlwaysIncludeUserClaimsInIdToken = true,
-            PostLogoutRedirectUris = { "http://localhost:3000/login" }
+            PostLogoutRedirectUris = { "http://localhost:3000/authentication/logout-callback" },
+            Properties = { { "Profile", "SPA" } }
         }
     };
 }
