@@ -7,6 +7,7 @@ import { OAuth2Strategy } from "remix-auth-oauth2";
 
 export interface OidcStrategyOptions {
   nonce: string;
+  responseType: string;
   scope: string;
   authority: string;
   clientID: string;
@@ -80,7 +81,8 @@ export class OidcStrategy<User> extends OAuth2Strategy<
         tokenURL: `${options.authority}/connect/token`,
         clientID: options.clientID,
         clientSecret: options.clientSecret,
-        callbackURL: options.callbackURL
+        callbackURL: options.callbackURL,
+        responseType: options.responseType
       },
       verify
     );
