@@ -28,7 +28,6 @@ auth.use(
       clientID: process.env.CLIENT_ID!,
       clientSecret: process.env.CLIENT_SECRET!,
       callbackURL: process.env.CALLBACK_URL!,
-      responseType: "code",
       scope: "openid profile",
       authority: "https://localhost:5001",
       nonce: "nonce"
