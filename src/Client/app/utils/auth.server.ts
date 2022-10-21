@@ -1,6 +1,6 @@
 import { createCookieSessionStorage } from "@remix-run/node";
 import { Authenticator } from "remix-auth";
-import type { OidcProfile} from "./oidc-strategy";
+import type { OidcProfile } from "./oidc-strategy";
 import { OidcStrategy } from "./oidc-strategy";
 
 const sessionSecret = process.env.SESSION_SECRET;
@@ -21,7 +21,6 @@ const storage = createCookieSessionStorage({
 });
 
 export const auth = new Authenticator<OidcProfile>(storage);
-
 auth.use(
   new OidcStrategy(
     {
@@ -30,10 +29,16 @@ auth.use(
       callbackURL: process.env.CALLBACK_URL!,
       scope: "openid profile",
       authority: "https://localhost:5001",
-      nonce: "nonce"
+      nonce: "nonce",
     },
     async ({ accessToken, refreshToken, extraParams, profile }) => {
       return { ...profile, ...extraParams };
     }
   )
 );
+
+export async function isAuthenticated(request: Request) {
+  return await auth.isAuthenticated(request, {
+    failureRedirect: "/login",
+  });
+}

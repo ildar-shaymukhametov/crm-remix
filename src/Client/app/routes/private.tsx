@@ -3,15 +3,12 @@ import { json } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import type { OAuth2Profile } from "remix-auth-oauth2";
 
-import { auth } from "~/utils/auth.server";
+import { isAuthenticated } from "~/utils/auth.server";
 
 type LoaderData = { profile: OAuth2Profile };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const profile = await auth.isAuthenticated(request, {
-    failureRedirect: "/",
-  });
-
+  const profile = await isAuthenticated(request);
   return json<LoaderData>({ profile });
 };
 
