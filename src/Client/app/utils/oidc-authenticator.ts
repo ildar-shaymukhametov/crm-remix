@@ -4,10 +4,8 @@ import invariant from "tiny-invariant";
 import type { OidcProfile } from "./oidc-strategy";
 
 export class OidcAuthenticator extends Authenticator<OidcProfile> {
-  requireUser(request: Request | Session): Promise<OidcProfile> {
-    return super.isAuthenticated(request, {
-      failureRedirect: "/login",
-    });
+  requireUser(request: Request): Promise<OidcProfile> {
+    return this.authenticate("oidc", request);
   }
 
   logout(request: Request | Session, user: OidcProfile): Promise<never> {
