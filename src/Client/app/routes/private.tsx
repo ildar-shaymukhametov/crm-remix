@@ -1,19 +1,15 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
-import type { OAuth2Profile } from "remix-auth-oauth2";
-
 import { auth } from "~/utils/auth.server";
 
-type LoaderData = { profile: OAuth2Profile };
-
 export const loader: LoaderFunction = async ({ request }) => {
-  const profile = await auth.isAuthenticated(request);
-  return json<LoaderData>({ profile });
+  const user = await auth.requireUser(request);
+  return json(user);
 };
 
 export default function Screen() {
-  const { profile } = useLoaderData<LoaderData>();
+  const user = useLoaderData();
   return (
     <>
       <Form method="post" action="/logout">
@@ -23,7 +19,7 @@ export default function Screen() {
       <hr />
 
       <pre>
-        <code>{JSON.stringify(profile, null, 2)}</code>
+        <code>{JSON.stringify(user, null, 2)}</code>
       </pre>
     </>
   );

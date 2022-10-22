@@ -4,9 +4,7 @@ import { useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  let user = await auth.isAuthenticated(request, {
-    failureRedirect: "/login",
-  });
+  let user = await auth.requireUser(request);
   return json(user);
 };
 
