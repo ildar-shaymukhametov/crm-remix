@@ -31,6 +31,7 @@ export interface OidcProfile extends OAuth2Profile {
   };
   emails: Array<{ value: string }>;
   photos: Array<{ value: string }>;
+  extra: OidcExtraParams;
   _json: {
     sub: string;
     name: string;
@@ -80,7 +81,7 @@ export class OidcStrategy<User> extends OAuth2Strategy<
         tokenURL: `${options.authority}/connect/token`,
         clientID: options.clientID,
         clientSecret: options.clientSecret,
-        callbackURL: options.callbackURL
+        callbackURL: options.callbackURL,
       },
       verify
     );
@@ -102,7 +103,10 @@ export class OidcStrategy<User> extends OAuth2Strategy<
     return new URLSearchParams(urlSearchParams);
   }
 
-  protected async userProfile(accessToken: string): Promise<OidcProfile> {
+  protected async userProfile(
+    accessToken: string,
+    params: OidcExtraParams
+  ): Promise<OidcProfile> {
     let response = await fetch(this.userInfoURL, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -120,6 +124,7 @@ export class OidcStrategy<User> extends OAuth2Strategy<
       },
       emails: [{ value: data.email }],
       photos: [{ value: data.picture }],
+      extra: params,
       _json: data,
     };
 

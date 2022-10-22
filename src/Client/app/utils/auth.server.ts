@@ -1,6 +1,5 @@
 import { createCookieSessionStorage } from "@remix-run/node";
 import { OidcAuthenticator } from "./oidc-authenticator";
-import type { OidcProfile } from "./oidc-strategy";
 import { OidcStrategy } from "./oidc-strategy";
 
 const sessionSecret = process.env.SESSION_SECRET;
@@ -20,7 +19,7 @@ const storage = createCookieSessionStorage({
   },
 });
 
-export const auth = new OidcAuthenticator<OidcProfile>(storage);
+export const auth = new OidcAuthenticator(storage);
 auth.use(
   new OidcStrategy(
     {
@@ -32,7 +31,7 @@ auth.use(
       nonce: "nonce",
     },
     async ({ accessToken, refreshToken, extraParams, profile }) => {
-      return { ...profile, ...extraParams };
+      return { ...profile, extra: extraParams };
     }
   )
 );
