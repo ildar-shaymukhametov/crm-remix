@@ -1,10 +1,9 @@
 import type {
   LinksFunction,
   LoaderFunction,
-  MetaFunction} from "@remix-run/node";
-import {
-  json
+  MetaFunction,
 } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -31,7 +30,7 @@ export const meta: MetaFunction = () => ({
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
   console.log(user);
-  
+
   return json({
     user: user,
   });
@@ -46,9 +45,9 @@ export default function App() {
       </head>
       <body className="h-full">
         <Header />
-        <main className="flex h-full">
+        <main className="flex h-full" style={{ marginTop: `${64}px` }}>
           <Sidebar />
-          <div className="flex-1">
+          <div className="flex-1 p-4">
             <Outlet />
           </div>
         </main>
