@@ -1,11 +1,24 @@
+import { redirect } from "@remix-run/node";
 import type { Session } from "@remix-run/server-runtime";
 import { Authenticator } from "remix-auth";
 import invariant from "tiny-invariant";
+import { auth, getSession, commitSession } from "./auth.server";
 import type { OidcProfile } from "./oidc-strategy";
 
 export class OidcAuthenticator extends Authenticator<OidcProfile> {
-  requireUser(request: Request): Promise<OidcProfile> {
-    return this.authenticate("oidc", request);
+  async requireUser(request: Request): Promise<OidcProfile> {
+    const user = await auth.isAuthenticated(request);
+    if (user) {
+      return user;
+    }
+
+    const session = await getSession(request);
+    session.set("returnUrl", request.url);
+    throw redirect("/login", {
+      headers: {
+        "Set-Cookie": await commitSession(session)
+      }
+    })
   }
 
   logout(request: Request | Session, user: OidcProfile): Promise<never> {

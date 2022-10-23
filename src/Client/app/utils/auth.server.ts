@@ -1,3 +1,4 @@
+import type { Session } from "@remix-run/node";
 import { createCookieSessionStorage } from "@remix-run/node";
 import { OidcAuthenticator } from "./oidc-authenticator";
 import { OidcStrategy } from "./oidc-strategy";
@@ -35,3 +36,11 @@ auth.use(
     }
   )
 );
+
+export function getSession(request: Request) {
+  return storage.getSession(request.headers.get("Cookie"));
+}
+
+export function commitSession(session: Session) {
+  return storage.commitSession(session);
+}
