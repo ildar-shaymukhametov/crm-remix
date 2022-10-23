@@ -5,7 +5,7 @@ export default function Header() {
   const user = useUser();
 
   return (
-    <header className="p-5 bg-slate-200 flex justify-between items-center">
+    <header className="sticky top-0 p-5 bg-slate-200 flex justify-between items-center">
       {user ? user.displayName : null}
       {user ? (
         <Form method="post" action="/logout">

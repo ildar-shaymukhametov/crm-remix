@@ -45,15 +45,13 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full">
-        <div className="h-full">
-          <Header />
-          <main className="flex h-full">
-            <Sidebar />
-            <div className="flex-1">
-              <Outlet />
-            </div>
-          </main>
-        </div>
+        <Header />
+        <main className="flex h-full">
+          <Sidebar />
+          <div className="flex-1">
+            <Outlet />
+          </div>
+        </main>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
