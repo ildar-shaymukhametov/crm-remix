@@ -12,7 +12,7 @@ export default function Index() {
   const user = useLoaderData();
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
+    <div>
       <h1>Welcome to Remix {user ? user.id : null}</h1>
       <ul>
         {user ? (
