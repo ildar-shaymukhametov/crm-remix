@@ -29,8 +29,6 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
-  console.log(user);
-
   return json({
     user: user,
   });
