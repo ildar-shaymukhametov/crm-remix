@@ -45,7 +45,7 @@ export default function App() {
       </head>
       <body className="h-full">
         <Header />
-        <main className="flex h-full" style={{ marginTop: `${64}px` }}>
+        <main className="flex h-full" style={{ paddingTop: `${64}px` }}>
           <Sidebar />
           <div className="flex-1 p-4">
             <Outlet />
