@@ -10,8 +10,10 @@ public class CreateCompanyCommandValidator : AbstractValidator<CreateCompanyComm
             .MaximumLength(200)
             .NotEmpty();
         RuleFor(x => x.Email)
-            .EmailAddress();
+            .EmailAddress()
+            .When(x => !string.IsNullOrWhiteSpace(x.Email));
         RuleFor(x => x.Inn)
-            .Length(10);
+            .Length(10)
+            .When(x => !string.IsNullOrWhiteSpace(x.Inn));
     }
 }

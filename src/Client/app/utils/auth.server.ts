@@ -27,12 +27,12 @@ auth.use(
       clientID: process.env.CLIENT_ID!,
       clientSecret: process.env.CLIENT_SECRET!,
       callbackURL: process.env.CALLBACK_URL!,
-      scope: "openid profile",
+      scope: "openid profile CRM.ApiAPI",
       authority: "https://localhost:5001",
       nonce: "nonce",
     },
     async ({ accessToken, refreshToken, extraParams, profile }) => {
-      return { ...profile, extra: extraParams };
+      return { ...profile, extra: { ...extraParams, accessToken } };
     }
   )
 );
