@@ -1,6 +1,6 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
 type Company = {
@@ -18,6 +18,10 @@ type Company = {
 type LoaderData = {
   company: Company;
 };
+
+export const handle = {
+  navbarButtons: [<Link to="companies/1/delete">Delete</Link>]
+}
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request);

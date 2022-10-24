@@ -1,4 +1,5 @@
 using CRM.Application.Companies.Commands.CreateCompany;
+using CRM.Application.Companies.Commands.DeleteCompany;
 using CRM.Application.Companies.Queries.GetCompanies;
 using CRM.Application.Companies.Queries.GetCompany;
 using Microsoft.AspNetCore.Authorization;
@@ -27,5 +28,13 @@ public class CompaniesController : ApiControllerBase
     {
         var id = await Mediator.Send(command);
         return Ok(new { Id = id });
+    }
+
+    [HttpDelete]
+    [Route("{id}")]
+    public async Task<ActionResult<int>> Delete(int id)
+    {
+        await Mediator.Send(new DeleteCompanyCommand { Id = id });
+        return NoContent();
     }
 }
