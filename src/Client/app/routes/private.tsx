@@ -6,3 +6,7 @@ export default function Screen() {
     <pre className="whitespace-pre-wrap break-all">{JSON.stringify(user, null, 2)}</pre>
   );
 }
+
+export function PrivateNavbarButtons() {
+  return <button>Private</button>;
+}

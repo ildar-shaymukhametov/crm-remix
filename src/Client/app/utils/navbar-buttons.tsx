@@ -1,7 +1,9 @@
+import { PrivateNavbarButtons } from "~/routes/private";
+
 export function useNavbarButtons(path: string) {
   switch (path) {
     case "/private":
-      return <button>Private</button>;
+      return <PrivateNavbarButtons />;
     default:
       break;
   }
