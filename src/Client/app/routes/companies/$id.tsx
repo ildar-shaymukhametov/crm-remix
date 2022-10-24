@@ -4,7 +4,7 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
 type Company = {
-  id: string;
+  id: number;
   type: string;
   name: string;
   inn: string;
