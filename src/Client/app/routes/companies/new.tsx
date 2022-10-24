@@ -33,7 +33,7 @@ export const action: ActionFunction = async ({ request }) => {
     return json({ fields: data, errors: responseData.errors }, { status: 400 });
   }
 
-  return redirect("new");
+  return redirect(responseData.id);
 };
 
 export default function NewCompanyRoute() {

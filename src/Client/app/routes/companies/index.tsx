@@ -1,10 +1,10 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
 type Company = {
-  id: string;
+  id: number;
   type: string;
   name: string;
   inn: string;
@@ -44,7 +44,9 @@ export default function CompanyIndex() {
   return (
     <ul>
       {data.companies.map((x, i) => (
-        <li key={i}>{x.name}</li>
+        <li key={i}>
+          <Link to={x.id.toString()}>{x.name}</Link>
+        </li>
       ))}
     </ul>
   );
