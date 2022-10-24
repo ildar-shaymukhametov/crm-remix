@@ -1,11 +1,13 @@
-import type { RouteMatch } from "@remix-run/react";
-import { Form, Link, useMatches } from "@remix-run/react";
+import { useLocation } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
+import { getCompaniesRouteNavbarButtons } from "~/routes/companies";
+import { getCompanyRouteNavbarButtons } from "~/routes/companies/$id";
 import { useUser } from "~/utils/utils";
 
 export default function Header() {
   const user = useUser();
-  const matches = useMatches();
-  const buttons = getNavbarButtons(matches);
+  const loc = useLocation();
+  const buttons = getNavbarButtons(loc.pathname)
 
   return (
     <header className="fixed w-full top-0 p-5 bg-slate-200 flex justify-between items-center">
@@ -34,8 +36,15 @@ export default function Header() {
   );
 }
 
-function getNavbarButtons(matches: RouteMatch[]) {
-  return matches
-    .filter((x) => x.handle && x.handle.navbarButtons)
-    .flatMap(({ handle }) => handle!.navbarButtons);
+function getNavbarButtons(pathname: string) {
+  if (pathname === "/companies") {
+    return getCompaniesRouteNavbarButtons();
+  }
+
+  const match = pathname.match(/\/companies\/(?<id>[1-9])+/);
+  if (match?.groups?.id) {
+    return getCompanyRouteNavbarButtons(match.groups.id);
+  }
+
+  return [];
 }

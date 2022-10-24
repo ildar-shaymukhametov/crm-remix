@@ -19,8 +19,8 @@ type LoaderData = {
   company: Company;
 };
 
-export const handle = {
-  navbarButtons: [<Link to="companies/1/delete">Delete</Link>]
+export function getCompanyRouteNavbarButtons(id: string) {
+  return [<Link to={`companies/${id}/delete`}>Delete</Link>];
 }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
