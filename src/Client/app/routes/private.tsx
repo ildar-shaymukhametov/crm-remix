@@ -7,7 +7,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const handle = {
-  // eslint-disable-next-line react/jsx-key
   navbarButtons: [<button>Private</button>, <button>Private2</button>]
 };
 

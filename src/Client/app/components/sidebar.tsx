@@ -22,6 +22,9 @@ export default function Sidebar() {
           <li>
             <Link to="private">Private</Link>
           </li>
+          <li>
+            <Link to="companies">Companies</Link>
+          </li>
         </ul>
       </nav>
     </div>
