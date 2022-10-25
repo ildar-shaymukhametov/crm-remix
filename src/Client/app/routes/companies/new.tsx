@@ -38,7 +38,6 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewCompanyRoute() {
   const data = useActionData<ActionData>();
-  console.log(data);
 
   return (
     <form method="post">
