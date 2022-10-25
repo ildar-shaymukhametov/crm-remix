@@ -20,7 +20,10 @@ type LoaderData = {
 };
 
 export function getCompanyRouteNavbarButtons(id: string) {
-  return [<Link to={`companies/${id}/delete`}>Delete</Link>];
+  return [
+    <Link to={`companies/${id}/delete`}>Delete</Link>,
+    <Link to={`companies/${id}/edit`}>Edit</Link>,
+  ];
 }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
