@@ -20,7 +20,7 @@ public class DeleteCompanyCommandHandler : IRequestHandler<DeleteCompanyCommand>
 
     public async Task<Unit> Handle(DeleteCompanyCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.Companies.FindAsync(request.Id, cancellationToken);
+        var entity = await _context.Companies.FindAsync(new object?[] { request.Id }, cancellationToken);
         if (entity == null)
         {
             throw new NotFoundException("Company", request.Id);
