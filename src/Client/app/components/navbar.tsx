@@ -41,7 +41,7 @@ function getNavbarButtons(pathname: string) {
     return getCompaniesRouteNavbarButtons();
   }
 
-  const match = pathname.match(/\/companies\/(?<id>[1-9])+/);
+  const match = pathname.match(/^\/companies\/(?<id>[1-9])+$/);
   if (match?.groups?.id) {
     return getCompanyRouteNavbarButtons(match.groups.id);
   }
