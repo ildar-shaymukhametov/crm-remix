@@ -4,10 +4,10 @@ import { getCompaniesRouteNavbarButtons } from "~/routes/companies";
 import { getCompanyRouteNavbarButtons } from "~/routes/companies/$id";
 import { useUser } from "~/utils/utils";
 
-export default function Header() {
+export default function Navbar() {
   const user = useUser();
   const loc = useLocation();
-  const buttons = getNavbarButtons(loc.pathname)
+  const buttons = getNavbarButtons(loc.pathname);
 
   return (
     <header className="fixed w-full top-0 p-5 bg-slate-200 flex justify-between items-center">
