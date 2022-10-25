@@ -11,9 +11,7 @@ export default function Navbar() {
 
   return (
     <header className="fixed w-full top-0 p-5 bg-slate-200 flex justify-between items-center">
-      <div className="w-80">
-        {user ? <Link to="/">{user.displayName}</Link> : null}
-      </div>
+      <div className="w-80"></div>
       <div className="flex flex-1">
         {buttons.length > 0 ? (
           <ul className="flex">
@@ -24,7 +22,12 @@ export default function Navbar() {
             ))}
           </ul>
         ) : null}
-        <div className="ml-auto">
+        <div className="ml-auto flex">
+          {user ? (
+            <Link to="account" className="mr-3">
+              {user.displayName}
+            </Link>
+          ) : null}
           {user ? (
             <Form method="post" action="/logout">
               <button>Log Out</button>
