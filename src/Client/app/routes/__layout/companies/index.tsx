@@ -1,6 +1,6 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
 type Company = {
@@ -28,7 +28,15 @@ export const loader: LoaderFunction = async ({ request }) => {
   });
 
   if (!response.ok) {
-    return null;
+    if (response.status === 404) {
+      throw new Response("Not Found", { status: 404 });
+    }
+
+    if (response.status === 401) {
+      throw new Response("Unauthorized", { status: 401 });
+    }
+
+    return json(null, { status: response.status });
   }
 
   const data = await response.json();
@@ -50,4 +58,16 @@ export default function CompanyIndex() {
       ))}
     </ul>
   );
+}
+
+export function CatchBoundary() {
+  const res = useCatch();
+  if (res.status === 401) {
+    return <p>Unauthorized</p>;
+  }
+  if (res.status === 404) {
+    return <p>Company not found</p>;
+  }
+
+  throw new Error(`Unsupported thrown response status code: ${res.status}`);
 }

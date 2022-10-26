@@ -11,5 +11,5 @@ export function getCompaniesRouteNavbarButtons() {
 }
 
 export default function CompaniesRoute() {
-  return <Outlet />
+  return <Outlet />;
 }

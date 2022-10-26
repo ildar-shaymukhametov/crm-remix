@@ -14,7 +14,6 @@ import {
   useCatch,
 } from "@remix-run/react";
 import Navbar from "./components/navbar";
-import Sidebar from "./components/sidebar";
 import styles from "./styles/tailwind.css";
 import { auth } from "./utils/auth.server";
 
@@ -45,10 +44,7 @@ export default function App() {
       <body className="h-full">
         <Navbar />
         <main className="flex h-full" style={{ paddingTop: `${64}px` }}>
-          <Sidebar />
-          <div className="flex-1 p-4">
-            <Outlet />
-          </div>
+          <Outlet />
         </main>
         <ScrollRestoration />
         <Scripts />

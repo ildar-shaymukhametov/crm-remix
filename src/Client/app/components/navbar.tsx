@@ -1,7 +1,7 @@
 import { useLocation } from "@remix-run/react";
 import { Form, Link } from "@remix-run/react";
-import { getCompaniesRouteNavbarButtons } from "~/routes/companies";
-import { getCompanyRouteNavbarButtons } from "~/routes/companies/$id";
+import { getCompaniesRouteNavbarButtons } from "~/routes/__layout/companies";
+import { getCompanyRouteNavbarButtons } from "~/routes/__layout/companies/$id";
 import { useUser } from "~/utils/utils";
 
 export default function Navbar() {
@@ -11,7 +11,9 @@ export default function Navbar() {
 
   return (
     <header className="fixed w-full top-0 p-5 bg-slate-200 flex justify-between items-center">
-      <div className="w-80"></div>
+      <div className="w-80">
+        <Link to="/">Crm</Link>
+      </div>
       <div className="flex flex-1">
         {buttons.length > 0 ? (
           <ul className="flex">
@@ -24,7 +26,7 @@ export default function Navbar() {
         ) : null}
         <div className="ml-auto flex">
           {user ? (
-            <Link to="account" className="mr-3">
+            <Link to="profile" className="mr-3">
               {user.displayName}
             </Link>
           ) : null}
