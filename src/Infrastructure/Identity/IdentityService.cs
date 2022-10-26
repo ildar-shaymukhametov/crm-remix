@@ -1,4 +1,5 @@
-﻿using CRM.Application.Common.Interfaces;
+﻿using System.Security.Claims;
+using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -76,6 +77,21 @@ public class IdentityService : IIdentityService
     {
         var result = await _userManager.DeleteAsync(user);
 
+        return result.ToApplicationResult();
+    }
+
+    public async Task<Result> UpdateClaimsAsync(string userId, string[] claims)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        var allClaims = await _userManager.GetClaimsAsync(user);
+        var removeResult = await _userManager.RemoveClaimsAsync(user, allClaims.Where(x => x.Type == "auth"));
+        if (!claims.Any())
+        {
+            return removeResult.ToApplicationResult();
+        }
+
+        var items = claims.Select(x => new Claim("auth", x));
+        var result = await _userManager.AddClaimsAsync(user, items);
         return result.ToApplicationResult();
     }
 }
