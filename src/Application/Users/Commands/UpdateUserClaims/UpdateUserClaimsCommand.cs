@@ -2,21 +2,21 @@ using AutoMapper;
 using CRM.Application.Common.Interfaces;
 using MediatR;
 
-namespace CRM.Application.Companies.Commands.UpdateClaims;
+namespace CRM.Application.Users.Commands.UpdateUserClaims;
 
-public record UpdateClaimsCommand : IRequest<Unit>
+public record UpdateUserClaimsCommand : IRequest<Unit>
 {
     public string[] Claims { get; set; } = Array.Empty<string>();
 }
 
-public class UpdateClaimsCommandHandler : IRequestHandler<UpdateClaimsCommand>
+public class UpdateUserClaimsCommandHandler : IRequestHandler<UpdateUserClaimsCommand>
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
     private readonly IIdentityService _identityService;
 
-    public UpdateClaimsCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IMapper mapper, IIdentityService identityService)
+    public UpdateUserClaimsCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IMapper mapper, IIdentityService identityService)
     {
         _context = context;
         _currentUserService = currentUserService;
@@ -24,7 +24,7 @@ public class UpdateClaimsCommandHandler : IRequestHandler<UpdateClaimsCommand>
         _identityService = identityService;
     }
 
-    public async Task<Unit> Handle(UpdateClaimsCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(UpdateUserClaimsCommand request, CancellationToken cancellationToken)
     {
         if (_currentUserService.UserId == null)
         {
