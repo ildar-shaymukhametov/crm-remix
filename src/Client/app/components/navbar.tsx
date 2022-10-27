@@ -26,7 +26,7 @@ export default function Navbar() {
         ) : null}
         <div className="ml-auto flex">
           {user ? (
-            <Link to="profile" className="mr-3">
+            <Link to="account/profile" className="mr-3">
               {user.displayName}
             </Link>
           ) : null}
