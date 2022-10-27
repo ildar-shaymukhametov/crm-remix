@@ -94,4 +94,11 @@ public class IdentityService : IIdentityService
         var result = await _userManager.AddClaimsAsync(user, items);
         return result.ToApplicationResult();
     }
+
+    public async Task<string[]> GetUserClaimsAsync(string? userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        var claims = await _userManager.GetClaimsAsync(user);
+        return claims.Where(x => x.Type == "auth").Select(x => x.Value).ToArray();
+    }
 }

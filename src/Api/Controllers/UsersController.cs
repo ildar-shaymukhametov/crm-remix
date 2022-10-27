@@ -1,4 +1,5 @@
 using CRM.Application.Companies.Commands.UpdateClaims;
+using CRM.Application.Users.Queries.GetUserClaims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,5 +13,11 @@ public class UsersController : ApiControllerBase
     public async Task<ActionResult> Claims(UpdateClaimsCommand request)
     {
         return Ok(await Mediator.Send(request));
+    }
+
+    [Route("Claims")]
+    public async Task<ActionResult> Claims()
+    {
+        return Ok(await Mediator.Send(new GetUserClaimsQuery()));
     }
 }
