@@ -2,6 +2,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Mappings;
+using CRM.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
