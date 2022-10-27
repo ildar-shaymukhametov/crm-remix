@@ -10,4 +10,7 @@ public class Company : BaseAuditableEntity
     public string? Phone { get; set; }
     public string? Email { get; set; }
     public string? Contacts { get; set; }
+
+    public string? ManagerId { get; set; }
+    public ApplicationUser? Manager { get; set; }
 }

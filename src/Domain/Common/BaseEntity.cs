@@ -2,9 +2,11 @@
 
 namespace CRM.Domain.Common;
 
-public abstract class BaseEntity
+public abstract class BaseEntity : BaseEntity<int> { }
+
+public abstract class BaseEntity<T>
 {
-    public int Id { get; set; }
+    public T Id { get; set; }
 
     private readonly List<BaseEvent> _domainEvents = new();
 
