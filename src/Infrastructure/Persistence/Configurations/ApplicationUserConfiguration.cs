@@ -1,4 +1,5 @@
 ﻿using CRM.Domain.Entities;
+using CRM.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -19,5 +20,15 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
 
         builder.Property(t => t.PhoneNumber)
             .HasMaxLength(256);
+    }
+}
+
+public class AspNetUserConfiguration : IEntityTypeConfiguration<AspNetUser>
+{
+    public void Configure(EntityTypeBuilder<AspNetUser> builder)
+    {
+        builder.HasOne(x => x.ApplicationUser)
+            .WithOne()
+            .HasForeignKey("ApplicationUser", "Id");
     }
 }

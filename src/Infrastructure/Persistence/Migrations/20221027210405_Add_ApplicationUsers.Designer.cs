@@ -12,14 +12,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221027165054_Add_ApplicationUsers")]
+    [Migration("20221027210405_Add_ApplicationUsers")]
     partial class Add_ApplicationUsers
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("ProductVersion", "6.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -496,6 +496,15 @@ namespace CRM.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CRM.Domain.Entities.ApplicationUser", b =>
+                {
+                    b.HasOne("CRM.Infrastructure.Identity.AspNetUser", null)
+                        .WithOne("ApplicationUser")
+                        .HasForeignKey("CRM.Domain.Entities.ApplicationUser", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CRM.Domain.Entities.Company", b =>
                 {
                     b.HasOne("CRM.Domain.Entities.ApplicationUser", "Manager")
@@ -554,6 +563,11 @@ namespace CRM.Infrastructure.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("CRM.Infrastructure.Identity.AspNetUser", b =>
+                {
+                    b.Navigation("ApplicationUser");
                 });
 #pragma warning restore 612, 618
         }
