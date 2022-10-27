@@ -1,4 +1,5 @@
 using AutoMapper;
+using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using MediatR;
 
@@ -34,7 +35,7 @@ public class UpdateUserClaimsCommandHandler : IRequestHandler<UpdateUserClaimsCo
         var result = await _identityService.UpdateClaimsAsync(_currentUserService.UserId, request.Claims);
         if (result.Errors.Any())
         {
-            throw new InvalidOperationException($"Failed to update claims for user {_currentUserService.UserId}");
+            throw new InternalServerErrorException($"Failed to update claims for user {_currentUserService.UserId}");
         }
 
         return Unit.Value;

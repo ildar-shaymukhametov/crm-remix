@@ -7,8 +7,9 @@ namespace CRM.App.Filters;
 public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
 {
     private readonly IDictionary<Type, Action<ExceptionContext>> _exceptionHandlers;
+    private readonly ILogger<ApiExceptionFilterAttribute> _logger;
 
-    public ApiExceptionFilterAttribute()
+    public ApiExceptionFilterAttribute(ILogger<ApiExceptionFilterAttribute> logger)
     {
         // Register known exception types and handlers.
         _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
@@ -17,7 +18,9 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
             { typeof(NotFoundException), HandleNotFoundException },
             { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
             { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
+            { typeof(InternalServerErrorException), HandleInternalServerErrorException },
         };
+        _logger = logger;
     }
 
     public override void OnException(ExceptionContext context)
@@ -41,8 +44,6 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
             HandleInvalidModelStateException(context);
             return;
         }
-
-        HandleUnhandledException(context);
     }
 
     private void HandleValidationException(ExceptionContext context)
@@ -121,8 +122,10 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
         context.ExceptionHandled = true;
     }
 
-    private void HandleUnhandledException(ExceptionContext context)
+    private void HandleInternalServerErrorException(ExceptionContext context)
     {
+        _logger.LogError(context.Exception, "Internal server error");
+
         var details = new ProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,
