@@ -13,6 +13,7 @@ type ClaimType = {
 
 type LoaderData = {
   claimTypes: ClaimType[];
+  claims: string[]
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -44,6 +45,12 @@ export const loader: LoaderFunction = async ({ request }) => {
       Authorization: `Bearer ${user.extra?.accessToken}`,
     },
   });
+  const userClaimsResponse = await fetch(`${process.env.API_URL}/Users/Claims`, {
+    headers: {
+      Authorization: `Bearer ${user.extra?.accessToken}`,
+    },
+  });
+
   if (!response.ok) {
     if (response.status === 404) {
       throw new Response("Not Found", { status: 404 });
@@ -56,18 +63,20 @@ export const loader: LoaderFunction = async ({ request }) => {
     return json(null, { status: response.status });
   }
 
-  const data = await response.json();
-  return json({ claimTypes: data });
+  const claimTypes = await response.json();
+  const claims = await userClaimsResponse.json();
+  return json({ claimTypes, claims });
 };
 
 export default function AccessRoute() {
   const submit = useSubmit();
   const selectElem = useRef(null);
-  const { claimTypes } = useLoaderData<LoaderData>();
+  const { claimTypes, claims } = useLoaderData<LoaderData>();
   const options = claimTypes.map((x) => ({
     value: x.value,
     label: x.name,
   }));
+  const selectedOptions = options.filter(x => claims.includes(x.value));
 
   const onButtonClick = () => {
     const formData = new FormData();
@@ -86,6 +95,7 @@ export default function AccessRoute() {
         instanceId="user-claims"
         isMulti
         options={options}
+        defaultValue={selectedOptions}
       />
       <button type="button" onClick={onButtonClick}>
         Save
