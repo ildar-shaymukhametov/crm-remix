@@ -2,6 +2,6 @@
 
 namespace CRM.Infrastructure.Identity;
 
-public class ApplicationUser : IdentityUser
+public class AspNetUser : IdentityUser
 {
 }

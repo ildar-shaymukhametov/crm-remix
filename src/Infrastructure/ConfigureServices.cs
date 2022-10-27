@@ -23,7 +23,7 @@ public static class ConfigureServices
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<ApplicationDbContextInitialiser>();
 
-        services.AddDefaultIdentity<ApplicationUser>()
+        services.AddDefaultIdentity<AspNetUser>()
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -35,7 +35,7 @@ public static class ConfigureServices
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
             })
-            .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
+            .AddApiAuthorization<AspNetUser, ApplicationDbContext>(options =>
             {
                 options.ApiScopes.AddRange(Config.ApiScopes.ToArray());
                 options.Clients.AddRange(Config.Clients.ToArray());
