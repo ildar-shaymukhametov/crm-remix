@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+namespace CRM.Domain.Entities;
+
 public class UserClaimType : BaseEntity
 {
     [MaxLength(100)]

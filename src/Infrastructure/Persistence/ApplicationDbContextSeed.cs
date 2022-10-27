@@ -1,3 +1,4 @@
+using CRM.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 public static class ApplicationDbContextSeed
