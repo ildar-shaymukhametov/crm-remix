@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Models;
 using CRM.Domain.Entities;
@@ -134,10 +135,15 @@ public class IdentityService : IIdentityService
         return result.ToApplicationResult();
     }
 
-    public async Task<string[]> GetUserClaimsAsync(string? userId)
+    public async Task<Claim[]> GetUserClaimsAsync(string? userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
-        var claims = await _userManager.GetClaimsAsync(user);
-        return claims.Where(x => x.Type == "auth").Select(x => x.Value).ToArray();
+        if (user == null)
+        {
+            throw new NotFoundException($"User {userId} not found");
+        }
+
+        var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
+        return principal.Claims.ToArray();
     }
 }

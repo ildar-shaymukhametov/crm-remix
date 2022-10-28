@@ -1,4 +1,5 @@
-﻿using CRM.Application.Common.Models;
+﻿using System.Security.Claims;
+using CRM.Application.Common.Models;
 
 namespace CRM.Application.Common.Interfaces;
 
@@ -10,5 +11,10 @@ public interface IIdentityService
     Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password);
     Task<Result> DeleteUserAsync(string userId);
     Task<Result> UpdateClaimsAsync(string userId, string[] claims);
-    Task<string[]> GetUserClaimsAsync(string? userId);
+
+    /// <summary>
+    ///     Gets all user claims.
+    ///     <exception cref="NotFoundException">User not found.</exception>
+    /// </summary>
+    Task<Claim[]> GetUserClaimsAsync(string? userId);
 }
