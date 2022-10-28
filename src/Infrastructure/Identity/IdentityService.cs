@@ -124,10 +124,10 @@ public class IdentityService : IIdentityService
         var user = await _userManager.FindByIdAsync(userId);
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
         var authorizationClaims = principal.Claims.Where(x => x.Type == "authorization");
-        var removeResult = await _userManager.RemoveClaimsAsync(user, authorizationClaims);
+        var removeClaimsResult = await _userManager.RemoveClaimsAsync(user, authorizationClaims);
         if (!claims.Any())
         {
-            return removeResult.ToApplicationResult();
+            return removeClaimsResult.ToApplicationResult();
         }
 
         var newAuthorizationClaims = claims.Select(x => new Claim("authorization", x));
