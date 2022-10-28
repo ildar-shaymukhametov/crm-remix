@@ -20,7 +20,6 @@ public class GetUserClaimsQueryHandler : IRequestHandler<GetUserClaimsQuery, str
 
     public async Task<string[]> Handle(GetUserClaimsQuery request, CancellationToken cancellationToken)
     {
-        var claims = await _identityService.GetUserClaimsAsync(_currentUserService.UserId);
-        return claims.Select(x => x.Value).ToArray();
+        return await _identityService.GetUserClaimsAsync(_currentUserService.UserId);
     }
 }

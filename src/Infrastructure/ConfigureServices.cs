@@ -47,8 +47,7 @@ public static class ConfigureServices
                 // });
                 //
                 // client.RequirePkce = false;
-            })
-            .AddProfileService<ProfileService>();
+            });
 
         services.AddTransient<IDateTime, DateTimeService>();
         services.AddTransient<IIdentityService, IdentityService>();
