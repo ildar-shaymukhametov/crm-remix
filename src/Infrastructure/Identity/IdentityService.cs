@@ -119,18 +119,19 @@ public class IdentityService : IIdentityService
         return result.ToApplicationResult();
     }
 
-    public async Task<Result> UpdateClaimsAsync(string userId, string[] claims)
+    public async Task<Result> UpdateAuthorizationClaimsAsync(string userId, string[] claims)
     {
         var user = await _userManager.FindByIdAsync(userId);
-        var allClaims = await _userManager.GetClaimsAsync(user);
-        var removeResult = await _userManager.RemoveClaimsAsync(user, allClaims.Where(x => x.Type == "auth"));
+        var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
+        var authorizationClaims = principal.Claims.Where(x => x.Type == "auth");
+        var removeResult = await _userManager.RemoveClaimsAsync(user, authorizationClaims);
         if (!claims.Any())
         {
             return removeResult.ToApplicationResult();
         }
 
-        var items = claims.Select(x => new Claim("auth", x));
-        var result = await _userManager.AddClaimsAsync(user, items);
+        var newAuthorizationClaims = claims.Select(x => new Claim("auth", x));
+        var result = await _userManager.AddClaimsAsync(user, newAuthorizationClaims);
         return result.ToApplicationResult();
     }
 

@@ -32,7 +32,7 @@ public class UpdateUserAuthorizationClaimsCommandHandler : IRequestHandler<Updat
             throw new UnauthorizedAccessException();
         }
 
-        var result = await _identityService.UpdateClaimsAsync(_currentUserService.UserId, request.Claims);
+        var result = await _identityService.UpdateAuthorizationClaimsAsync(_currentUserService.UserId, request.Claims);
         if (result.Errors.Any())
         {
             throw new InternalServerErrorException($"Failed to update claims for user {_currentUserService.UserId}");
