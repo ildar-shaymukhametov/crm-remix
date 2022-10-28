@@ -22,7 +22,7 @@ export const action: ActionFunction = async ({ request }) => {
   const data = {
     claims: Object.values(Object.fromEntries(formData)),
   };
-  const response = await fetch(`${process.env.API_URL}/Users/Claims`, {
+  const response = await fetch(`${process.env.API_URL}/User/AuthorizationClaims`, {
     method: "post",
     body: JSON.stringify(data),
     headers: {
@@ -45,7 +45,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       Authorization: `Bearer ${user.extra?.accessToken}`,
     },
   });
-  const userClaimsResponse = await fetch(`${process.env.API_URL}/Users/Claims`, {
+  const userClaimsResponse = await fetch(`${process.env.API_URL}/User/AuthorizationClaims`, {
     headers: {
       Authorization: `Bearer ${user.extra?.accessToken}`,
     },

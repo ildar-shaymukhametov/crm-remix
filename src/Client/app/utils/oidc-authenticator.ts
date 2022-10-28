@@ -9,7 +9,7 @@ export class OidcAuthenticator extends Authenticator<OidcProfile> {
   async requireUser(request: Request): Promise<OidcProfile> {
     const user = await auth.isAuthenticated(request);
     if (user) {
-      let response = await fetch(`${process.env.API_URL}/Users/Claims`, {
+      let response = await fetch(`${process.env.API_URL}/User/AuthorizationClaims`, {
         headers: {
           Authorization: `Bearer ${user.extra.accessToken}`
         },

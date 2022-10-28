@@ -3,21 +3,21 @@ using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using MediatR;
 
-namespace CRM.Application.Users.Commands.UpdateUserClaims;
+namespace CRM.Application.Users.Commands.UpdateUserAuthorizationClaims;
 
-public record UpdateUserClaimsCommand : IRequest<Unit>
+public record UpdateUserAuthorizationClaimsCommand : IRequest<Unit>
 {
     public string[] Claims { get; set; } = Array.Empty<string>();
 }
 
-public class UpdateUserClaimsCommandHandler : IRequestHandler<UpdateUserClaimsCommand>
+public class UpdateUserAuthorizationClaimsCommandHandler : IRequestHandler<UpdateUserAuthorizationClaimsCommand>
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
     private readonly IIdentityService _identityService;
 
-    public UpdateUserClaimsCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IMapper mapper, IIdentityService identityService)
+    public UpdateUserAuthorizationClaimsCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IMapper mapper, IIdentityService identityService)
     {
         _context = context;
         _currentUserService = currentUserService;
@@ -25,7 +25,7 @@ public class UpdateUserClaimsCommandHandler : IRequestHandler<UpdateUserClaimsCo
         _identityService = identityService;
     }
 
-    public async Task<Unit> Handle(UpdateUserClaimsCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(UpdateUserAuthorizationClaimsCommand request, CancellationToken cancellationToken)
     {
         if (_currentUserService.UserId == null)
         {

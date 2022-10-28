@@ -134,7 +134,7 @@ public class IdentityService : IIdentityService
         return result.ToApplicationResult();
     }
 
-    public async Task<string[]> GetUserClaimsAsync(string? userId)
+    public async Task<string[]> GetUserAuthorizationClaimsAsync(string? userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         var claims = await _userManager.GetClaimsAsync(user);
