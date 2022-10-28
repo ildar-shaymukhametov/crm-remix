@@ -123,14 +123,14 @@ public class IdentityService : IIdentityService
     {
         var user = await _userManager.FindByIdAsync(userId);
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
-        var authorizationClaims = principal.Claims.Where(x => x.Type == "auth");
+        var authorizationClaims = principal.Claims.Where(x => x.Type == "authorization");
         var removeResult = await _userManager.RemoveClaimsAsync(user, authorizationClaims);
         if (!claims.Any())
         {
             return removeResult.ToApplicationResult();
         }
 
-        var newAuthorizationClaims = claims.Select(x => new Claim("auth", x));
+        var newAuthorizationClaims = claims.Select(x => new Claim("authorization", x));
         var result = await _userManager.AddClaimsAsync(user, newAuthorizationClaims);
         return result.ToApplicationResult();
     }
@@ -139,6 +139,6 @@ public class IdentityService : IIdentityService
     {
         var user = await _userManager.FindByIdAsync(userId);
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
-        return principal.Claims.Where(x => x.Type == "auth").Select(x => x.Value).ToArray();
+        return principal.Claims.Where(x => x.Type == "authorization").Select(x => x.Value).ToArray();
     }
 }
