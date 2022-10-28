@@ -137,7 +137,7 @@ public class IdentityService : IIdentityService
     public async Task<string[]> GetUserAuthorizationClaimsAsync(string? userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
-        var claims = await _userManager.GetClaimsAsync(user);
-        return claims.Where(x => x.Type == "auth").Select(x => x.Value).ToArray();
+        var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
+        return principal.Claims.Where(x => x.Type == "auth").Select(x => x.Value).ToArray();
     }
 }
