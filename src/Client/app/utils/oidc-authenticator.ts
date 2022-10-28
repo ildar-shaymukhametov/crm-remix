@@ -9,6 +9,22 @@ export class OidcAuthenticator extends Authenticator<OidcProfile> {
   async requireUser(request: Request): Promise<OidcProfile> {
     const user = await auth.isAuthenticated(request);
     if (user) {
+      let response = await fetch(`${process.env.API_URL}/Users/Claims`, {
+        headers: {
+          Authorization: `Bearer ${user.extra.accessToken}`
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          await auth.logout(request, user);
+          throw redirect("/login");
+        }
+      }
+
+      let data = await response.json();
+      user.authrizationClaims = data;
+
       return user;
     }
 

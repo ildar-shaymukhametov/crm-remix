@@ -1,11 +1,16 @@
-import type { ActionFunction, LoaderFunction} from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
+import { useActionData, useCatch } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  return await auth.requireUser(request);
+  let user = await auth.requireUser(request);
+  if (!user.authrizationClaims.includes("company.create")) {
+    throw new Response(null, { status: 401, statusText: "Unauhtorized" });
+  }
+
+  return user;
 };
 
 type ActionData = {
@@ -112,4 +117,16 @@ export default function NewCompanyRoute() {
       <button type="submit">Create</button>
     </form>
   );
+}
+
+export function CatchBoundary() {
+  const res = useCatch();
+  if (res.status === 401) {
+    return <p>Unauthorized</p>;
+  }
+  if (res.status === 404) {
+    return <p>Company not found</p>;
+  }
+
+  throw new Error(`Unsupported thrown response status code: ${res.status}`);
 }

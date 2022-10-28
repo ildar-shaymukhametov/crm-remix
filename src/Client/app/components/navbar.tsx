@@ -2,12 +2,13 @@ import { useLocation } from "@remix-run/react";
 import { Form, Link } from "@remix-run/react";
 import { getCompaniesRouteNavbarButtons } from "~/routes/__layout/companies";
 import { getCompanyRouteNavbarButtons } from "~/routes/__layout/companies/$id";
+import type { OidcProfile } from "~/utils/oidc-strategy";
 import { useUser } from "~/utils/utils";
 
 export default function Navbar() {
   const user = useUser();
   const loc = useLocation();
-  const buttons = getNavbarButtons(loc.pathname);
+  const buttons = getNavbarButtons(loc.pathname, user);
 
   return (
     <header className="fixed w-full top-0 p-5 bg-slate-200 flex justify-between items-center">
@@ -41,14 +42,14 @@ export default function Navbar() {
   );
 }
 
-function getNavbarButtons(pathname: string) {
+function getNavbarButtons(pathname: string, user: OidcProfile) {
   if (pathname === "/companies") {
-    return getCompaniesRouteNavbarButtons();
+    return getCompaniesRouteNavbarButtons(user);
   }
 
   const match = pathname.match(/^\/companies\/(?<id>[1-9])+$/);
   if (match?.groups?.id) {
-    return getCompanyRouteNavbarButtons(match.groups.id);
+    return getCompanyRouteNavbarButtons(match.groups.id, user);
   }
 
   return [];

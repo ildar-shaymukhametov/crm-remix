@@ -1,10 +1,15 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Link, useActionData, useParams } from "@remix-run/react";
+import { Link, useActionData, useCatch, useParams } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  return await auth.requireUser(request);
+  let user = await auth.requireUser(request);
+  if (!user.authrizationClaims.includes("company.delete")) {
+    throw new Response(null, { status: 401, statusText: "Unauthorized" });
+  }
+
+  return user;
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -43,4 +48,16 @@ export default function DeleteCompany() {
       </div>
     </>
   );
+}
+
+export function CatchBoundary() {
+  const res = useCatch();
+  if (res.status === 401) {
+    return <p>Unauthorized</p>;
+  }
+  if (res.status === 404) {
+    return <p>Company not found</p>;
+  }
+
+  throw new Error(`Unsupported thrown response status code: ${res.status}`);
 }

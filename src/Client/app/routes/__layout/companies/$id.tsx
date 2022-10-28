@@ -2,6 +2,7 @@ import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
+import type { OidcProfile } from "~/utils/oidc-strategy";
 
 type Company = {
   id: number;
@@ -19,11 +20,16 @@ type LoaderData = {
   company: Company;
 };
 
-export function getCompanyRouteNavbarButtons(id: string) {
-  return [
-    <Link to={`companies/${id}/delete`}>Delete</Link>,
-    <Link to={`companies/${id}/edit`}>Edit</Link>,
-  ];
+export function getCompanyRouteNavbarButtons(id: string, user: OidcProfile) {
+  let result = [];
+  if (user.authrizationClaims.includes("company.delete")) {
+    result.push(<Link to={`companies/${id}/delete`}>Delete</Link>);
+  }
+  if (user.authrizationClaims.includes("company.update")) {
+    result.push(<Link to={`companies/${id}/edit`}>Edit</Link>);
+  }
+
+  return result;
 }
 
 export const loader: LoaderFunction = async ({ request, params }) => {

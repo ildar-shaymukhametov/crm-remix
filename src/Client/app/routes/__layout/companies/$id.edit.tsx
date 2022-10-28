@@ -23,6 +23,10 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request);
+  if (!user.authrizationClaims.includes("company.update")) {
+    throw new Response(null, { status: 401, statusText: "Unauthorized" });
+  }
+
   const response = await fetch(
     `${process.env.API_URL}/companies/${params.id}`,
     {
@@ -190,6 +194,6 @@ export function CatchBoundary() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  console.log(error.message);
+  console.error(error.message);
   return <p>{error.message}</p>;
 }

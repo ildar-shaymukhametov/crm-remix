@@ -31,6 +31,7 @@ export interface OidcProfile extends OAuth2Profile {
   };
   emails: Array<{ value: string }>;
   photos: Array<{ value: string }>;
+  authrizationClaims: string[],
   extra: OidcExtraParams;
   _json: {
     sub: string;
