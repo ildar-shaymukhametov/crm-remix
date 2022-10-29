@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CRM.Infrastructure.Authorization.Handlers;
 
-public class UserHasCreateCompanyClaimHandler : AuthorizationHandler<UserHasCreateCompanyClaimRequirement>
+public class OrUserHasCreateCompanyClaimRequirement : IOrAuthorizationRequirement { }
+
+public class OrUserHasCreateCompanyClaimHandler : AuthorizationHandler<OrUserHasCreateCompanyClaimRequirement>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserHasCreateCompanyClaimRequirement requirement)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, OrUserHasCreateCompanyClaimRequirement requirement)
     {
         if (context.User.HasClaim(x => x.Value == Constants.Authorization.Claims.CreateCompany))
         {
@@ -23,4 +25,3 @@ public class UserHasCreateCompanyClaimHandler : AuthorizationHandler<UserHasCrea
     }
 }
 
-public class UserHasCreateCompanyClaimRequirement : IOrAuthorizationRequirement { }

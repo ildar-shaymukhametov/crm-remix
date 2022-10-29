@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CRM.Infrastructure.Authorization.Handlers;
 
-public class UserIsAdminHandler : AuthorizationHandler<UserIsAdminRequirement>
+public class OrUserIsAdminRequirement : IOrAuthorizationRequirement { }
+
+public class OrUserIsAdminHandler : AuthorizationHandler<OrUserIsAdminRequirement>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsAdminRequirement requirement)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, OrUserIsAdminRequirement requirement)
     {
         if (context.User.IsInRole(Constants.Roles.Administrator))
         {
@@ -23,4 +25,3 @@ public class UserIsAdminHandler : AuthorizationHandler<UserIsAdminRequirement>
     }
 }
 
-public class UserIsAdminRequirement : IOrAuthorizationRequirement { }

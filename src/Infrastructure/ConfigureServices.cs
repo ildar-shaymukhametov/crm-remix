@@ -54,8 +54,8 @@ public static class ConfigureServices
         {
             options.AddPolicy(Constants.Authorization.Policies.CreateCompany, policy =>
                 policy.AddRequirements(
-                    new UserIsAdminRequirement(), 
-                    new UserHasCreateCompanyClaimRequirement()));
+                    new OrUserIsAdminRequirement(),
+                    new OrUserHasCreateCompanyClaimRequirement()));
         });
 
         return services;
