@@ -3,7 +3,6 @@ using CRM.Application.Companies.Commands.DeleteCompany;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Application.Companies.Queries.GetCompanies;
 using CRM.Application.Companies.Queries.GetCompany;
-using CRM.Application.Companies.Queries.GetPossibleCompanyManagers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,11 +44,5 @@ public class CompaniesController : ApiControllerBase
     public async Task<ActionResult> Update(UpdateCompanyCommand command)
     {
         return Ok(await Mediator.Send(command));
-    }
-
-    [Route("{id}/PossibleManagers")]
-    public async Task<ActionResult> GetManagers(int id)
-    {
-        return Ok(await Mediator.Send(new GetPossibleCompanyManagersQuery { Id = id }));
     }
 }
