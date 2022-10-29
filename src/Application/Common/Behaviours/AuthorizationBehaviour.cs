@@ -65,7 +65,6 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
             {
                 foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
                 {
-
                     var authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, policy);
                     if (!authorized)
                     {

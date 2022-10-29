@@ -7,6 +7,8 @@ public static class ConfigureHandlers
 {
     public static IServiceCollection AddAuthorizationHandlers(this IServiceCollection services)
     {
-        return services.AddScoped<IAuthorizationHandler, UserIsAdminHandler>();
+        return services
+            .AddScoped<IAuthorizationHandler, UserIsAdminHandler>()
+            .AddScoped<IAuthorizationHandler, UserHasCreateCompanyClaimHandler>();
     }
 }

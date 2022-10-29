@@ -6,7 +6,6 @@ using CRM.Infrastructure.Persistence;
 using CRM.Infrastructure.Persistence.Interceptors;
 using CRM.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -54,7 +53,9 @@ public static class ConfigureServices
         services.AddAuthorization(options =>
         {
             options.AddPolicy(Constants.Authorization.Policies.CreateCompany, policy =>
-                policy.AddRequirements(new UserIsAdminRequirement()));
+                policy.AddRequirements(
+                    new UserIsAdminRequirement(), 
+                    new UserHasCreateCompanyClaimRequirement()));
         });
 
         return services;

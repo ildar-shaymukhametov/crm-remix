@@ -44,54 +44,51 @@ public class CreateCompanyTests : BaseTest
         Assert.Equal(user.Id, company.CreatedBy);
     }
 
-    // [Fact]
-    // public async Task User_has_claim___Creates_company()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new [] { Utils.CreateAuthorizationClaim(Constants.Authorization.Claims.CreateCompany) });
+    [Fact]
+    public async Task User_has_claim___Creates_company()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new [] { Utils.CreateAuthorizationClaim(Constants.Authorization.Claims.CreateCompany) });
 
-    //     var data = Faker.Builders.Company();
-    //     var command = new CreateCompanyCommand
-    //     {
-    //         Address = data.Address,
-    //         Ceo = data.Ceo,
-    //         Contacts = data.Contacts,
-    //         Email = data.Email,
-    //         Inn = data.Inn,
-    //         Name = data.Name,
-    //         Phone = data.Phone,
-    //         Type = data.Type
-    //     };
+        var data = Faker.Builders.Company();
+        var command = new CreateCompanyCommand
+        {
+            Address = data.Address,
+            Ceo = data.Ceo,
+            Contacts = data.Contacts,
+            Email = data.Email,
+            Inn = data.Inn,
+            Name = data.Name,
+            Phone = data.Phone,
+            Type = data.Type
+        };
 
-    //     var companyId = await _fixture.SendAsync(command);
-    //     var company = await _fixture.FindAsync<Company>(companyId);
+        var companyId = await _fixture.SendAsync(command);
+        var company = await _fixture.FindAsync<Company>(companyId);
 
-    //     Assert.NotNull(company);
-    //     Assert.Equal(companyId, company!.Id);
-    //     Assert.Equal(BaseTestFixture.UtcNow, company.CreatedAtUtc);
-    //     Assert.Equal(user.Id, company.CreatedBy);
-    // }
+        Assert.NotNull(company);
+        Assert.Equal(companyId, company!.Id);
+        Assert.Equal(BaseTestFixture.UtcNow, company.CreatedAtUtc);
+        Assert.Equal(user.Id, company.CreatedBy);
+    }
 
-    // [Fact]
-    // public async Task User_has_no_claim___Does_not_create_company()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync();
+    [Fact]
+    public async Task User_has_no_claim___Does_not_create_company()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync();
 
-    //     var data = Faker.Builders.Company();
-    //     var command = new CreateCompanyCommand
-    //     {
-    //         Address = data.Address,
-    //         Ceo = data.Ceo,
-    //         Contacts = data.Contacts,
-    //         Email = data.Email,
-    //         Inn = data.Inn,
-    //         Name = data.Name,
-    //         Phone = data.Phone,
-    //         Type = data.Type
-    //     };
+        var data = Faker.Builders.Company();
+        var command = new CreateCompanyCommand
+        {
+            Address = data.Address,
+            Ceo = data.Ceo,
+            Contacts = data.Contacts,
+            Email = data.Email,
+            Inn = data.Inn,
+            Name = data.Name,
+            Phone = data.Phone,
+            Type = data.Type
+        };
 
-    //     var companyId = await _fixture.SendAsync(command);
-    //     var company = await _fixture.FindAsync<Company>(companyId);
-
-    //     Assert.Null(company);
-    // }
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
 }
