@@ -65,18 +65,8 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
             {
                 foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
                 {
-                    var authorized = false;
-                    if (policy == Constants.Authorization.Policies.UpdateCompany && request is UpdateCompanyCommand dto)
-                    {
-                        var resource = await _dbContext.Companies.FindAsync(dto.Id);
-                        authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, resource, policy);
-                    }
-                    else
-                    {
-                        authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, policy);
-                    }
 
-
+                    var authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, policy);
                     if (!authorized)
                     {
                         throw new ForbiddenAccessException();

@@ -6,7 +6,7 @@ public static class Date
 {
     public static DateTime RandomDateTime()
     {
-        var year = Random.Shared.Next(1990, 2022);
+        var year = Random.Shared.Next(1990, DateTime.UtcNow.Year);
         var month = Random.Shared.Next(1, 13);
         var day = Random.Shared.Next(1, DateTime.DaysInMonth(year, month) + 1);
         var hour = Random.Shared.Next(1, 24);

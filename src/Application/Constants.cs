@@ -16,6 +16,7 @@ public static class Constants
         public static class Policies
         {
             public const string UpdateCompany = "UpdateCompany";
+            public const string CreateCompany = "CreateCompany";
         }
     }
 

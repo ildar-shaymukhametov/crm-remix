@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CRM.Infrastructure.Authorization.Handlers;
 
-public class UserIsAdminHandler : AuthorizationHandler<UserIsAdminRequirement, Company>
+public class UserIsAdminHandler : AuthorizationHandler<UserIsAdminRequirement>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsAdminRequirement requirement, Company resource)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsAdminRequirement requirement)
     {
         if (context.User.IsInRole(Constants.Roles.Administrator))
         {

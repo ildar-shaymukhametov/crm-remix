@@ -1,11 +1,13 @@
 using AutoMapper;
 using CRM.Application.Common.Interfaces;
+using CRM.Application.Common.Security;
 using CRM.Domain.Entities;
 using CRM.Domain.Events;
 using MediatR;
 
 namespace CRM.Application.Companies.Commands.CreateCompany;
 
+[Authorize(Constants.Authorization.Policies.CreateCompany)]
 public record CreateCompanyCommand : IRequest<int>
 {
     public string? Type { get; set; }

@@ -26,7 +26,7 @@ public static class ConfigureServices
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<ApplicationDbContextInitialiser>();
 
-        services.AddScoped<IAuthorizationHandler, UserIsAdminHandler>();
+        services.AddAuthorizationHandlers();
 
         services.AddDefaultIdentity<AspNetUser>()
             .AddRoles<IdentityRole>()
@@ -53,7 +53,7 @@ public static class ConfigureServices
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(Constants.Authorization.Policies.UpdateCompany, policy =>
+            options.AddPolicy(Constants.Authorization.Policies.CreateCompany, policy =>
                 policy.AddRequirements(new UserIsAdminRequirement()));
         });
 
