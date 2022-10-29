@@ -8,12 +8,6 @@ namespace CRM.Infrastructure.Persistence.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "ManagerId",
-                table: "Companies",
-                type: "nvarchar(450)",
-                nullable: true);
-
             migrationBuilder.CreateTable(
                 name: "ApplicationUsers",
                 columns: table => new
@@ -34,36 +28,12 @@ namespace CRM.Infrastructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Companies_ManagerId",
-                table: "Companies",
-                column: "ManagerId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Companies_ApplicationUsers_ManagerId",
-                table: "Companies",
-                column: "ManagerId",
-                principalTable: "ApplicationUsers",
-                principalColumn: "Id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Companies_ApplicationUsers_ManagerId",
-                table: "Companies");
-
             migrationBuilder.DropTable(
                 name: "ApplicationUsers");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Companies_ManagerId",
-                table: "Companies");
-
-            migrationBuilder.DropColumn(
-                name: "ManagerId",
-                table: "Companies");
         }
     }
 }
