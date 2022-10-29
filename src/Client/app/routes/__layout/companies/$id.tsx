@@ -1,6 +1,6 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 import type { OidcProfile } from "~/utils/oidc-strategy";
 
@@ -44,7 +44,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   );
 
   if (!response.ok) {
-    return json(null, { status: response.status });
+    throw response;
   }
 
   return json({ company: await response.json() });
@@ -53,13 +53,24 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 export default function CompanyRoute() {
   const data = useLoaderData<LoaderData>();
 
-  if (!data?.company) {
-    return <div>Failed to load company</div>;
-  }
-
   return Object.entries(data.company).map(([key, name], i) => (
     <p key={i}>
       {key}: {name}
     </p>
   ));
+}
+
+export function CatchBoundary() {
+  const res = useCatch();
+  if (res.status === 401) {
+    return <p>Unauthorized</p>;
+  }
+  if (res.status === 403) {
+    return <p>Forbidden</p>;
+  }
+  if (res.status === 404) {
+    return <p>Company not found</p>;
+  }
+
+  throw new Error(`Unsupported thrown response status code: ${res.status}`);
 }
