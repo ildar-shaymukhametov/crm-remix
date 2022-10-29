@@ -1,6 +1,6 @@
 ﻿using CRM.Application;
 using CRM.Application.Common.Interfaces;
-using CRM.Infrastructure.Authorization.Handlers.Companies;
+using CRM.Infrastructure.Authorization.Handlers;
 using CRM.Infrastructure.Identity;
 using CRM.Infrastructure.Persistence;
 using CRM.Infrastructure.Persistence.Interceptors;
@@ -26,7 +26,7 @@ public static class ConfigureServices
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<ApplicationDbContextInitialiser>();
 
-        services.AddScoped<IAuthorizationHandler, UserIsCompanyManagerHandler>();
+        services.AddScoped<IAuthorizationHandler, UserIsAdminHandler>();
 
         services.AddDefaultIdentity<AspNetUser>()
             .AddRoles<IdentityRole>()
@@ -54,7 +54,7 @@ public static class ConfigureServices
         services.AddAuthorization(options =>
         {
             options.AddPolicy(Constants.Authorization.Policies.UpdateCompany, policy =>
-                policy.AddRequirements(new UserIsCompanyManagerRequirement()));
+                policy.AddRequirements(new UserIsAdminRequirement()));
         });
 
         return services;
