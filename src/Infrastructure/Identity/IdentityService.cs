@@ -105,6 +105,20 @@ public class IdentityService : IIdentityService
         return result.Succeeded;
     }
 
+    public async Task<bool> AuthorizeAsync(string userId, object? resource, string policyName)
+    {
+        var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
+        if (user == null)
+        {
+            return false;
+        }
+
+        var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
+        var result = await _authorizationService.AuthorizeAsync(principal, resource, policyName);
+
+        return result.Succeeded;
+    }
+
     public async Task<Result> DeleteUserAsync(string userId)
     {
         var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);

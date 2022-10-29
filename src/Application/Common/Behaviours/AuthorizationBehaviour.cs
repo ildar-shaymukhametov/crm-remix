@@ -2,6 +2,7 @@
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
+using CRM.Application.Companies.Commands.UpdateCompany;
 using MediatR;
 
 namespace CRM.Application.Common.Behaviours;
@@ -10,13 +11,13 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
 {
     private readonly ICurrentUserService _currentUserService;
     private readonly IIdentityService _identityService;
+    private readonly IApplicationDbContext _dbContext;
 
-    public AuthorizationBehaviour(
-        ICurrentUserService currentUserService,
-        IIdentityService identityService)
+    public AuthorizationBehaviour(ICurrentUserService currentUserService, IIdentityService identityService, IApplicationDbContext dbContext)
     {
         _currentUserService = currentUserService;
         _identityService = identityService;
+        _dbContext = dbContext;
     }
 
     public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
@@ -64,7 +65,17 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
             {
                 foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
                 {
-                    var authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, policy);
+                    var authorized = false;
+                    if (policy == Constants.Authorization.Policies.UpdateCompany && request is UpdateCompanyCommand dto)
+                    {
+                        var resource = await _dbContext.Companies.FindAsync(dto.Id);
+                        authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, resource, policy);
+                    }
+                    else
+                    {
+                        authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, policy);
+                    }
+
 
                     if (!authorized)
                     {

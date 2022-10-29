@@ -9,7 +9,10 @@ public class AuthorizeAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="AuthorizeAttribute"/> class. 
     /// </summary>
-    public AuthorizeAttribute() { }
+    public AuthorizeAttribute(string policyName)
+    {
+        Policy = policyName;
+    }
 
     /// <summary>
     /// Gets or sets a comma delimited list of roles that are allowed to access the resource.
