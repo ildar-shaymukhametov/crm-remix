@@ -9,7 +9,7 @@ public class GetCompaniesTests : BaseTest
     public GetCompaniesTests(BaseTestFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task User_is_admin___Return_company()
+    public async Task User_is_admin___Returns_company()
     {
         var user = await _fixture.RunAsAdministratorAsync();
 
@@ -23,7 +23,7 @@ public class GetCompaniesTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim___Return_company()
+    public async Task User_has_claim___Returns_company()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[]
         {
@@ -40,7 +40,7 @@ public class GetCompaniesTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_no_claim___Throw_forbidden_access()
+    public async Task User_has_no_claim___Throws_forbidden_access()
     {
         var user = await _fixture.RunAsDefaultUserAsync();
 

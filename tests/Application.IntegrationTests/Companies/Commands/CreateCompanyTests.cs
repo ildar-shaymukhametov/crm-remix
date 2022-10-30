@@ -51,7 +51,7 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_no_claim___Does_not_create_company()
+    public async Task User_has_no_claim___Throws_forbidden_access()
     {
         var user = await _fixture.RunAsDefaultUserAsync();
         var command = CreateCommand();
