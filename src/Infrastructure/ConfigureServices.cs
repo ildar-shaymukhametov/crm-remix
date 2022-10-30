@@ -54,10 +54,15 @@ public static class ConfigureServices
         {
             options.AddPolicy(Constants.Policies.CreateCompany, policy =>
                 policy.AddRequirements(new CreateCompanyRequirement()));
+
             options.AddPolicy(Constants.Policies.GetCompany, policy =>
                 policy.AddRequirements(new GetCompanyRequirement()));
+
             options.AddPolicy(Constants.Policies.GetCompanies, policy =>
                 policy.AddRequirements(new GetCompaniesRequirement()));
+
+            options.AddPolicy(Constants.Policies.UpdateCompany, policy =>
+                policy.AddRequirements(new UpdateCompanyRequirement()));
         });
 
         return services;
