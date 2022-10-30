@@ -5,7 +5,7 @@ namespace CRM.Infrastructure.Authorization.Handlers;
 
 public class GetCompanyRequirement : IAuthorizationRequirement { }
 
-public class GetCompanyRequirementHandler : BaseAuthorizationHandler<GetCompanyRequirement>
+public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompanyRequirement>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {

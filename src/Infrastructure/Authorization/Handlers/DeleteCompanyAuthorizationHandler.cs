@@ -5,7 +5,7 @@ namespace CRM.Infrastructure.Authorization.Handlers;
 
 public class DeleteCompanyRequirement : IAuthorizationRequirement { }
 
-public class DeleteCompanyRequirementHandler : BaseAuthorizationHandler<DeleteCompanyRequirement>
+public class DeleteCompanyAuthorizationHandler : BaseAuthorizationHandler<DeleteCompanyRequirement>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
     {

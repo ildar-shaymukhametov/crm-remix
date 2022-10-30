@@ -5,7 +5,7 @@ namespace CRM.Infrastructure.Authorization.Handlers;
 
 public class UpdateCompanyRequirement : IAuthorizationRequirement { }
 
-public class UpdateCompanyRequirementHandler : BaseAuthorizationHandler<UpdateCompanyRequirement>
+public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<UpdateCompanyRequirement>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
     {
