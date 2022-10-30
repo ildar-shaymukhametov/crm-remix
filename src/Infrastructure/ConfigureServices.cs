@@ -53,17 +53,11 @@ public static class ConfigureServices
         services.AddAuthorization(options =>
         {
             options.AddPolicy(Constants.Policies.CreateCompany, policy =>
-                policy.AddRequirements(
-                    new OrUserIsAdminRequirement(),
-                    new OrUserHasCreateCompanyClaimRequirement()));
+                policy.AddRequirements(new CreateCompanyRequirement()));
             options.AddPolicy(Constants.Policies.GetCompany, policy =>
-                policy.AddRequirements(
-                    new OrUserIsAdminRequirement(),
-                    new OrUserHasViewCompanyClaimRequirement()));
+                policy.AddRequirements(new GetCompanyRequirement()));
             options.AddPolicy(Constants.Policies.GetCompanies, policy =>
-                policy.AddRequirements(
-                    new OrUserIsAdminRequirement(),
-                    new OrUserHasViewCompanyClaimRequirement()));
+                policy.AddRequirements(new GetCompaniesRequirement()));
         });
 
         return services;
