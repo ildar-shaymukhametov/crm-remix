@@ -126,6 +126,7 @@ export class OidcStrategy<User> extends OAuth2Strategy<
       emails: [{ value: data.email }],
       photos: [{ value: data.picture }],
       extra: params,
+      authrizationClaims: [],
       _json: data,
     };
 
