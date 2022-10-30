@@ -1,6 +1,5 @@
-﻿using CRM.Application;
-using CRM.Application.Common.Interfaces;
-using CRM.Infrastructure.Authorization.Handlers;
+﻿using CRM.Application.Common.Interfaces;
+using CRM.Infrastructure.Authorization;
 using CRM.Infrastructure.Identity;
 using CRM.Infrastructure.Persistence;
 using CRM.Infrastructure.Persistence.Interceptors;
@@ -52,20 +51,7 @@ public static class ConfigureServices
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(Constants.Policies.CreateCompany, policy =>
-                policy.AddRequirements(new CreateCompanyRequirement()));
-
-            options.AddPolicy(Constants.Policies.GetCompany, policy =>
-                policy.AddRequirements(new GetCompanyRequirement()));
-
-            options.AddPolicy(Constants.Policies.GetCompanies, policy =>
-                policy.AddRequirements(new GetCompaniesRequirement()));
-
-            options.AddPolicy(Constants.Policies.UpdateCompany, policy =>
-                policy.AddRequirements(new UpdateCompanyRequirement()));
-
-            options.AddPolicy(Constants.Policies.DeleteCompany, policy =>
-                policy.AddRequirements(new DeleteCompanyRequirement()));
+            options.AddPolicies();
         });
 
         return services;
