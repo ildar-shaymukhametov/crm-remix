@@ -9,7 +9,7 @@ public class OrUserHasCreateCompanyClaimHandler : AuthorizationHandler<OrUserHas
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, OrUserHasCreateCompanyClaimRequirement requirement)
     {
-        if (context.User.HasClaim(x => x.Value == Constants.Authorization.Claims.CreateCompany))
+        if (context.User.HasClaim(x => x.Value == Constants.Claims.CreateCompany))
         {
             context.Succeed(requirement);
             if (requirement is IOrAuthorizationRequirement)

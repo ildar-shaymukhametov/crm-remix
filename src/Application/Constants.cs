@@ -2,22 +2,19 @@ namespace CRM.Application;
 
 public static class Constants
 {
-    public static class Authorization
+    public static class Claims
     {
-        public static class Claims
-        {
-            public const string ClaimType = "authorization";
-            public const string CreateCompany = "company.create";
-            public const string UpdateCompany = "company.update";
-            public const string DeleteCompany = "company.delete";
-            public const string ViewCompany = "company.view";
-        }
+        public const string ClaimType = "authorization";
+        public const string CreateCompany = "company.create";
+        public const string UpdateCompany = "company.update";
+        public const string DeleteCompany = "company.delete";
+        public const string ViewCompany = "company.view";
+    }
 
-        public static class Policies
-        {
-            public const string UpdateCompany = "UpdateCompany";
-            public const string CreateCompany = "CreateCompany";
-        }
+    public static class Policies
+    {
+        public const string UpdateCompany = "UpdateCompany";
+        public const string CreateCompany = "CreateCompany";
     }
 
     public static class Roles

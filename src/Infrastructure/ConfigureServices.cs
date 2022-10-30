@@ -52,7 +52,7 @@ public static class ConfigureServices
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(Constants.Authorization.Policies.CreateCompany, policy =>
+            options.AddPolicy(Constants.Policies.CreateCompany, policy =>
                 policy.AddRequirements(
                     new OrUserIsAdminRequirement(),
                     new OrUserHasCreateCompanyClaimRequirement()));

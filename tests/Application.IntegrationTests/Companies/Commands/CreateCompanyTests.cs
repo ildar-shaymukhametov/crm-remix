@@ -37,7 +37,7 @@ public class CreateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Utils.CreateAuthorizationClaim(Constants.Authorization.Claims.CreateCompany)
+            Utils.CreateAuthorizationClaim(Constants.Claims.CreateCompany)
         });
 
         var command = CreateCommand();
