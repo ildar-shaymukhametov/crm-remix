@@ -16,6 +16,7 @@ public static class Constants
         public const string UpdateCompany = "UpdateCompany";
         public const string CreateCompany = "CreateCompany";
         public const string GetCompany = "GetCompany";
+        public const string GetCompanies = "GetCompanies";
     }
 
     public static class Roles

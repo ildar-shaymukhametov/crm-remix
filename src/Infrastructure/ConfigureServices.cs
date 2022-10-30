@@ -60,6 +60,10 @@ public static class ConfigureServices
                 policy.AddRequirements(
                     new OrUserIsAdminRequirement(),
                     new OrUserHasViewCompanyClaimRequirement()));
+            options.AddPolicy(Constants.Policies.GetCompanies, policy =>
+                policy.AddRequirements(
+                    new OrUserIsAdminRequirement(),
+                    new OrUserHasViewCompanyClaimRequirement()));
         });
 
         return services;

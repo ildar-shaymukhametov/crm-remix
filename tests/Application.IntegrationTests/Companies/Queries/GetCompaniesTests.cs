@@ -1,3 +1,5 @@
+using Application.IntegrationTests;
+using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Queries.GetCompanies;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
@@ -7,9 +9,9 @@ public class GetCompaniesTests : BaseTest
     public GetCompaniesTests(BaseTestFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task Returns_companies()
+    public async Task User_is_admin___Return_company()
     {
-        var user = await _fixture.RunAsDefaultUserAsync();
+        var user = await _fixture.RunAsAdministratorAsync();
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
@@ -18,5 +20,34 @@ public class GetCompaniesTests : BaseTest
         var result = await _fixture.SendAsync(request);
 
         Assert.Collection(result, x => Assert.Equal(company.Id, x.Id));
+    }
+
+    [Fact]
+    public async Task User_has_claim___Return_company()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Utils.CreateClaim(Constants.Claims.ViewCompany)
+        });
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var request = new GetCompaniesQuery();
+        var result = await _fixture.SendAsync(request);
+
+        Assert.Collection(result, x => Assert.Equal(company.Id, x.Id));
+    }
+
+    [Fact]
+    public async Task User_has_no_claim___Throw_forbidden_access()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync();
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var request = new GetCompaniesQuery();
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
     }
 }
