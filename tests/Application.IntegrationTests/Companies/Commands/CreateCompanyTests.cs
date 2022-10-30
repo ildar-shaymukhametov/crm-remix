@@ -22,19 +22,7 @@ public class CreateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsAdministratorAsync();
 
-        var data = Faker.Builders.Company();
-        var command = new CreateCompanyCommand
-        {
-            Address = data.Address,
-            Ceo = data.Ceo,
-            Contacts = data.Contacts,
-            Email = data.Email,
-            Inn = data.Inn,
-            Name = data.Name,
-            Phone = data.Phone,
-            Type = data.Type
-        };
-
+        var command = CreateCommand();
         var companyId = await _fixture.SendAsync(command);
         var company = await _fixture.FindAsync<Company>(companyId);
 
@@ -47,21 +35,12 @@ public class CreateCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim___Creates_company()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new [] { Utils.CreateAuthorizationClaim(Constants.Authorization.Claims.CreateCompany) });
-
-        var data = Faker.Builders.Company();
-        var command = new CreateCompanyCommand
+        var user = await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Address = data.Address,
-            Ceo = data.Ceo,
-            Contacts = data.Contacts,
-            Email = data.Email,
-            Inn = data.Inn,
-            Name = data.Name,
-            Phone = data.Phone,
-            Type = data.Type
-        };
+            Utils.CreateAuthorizationClaim(Constants.Authorization.Claims.CreateCompany)
+        });
 
+        var command = CreateCommand();
         var companyId = await _fixture.SendAsync(command);
         var company = await _fixture.FindAsync<Company>(companyId);
 
@@ -75,7 +54,13 @@ public class CreateCompanyTests : BaseTest
     public async Task User_has_no_claim___Does_not_create_company()
     {
         var user = await _fixture.RunAsDefaultUserAsync();
+        var command = CreateCommand();
 
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
+    private static CreateCompanyCommand CreateCommand()
+    {
         var data = Faker.Builders.Company();
         var command = new CreateCompanyCommand
         {
@@ -89,6 +74,6 @@ public class CreateCompanyTests : BaseTest
             Type = data.Type
         };
 
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        return command;
     }
 }
