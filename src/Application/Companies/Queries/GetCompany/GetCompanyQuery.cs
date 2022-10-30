@@ -2,11 +2,13 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
+using CRM.Application.Common.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Application.Companies.Queries.GetCompany;
 
+[Authorize(Constants.Policies.GetCompany)]
 public record GetCompanyQuery : IRequest<CompanyVm>
 {
     public int Id { get; set; }
