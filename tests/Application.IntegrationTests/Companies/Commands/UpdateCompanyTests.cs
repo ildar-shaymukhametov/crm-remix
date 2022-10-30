@@ -1,6 +1,5 @@
 using Application.IntegrationTests;
 using CRM.Application.Common.Exceptions;
-using CRM.Application.Companies.Commands.CreateCompany;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Domain.Entities;
 using FluentAssertions;

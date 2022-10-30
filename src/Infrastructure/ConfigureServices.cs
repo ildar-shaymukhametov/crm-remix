@@ -63,6 +63,9 @@ public static class ConfigureServices
 
             options.AddPolicy(Constants.Policies.UpdateCompany, policy =>
                 policy.AddRequirements(new UpdateCompanyRequirement()));
+
+            options.AddPolicy(Constants.Policies.DeleteCompany, policy =>
+                policy.AddRequirements(new DeleteCompanyRequirement()));
         });
 
         return services;

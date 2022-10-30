@@ -1,9 +1,11 @@
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
+using CRM.Application.Common.Security;
 using MediatR;
 
 namespace CRM.Application.Companies.Commands.DeleteCompany;
 
+[Authorize(Constants.Policies.DeleteCompany)]
 public record DeleteCompanyCommand : IRequest
 {
     public int Id { get; set; }
