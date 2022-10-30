@@ -1,11 +1,9 @@
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
-using CRM.Application.Common.Security;
 using MediatR;
 
 namespace CRM.Application.Companies.Commands.UpdateCompany;
 
-[Authorize(Constants.Authorization.Policies.UpdateCompany)]
 public record UpdateCompanyCommand : IRequest<Unit>
 {
     public int Id { get; set; }
