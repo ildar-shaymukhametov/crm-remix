@@ -6,6 +6,8 @@
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
 public class AuthorizeAttribute : Attribute
 {
+    public AuthorizeAttribute() { }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AuthorizeAttribute"/> class. 
     /// </summary>

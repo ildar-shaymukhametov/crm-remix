@@ -2,12 +2,14 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Mappings;
+using CRM.Application.Common.Security;
 using CRM.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Application.Companies.Queries.GetUserClaimsTypes;
 
+[Authorize]
 public record GetUserClaimTypesQuery : IRequest<UserClaimTypeVm[]>;
 
 public class GetUserClaimsRequestHandler : IRequestHandler<GetUserClaimTypesQuery, UserClaimTypeVm[]>

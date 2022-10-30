@@ -1,10 +1,8 @@
 using CRM.Application.Companies.Queries.GetUserClaimsTypes;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM.App.Controllers;
 
-[Authorize]
 public class UserClaimTypesController : ApiControllerBase
 {
     [HttpGet]
