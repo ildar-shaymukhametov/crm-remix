@@ -39,6 +39,7 @@ public class IdentityService : IIdentityService
         return user.UserName;
     }
 
+    // todo: test
     public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
     {
         var user = new AspNetUser
@@ -133,6 +134,7 @@ public class IdentityService : IIdentityService
         return result.ToApplicationResult();
     }
 
+    // todo: test
     public async Task<Result> UpdateAuthorizationClaimsAsync(string userId, string[] claims)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -149,6 +151,7 @@ public class IdentityService : IIdentityService
         return result.ToApplicationResult();
     }
 
+    // todo: test
     public async Task<string[]> GetUserAuthorizationClaimsAsync(string? userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
