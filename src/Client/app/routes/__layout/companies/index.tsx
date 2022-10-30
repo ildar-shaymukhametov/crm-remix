@@ -28,15 +28,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   });
 
   if (!response.ok) {
-    if (response.status === 404) {
-      throw new Response("Not Found", { status: 404 });
-    }
-
-    if (response.status === 401) {
-      throw new Response("Unauthorized", { status: 401 });
-    }
-
-    return json(null, { status: response.status });
+    throw response;
   }
 
   const data = await response.json();
@@ -45,9 +37,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function CompanyIndex() {
   const data = useLoaderData<LoaderData>();
-  if (!data) {
-    return <div>Failed to load companies</div>;
-  }
 
   return (
     <ul>
@@ -64,6 +53,9 @@ export function CatchBoundary() {
   const res = useCatch();
   if (res.status === 401) {
     return <p>Unauthorized</p>;
+  }
+  if (res.status === 403) {
+    return <p>Forbidden</p>;
   }
   if (res.status === 404) {
     return <p>Company not found</p>;
