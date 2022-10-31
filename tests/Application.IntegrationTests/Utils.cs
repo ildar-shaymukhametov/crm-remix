@@ -5,5 +5,5 @@ namespace Application.IntegrationTests;
 
 public static class Utils
 {
-    public static Claim CreateClaim(string value, string type = Constants.Claims.ClaimType) => new Claim(type, value);
+    public static Claim CreateAuthorizationClaim(string value, string type = Constants.Claims.ClaimType) => new Claim(type, value);
 }
