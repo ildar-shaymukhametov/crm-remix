@@ -130,6 +130,14 @@ public class BaseTestFixture
         return await context.FindAsync<TEntity>(keyValues);
     }
 
+    public async Task<List<Claim>> GetAuthorizationClaimsAsync(AspNetUser user)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
+        var claims = await userManager.GetClaimsAsync(user);
+        return claims.Where(x => x.Type == Constants.Claims.ClaimType).ToList();
+    }
+
     public async Task AddAsync<TEntity>(TEntity entity) where TEntity : class
     {
         using var scope = _scopeFactory.CreateScope();
