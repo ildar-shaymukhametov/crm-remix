@@ -14,9 +14,6 @@ public static class ConfigurePolicies
         options.AddPolicy(Policies.GetCompany, policy =>
             policy.AddRequirements(new GetCompanyRequirement()));
 
-        options.AddPolicy(Policies.GetCompanies, policy =>
-            policy.AddRequirements(new GetCompaniesRequirement()));
-
         options.AddPolicy(Policies.UpdateCompany, policy =>
             policy.AddRequirements(new UpdateCompanyRequirement()));
 

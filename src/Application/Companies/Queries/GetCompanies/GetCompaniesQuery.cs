@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Application.Companies.Queries.GetCompanies;
 
-[Authorize(Constants.Policies.GetCompanies)]
+[Authorize]
 public record GetCompaniesQuery : IRequest<CompanyDto[]>;
 
 public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, CompanyDto[]>
