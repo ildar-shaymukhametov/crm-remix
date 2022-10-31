@@ -2,7 +2,6 @@
 using CRM.Application;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Models;
-using CRM.Domain.Entities;
 using CRM.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -49,37 +48,7 @@ public class IdentityService : IIdentityService
             Email = userName,
         };
 
-        using var transaction = await _dbContext.Database.BeginTransactionAsync();
         var result = await _userManager.CreateAsync(user, password);
-        if (!result.Succeeded)
-        {
-            return (result.ToApplicationResult(), user.Id);
-        }
-
-        var appUser = new ApplicationUser
-        {
-            Id = user.Id,
-            Email = user.Email
-        };
-        
-        try
-        {
-            _dbContext.ApplicationUsers.Add(appUser);
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            _logger.LogError(ex, "Failed to create an ApplicationUser. Email: {email}", appUser.Email);
-            result = IdentityResult.Failed(new IdentityError
-            {
-                Code = "CreateApplicationUserFail",
-                Description = "Failed to create an application user"
-            });
-
-            return (result.ToApplicationResult(), user.Id);
-        }
 
         return (result.ToApplicationResult(), user.Id);
     }

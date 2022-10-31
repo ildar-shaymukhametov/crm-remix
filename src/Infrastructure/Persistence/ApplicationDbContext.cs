@@ -18,7 +18,6 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<AspNetUser>, IAppl
 
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<UserClaimType> UserClaimTypes => Set<UserClaimType>();
-    public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
 
     public ApplicationDbContext(DbContextOptions options, IOptions<OperationalStoreOptions> operationalStoreOptions, IMediator mediator, AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor) : base(options, operationalStoreOptions)
     {
