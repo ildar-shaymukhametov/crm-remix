@@ -151,7 +151,6 @@ public class IdentityService : IIdentityService
         return result.ToApplicationResult();
     }
 
-    // todo: test
     public async Task<string[]> GetUserAuthorizationClaimsAsync(string? userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
