@@ -26,7 +26,7 @@ public static class ConfigureServices
 
         services.AddAuthorizationHandlers();
 
-        services.AddDefaultIdentity<AspNetUser>()
+        services.AddDefaultIdentity<ApplicationUser>()
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -37,7 +37,7 @@ public static class ConfigureServices
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
             })
-            .AddApiAuthorization<AspNetUser, ApplicationDbContext>(options =>
+            .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
             {
                 options.ApiScopes.AddRange(Config.ApiScopes.ToArray());
                 options.Clients.AddRange(Config.Clients.ToArray());

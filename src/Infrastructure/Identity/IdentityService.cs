@@ -12,15 +12,15 @@ namespace CRM.Infrastructure.Identity;
 
 public class IdentityService : IIdentityService
 {
-    private readonly UserManager<AspNetUser> _userManager;
-    private readonly IUserClaimsPrincipalFactory<AspNetUser> _userClaimsPrincipalFactory;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService;
     private readonly ApplicationDbContext _dbContext;
     private readonly ILogger<IdentityService> _logger;
 
     public IdentityService(
-        UserManager<AspNetUser> userManager,
-        IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory,
+        UserManager<ApplicationUser> userManager,
+        IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
         IAuthorizationService authorizationService,
         ApplicationDbContext dbContext,
         ILogger<IdentityService> logger)
@@ -42,7 +42,7 @@ public class IdentityService : IIdentityService
     // todo: test
     public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
     {
-        var user = new AspNetUser
+        var user = new ApplicationUser
         {
             UserName = userName,
             Email = userName,
@@ -97,7 +97,7 @@ public class IdentityService : IIdentityService
         return user != null ? await DeleteUserAsync(user) : Result.Success();
     }
 
-    public async Task<Result> DeleteUserAsync(AspNetUser user)
+    public async Task<Result> DeleteUserAsync(ApplicationUser user)
     {
         var result = await _userManager.DeleteAsync(user);
 

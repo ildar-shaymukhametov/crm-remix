@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using CRM.Infrastructure.Identity
-@inject SignInManager<AspNetUser> SignInManager
-@inject UserManager<AspNetUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     string? returnUrl = null;

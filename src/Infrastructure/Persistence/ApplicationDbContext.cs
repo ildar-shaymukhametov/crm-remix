@@ -11,7 +11,7 @@ using CRM.Infrastructure.Persistence.Interceptors;
 
 namespace CRM.Infrastructure.Persistence;
 
-public class ApplicationDbContext : ApiAuthorizationDbContext<AspNetUser>, IApplicationDbContext
+public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, IApplicationDbContext
 {
     private readonly IMediator _mediator;
     private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;

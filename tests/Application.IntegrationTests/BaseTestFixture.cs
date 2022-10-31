@@ -53,27 +53,27 @@ public class BaseTestFixture
         return _currentUserId;
     }
 
-    public async Task<AspNetUser> RunAsDefaultUserAsync()
+    public async Task<ApplicationUser> RunAsDefaultUserAsync()
     {
         return await RunAsDefaultUserAsync(Array.Empty<Claim>());
     }
 
-    public async Task<AspNetUser> RunAsDefaultUserAsync(Claim[] claims)
+    public async Task<ApplicationUser> RunAsDefaultUserAsync(Claim[] claims)
     {
         return await RunAsUserAsync("test@local", "Testing1234!", Array.Empty<string>(), claims);
     }
 
-    public async Task<AspNetUser> RunAsAdministratorAsync()
+    public async Task<ApplicationUser> RunAsAdministratorAsync()
     {
         return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Constants.Roles.Administrator }, Array.Empty<Claim>());
     }
 
-    public async Task<AspNetUser> RunAsUserAsync(string userName, string password, string[] roles, Claim[] claims)
+    public async Task<ApplicationUser> RunAsUserAsync(string userName, string password, string[] roles, Claim[] claims)
     {
         using var scope = _scopeFactory.CreateScope();
 
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
-        var user = new AspNetUser { UserName = userName, Email = userName };
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var user = new ApplicationUser { UserName = userName, Email = userName };
         var result = await userManager.CreateAsync(user, password);
 
         if (roles.Any())
@@ -129,10 +129,10 @@ public class BaseTestFixture
         return await context.FindAsync<TEntity>(keyValues);
     }
 
-    public async Task<List<Claim>> GetAuthorizationClaimsAsync(AspNetUser user)
+    public async Task<List<Claim>> GetAuthorizationClaimsAsync(ApplicationUser user)
     {
         using var scope = _scopeFactory.CreateScope();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var claims = await userManager.GetClaimsAsync(user);
         return claims.Where(x => x.Type == Constants.Claims.ClaimType).ToList();
     }
