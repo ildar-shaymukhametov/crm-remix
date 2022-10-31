@@ -1,5 +1,5 @@
+using CRM.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
-using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Authorization.Handlers;
 
@@ -7,9 +7,13 @@ public class DeleteCompanyRequirement : IAuthorizationRequirement { }
 
 public class DeleteCompanyAuthorizationHandler : BaseAuthorizationHandler<DeleteCompanyRequirement>
 {
+    public DeleteCompanyAuthorizationHandler(IUserAuthorizationService userAuthorizationService) : base(userAuthorizationService)
+    {
+    }
+
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
     {
-        if (IsAdmin(context) || HasClaim(context, Claims.DeleteCompany))
+        if (AuthorizationService.CanDeleteCompany(context.User))
         {
             context.Succeed(requirement);
         }

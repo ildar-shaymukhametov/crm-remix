@@ -25,6 +25,7 @@ public static class ConfigureServices
         services.AddScoped<ApplicationDbContextInitialiser>();
 
         services.AddAuthorizationHandlers();
+        services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
 
         services.AddDefaultIdentity<ApplicationUser>()
             .AddRoles<IdentityRole>()
