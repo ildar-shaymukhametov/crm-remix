@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Application.IntegrationTests;
 using CRM.Infrastructure.Identity;
 using CRM.Infrastructure.Persistence;
 using MediatR;
@@ -56,20 +55,20 @@ public class BaseTestFixture
 
     public async Task<AspNetUser> RunAsDefaultUserAsync()
     {
-        return await RunAsDefaultUserAsync(Array.Empty<string>());
+        return await RunAsDefaultUserAsync(Array.Empty<Claim>());
     }
 
-    public async Task<AspNetUser> RunAsDefaultUserAsync(string[] authorizationClaims)
+    public async Task<AspNetUser> RunAsDefaultUserAsync(Claim[] claims)
     {
-        return await RunAsUserAsync("test@local", "Testing1234!", Array.Empty<string>(), authorizationClaims);
+        return await RunAsUserAsync("test@local", "Testing1234!", Array.Empty<string>(), claims);
     }
 
     public async Task<AspNetUser> RunAsAdministratorAsync()
     {
-        return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Constants.Roles.Administrator }, Array.Empty<string>());
+        return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Constants.Roles.Administrator }, Array.Empty<Claim>());
     }
 
-    public async Task<AspNetUser> RunAsUserAsync(string userName, string password, string[] roles, string[] authorizationClaims)
+    public async Task<AspNetUser> RunAsUserAsync(string userName, string password, string[] roles, Claim[] claims)
     {
         using var scope = _scopeFactory.CreateScope();
 
@@ -89,9 +88,9 @@ public class BaseTestFixture
             await userManager.AddToRolesAsync(user, roles);
         }
 
-        if (authorizationClaims.Any())
+        if (claims.Any())
         {
-            await userManager.AddClaimsAsync(user, authorizationClaims.Select(x => Utils.CreateAuthorizationClaim(x)));
+            await userManager.AddClaimsAsync(user, claims);
         }
 
         if (result.Succeeded)

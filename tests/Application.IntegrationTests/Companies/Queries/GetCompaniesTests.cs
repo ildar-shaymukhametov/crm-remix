@@ -27,7 +27,7 @@ public class GetCompaniesTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Constants.Claims.ViewCompany
+            Utils.CreateAuthorizationClaim(Constants.Claims.ViewCompany)
         });
 
         var company = Faker.Builders.Company();

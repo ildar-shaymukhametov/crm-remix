@@ -29,7 +29,7 @@ public class DeleteCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new []
         {
-            Constants.Claims.DeleteCompany
+            Utils.CreateAuthorizationClaim(Constants.Claims.DeleteCompany)
         });
 
         var company = Faker.Builders.Company();

@@ -35,9 +35,9 @@ public class CreateCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim___Creates_company()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[]
+        var user = await _fixture.RunAsDefaultUserAsync(new []
         {
-            Constants.Claims.CreateCompany
+            Utils.CreateAuthorizationClaim(Constants.Claims.CreateCompany)
         });
 
         var command = CreateCommand();

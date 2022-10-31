@@ -10,11 +10,19 @@ public class UpdateUserAuthorizationClaimsTests : BaseTest
     [Fact]
     public async Task Updates_authorization_claims()
     {
-        var initialClaims = Faker.Lorem.Words(1).ToArray();
+        var initialClaims = new []
+        {
+            Utils.CreateAuthorizationClaim(Faker.Name.First())
+        };
+
         var user = await _fixture.RunAsDefaultUserAsync(initialClaims);
         var request = new UpdateUserAuthorizationClaimsCommand
         {
-            Claims = Faker.Lorem.Words(2).ToArray()
+            Claims = new []
+            {
+                Faker.Name.First(),
+                Faker.Name.First()
+            }
         };
 
         await _fixture.SendAsync(request);
