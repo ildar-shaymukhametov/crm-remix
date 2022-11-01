@@ -6,10 +6,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   return await auth.requireUser(request);
 };
 
-export const handle = {
-  navbarButtons: [<button>Private</button>, <button>Private2</button>]
-};
-
 export default function Screen() {
   const user = useLoaderData();
   return (
