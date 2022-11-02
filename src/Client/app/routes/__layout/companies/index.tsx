@@ -1,8 +1,19 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useCatch, useLoaderData } from "@remix-run/react";
-import type { Company } from "~/models/company";
 import { auth } from "~/utils/auth.server";
+
+type Company = {
+  id: number;
+  type: string;
+  name: string;
+  inn: string;
+  address: string;
+  ceo: string;
+  phone: string;
+  email: string;
+  contacts: string;
+};
 
 type LoaderData = {
   companies: Company[];

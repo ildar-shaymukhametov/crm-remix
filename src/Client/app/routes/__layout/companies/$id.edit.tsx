@@ -3,8 +3,19 @@ import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useActionData, useCatch, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import type { Company } from "~/models/company";
 import { auth } from "~/utils/auth.server";
+
+type Company = {
+  id: number;
+  type: string;
+  name: string;
+  inn: string;
+  address: string;
+  ceo: string;
+  phone: string;
+  email: string;
+  contacts: string;
+};
 
 type LoaderData = {
   company: Company;
