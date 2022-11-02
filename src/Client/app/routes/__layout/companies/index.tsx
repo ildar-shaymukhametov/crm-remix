@@ -3,7 +3,7 @@ import { json } from "@remix-run/node";
 import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
-type Company = {
+export type Company = {
   id: number;
   type: string;
   name: string;
@@ -62,4 +62,11 @@ export function CatchBoundary() {
   }
 
   throw new Error(`Unsupported thrown response status code: ${res.status}`);
+}
+
+export function meta() {
+  return {
+    title: "Companies",
+    description: "Welcome to remix!"
+  };
 }

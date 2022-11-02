@@ -1,4 +1,3 @@
-import type { Session } from "@remix-run/node";
 import { createCookieSessionStorage } from "@remix-run/node";
 import { OidcAuthenticator } from "./oidc-authenticator";
 import { OidcStrategy } from "./oidc-strategy";
@@ -8,9 +7,10 @@ if (!sessionSecret) {
   throw new Error("SESSION_SECRET must be set");
 }
 
+// todo: extract to session.server.ts
 const storage = createCookieSessionStorage({
   cookie: {
-    name: "crm.session",
+    name: "_session",
     secure: process.env.NODE_ENV === "production",
     secrets: [sessionSecret],
     sameSite: "lax",
@@ -37,10 +37,4 @@ auth.use(
   )
 );
 
-export function getSession(request: Request) {
-  return storage.getSession(request.headers.get("Cookie"));
-}
-
-export function commitSession(session: Session) {
-  return storage.commitSession(session);
-}
+export const { getSession, commitSession, destroySession } = storage;

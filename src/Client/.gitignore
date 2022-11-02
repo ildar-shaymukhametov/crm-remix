@@ -7,3 +7,6 @@ node_modules
 
 /app/styles/tailwind.css
 /styles/tailwind.css
+/test-results/
+/playwright-report/
+/playwright/.cache/
