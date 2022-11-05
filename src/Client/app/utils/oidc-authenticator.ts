@@ -21,7 +21,7 @@ export class OidcAuthenticator extends Authenticator<OidcProfile> {
     })
   }
 
-  logout(request: Request | Session, user: OidcProfile): Promise<never> {
+  logout(request: Request | Session, options: { user: OidcProfile, redirectTo: string }): Promise<never> {
     invariant(
       process.env.POST_LOGOUT_REDIRECT_URI,
       "POST_LOGOUT_REDIRECT_URI is not defined"
@@ -29,7 +29,7 @@ export class OidcAuthenticator extends Authenticator<OidcProfile> {
     invariant(process.env.ENDSESSION_URL, "ENDSESSION_URL is not defined");
 
     var query = new URLSearchParams({
-      id_token_hint: user.extra.id_token,
+      id_token_hint: options.user.extra.id_token,
       post_logout_redirect_uri: process.env.POST_LOGOUT_REDIRECT_URI,
     });
     var url = new URL(`${process.env.ENDSESSION_URL}?${query}`);
