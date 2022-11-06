@@ -13,6 +13,7 @@ public class UserController : ApiControllerBase
         return Ok(await Mediator.Send(request));
     }
 
+    [HttpGet]
     [Route("AuthorizationClaims")]
     public async Task<ActionResult> GetAuthorizationClaims()
     {
