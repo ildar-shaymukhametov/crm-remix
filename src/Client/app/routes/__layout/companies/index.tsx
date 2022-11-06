@@ -21,7 +21,7 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
-  const response = await fetch(`${process.env.API_URL}/companies`, {
+  const response = await fetch(`${process.env.API_URL_HOST}:${process.env.API_URL_PORT}/companies`, {
     headers: {
       Authorization: `Bearer ${user.extra?.accessToken}`,
     },

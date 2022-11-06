@@ -1,10 +1,9 @@
-import { setupServer } from 'msw/node'
-import { handlers } from './company-handlers'
+import { getAdminServer } from 'mockttp'
 
-const server = setupServer(...handlers)
+const mockServer = getAdminServer();
+mockServer.start().then(() => {
+  console.info('🔶 Mock server installed')
+});
 
-server.listen({ onUnhandledRequest: 'warn' })
-console.info('🔶 Mock server installed')
-
-process.once('SIGINT', () => server.close())
-process.once('SIGTERM', () => server.close())
+process.on('SIGINT', () => mockServer.stop());
+process.on('SIGTERM', () => mockServer.stop());
