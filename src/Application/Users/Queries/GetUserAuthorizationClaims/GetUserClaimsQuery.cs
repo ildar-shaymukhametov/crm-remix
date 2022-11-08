@@ -9,13 +9,11 @@ public record GetUserAuthorizationClaimsQuery : IRequest<string[]>;
 
 public class GetUserAuthorizationClaimsQueryHandler : IRequestHandler<GetUserAuthorizationClaimsQuery, string[]>
 {
-    private readonly IApplicationDbContext _dbContext;
     private readonly IIdentityService _identityService;
     private readonly ICurrentUserService _currentUserService;
 
-    public GetUserAuthorizationClaimsQueryHandler(IApplicationDbContext dbContext, IIdentityService identityService, ICurrentUserService currentUserService)
+    public GetUserAuthorizationClaimsQueryHandler(IIdentityService identityService, ICurrentUserService currentUserService)
     {
-        _dbContext = dbContext;
         _identityService = identityService;
         _currentUserService = currentUserService;
     }
