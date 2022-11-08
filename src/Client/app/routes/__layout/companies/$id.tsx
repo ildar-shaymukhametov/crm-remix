@@ -22,10 +22,10 @@ type LoaderData = {
 
 export function getCompanyRouteNavbarButtons(id: string, user: OidcProfile) {
   let result = [];
-  if (user.authrizationClaims.includes("company.delete")) {
+  if (user.permissions.includes("company.delete")) {
     result.push(<Link to={`companies/${id}/delete`}>Delete</Link>);
   }
-  if (user.authrizationClaims.includes("company.update")) {
+  if (user.permissions.includes("company.update")) {
     result.push(<Link to={`companies/${id}/edit`}>Edit</Link>);
   }
 

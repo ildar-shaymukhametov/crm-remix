@@ -5,9 +5,11 @@ import { useActionData, useCatch } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  let user = await auth.requireUser(request);
-  if (!user.authrizationClaims.includes("company.create")) {
-    throw new Response(null, { status: 403, statusText: "Forbidden" });
+  const user = await auth.requireUser(request, {
+    permissions: ["CreateCompany"],
+  });
+  if (!user.permissions.includes("CreateCompany")) {
+    throw new Response(null, { status: 403 });
   }
 
   return user;

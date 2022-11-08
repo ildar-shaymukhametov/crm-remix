@@ -31,7 +31,7 @@ export interface OidcProfile extends OAuth2Profile {
   };
   emails: Array<{ value: string }>;
   photos: Array<{ value: string }>;
-  authrizationClaims: string[],
+  permissions: string[];
   extra: OidcExtraParams;
   _json: {
     sub: string;
@@ -126,7 +126,7 @@ export class OidcStrategy<User> extends OAuth2Strategy<
       emails: [{ value: data.email }],
       photos: [{ value: data.picture }],
       extra: params,
-      authrizationClaims: [],
+      permissions: [],
       _json: data,
     };
 

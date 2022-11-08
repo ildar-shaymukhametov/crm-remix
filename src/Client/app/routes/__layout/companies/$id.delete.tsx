@@ -5,7 +5,7 @@ import { auth } from "~/utils/auth.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   let user = await auth.requireUser(request);
-  if (!user.authrizationClaims.includes("company.delete")) {
+  if (!user.permissions.includes("company.delete")) {
     throw new Response(null, { status: 403, statusText: "Forbidden" });
   }
 

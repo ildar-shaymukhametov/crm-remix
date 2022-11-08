@@ -23,7 +23,7 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request);
-  if (!user.authrizationClaims.includes("company.update")) {
+  if (!user.permissions.includes("company.update")) {
     throw new Response(null, { status: 401, statusText: "Unauthorized" });
   }
 
