@@ -13,7 +13,7 @@ require('dotenv').config();
 const config: PlaywrightTestConfig = {
   testDir: './tests',
   /* Maximum time one test can run for. */
-  timeout: 120 * 1000,
+  timeout: 10 * 60 * 1000,
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
@@ -57,7 +57,7 @@ const config: PlaywrightTestConfig = {
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'cross-env API_URL_HOST=http://localhost PORT=8811 npm run dev',
+    command: 'cross-env PORT=8811 npm run dev',
     port: 8811
   }
 };
