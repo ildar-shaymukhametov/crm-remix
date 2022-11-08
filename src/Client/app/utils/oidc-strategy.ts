@@ -19,6 +19,7 @@ export interface OidcExtraParams extends Record<string, string | number> {
   scope: string;
   expires_in: 86_400;
   token_type: "Bearer";
+  access_token: string
 }
 
 export interface OidcProfile extends OAuth2Profile {

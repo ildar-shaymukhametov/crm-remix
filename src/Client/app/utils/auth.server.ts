@@ -32,7 +32,8 @@ auth.use(
       nonce: "nonce",
     },
     async ({ accessToken, refreshToken, extraParams, profile }) => {
-      return { ...profile, extra: { ...extraParams, accessToken } };
+      extraParams.access_token = accessToken;
+      return { ...profile, extra: { ...extraParams } };
     }
   )
 );

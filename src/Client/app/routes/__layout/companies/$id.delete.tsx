@@ -14,12 +14,15 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export const action: ActionFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request);
-  const response = await fetch(`${process.env.API_URL}/companies/${params.id}`, {
-    method: "delete",
-    headers: {
-      Authorization: `Bearer ${user.extra?.accessToken}`,
-    },
-  });
+  const response = await fetch(
+    `${process.env.API_URL}/companies/${params.id}`,
+    {
+      method: "delete",
+      headers: {
+        Authorization: `Bearer ${user.extra.access_token}`,
+      },
+    }
+  );
 
   if (!response.ok) {
     throw response;

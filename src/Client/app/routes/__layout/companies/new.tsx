@@ -30,7 +30,7 @@ export const action: ActionFunction = async ({ request }) => {
     method: "post",
     body: JSON.stringify(data),
     headers: {
-      Authorization: `Bearer ${user.extra?.accessToken}`,
+      Authorization: `Bearer ${user.extra?.access_token}`,
       "Content-Type": "application/json",
     },
   });

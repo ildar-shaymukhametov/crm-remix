@@ -38,7 +38,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     `${process.env.API_URL}/companies/${params.id}`,
     {
       headers: {
-        Authorization: `Bearer ${user.extra?.accessToken}`,
+        Authorization: `Bearer ${user.extra?.access_token}`,
       },
     }
   );

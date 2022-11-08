@@ -31,7 +31,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     `${process.env.API_URL}/companies/${params.id}`,
     {
       headers: {
-        Authorization: `Bearer ${user.extra?.accessToken}`,
+        Authorization: `Bearer ${user.extra?.access_token}`,
       },
     }
   );
@@ -73,7 +73,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       method: "put",
       body: JSON.stringify(data),
       headers: {
-        Authorization: `Bearer ${user.extra?.accessToken}`,
+        Authorization: `Bearer ${user.extra?.access_token}`,
         "Content-Type": "application/json",
       },
     }

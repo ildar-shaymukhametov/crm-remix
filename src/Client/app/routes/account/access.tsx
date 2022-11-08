@@ -22,14 +22,17 @@ export const action: ActionFunction = async ({ request }) => {
   const data = {
     claims: Object.values(Object.fromEntries(formData)),
   };
-  const response = await fetch(`${process.env.API_URL}/User/AuthorizationClaims`, {
-    method: "post",
-    body: JSON.stringify(data),
-    headers: {
-      Authorization: `Bearer ${user.extra?.accessToken}`,
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await fetch(
+    `${process.env.API_URL}/User/AuthorizationClaims`,
+    {
+      method: "post",
+      body: JSON.stringify(data),
+      headers: {
+        Authorization: `Bearer ${user.extra?.access_token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   if (!response.ok) {
     throw new Error(`${response.statusText} (${response.status})`);
@@ -42,14 +45,17 @@ export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
   const response = await fetch(`${process.env.API_URL}/UserClaimTypes`, {
     headers: {
-      Authorization: `Bearer ${user.extra?.accessToken}`,
+      Authorization: `Bearer ${user.extra?.access_token}`,
     },
   });
-  const userClaimsResponse = await fetch(`${process.env.API_URL}/User/AuthorizationClaims`, {
-    headers: {
-      Authorization: `Bearer ${user.extra?.accessToken}`,
-    },
-  });
+  const userClaimsResponse = await fetch(
+    `${process.env.API_URL}/User/AuthorizationClaims`,
+    {
+      headers: {
+        Authorization: `Bearer ${user.extra?.access_token}`,
+      },
+    }
+  );
 
   if (!response.ok) {
     if (response.status === 404) {
