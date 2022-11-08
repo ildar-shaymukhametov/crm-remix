@@ -1,6 +1,5 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import { useActionData, useCatch } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
@@ -23,9 +22,9 @@ type ActionData = {
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  const user = await auth.requireUser(request);
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
-  const user = await auth.requireUser(request);
   const response = await fetch(`${process.env.API_URL}/companies`, {
     method: "post",
     body: JSON.stringify(data),
@@ -37,7 +36,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   const responseData = await response.json();
   if (!response.ok) {
-    return json({ fields: data, errors: responseData.errors }, { status: 400 });
+    throw response;
   }
 
   return redirect(responseData.id);
@@ -125,6 +124,9 @@ export function CatchBoundary() {
   const res = useCatch();
   if (res.status === 401) {
     return <p>Unauthorized</p>;
+  }
+  if (res.status === 403) {
+    return <p>Forbidden</p>;
   }
   if (res.status === 404) {
     return <p>Company not found</p>;
