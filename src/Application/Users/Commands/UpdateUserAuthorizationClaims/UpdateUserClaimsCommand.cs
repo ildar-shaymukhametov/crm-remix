@@ -1,4 +1,3 @@
-using AutoMapper;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
@@ -14,16 +13,12 @@ public record UpdateUserAuthorizationClaimsCommand : IRequest<Unit>
 
 public class UpdateUserAuthorizationClaimsCommandHandler : IRequestHandler<UpdateUserAuthorizationClaimsCommand>
 {
-    private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IMapper _mapper;
     private readonly IIdentityService _identityService;
 
-    public UpdateUserAuthorizationClaimsCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IMapper mapper, IIdentityService identityService)
+    public UpdateUserAuthorizationClaimsCommandHandler(ICurrentUserService currentUserService, IIdentityService identityService)
     {
-        _context = context;
         _currentUserService = currentUserService;
-        _mapper = mapper;
         _identityService = identityService;
     }
 
