@@ -59,7 +59,7 @@ public class CreateCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    private static CreateCompanyCommand CreateCommand()
+    public static CreateCompanyCommand CreateCommand()
     {
         var data = Faker.Builders.Company();
         var command = new CreateCompanyCommand

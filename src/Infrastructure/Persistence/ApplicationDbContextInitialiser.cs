@@ -49,6 +49,19 @@ public class ApplicationDbContextInitialiser
         }
     }
 
+    public async Task SeedTestUsersAsync()
+    {
+        try
+        {
+            await TrySeedTestUsersAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while seeding the database.");
+            throw;
+        }
+    }
+
     public async Task TrySeedAsync()
     {
         // Default roles
@@ -59,13 +72,39 @@ public class ApplicationDbContextInitialiser
             await _roleManager.CreateAsync(administratorRole);
         }
 
+        var testerRole = new IdentityRole("Tester");
+        if (_roleManager.Roles.All(r => r.Name != testerRole.Name))
+        {
+            await _roleManager.CreateAsync(testerRole);
+        }
+
         // Default users
         var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
 
         if (_userManager.Users.All(u => u.UserName != administrator.UserName))
         {
             await _userManager.CreateAsync(administrator, "Administrator1!");
-            await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
+            await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name, testerRole.Name });
+        }
+    }
+
+    public async Task TrySeedTestUsersAsync()
+    {
+        // Default roles
+        var testerRole = new IdentityRole("Tester");
+
+        if (_roleManager.Roles.All(r => r.Name != testerRole.Name))
+        {
+            await _roleManager.CreateAsync(testerRole);
+        }
+
+        // Default users
+        var defaultUser = new ApplicationUser { UserName = "tester@localhost", Email = "tester@localhost" };
+
+        if (_userManager.Users.All(u => u.UserName != defaultUser.UserName))
+        {
+            await _userManager.CreateAsync(defaultUser, "Tester1!");
+            await _userManager.AddToRolesAsync(defaultUser, new[] { testerRole.Name });
         }
     }
 }

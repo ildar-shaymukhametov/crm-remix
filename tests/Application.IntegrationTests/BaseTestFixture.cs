@@ -63,6 +63,11 @@ public class BaseTestFixture
         return await RunAsUserAsync("test@local", "Testing1234!", Array.Empty<string>(), claims);
     }
 
+    public async Task<ApplicationUser> RunAsDefaultUserAsync(Claim[] claims, string[] roles)
+    {
+        return await RunAsUserAsync("test@local", "Testing1234!", roles, claims);
+    }
+
     public async Task<ApplicationUser> RunAsAdministratorAsync()
     {
         return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Constants.Roles.Administrator }, Array.Empty<Claim>());

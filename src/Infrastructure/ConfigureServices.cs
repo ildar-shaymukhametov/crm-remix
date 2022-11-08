@@ -27,6 +27,8 @@ public static class ConfigureServices
         services.AddAuthorizationHandlers();
         services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
 
+        services.AddSingleton<ITestService, TestService>();
+
         services.AddDefaultIdentity<ApplicationUser>()
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();

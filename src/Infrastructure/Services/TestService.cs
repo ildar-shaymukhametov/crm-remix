@@ -1,0 +1,44 @@
+using CRM.Application.Common.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Respawn;
+using Respawn.Graph;
+
+namespace CRM.Infrastructure.Services;
+
+public class TestService : ITestService
+{
+    private readonly string _connectionString;
+    private Respawner _respawner = null!;
+
+    public TestService(IConfiguration configuration)
+    {
+        _connectionString = configuration.GetConnectionString("DefaultConnection");
+    }
+
+    public async Task CreateCheckpointAsync()
+    {
+        _respawner = await Respawner.CreateAsync(_connectionString, new RespawnerOptions
+        {
+            TablesToIgnore = new Table[]
+            {
+                "__EFMigrationsHistory",
+                "AspNetRoleClaims",
+                "AspNetRoles",
+                "AspNetUserClaims",
+                "AspNetUserLogins",
+                "AspNetUserRoles",
+                "AspNetUsers",
+                "AspNetUserTokens",
+                "DeviceCodes",
+                "Keys",
+                "PersistedGrants",
+                "ApplicationUsers"
+            }
+        });
+    }
+
+    public async Task ResetDbAsync()
+    {
+        await _respawner.ResetAsync(_connectionString);
+    }
+}
