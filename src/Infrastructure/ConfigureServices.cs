@@ -26,6 +26,7 @@ public static class ConfigureServices
 
         services.AddAuthorizationHandlers();
         services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
+        services.AddScoped<IPermissionsService, PermissionsService>();
 
         services.AddSingleton<ITestService, TestService>();
 
