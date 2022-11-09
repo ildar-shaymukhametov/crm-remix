@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using CRM.Infrastructure.Identity;
 using CRM.Infrastructure.Persistence;
 using MediatR;
@@ -119,7 +119,7 @@ public class BaseTestFixture
 
     public async Task InitStateAsync()
     {
-        _respawner = await Respawner.CreateAsync(_connectionString, new RespawnerOptions
+        _respawner ??= await Respawner.CreateAsync(_connectionString, new RespawnerOptions
         {
             TablesToIgnore = new Table[] { "__EFMigrationsHistory" }
         });
