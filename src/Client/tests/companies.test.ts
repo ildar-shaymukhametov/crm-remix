@@ -16,8 +16,11 @@ test("companies page for default user", async ({
   await page.goto("/companies");
   await expect(page).toHaveTitle(/companies/i);
 
-  let elem = page.getByText(company.name);
-  await expect(elem).toBeVisible();
+  let companyName = page.getByText(company.name);
+  await expect(companyName).toBeVisible();
+
+  let companiesNotFound = page.getByText(/no companies found/i);
+  await expect(companiesNotFound).not.toBeVisible();
 
   let button = page.getByRole("button", { name: /new company/i });
   await expect(button).not.toBeVisible();
@@ -30,6 +33,9 @@ test("companies page for default user", async ({
 test("companies page for admin user", async ({ page, runAsAdministrator }) => {
   await runAsAdministrator();
   await page.goto("/companies");
+
+  let companiesNotFound = page.getByText(/no companies found/i);
+  await expect(companiesNotFound).toBeVisible();
 
   let button = page.getByRole("link", { name: /new company/i });
   await expect(button).toBeVisible();

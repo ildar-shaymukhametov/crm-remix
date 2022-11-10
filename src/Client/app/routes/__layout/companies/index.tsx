@@ -48,11 +48,15 @@ export default function CompanyIndex() {
         <Link to="/companies/new">New company</Link>
       ) : null}
       <ul>
-        {companies.map((x, i) => (
-          <li key={i}>
-            <Link to={x.id.toString()}>{x.name}</Link>
-          </li>
-        ))}
+        {companies.length > 0 ? (
+          companies.map((x, i) => (
+            <li key={i}>
+              <Link to={x.id.toString()}>{x.name}</Link>
+            </li>
+          ))
+        ) : (
+          <div>No companies found</div>
+        )}
       </ul>
     </>
   );
