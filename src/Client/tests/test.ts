@@ -127,7 +127,6 @@ async function requestAccessToken(
   );
 
   const { access_token } = await response.json();
-  console.log(access_token);
 
   return access_token as string;
 }
