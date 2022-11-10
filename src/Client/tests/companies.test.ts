@@ -5,23 +5,29 @@ test.afterEach(async ({ resetDb }) => {
   await resetDb();
 });
 
-test("title", async ({ page, runAsDefaultUser }) => {
-  await runAsDefaultUser();
-  await page.goto("/companies");
-  await expect(page).toHaveTitle(/companies/i);
-});
-
-test("displays companies", async ({ page, createCompany, runAsDefaultUser }) => {
+test("companies page for default user", async ({
+  page,
+  createCompany,
+  runAsDefaultUser,
+}) => {
   await runAsDefaultUser();
   let company = await createCompany();
 
   await page.goto("/companies");
+  await expect(page).toHaveTitle(/companies/i);
 
   let elem = page.getByText(company.name);
   await expect(elem).toBeVisible();
+
+  let button = page.getByRole("button", { name: /new company/i });
+  await expect(button).not.toBeVisible();
+
+  await page.goto("/companies/new");
+  let error = page.getByText(/forbidden/i);
+  await expect(error).toBeVisible();
 });
 
-test("user can go to new company page", async ({ page, runAsAdministrator }) => {
+test("companies page for admin user", async ({ page, runAsAdministrator }) => {
   await runAsAdministrator();
   await page.goto("/companies");
 
@@ -33,16 +39,4 @@ test("user can go to new company page", async ({ page, runAsAdministrator }) => 
 
   let error = page.getByText(/forbidden/i);
   await expect(error).not.toBeVisible();
-});
-
-test("user cannot go to new company page", async ({ page, runAsDefaultUser }) => {
-  await runAsDefaultUser();
-  await page.goto("/companies");
-
-  let button = page.getByRole("button", { name: /new company/i });
-  await expect(button).not.toBeVisible();
-
-  await page.goto("/companies/new");
-  let error = page.getByText(/forbidden/i);
-  await expect(error).toBeVisible();
 });
