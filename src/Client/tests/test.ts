@@ -4,7 +4,7 @@ import { parse } from "cookie";
 import { commitSession, getSession } from "~/utils/auth.server";
 import type { OidcProfile } from "~/utils/oidc-strategy";
 
-let accessToken = "";
+let defaultUserAccessToken = "";
 let adminAccessToken = "";
 
 export const test = base.extend<{
@@ -78,27 +78,37 @@ async function getAccessToken(page: Page, username: string, password: string) {
   return await getDefaultUserAccessToken(page, username, password);
 }
 
+export async function getDefaultUserAccessToken(
+  page: Page,
+  username: string,
+  password: string
+) {
+  if (defaultUserAccessToken) {
+    return defaultUserAccessToken;
+  }
+
+  defaultUserAccessToken = await requestAccessToken(page, username, password);
+  return defaultUserAccessToken;
+}
+
 export async function getAdminAccessToken(page: Page) {
   if (adminAccessToken) {
     return adminAccessToken;
   }
 
-  return await getDefaultUserAccessToken(
+  adminAccessToken = await requestAccessToken(
     page,
     "administrator@localhost",
     "Administrator1!"
   );
+  return adminAccessToken;
 }
 
-async function getDefaultUserAccessToken(
+async function requestAccessToken(
   page: Page,
   username: string,
   password: string
 ) {
-  if (accessToken) {
-    return accessToken;
-  }
-
   const response = await page.request.post(
     `${process.env.AUTHORITY}/connect/token`,
     {
@@ -117,6 +127,8 @@ async function getDefaultUserAccessToken(
   );
 
   const { access_token } = await response.json();
+  console.log(access_token);
+
   return access_token as string;
 }
 
