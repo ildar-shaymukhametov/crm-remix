@@ -25,7 +25,7 @@ test("user can go to new company page", async ({ page, runAsAdministrator }) => 
   await runAsAdministrator();
   await page.goto("/companies");
 
-  let button = page.getByRole("button", { name: /new company/i });
+  let button = page.getByRole("link", { name: /new company/i });
   await expect(button).toBeVisible();
 
   await button.click();

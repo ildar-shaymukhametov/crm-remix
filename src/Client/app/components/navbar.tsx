@@ -1,6 +1,5 @@
 import { useLocation } from "@remix-run/react";
 import { Form, Link } from "@remix-run/react";
-import { getCompaniesRouteNavbarButtons } from "~/routes/__layout/companies";
 import { getCompanyRouteNavbarButtons } from "~/routes/__layout/companies/$id";
 import type { OidcProfile } from "~/utils/oidc-strategy";
 import { useUser } from "~/utils/utils";
@@ -43,10 +42,6 @@ export default function Navbar() {
 }
 
 function getNavbarButtons(pathname: string, user: OidcProfile) {
-  if (pathname === "/companies") {
-    return getCompaniesRouteNavbarButtons(user);
-  }
-
   const match = pathname.match(/^\/companies\/(?<id>[1-9])+$/);
   if (match?.groups?.id) {
     return getCompanyRouteNavbarButtons(match.groups.id, user);

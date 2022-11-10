@@ -12,8 +12,12 @@ export class OidcAuthenticator extends Authenticator<OidcProfile> {
   ): Promise<OidcProfile> {
     const user = await auth.isAuthenticated(request);
     if (user) {
+      if (permissions.length === 0) {
+        return user;
+      }
+
       const params: string[][] = [];
-      permissions.forEach((x) => params.push(["query", x]));
+      permissions.forEach((x) => params.push(["q", x]));
       const query = new URLSearchParams(params);
       const response = await fetch(
         `${process.env.API_URL}/User/Permissions?${query}`,

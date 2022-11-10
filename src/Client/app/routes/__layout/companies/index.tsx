@@ -2,6 +2,7 @@ import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
+import type { OidcProfile } from "~/utils/oidc-strategy";
 
 export type Company = {
   id: number;
@@ -17,10 +18,13 @@ export type Company = {
 
 type LoaderData = {
   companies: Company[];
+  user: OidcProfile;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await auth.requireUser(request);
+  const user = await auth.requireUser(request, {
+    permissions: ["CreateCompany"],
+  });
   const response = await fetch(`${process.env.API_URL}/companies`, {
     headers: {
       Authorization: `Bearer ${user.extra?.access_token}`,
@@ -32,20 +36,25 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   const data = await response.json();
-  return json({ companies: data });
+  return json({ companies: data, user });
 };
 
 export default function CompanyIndex() {
-  const data = useLoaderData<LoaderData>();
+  const { companies, user } = useLoaderData<LoaderData>();
 
   return (
-    <ul>
-      {data.companies.map((x, i) => (
-        <li key={i}>
-          <Link to={x.id.toString()}>{x.name}</Link>
-        </li>
-      ))}
-    </ul>
+    <>
+      {user.permissions.includes("CreateCompany") ? (
+        <Link to="/companies/new">New company</Link>
+      ) : null}
+      <ul>
+        {companies.map((x, i) => (
+          <li key={i}>
+            <Link to={x.id.toString()}>{x.name}</Link>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
 
@@ -67,6 +76,6 @@ export function CatchBoundary() {
 export function meta() {
   return {
     title: "Companies",
-    description: "Welcome to remix!"
+    description: "Welcome to remix!",
   };
 }
