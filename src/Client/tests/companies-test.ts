@@ -19,9 +19,15 @@ export const test = base.extend<{
             data: company,
           }
         );
+
+        if (!response.ok()) {
+          throw new Error(`${response.status()}: ${response.statusText()}`);
+        }
+
+        setDbDirty();
+
         let { id } = await response.json();
         company.id = id;
-        setDbDirty();
         return company;
       });
     },
