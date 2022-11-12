@@ -5,52 +5,53 @@ test.afterEach(async ({ resetDb }) => {
   await resetDb();
 });
 
-test("should see title, should not see new company button", async ({
-  page,
-  runAsDefaultUser,
-}) => {
-  await runAsDefaultUser();
+test.describe("companies", () => {
+  test("should see title, should not see new company button", async ({
+    page,
+    runAsDefaultUser,
+  }) => {
+    await runAsDefaultUser();
+    await page.goto("/companies");
+    await expect(page).toHaveTitle(/companies/i);
 
-  await page.goto("/companies");
-  await expect(page).toHaveTitle(/companies/i);
+    let link = page.getByRole("link", { name: /new company/i });
+    await expect(link).not.toBeVisible();
+  });
 
-  let link = page.getByRole("link", { name: /new company/i });
-  await expect(link).not.toBeVisible();
-});
+  test("does not see companies", async ({ page, runAsDefaultUser }) => {
+    await runAsDefaultUser();
+    await page.goto("/companies");
 
-test("does not see companies", async ({ page, runAsDefaultUser }) => {
-  await runAsDefaultUser();
+    let companiesNotFound = page.getByText(/no companies found/i);
+    await expect(companiesNotFound).toBeVisible();
+  });
 
-  await page.goto("/companies");
+  test("sees companies", async ({ page, createCompany, runAsDefaultUser }) => {
+    await runAsDefaultUser();
+    let company = await createCompany();
+    await page.goto("/companies");
 
-  let companiesNotFound = page.getByText(/no companies found/i);
-  await expect(companiesNotFound).toBeVisible();
-});
+    let companyName = page.getByText(company.name);
+    await expect(companyName).toBeVisible();
 
-test("sees companies", async ({ page, createCompany, runAsDefaultUser }) => {
-  await runAsDefaultUser();
-  let company = await createCompany();
+    let companiesNotFound = page.getByText(/no companies found/i);
+    await expect(companiesNotFound).not.toBeVisible();
+  });
 
-  await page.goto("/companies");
+  test("navigates to new company page", async ({
+    page,
+    runAsAdministrator,
+  }) => {
+    await runAsAdministrator();
+    await page.goto("/companies");
 
-  let companyName = page.getByText(company.name);
-  await expect(companyName).toBeVisible();
+    let link = page.getByRole("link", { name: /new company/i });
+    await expect(link).toBeVisible();
 
-  let companiesNotFound = page.getByText(/no companies found/i);
-  await expect(companiesNotFound).not.toBeVisible();
-});
+    await link.click();
+    expect(page.url()).toMatch(/companies\/new/i);
 
-test("navigates to new company page", async ({ page, runAsAdministrator }) => {
-  await runAsAdministrator();
-
-  await page.goto("/companies");
-
-  let link = page.getByRole("link", { name: /new company/i });
-  await expect(link).toBeVisible();
-
-  await link.click();
-  expect(page.url()).toMatch(/companies\/new/i);
-
-  let forbidden = page.getByText(/forbidden/i);
-  await expect(forbidden).not.toBeVisible();
+    let forbidden = page.getByText(/forbidden/i);
+    await expect(forbidden).not.toBeVisible();
+  });
 });
