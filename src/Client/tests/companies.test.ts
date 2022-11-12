@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
-import { test } from "./companies-test";
+import { buildCompany, test } from "./companies-test";
 
-test.afterEach(async ({ resetDb }) => {
+test.beforeEach(async ({ resetDb }) => {
   await resetDb();
 });
 
@@ -40,6 +40,7 @@ test.describe("companies", () => {
 
   test("navigates to new company page", async ({
     page,
+    baseURL,
     runAsAdministrator,
   }) => {
     await runAsAdministrator();
@@ -49,9 +50,53 @@ test.describe("companies", () => {
     await expect(link).toBeVisible();
 
     await link.click();
-    expect(page.url()).toMatch(/companies\/new/i);
+    expect(page.url()).toBe(`${baseURL}/companies/new`);
+  });
+});
+
+test.describe("new company", () => {
+  test("page should be forbidden", async ({ page, runAsDefaultUser }) => {
+    await runAsDefaultUser();
+    await page.goto("/companies/new");
+
+    let forbidden = page.getByText(/forbidden/i);
+    await expect(forbidden).toBeVisible();
+  });
+
+  test.only("creates new company", async ({
+    page,
+    runAsAdministrator,
+  }) => {
+    await runAsAdministrator();
+    await page.goto("/companies/new");
 
     let forbidden = page.getByText(/forbidden/i);
     await expect(forbidden).not.toBeVisible();
+
+    var company = buildCompany();
+    await page.getByLabel(/name/i).fill(company.name);
+    await page.getByLabel(/address/i).fill(company.address);
+    await page.getByLabel(/ceo/i).fill(company.ceo);
+    await page.getByLabel(/contacts/i).fill(company.contacts);
+    await page.getByLabel(/email/i).fill(company.email);
+    await page.getByLabel(/inn/i).fill(company.inn);
+    await page.getByLabel(/phone/i).fill(company.phone);
+    let type = page.getByLabel(/type/i);
+    await type.selectOption({ index: 1 });
+    company.type =
+      (await type.getByRole("option", { selected: true }).textContent()) ?? "";
+
+    let submit = page.getByRole("button", { name: /create new company/i });
+    await submit.click();
+
+    expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+    await expect(page.getByText(company.name)).toBeVisible();
+    await expect(page.getByText(company.address)).toBeVisible();
+    await expect(page.getByText(company.ceo)).toBeVisible();
+    await expect(page.getByText(company.contacts)).toBeVisible();
+    await expect(page.getByText(company.email)).toBeVisible();
+    await expect(page.getByText(company.inn)).toBeVisible();
+    await expect(page.getByText(company.phone)).toBeVisible();
+    await expect(page.getByText(company.type)).toBeVisible();
   });
 });

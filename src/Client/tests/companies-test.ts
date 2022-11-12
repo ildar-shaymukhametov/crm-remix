@@ -24,8 +24,6 @@ export const test = base.extend<{
           throw new Error(`${response.status()}: ${response.statusText()}`);
         }
 
-        setDbDirty();
-
         let { id } = await response.json();
         company.id = id;
         return company;
@@ -35,7 +33,7 @@ export const test = base.extend<{
   ],
 });
 
-function buildCompany(): Company {
+export function buildCompany(): Company {
   return {
     address: faker.address.streetAddress(),
     ceo: faker.name.fullName(),

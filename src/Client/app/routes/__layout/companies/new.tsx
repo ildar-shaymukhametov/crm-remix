@@ -63,10 +63,10 @@ export default function NewCompanyRoute() {
           Type:
           <select name="type" defaultValue={data?.fields?.type}>
             <option value=""></option>
-            <option value="1">ООО</option>
-            <option value="2">АО</option>
-            <option value="3">ПАО</option>
-            <option value="4">ИП</option>
+            <option value="ООО">ООО</option>
+            <option value="АО">АО</option>
+            <option value="ПАО">ПАО</option>
+            <option value="ИП">ИП</option>
           </select>
         </label>
       </div>
@@ -115,7 +115,7 @@ export default function NewCompanyRoute() {
           <input name="contacts" defaultValue={data?.fields?.contacts} />
         </label>
       </div>
-      <button type="submit">Create</button>
+      <button type="submit">Create new company</button>
     </form>
   );
 }

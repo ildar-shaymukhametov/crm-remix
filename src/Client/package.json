@@ -9,7 +9,8 @@
     "dev:remix": "remix dev",
     "dev:css": "tailwindcss -w -i ./styles/tailwind.css -o ./app/styles/tailwind.css",
     "start": "remix-serve build",
-    "test:e2e:dev": "playwright test"
+    "test:e2e:dev": "playwright test",
+    "test:e2e:dev:debug": "playwright test --debug"
   },
   "dependencies": {
     "@remix-run/node": "^1.7.4",
