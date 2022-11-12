@@ -6,7 +6,7 @@ export const test = base.extend<{
   createCompany: () => Promise<Company>;
 }>({
   createCompany: [
-    async ({ page, setDbDirty }, use) => {
+    async ({ page }, use) => {
       use(async () => {
         const accessToken = await getAdminAccessToken(page);
         const company = buildCompany();

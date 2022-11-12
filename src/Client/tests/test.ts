@@ -6,13 +6,11 @@ import type { OidcProfile } from "~/utils/oidc-strategy";
 
 let defaultUserAccessToken = "";
 let adminAccessToken = "";
-let isDbDirty = false;
 
 export const test = base.extend<{
   runAsDefaultUser: () => Promise<OidcProfile>;
   runAsAdministrator: () => Promise<OidcProfile>;
   resetDb: () => Promise<void>;
-  setDbDirty: () => void;
 }>({
   runAsDefaultUser: [
     async ({ page, baseURL }, use) => {
@@ -29,24 +27,16 @@ export const test = base.extend<{
   resetDb: [
     async ({ page }, use) => {
       use(async () => {
-        if (!isDbDirty) {
-          return;
-        }
-
         let token = await getAdminAccessToken(page);
-        let response = await page.request.post(`${process.env.API_URL}/test/resetdb`, {
+        await page.request.post(`${process.env.API_URL}/test/resetdb`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        isDbDirty = !response.ok();
       });
     },
     { auto: true },
   ],
-  setDbDirty: async ({ page }, use) => {
-    use(() => isDbDirty = true);
-  },
 });
 
 function runAsDefaultUser(page: Page, baseURL: any) {
