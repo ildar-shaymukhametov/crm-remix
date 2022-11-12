@@ -18,7 +18,7 @@ type ActionData = {
   errors?: {
     [index: string]: string[];
   };
-  fields?: any;
+  fields?: { [index: string]: string };
 };
 
 export const action: ActionFunction = async ({ request }) => {

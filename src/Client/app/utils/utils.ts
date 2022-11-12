@@ -19,16 +19,21 @@ export function useMatchesData(
   return route?.data;
 }
 
-function isUser(user: any): user is OidcProfile {
-  return user && typeof user === "object" && typeof user.displayName === "string";
+function isUser(user: OidcProfile) {
+  return (
+    user && typeof user === "object" && typeof user.displayName === "string"
+  );
 }
 
 export function useOptionalUser(): OidcProfile | undefined {
   const data = useMatchesData("root");
-  if (!data || !isUser(data.user)) {
+  if (
+    !data || !isUser(data.user as OidcProfile)
+  ) {
     return undefined;
   }
-  return data.user;
+
+  return data.user as OidcProfile;
 }
 
 export function useUser(): OidcProfile {

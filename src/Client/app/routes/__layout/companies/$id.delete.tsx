@@ -4,7 +4,7 @@ import { Link, useCatch, useParams } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  let user = await auth.requireUser(request);
+  const user = await auth.requireUser(request);
   if (!user.permissions.includes("company.delete")) {
     throw new Response(null, { status: 403, statusText: "Forbidden" });
   }

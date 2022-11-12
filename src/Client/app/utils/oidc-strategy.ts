@@ -109,13 +109,13 @@ export class OidcStrategy<User> extends OAuth2Strategy<
     accessToken: string,
     params: OidcExtraParams
   ): Promise<OidcProfile> {
-    let response = await fetch(this.userInfoURL, {
+    const response = await fetch(this.userInfoURL, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    let data: OidcProfile["_json"] = await response.json();
+    const data: OidcProfile["_json"] = await response.json();
 
-    let profile: OidcProfile = {
+    const profile: OidcProfile = {
       provider: "oidc",
       displayName: data.name,
       id: data.sub,

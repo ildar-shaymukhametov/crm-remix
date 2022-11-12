@@ -14,7 +14,7 @@ test.describe("companies", () => {
     await page.goto("/companies");
     await expect(page).toHaveTitle(/companies/i);
 
-    let link = page.getByRole("link", { name: /new company/i });
+    const link = page.getByRole("link", { name: /new company/i });
     await expect(link).not.toBeVisible();
   });
 
@@ -22,19 +22,19 @@ test.describe("companies", () => {
     await runAsDefaultUser();
     await page.goto("/companies");
 
-    let companiesNotFound = page.getByText(/no companies found/i);
+    const companiesNotFound = page.getByText(/no companies found/i);
     await expect(companiesNotFound).toBeVisible();
   });
 
   test("sees companies", async ({ page, createCompany, runAsDefaultUser }) => {
     await runAsDefaultUser();
-    let company = await createCompany();
+    const company = await createCompany();
     await page.goto("/companies");
 
-    let companyName = page.getByText(company.name);
+    const companyName = page.getByText(company.name);
     await expect(companyName).toBeVisible();
 
-    let companiesNotFound = page.getByText(/no companies found/i);
+    const companiesNotFound = page.getByText(/no companies found/i);
     await expect(companiesNotFound).not.toBeVisible();
   });
 
@@ -46,7 +46,7 @@ test.describe("companies", () => {
     await runAsAdministrator();
     await page.goto("/companies");
 
-    let link = page.getByRole("link", { name: /new company/i });
+    const link = page.getByRole("link", { name: /new company/i });
     await expect(link).toBeVisible();
 
     await link.click();
@@ -59,7 +59,7 @@ test.describe("new company", () => {
     await runAsDefaultUser();
     await page.goto("/companies/new");
 
-    let forbidden = page.getByText(/forbidden/i);
+    const forbidden = page.getByText(/forbidden/i);
     await expect(forbidden).toBeVisible();
   });
 
@@ -70,10 +70,10 @@ test.describe("new company", () => {
     await runAsAdministrator();
     await page.goto("/companies/new");
 
-    let forbidden = page.getByText(/forbidden/i);
+    const forbidden = page.getByText(/forbidden/i);
     await expect(forbidden).not.toBeVisible();
 
-    var company = buildCompany();
+    const company = buildCompany();
     await page.getByLabel(/name/i).fill(company.name);
     await page.getByLabel(/address/i).fill(company.address);
     await page.getByLabel(/ceo/i).fill(company.ceo);
@@ -81,12 +81,12 @@ test.describe("new company", () => {
     await page.getByLabel(/email/i).fill(company.email);
     await page.getByLabel(/inn/i).fill(company.inn);
     await page.getByLabel(/phone/i).fill(company.phone);
-    let type = page.getByLabel(/type/i);
+    const type = page.getByLabel(/type/i);
     await type.selectOption({ index: 1 });
     company.type =
       (await type.getByRole("option", { selected: true }).textContent()) ?? "";
 
-    let submit = page.getByRole("button", { name: /create new company/i });
+    const submit = page.getByRole("button", { name: /create new company/i });
     await submit.click();
 
     expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));

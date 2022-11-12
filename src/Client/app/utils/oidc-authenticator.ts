@@ -60,11 +60,11 @@ export class OidcAuthenticator extends Authenticator<OidcProfile> {
     );
     invariant(process.env.ENDSESSION_URL, "ENDSESSION_URL is not defined");
 
-    var query = new URLSearchParams({
+    const query = new URLSearchParams({
       id_token_hint: options.user.extra.id_token,
       post_logout_redirect_uri: process.env.POST_LOGOUT_REDIRECT_URI,
     });
-    var url = new URL(`${process.env.ENDSESSION_URL}?${query}`);
+    const url = new URL(`${process.env.ENDSESSION_URL}?${query}`);
     return super.logout(request, {
       redirectTo: url.toString(),
     });

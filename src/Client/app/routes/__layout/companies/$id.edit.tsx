@@ -56,7 +56,7 @@ type ActionData = {
   errors?: {
     [index: string]: string[];
   };
-  fields?: any;
+  fields?: { [index: string]: string | number }
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -101,7 +101,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 export default function EditCompanyRoute() {
   const actionData = useActionData<ActionData>();
   const loaderData = useLoaderData<LoaderData>();
-  let data: ActionData = {
+  const data: ActionData = {
     fields: { ...loaderData.company, ...actionData?.fields },
     errors: actionData?.errors,
   };
@@ -115,14 +115,14 @@ export default function EditCompanyRoute() {
             name="name"
             required
             maxLength={200}
-            defaultValue={data?.fields.name}
+            defaultValue={data?.fields?.name}
           />
         </label>
       </div>
       <div>
         <label>
           Type:
-          <select name="type" defaultValue={data?.fields.type}>
+          <select name="type" defaultValue={data?.fields?.type}>
             <option value=""></option>
             <option value="1">ООО</option>
             <option value="2">АО</option>
@@ -134,7 +134,7 @@ export default function EditCompanyRoute() {
       <div>
         <label>
           Inn:
-          <input name="inn" defaultValue={data?.fields.inn} />
+          <input name="inn" defaultValue={data?.fields?.inn} />
         </label>
         {data?.errors?.Inn
           ? data.errors.Inn.map((error, i) => <p key={i}>{error}</p>)
@@ -143,13 +143,13 @@ export default function EditCompanyRoute() {
       <div>
         <label>
           Address:
-          <input name="address" defaultValue={data?.fields.address} />
+          <input name="address" defaultValue={data?.fields?.address} />
         </label>
       </div>
       <div>
         <label>
           CEO:
-          <input name="ceo" defaultValue={data?.fields.ceo} />
+          <input name="ceo" defaultValue={data?.fields?.ceo} />
         </label>
         {data?.errors?.Ceo
           ? data.errors.Ceo.map((error, i) => <p key={i}>{error}</p>)
@@ -158,13 +158,13 @@ export default function EditCompanyRoute() {
       <div>
         <label>
           Phone:
-          <input name="phone" defaultValue={data?.fields.phone} />
+          <input name="phone" defaultValue={data?.fields?.phone} />
         </label>
       </div>
       <div>
         <label>
           Email:
-          <input name="email" defaultValue={data?.fields.email} />
+          <input name="email" defaultValue={data?.fields?.email} />
         </label>
         {data?.errors?.Email
           ? data.errors.Email.map((error, i) => <p key={i}>{error}</p>)
@@ -173,7 +173,7 @@ export default function EditCompanyRoute() {
       <div>
         <label>
           Contacts:
-          <input name="contacts" defaultValue={data?.fields.contacts} />
+          <input name="contacts" defaultValue={data?.fields?.contacts} />
         </label>
       </div>
       <button type="submit">Save</button>

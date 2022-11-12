@@ -4,6 +4,8 @@ import { useCatch, useLoaderData, useSubmit } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 import Select from "react-select";
 import { useRef } from "react";
+import invariant from "tiny-invariant";
+import StateManagedSelect from "react-select";
 
 type ClaimType = {
   id: number;
@@ -76,14 +78,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function AccessRoute() {
   const submit = useSubmit();
-  const selectElem = useRef(null);
+  const selectElem = useRef<any>(null);
   const { claimTypes, claims } = useLoaderData<LoaderData>();
   const options = claimTypes.map((x) => ({
     value: x.value,
     label: x.name,
   }));
   const selectedOptions = options.filter(x => claims.includes(x.value));
-
+  
   const onButtonClick = () => {
     const formData = new FormData();
     const items = selectElem.current.getValue() as [{ value: string }];

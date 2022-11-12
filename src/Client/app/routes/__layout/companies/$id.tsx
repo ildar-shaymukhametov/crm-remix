@@ -21,7 +21,7 @@ type LoaderData = {
 };
 
 export function getCompanyRouteNavbarButtons(id: string, user: OidcProfile) {
-  let result = [];
+  const result = [];
   if (user.permissions.includes("company.delete")) {
     result.push(<Link to={`companies/${id}/delete`}>Delete</Link>);
   }
