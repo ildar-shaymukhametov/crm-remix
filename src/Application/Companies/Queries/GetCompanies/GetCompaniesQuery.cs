@@ -14,18 +14,29 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IPermissionsService _permissionsService;
+    private readonly ICurrentUserService _currentUserService;
 
-    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper)
+    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, IPermissionsService permissionsService, ICurrentUserService currentUserService)
     {
+        _permissionsService = permissionsService;
+        _currentUserService = currentUserService;
         _dbContext = dbContext;
         _mapper = mapper;
     }
 
     public async Task<CompanyDto[]> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
     {
-        return await _dbContext.Companies
-            .AsNoTracking()
-            .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
-            .ToArrayAsync();
+        var permissions = await _permissionsService.CheckUserPermissionsAsync(_currentUserService.UserId!, new[] { "ViewCompany" });
+
+        if (permissions.Contains("ViewCompany"))
+        {
+            return await _dbContext.Companies
+                .AsNoTracking()
+                .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
+                .ToArrayAsync(cancellationToken);
+        }
+
+        return Array.Empty<CompanyDto>();
     }
 }

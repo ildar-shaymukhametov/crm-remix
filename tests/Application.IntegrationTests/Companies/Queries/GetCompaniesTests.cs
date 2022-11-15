@@ -1,3 +1,4 @@
+using Application.IntegrationTests;
 using CRM.Application.Companies.Queries.GetCompanies;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
@@ -7,7 +8,7 @@ public class GetCompaniesTests : BaseTest
     public GetCompaniesTests(BaseTestFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task User_is_admin___Returns_companies()
+    public async Task User_is_admin___Returns_company()
     {
         var user = await _fixture.RunAsAdministratorAsync();
 
@@ -21,9 +22,12 @@ public class GetCompaniesTests : BaseTest
     }
 
     [Fact]
-    public async Task User_is_authenticated___Returns_companies()
+    public async Task User_has_claim___Returns_company()
     {
-        var user = await _fixture.RunAsDefaultUserAsync();
+        var user = await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Utils.CreateAuthorizationClaim(Constants.Claims.ViewCompany)
+        });
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
@@ -32,5 +36,19 @@ public class GetCompaniesTests : BaseTest
         var result = await _fixture.SendAsync(request);
 
         Assert.Collection(result, x => Assert.Equal(company.Id, x.Id));
+    }
+
+    [Fact]
+    public async Task User_has_no_claim___Returns_empty_list()
+    {
+        await _fixture.RunAsDefaultUserAsync();
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var request = new GetCompaniesQuery();
+        var actual = await _fixture.SendAsync(request);
+
+        Assert.Empty(actual);
     }
 }
