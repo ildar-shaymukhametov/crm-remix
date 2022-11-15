@@ -15,8 +15,9 @@ public class GetUserPermissionsQueryTests : BaseTest
 
         var expected = new[]
         {
-            Policies.CreateCompany,
-            Policies.UpdateCompany,
+            "CreateCompany",
+            "UpdateCompany",
+            "ViewCompany",
         };
 
         var request = new GetUserPermissionsQuery
@@ -36,8 +37,9 @@ public class GetUserPermissionsQueryTests : BaseTest
 
         var expected = new[]
         {
-            Policies.CreateCompany,
-            Policies.UpdateCompany
+            "CreateCompany",
+            "UpdateCompany",
+            "ViewCompany",
         };
 
         var request = new GetUserPermissionsQuery

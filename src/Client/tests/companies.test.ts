@@ -98,10 +98,8 @@ test.describe("view company", () => {
     const company = await createCompany();
     await page.goto(`/companies/${company.id}`);
 
-    const deleteButton = page.getByRole("link", { name: /delete/i });
-    await expect(deleteButton).not.toBeVisible();
-
-    await expectCompanyFieldsToBeVisible(page, company);
+    const forbidden = page.getByText(/forbidden/i);
+    await expect(forbidden).toBeVisible();
   });
 
   test("admin", async ({ page, runAsAdministrator, createCompany }) => {
@@ -130,7 +128,7 @@ test.describe("view company", () => {
   }
 });
 
-test.describe.only("edit company", () => {
+test.describe("edit company", () => {
   test("default user", async ({ page, runAsDefaultUser, createCompany }) => {
     await runAsDefaultUser();
     const company = await createCompany();

@@ -37,6 +37,10 @@ public class PermissionsService : IPermissionsService
         {
             result.Add(Policies.UpdateCompany);
         }
+        if (permissions.Contains(Policies.ViewCompany) && _authorizationService.CanViewCompany(principal))
+        {
+            result.Add(Policies.ViewCompany);
+        }
 
         return result.ToArray();
     }

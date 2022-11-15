@@ -20,7 +20,11 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const user = await auth.requireUser(request);
+  const user = await auth.requireUser(request, { permissions: ["ViewCompany"] });
+  if (!user.permissions.includes("ViewCompany")) {
+    throw new Response(null, { status: 403 });
+  }
+
   const response = await fetch(
     `${process.env.API_URL}/companies/${params.id}`,
     {
