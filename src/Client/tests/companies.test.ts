@@ -1,4 +1,6 @@
+import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
+import type { Company } from "~/routes/__layout/companies/index";
 import { buildCompany, test } from "./companies-test";
 
 test.beforeEach(async ({ resetDb }) => {
@@ -90,12 +92,8 @@ test.describe("new company", () => {
   });
 });
 
-test.describe("view company", () => {
-  test("can view company", async ({
-    page,
-    runAsDefaultUser,
-    createCompany,
-  }) => {
+test.describe.only("view company", () => {
+  test("default user", async ({ page, runAsDefaultUser, createCompany }) => {
     await runAsDefaultUser();
     const company = await createCompany();
     await page.goto(`/companies/${company.id}`);
@@ -103,6 +101,24 @@ test.describe("view company", () => {
     const deleteButton = page.getByRole("link", { name: /delete/i });
     await expect(deleteButton).not.toBeVisible();
 
+    await expectCompanyFieldsToBeVisible(page, company);
+  });
+
+  test.only("admin", async ({ page, runAsAdministrator, createCompany }) => {
+    await runAsAdministrator();
+    const company = await createCompany();
+    await page.goto(`/companies/${company.id}`);
+
+    const deleteButton = page.getByRole("link", { name: /delete/i });
+    await expect(deleteButton).toBeVisible();
+
+    const editButton = page.getByRole("link", { name: /edit/i });
+    await expect(editButton).toBeVisible();
+
+    await expectCompanyFieldsToBeVisible(page, company);
+  });
+
+  async function expectCompanyFieldsToBeVisible(page: Page, company: Company) {
     await expect(page.getByText(company.name)).toBeVisible();
     await expect(page.getByText(company.address)).toBeVisible();
     await expect(page.getByText(company.ceo)).toBeVisible();
@@ -111,18 +127,5 @@ test.describe("view company", () => {
     await expect(page.getByText(company.inn)).toBeVisible();
     await expect(page.getByText(company.phone)).toBeVisible();
     await expect(page.getByText(company.type)).toBeVisible();
-  });
-
-  test.only("delete button visible", async ({
-    page,
-    runAsAdministrator,
-    createCompany,
-  }) => {
-    await runAsAdministrator();
-    const company = await createCompany();
-    await page.goto(`/companies/${company.id}`);
-
-    const deleteButton = page.getByRole("link", { name: /delete/i });
-    await expect(deleteButton).toBeVisible();
-  });
+  }
 });
