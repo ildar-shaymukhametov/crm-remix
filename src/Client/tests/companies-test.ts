@@ -24,7 +24,7 @@ export const test = base.extend<{
           throw new Error(`${response.status()}: ${response.statusText()}`);
         }
 
-        let { id } = await response.json();
+        const { id } = await response.json();
         company.id = id;
         return company;
       });
@@ -43,6 +43,6 @@ export function buildCompany(): Company {
     inn: faker.random.numeric(10),
     name: faker.company.name(),
     phone: faker.phone.number(),
-    type: faker.helpers.arrayElement(faker.company.suffixes()),
+    type: faker.helpers.arrayElement(["ООО", "АО", "ПАО", "ИП"])
   };
 }

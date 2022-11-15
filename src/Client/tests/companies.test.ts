@@ -88,11 +88,11 @@ test.describe("new company", () => {
     const submit = page.getByRole("button", { name: /create new company/i });
     await submit.click();
 
-    expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+    await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
   });
 });
 
-test.describe.only("view company", () => {
+test.describe("view company", () => {
   test("default user", async ({ page, runAsDefaultUser, createCompany }) => {
     await runAsDefaultUser();
     const company = await createCompany();
@@ -104,7 +104,7 @@ test.describe.only("view company", () => {
     await expectCompanyFieldsToBeVisible(page, company);
   });
 
-  test.only("admin", async ({ page, runAsAdministrator, createCompany }) => {
+  test("admin", async ({ page, runAsAdministrator, createCompany }) => {
     await runAsAdministrator();
     const company = await createCompany();
     await page.goto(`/companies/${company.id}`);
@@ -128,4 +128,47 @@ test.describe.only("view company", () => {
     await expect(page.getByText(company.phone)).toBeVisible();
     await expect(page.getByText(company.type)).toBeVisible();
   }
+});
+
+test.describe.only("edit company", () => {
+  test("admin", async ({ page, runAsAdministrator, createCompany }) => {
+    await runAsAdministrator();
+    const company = await createCompany();
+    await page.goto(`/companies/${company.id}/edit`);
+
+    const name = page.getByLabel(/name/i);
+    const address = page.getByLabel(/address/i);
+    const ceo = page.getByLabel(/ceo/i);
+    const contacts = page.getByLabel(/contacts/i);
+    const email = page.getByLabel(/email/i);
+    const inn = page.getByLabel(/inn/i);
+    const phone = page.getByLabel(/phone/i);
+    const type = page.getByLabel(/type/i);
+
+    await expect(name).toHaveValue(company.name);
+    await expect(address).toHaveValue(company.address);
+    await expect(ceo).toHaveValue(company.ceo);
+    await expect(contacts).toHaveValue(company.contacts);
+    await expect(email).toHaveValue(company.email);
+    await expect(inn).toHaveValue(company.inn);
+    await expect(phone).toHaveValue(company.phone);
+    const selectedOption = type.getByRole("option", { selected: true });
+    await expect(selectedOption).toHaveText(company.type);
+
+    const newCompany = buildCompany();
+    await name.fill(newCompany.name);
+    await address.fill(newCompany.address);
+    await ceo.fill(newCompany.ceo);
+    await contacts.fill(newCompany.contacts);
+    await email.fill(newCompany.email);
+    await inn.fill(newCompany.inn);
+    await phone.fill(newCompany.phone);
+    await type.selectOption(newCompany.type);
+
+    const submit = page.getByRole("button", { name: /save changes/i });
+    await expect(submit).toBeVisible();
+    await submit.click();
+
+    await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+  });
 });

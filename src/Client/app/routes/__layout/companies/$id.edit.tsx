@@ -23,10 +23,6 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request);
-  if (!user.permissions.includes("company.update")) {
-    throw new Response(null, { status: 401, statusText: "Unauthorized" });
-  }
-
   const response = await fetch(
     `${process.env.API_URL}/companies/${params.id}`,
     {
@@ -124,10 +120,10 @@ export default function EditCompanyRoute() {
           Type:
           <select name="type" defaultValue={data?.fields?.type}>
             <option value=""></option>
-            <option value="1">ООО</option>
-            <option value="2">АО</option>
-            <option value="3">ПАО</option>
-            <option value="4">ИП</option>
+            <option value="ООО">ООО</option>
+            <option value="АО">АО</option>
+            <option value="ПАО">ПАО</option>
+            <option value="ИП">ИП</option>
           </select>
         </label>
       </div>
@@ -176,7 +172,7 @@ export default function EditCompanyRoute() {
           <input name="contacts" defaultValue={data?.fields?.contacts} />
         </label>
       </div>
-      <button type="submit">Save</button>
+      <button type="submit">Save changes</button>
     </form>
   );
 }
