@@ -15,7 +15,7 @@ public class UserAuthorizationService : IUserAuthorizationService
 {
     public bool CanViewCompany(ClaimsPrincipal principal)
     {
-        return IsAdmin(principal) || HasClaim(principal, Claims.ViewCompany);
+        return true;
     }
 
     public bool CanUpdateCompany(ClaimsPrincipal principal)

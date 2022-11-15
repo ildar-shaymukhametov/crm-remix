@@ -63,7 +63,7 @@ test.describe("new company", () => {
     await expect(forbidden).toBeVisible();
   });
 
-  test.only("creates new company", async ({
+  test("creates new company", async ({
     page,
     runAsAdministrator,
   }) => {
@@ -90,6 +90,18 @@ test.describe("new company", () => {
     await submit.click();
 
     expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+  });
+});
+
+test.describe("view company", () => {
+  test("can view company", async ({ page, runAsDefaultUser, createCompany }) => {
+    await runAsDefaultUser();
+    const company = await createCompany();
+    await page.goto(`/companies/${company.id}`);
+
+    const deleteButton = page.getByRole("link", { name: /delete/i });
+    await expect(deleteButton).not.toBeVisible();
+
     await expect(page.getByText(company.name)).toBeVisible();
     await expect(page.getByText(company.address)).toBeVisible();
     await expect(page.getByText(company.ceo)).toBeVisible();
