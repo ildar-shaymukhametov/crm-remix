@@ -22,7 +22,11 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const user = await auth.requireUser(request);
+  const user = await auth.requireUser(request, { permissions: ["UpdateCompany"] });
+  if (!user.permissions.includes("UpdateCompany")) {
+    throw new Response(null, { status: 403 });
+  }
+
   const response = await fetch(
     `${process.env.API_URL}/companies/${params.id}`,
     {
@@ -33,15 +37,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   );
 
   if (!response.ok) {
-    if (response.status === 404) {
-      throw new Response("Not Found", { status: 404 });
-    }
-
-    if (response.status === 401) {
-      throw new Response("Unauthorized", { status: 401 });
-    }
-
-    return json(null, { status: response.status });
+    throw response;
   }
 
   const data = await response.json();
@@ -52,17 +48,17 @@ type ActionData = {
   errors?: {
     [index: string]: string[];
   };
-  fields?: { [index: string]: string | number }
+  fields?: { [index: string]: string | number };
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
+  const user = await auth.requireUser(request);
   invariant(params?.id, "Missing id parameter");
 
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   data.id = params.id;
 
-  const user = await auth.requireUser(request);
   const response = await fetch(
     `${process.env.API_URL}/companies/${params.id}`,
     {
@@ -76,19 +72,15 @@ export const action: ActionFunction = async ({ request, params }) => {
   );
 
   if (!response.ok) {
-    if (response.status === 404) {
-      throw new Error("Company not found");
+    if (response.status !== 400) {
+      throw response;
     }
 
-    if (response.status === 400) {
-      const responseData = await response.json();
-      return json(
-        { fields: data, errors: responseData.errors },
-        { status: response.status }
-      );
-    }
-
-    throw new Error(`${response.statusText} (${response.status})`);
+    const responseData = await response.json();
+    return json(
+      { fields: data, errors: responseData.errors },
+      { status: response.status }
+    );
   }
 
   return redirect(`/companies/${params.id}`);
@@ -181,6 +173,9 @@ export function CatchBoundary() {
   const res = useCatch();
   if (res.status === 401) {
     return <p>Unauthorized</p>;
+  }
+  if (res.status === 403) {
+    return <p>Forbidden</p>;
   }
   if (res.status === 404) {
     return <p>Company not found</p>;

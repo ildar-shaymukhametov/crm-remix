@@ -33,6 +33,10 @@ public class PermissionsService : IPermissionsService
         {
             result.Add(Policies.CreateCompany);
         }
+        if (permissions.Contains(Policies.UpdateCompany) && _authorizationService.CanUpdateCompany(principal))
+        {
+            result.Add(Policies.UpdateCompany);
+        }
 
         return result.ToArray();
     }

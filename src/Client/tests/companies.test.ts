@@ -130,7 +130,16 @@ test.describe("view company", () => {
   }
 });
 
-test.describe.only("edit company", () => {
+test.describe("edit company", () => {
+  test.only("default user", async ({ page, runAsDefaultUser, createCompany }) => {
+    await runAsDefaultUser();
+    const company = await createCompany();
+    await page.goto(`/companies/${company.id}/edit`);
+
+    const forbidden = page.getByText(/forbidden/i);
+    await expect(forbidden).toBeVisible();
+  });
+
   test("admin", async ({ page, runAsAdministrator, createCompany }) => {
     await runAsAdministrator();
     const company = await createCompany();
