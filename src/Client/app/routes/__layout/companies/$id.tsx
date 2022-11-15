@@ -22,9 +22,6 @@ type LoaderData = {
 
 export function getCompanyRouteNavbarButtons(id: string, user: OidcProfile) {
   const result = [];
-  if (user.permissions.includes("company.delete")) {
-    result.push(<Link to={`companies/${id}/delete`}>Delete</Link>);
-  }
   if (user.permissions.includes("company.update")) {
     result.push(<Link to={`companies/${id}/edit`}>Edit</Link>);
   }
@@ -51,13 +48,20 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 };
 
 export default function CompanyRoute() {
-  const data = useLoaderData<LoaderData>();
+  const { company } = useLoaderData<LoaderData>();
 
-  return Object.entries(data.company).map(([key, name], i) => (
-    <p key={i}>
-      {key}: {name}
-    </p>
-  ));
+  return (
+    <>
+      <Link to={`companies/${company.id}/delete`}>Delete</Link>
+      <div>
+        {Object.entries(company).map(([key, name], i) => (
+          <p key={i}>
+            {key}: {name}
+          </p>
+        ))}
+      </div>
+    </>
+  );
 }
 
 export function CatchBoundary() {

@@ -63,10 +63,7 @@ test.describe("new company", () => {
     await expect(forbidden).toBeVisible();
   });
 
-  test("creates new company", async ({
-    page,
-    runAsAdministrator,
-  }) => {
+  test("creates new company", async ({ page, runAsAdministrator }) => {
     await runAsAdministrator();
     await page.goto("/companies/new");
 
@@ -94,7 +91,11 @@ test.describe("new company", () => {
 });
 
 test.describe("view company", () => {
-  test("can view company", async ({ page, runAsDefaultUser, createCompany }) => {
+  test("can view company", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+  }) => {
     await runAsDefaultUser();
     const company = await createCompany();
     await page.goto(`/companies/${company.id}`);
@@ -110,5 +111,18 @@ test.describe("view company", () => {
     await expect(page.getByText(company.inn)).toBeVisible();
     await expect(page.getByText(company.phone)).toBeVisible();
     await expect(page.getByText(company.type)).toBeVisible();
+  });
+
+  test.only("delete button visible", async ({
+    page,
+    runAsAdministrator,
+    createCompany,
+  }) => {
+    await runAsAdministrator();
+    const company = await createCompany();
+    await page.goto(`/companies/${company.id}`);
+
+    const deleteButton = page.getByRole("link", { name: /delete/i });
+    await expect(deleteButton).toBeVisible();
   });
 });
