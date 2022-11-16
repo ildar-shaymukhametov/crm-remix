@@ -1,25 +1,26 @@
 ﻿using CRM.Application.Common.Interfaces;
+using MediatR;
 using MediatR.Pipeline;
 using Microsoft.Extensions.Logging;
 
 namespace CRM.Application.Common.Behaviours;
 
-public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where TRequest : notnull
+public class PostRequestLoggingBehaviour<TRequest, TResponse> : IRequestPostProcessor<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     private readonly ILogger _logger;
     private readonly ICurrentUserService _currentUserService;
     private readonly IIdentityService _identityService;
 
-    public LoggingBehaviour(ILogger<TRequest> logger, ICurrentUserService currentUserService, IIdentityService identityService)
+    public PostRequestLoggingBehaviour(ILogger<TRequest> logger, ICurrentUserService currentUserService, IIdentityService identityService)
     {
         _logger = logger;
         _currentUserService = currentUserService;
         _identityService = identityService;
     }
 
-    public async Task Process(TRequest request, CancellationToken cancellationToken)
+    public async Task Process(TRequest request, TResponse response, CancellationToken cancellationToken)
     {
-        var requestName = typeof(TRequest).Name;
+        var responseName = typeof(TResponse).Name;
         var userId = _currentUserService.UserId ?? string.Empty;
         string userName = string.Empty;
 
@@ -28,6 +29,6 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
             userName = await _identityService.GetUserNameAsync(userId);
         }
 
-        _logger.LogInformation("CRM.App Request: {Name} {@UserId} {@UserName} {@Request}", requestName, userId, userName, request);
+        _logger.LogInformation("CRM.App Response: {Name} {@UserId} {@UserName} {@Request}", responseName, userId, userName, response);
     }
 }

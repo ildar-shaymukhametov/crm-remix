@@ -1,3 +1,4 @@
+using System.Text;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
@@ -9,6 +10,12 @@ namespace CRM.Application.Users.Commands.UpdateUserAuthorizationClaims;
 public record UpdateUserAuthorizationClaimsCommand : IRequest<Unit>
 {
     public string[] Claims { get; set; } = Array.Empty<string>();
+
+    protected virtual bool PrintMembers(StringBuilder stringBuilder)
+    {
+        stringBuilder.Append($"{nameof(Claims)} = [{string.Join(", ", Claims)}]");
+        return true;
+    }
 }
 
 public class UpdateUserAuthorizationClaimsCommandHandler : IRequestHandler<UpdateUserAuthorizationClaimsCommand>

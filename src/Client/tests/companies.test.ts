@@ -8,19 +8,53 @@ test.beforeEach(async ({ resetDb }) => {
 });
 
 test.describe.only("view companies", () => {
-  test("no permissions", async ({ page, runAsDefaultUser, createCompany }) => {
+  test("minimum permissions", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+  }) => {
     await runAsDefaultUser();
-    await page.goto("/companies");
-    await expect(page).toHaveTitle(/companies/i);
-
-    const link = page.getByRole("link", { name: /new company/i });
-    await expect(link).not.toBeVisible();
-
     await createCompany();
     await page.goto("/companies");
-    const companiesNotFound = page.getByText(/no companies found/i);
-    await expect(companiesNotFound).toBeVisible();
+
+    await expectMinimumUi(page);
   });
+
+  test("should see new company button", async ({ page, runAsDefaultUser }) => {
+    await runAsDefaultUser({ claims: ["company.create"] });
+    await page.goto("/companies");
+
+    await expectMinimumUi(page, { newCompanyButton: false });
+
+    const link = page.getByRole("link", { name: /new company/i });
+    await expect(link).toBeVisible();
+
+    await link.click();
+    await expect(page).toHaveURL(/companies\/new/i);
+  });
+
+  type IncludeOptions = {
+    newCompanyButton?: boolean;
+    noCompaniesFound?: boolean;
+  };
+  async function expectMinimumUi(
+    page: Page,
+    { newCompanyButton, noCompaniesFound }: IncludeOptions = {
+      newCompanyButton: true,
+      noCompaniesFound: true,
+    }
+  ) {
+    await expect(page).toHaveTitle(/companies/i);
+
+    if (newCompanyButton) {
+      const link = page.getByRole("link", { name: /new company/i });
+      await expect(link).not.toBeVisible();
+    }
+    if (noCompaniesFound) {
+      const companiesNotFound = page.getByText(/no companies found/i);
+      await expect(companiesNotFound).toBeVisible();
+    }
+  }
 });
 
 test.describe("new company", () => {

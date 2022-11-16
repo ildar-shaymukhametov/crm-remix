@@ -1,6 +1,5 @@
 using CRM.Application.IntegrationTests;
 using CRM.Application.Users.Queries.GetUserPermissions;
-using static CRM.Application.Constants;
 
 namespace Application.IntegrationTests.Companies.Users.Queries;
 
@@ -27,7 +26,7 @@ public class GetUserPermissionsQueryTests : BaseTest
 
         var actual = await _fixture.SendAsync(request);
 
-        Assert.Equal(expected, actual);
+        Assert.Equal(expected, actual.Permissions);
     }
 
     [Fact]
@@ -49,6 +48,6 @@ public class GetUserPermissionsQueryTests : BaseTest
 
         var actual = await _fixture.SendAsync(request);
 
-        Assert.Empty(actual);
+        Assert.Empty(actual.Permissions);
     }
 }

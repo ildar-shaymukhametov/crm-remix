@@ -34,8 +34,8 @@ export class OidcAuthenticator extends Authenticator<OidcProfile> {
           throw redirect("/login");
         }
       } else {
-        const data = await response.json();
-        user.permissions = data;
+        const { permissions } = await response.json();
+        user.permissions = permissions;
       }
 
       return user;

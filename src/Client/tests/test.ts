@@ -1,6 +1,7 @@
 import type { Page } from "@playwright/test";
 import { test as base } from "@playwright/test";
 import { parse } from "cookie";
+import invariant from "tiny-invariant";
 import { commitSession, getSession } from "~/utils/auth.server";
 import type { OidcProfile } from "~/utils/oidc-strategy";
 
@@ -8,26 +9,30 @@ let defaultUserAccessToken = "";
 let adminAccessToken = "";
 
 export const test = base.extend<{
-  runAsDefaultUser: () => Promise<OidcProfile>;
+  runAsDefaultUser: (options?: { claims: string[] }) => Promise<OidcProfile>;
   runAsAdministrator: () => Promise<OidcProfile>;
   resetDb: () => Promise<void>;
 }>({
   runAsDefaultUser: [
     async ({ page, baseURL }, use) => {
-      use(runAsDefaultUser(page, baseURL));
+      invariant(baseURL, "baseURL must be set");
+      use(({ claims } = { claims: [] }) =>
+        runAsDefaultUser(page, baseURL, claims)
+      );
     },
     { auto: true },
   ],
   runAsAdministrator: [
     async ({ page, baseURL }, use) => {
-      use(runAsAdministrator(page, baseURL));
+      invariant(baseURL, "baseURL must be set");
+      use(() => runAsAdministrator(page, baseURL));
     },
     { auto: true },
   ],
   resetDb: [
     async ({ page }, use) => {
       use(async () => {
-        let token = await getAdminAccessToken(page);
+        const token = await getAdminAccessToken(page);
         await page.request.post(`${process.env.API_URL}/test/resetdb`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -39,35 +44,62 @@ export const test = base.extend<{
   ],
 });
 
-function runAsDefaultUser(page: Page, baseURL: any) {
-  return login(page, baseURL, "tester@localhost", "Tester1!");
+async function addClaims(page: Page, user: OidcProfile, claims: string[]) {
+  const response = await page.request.post(
+    `${process.env.API_URL}/User/AuthorizationClaims`,
+    {
+      headers: {
+        Authorization: `Bearer ${user.extra.access_token}`,
+      },
+      data: { claims },
+    }
+  );
+
+  if (!response.ok()) {
+    throw new Error(`${response.status()}: ${response.statusText()}`);
+  }
 }
 
-function runAsAdministrator(page: Page, baseURL: any) {
+async function runAsDefaultUser(
+  page: Page,
+  baseURL: string,
+  claims: string[] = []
+) {
+  const user = await login(page, baseURL, "tester@localhost", "Tester1!");
+  if (claims.length > 0) {
+    await addClaims(page, user, claims);
+  }
+  return user;
+}
+
+function runAsAdministrator(page: Page, baseURL: string) {
   return login(page, baseURL, "administrator@localhost", "Administrator1!");
 }
 
-function login(page: Page, baseURL: any, username: string, password: string) {
-  return async () => {
-    const user = createUser();
-    user.extra.access_token = await getAccessToken(page, username, password);
+async function login(
+  page: Page,
+  baseURL: string,
+  username: string,
+  password: string
+) {
+  const user = createUser();
+  user.extra.access_token = await getAccessToken(page, username, password);
 
-    const session = await getSession();
-    session.set("user", user);
-    const cookieValue = await commitSession(session);
-    const { _session } = parse(cookieValue);
-    page.context().addCookies([
-      {
-        name: "_session",
-        sameSite: "Lax",
-        url: baseURL,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        value: _session,
-      },
-    ]);
-    return user;
-  };
+  const session = await getSession();
+  session.set("user", user);
+  const cookieValue = await commitSession(session);
+  const { _session } = parse(cookieValue);
+  page.context().addCookies([
+    {
+      name: "_session",
+      sameSite: "Lax",
+      url: baseURL,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      value: _session,
+    },
+  ]);
+  return user;
 }
 
 async function getAccessToken(page: Page, username: string, password: string) {
@@ -80,8 +112,8 @@ async function getAccessToken(page: Page, username: string, password: string) {
 
 export async function getDefaultUserAccessToken(
   page: Page,
-  username: string,
-  password: string
+  username = "tester@localhost",
+  password = "Tester1!"
 ) {
   if (defaultUserAccessToken) {
     return defaultUserAccessToken;

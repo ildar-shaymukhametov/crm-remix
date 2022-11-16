@@ -24,7 +24,6 @@ public class TestService : ITestService
                 "__EFMigrationsHistory",
                 "AspNetRoleClaims",
                 "AspNetRoles",
-                "AspNetUserClaims",
                 "AspNetUserLogins",
                 "AspNetUserRoles",
                 "AspNetUsers",
