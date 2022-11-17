@@ -60,14 +60,41 @@ test.describe.only("new company", () => {
     await expectMinimalUi(page, {
       forbidden: true,
       companyFields: false,
-      saveButton: false,
+      submitButton: false,
     });
+  });
+
+  test("should be able to create new company", async ({
+    page,
+    runAsDefaultUser,
+  }) => {
+    await runAsDefaultUser({ claims: ["company.create"] });
+    await page.goto("/companies/new");
+
+    await expectMinimalUi(page);
+
+    const company = buildCompany();
+    await page.getByLabel(/name/i).fill(company.name);
+    await page.getByLabel(/address/i).fill(company.address);
+    await page.getByLabel(/ceo/i).fill(company.ceo);
+    await page.getByLabel(/contacts/i).fill(company.contacts);
+    await page.getByLabel(/email/i).fill(company.email);
+    await page.getByLabel(/inn/i).fill(company.inn);
+    await page.getByLabel(/phone/i).fill(company.phone);
+    const type = page.getByLabel(/type/i);
+    await type.selectOption({ index: 1 });
+    company.type =
+      (await type.getByRole("option", { selected: true }).textContent()) ?? "";
+
+    const submit = page.getByRole("button", { name: /create new company/i });
+    await submit.click();
+    await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
   });
 
   type VisibilityOptions = {
     forbidden?: boolean;
     companyFields?: boolean;
-    saveButton?: boolean;
+    submitButton?: boolean;
   };
 
   async function expectMinimalUi(
@@ -75,7 +102,7 @@ test.describe.only("new company", () => {
     {
       forbidden = false,
       companyFields = true,
-      saveButton = true,
+      submitButton = true,
     }: VisibilityOptions = {}
   ) {
     await expect(page).toHaveTitle("New company");
@@ -84,30 +111,26 @@ test.describe.only("new company", () => {
     });
     await expectCompanyFieldsToBeVisible(page, companyFields);
 
-    const save = page.getByRole("button", { name: /save changes/i });
+    const save = page.getByRole("button", { name: /create new company/i });
     await expect(save).toBeVisible({
-      visible: saveButton,
+      visible: submitButton,
     });
   }
 
   async function expectCompanyFieldsToBeVisible(page: Page, visible: boolean) {
-    const name = page.getByLabel(/name/i);
-    const address = page.getByLabel(/address/i);
-    const ceo = page.getByLabel(/ceo/i);
-    const contacts = page.getByLabel(/contacts/i);
-    const email = page.getByLabel(/email/i);
-    const inn = page.getByLabel(/inn/i);
-    const phone = page.getByLabel(/phone/i);
-    const type = page.getByLabel(/type/i);
-
-    await expect(name).toBeVisible({ visible });
-    await expect(address).toBeVisible({ visible });
-    await expect(ceo).toBeVisible({ visible });
-    await expect(contacts).toBeVisible({ visible });
-    await expect(email).toBeVisible({ visible });
-    await expect(inn).toBeVisible({ visible });
-    await expect(phone).toBeVisible({ visible });
-    await expect(type).toBeVisible({ visible });
+    const fields = [
+      /name/i,
+      /address/i,
+      /ceo/i,
+      /contacts/i,
+      /email/i,
+      /inn/i,
+      /phone/i,
+      /type/i,
+    ];
+    for (const field of fields) {
+      await expect(page.getByLabel(field)).toBeVisible({ visible });
+    }
   }
 });
 
