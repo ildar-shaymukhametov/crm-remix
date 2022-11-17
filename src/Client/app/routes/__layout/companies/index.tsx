@@ -79,7 +79,6 @@ export function CatchBoundary() {
 
 export function meta() {
   return {
-    title: "Companies",
-    description: "Welcome to remix!",
+    title: "Companies"
   };
 }

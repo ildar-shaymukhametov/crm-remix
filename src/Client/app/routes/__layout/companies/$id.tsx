@@ -1,4 +1,4 @@
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
@@ -20,7 +20,9 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const user = await auth.requireUser(request, { permissions: ["ViewCompany"] });
+  const user = await auth.requireUser(request, {
+    permissions: ["ViewCompany"],
+  });
   if (!user.permissions.includes("ViewCompany")) {
     throw new Response(null, { status: 403 });
   }
@@ -38,7 +40,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     throw response;
   }
 
-  return json({ company: await response.json() });
+  const company = await response.json();
+  return json({ company });
 };
 
 export default function CompanyRoute() {
@@ -73,3 +76,15 @@ export function CatchBoundary() {
 
   throw new Error(`Unsupported thrown response status code: ${res.status}`);
 }
+
+export const meta: MetaFunction<LoaderData> = ({ data }) => {
+  if (!data?.company) {
+    return {
+      title: "View company",
+    };
+  }
+
+  return {
+    title: data.company.name,
+  };
+};

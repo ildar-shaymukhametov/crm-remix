@@ -7,7 +7,7 @@ test.beforeEach(async ({ resetDb }) => {
   await resetDb();
 });
 
-test.describe.only("view companies", () => {
+test.describe("view companies", () => {
   test("minimum permissions", async ({
     page,
     runAsDefaultUser,
@@ -37,6 +37,7 @@ test.describe.only("view companies", () => {
     newCompanyButton?: boolean;
     noCompaniesFound?: boolean;
   };
+
   async function expectMinimumUi(
     page: Page,
     { newCompanyButton, noCompaniesFound }: IncludeOptions = {
@@ -93,39 +94,81 @@ test.describe("new company", () => {
   });
 });
 
-test.describe("view company", () => {
-  test("default user", async ({ page, runAsDefaultUser, createCompany }) => {
+test.describe.only("view company", () => {
+  test("minimum permissions", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+  }) => {
     await runAsDefaultUser();
     const company = await createCompany();
     await page.goto(`/companies/${company.id}`);
 
-    const forbidden = page.getByText(/forbidden/i);
-    await expect(forbidden).toBeVisible();
+    await expectMinimumUi(page, company, { title: "minimal" });
   });
 
-  test("admin", async ({ page, runAsAdministrator, createCompany }) => {
-    await runAsAdministrator();
+  test("should see company fields", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+  }) => {
+    await runAsDefaultUser({ claims: ["company.view"] });
     const company = await createCompany();
     await page.goto(`/companies/${company.id}`);
 
-    const deleteButton = page.getByRole("link", { name: /delete/i });
-    await expect(deleteButton).toBeVisible();
-
-    const editButton = page.getByRole("link", { name: /edit/i });
-    await expect(editButton).toBeVisible();
-
+    await expectMinimumUi(page, company, { companyFields: false });
     await expectCompanyFieldsToBeVisible(page, company);
   });
 
-  async function expectCompanyFieldsToBeVisible(page: Page, company: Company) {
-    await expect(page.getByText(company.name)).toBeVisible();
-    await expect(page.getByText(company.address)).toBeVisible();
-    await expect(page.getByText(company.ceo)).toBeVisible();
-    await expect(page.getByText(company.contacts)).toBeVisible();
-    await expect(page.getByText(company.email)).toBeVisible();
-    await expect(page.getByText(company.inn)).toBeVisible();
-    await expect(page.getByText(company.phone)).toBeVisible();
-    await expect(page.getByText(company.type)).toBeVisible();
+  type IncludeOptions = {
+    forbidden?: boolean;
+    companyFields?: boolean;
+    title?: "minimal" | "full";
+  };
+
+  async function expectMinimumUi(
+    page: Page,
+    company: Company,
+    { forbidden, companyFields, title }: IncludeOptions = {
+      forbidden: true,
+      companyFields: true,
+      title: "full",
+    }
+  ) {
+    if (title === "minimal") {
+      await expect(page).toHaveTitle("View company");
+    } else {
+      await expect(page).toHaveTitle(company.name);
+    }
+
+    if (forbidden) {
+      const forbidden = page.getByText(/forbidden/i);
+      await expect(forbidden).toBeVisible();
+    }
+    if (companyFields) {
+      await expectCompanyFieldsToBeVisible(page, company, false);
+    }
+  }
+
+  async function expectCompanyFieldsToBeVisible(
+    page: Page,
+    company: Company,
+    visible = true
+  ) {
+    const fields = [
+      company.name,
+      company.address,
+      company.ceo,
+      company.contacts,
+      company.email,
+      company.inn,
+      company.phone,
+      company.type,
+    ];
+
+    for (const field of fields) {
+      await expect(page.getByText(field)).toBeVisible({ visible });
+    }
   }
 });
 
