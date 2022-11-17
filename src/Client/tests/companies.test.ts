@@ -8,53 +8,47 @@ test.beforeEach(async ({ resetDb }) => {
 });
 
 test.describe("view companies", () => {
-  test("minimum permissions", async ({
-    page,
-    runAsDefaultUser,
-    createCompany,
-  }) => {
+  test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
     await runAsDefaultUser();
     await createCompany();
     await page.goto("/companies");
 
-    await expectMinimumUi(page);
+    await expectMinimalUi(page);
   });
 
-  test("should see new company button", async ({ page, runAsDefaultUser }) => {
+  test("should see and click new company button", async ({
+    page,
+    runAsDefaultUser,
+  }) => {
     await runAsDefaultUser({ claims: ["company.create"] });
     await page.goto("/companies");
 
-    await expectMinimumUi(page, { newCompanyButton: false });
+    await expectMinimalUi(page, { newCompanyButton: true });
 
     const link = page.getByRole("link", { name: /new company/i });
-    await expect(link).toBeVisible();
-
     await link.click();
     await expect(page).toHaveURL(/companies\/new/i);
   });
 
-  type IncludeOptions = {
+  type VisibilityOptions = {
     newCompanyButton?: boolean;
     noCompaniesFound?: boolean;
   };
 
-  async function expectMinimumUi(
+  async function expectMinimalUi(
     page: Page,
-    { newCompanyButton, noCompaniesFound }: IncludeOptions = {
-      newCompanyButton: true,
-      noCompaniesFound: true,
-    }
+    {
+      newCompanyButton = false,
+      noCompaniesFound = true,
+    }: VisibilityOptions = {}
   ) {
     await expect(page).toHaveTitle(/companies/i);
 
-    if (newCompanyButton) {
-      const link = page.getByRole("link", { name: /new company/i });
-      await expect(link).not.toBeVisible();
-    }
-    if (noCompaniesFound) {
-      const companiesNotFound = page.getByText(/no companies found/i);
-      await expect(companiesNotFound).toBeVisible();
-    }
+    const link = page.getByRole("link", { name: /new company/i });
+    await expect(link).toBeVisible({ visible: newCompanyButton });
+
+    const companiesNotFound = page.getByText(/no companies found/i);
+    await expect(companiesNotFound).toBeVisible({ visible: noCompaniesFound });
   }
 });
 
@@ -94,7 +88,7 @@ test.describe("new company", () => {
   });
 });
 
-test.describe.only("view company", () => {
+test.describe("view company", () => {
   test("should see forbidden", async ({
     page,
     runAsDefaultUser,
@@ -104,23 +98,19 @@ test.describe.only("view company", () => {
     const company = await createCompany();
     await page.goto(`/companies/${company.id}`);
 
-    await expectUi(page, company, {
+    await expectMinimalUi(page, company, {
       title: "minimal",
       companyFields: false,
       forbidden: true,
     });
   });
 
-  test("should see company fields", async ({
-    page,
-    runAsDefaultUser,
-    createCompany,
-  }) => {
+  test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
     await runAsDefaultUser({ claims: ["company.view"] });
     const company = await createCompany();
     await page.goto(`/companies/${company.id}`);
 
-    await expectUi(page, company, {});
+    await expectMinimalUi(page, company);
   });
 
   test("should see edit company button", async ({
@@ -132,7 +122,7 @@ test.describe.only("view company", () => {
     const company = await createCompany();
     await page.goto(`/companies/${company.id}`);
 
-    await expectUi(page, company, { editButton: true });
+    await expectMinimalUi(page, company, { editButton: true });
   });
 
   type VisibilityOptions = {
@@ -142,7 +132,7 @@ test.describe.only("view company", () => {
     editButton?: boolean;
   };
 
-  async function expectUi(
+  async function expectMinimalUi(
     page: Page,
     company: Company,
     {
@@ -150,7 +140,7 @@ test.describe.only("view company", () => {
       companyFields = true,
       title = "full",
       editButton = false,
-    }: VisibilityOptions
+    }: VisibilityOptions = {}
   ) {
     if (title === "minimal") {
       await expect(page).toHaveTitle("View company");
