@@ -120,19 +120,36 @@ test.describe.only("view company", () => {
     await expectCompanyFieldsToBeVisible(page, company);
   });
 
+  test("should see edit company button", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+  }) => {
+    await runAsDefaultUser({ claims: ["company.view", "company.update"] });
+    const company = await createCompany();
+    await page.goto(`/companies/${company.id}`);
+
+    await expectMinimumUi(page, company, { editButton: false });
+
+    const button = page.getByRole("link", { name: /edit/i });
+    await expect(button).toBeVisible();
+  });
+
   type IncludeOptions = {
     forbidden?: boolean;
     companyFields?: boolean;
     title?: "minimal" | "full";
+    editButton?: boolean;
   };
 
   async function expectMinimumUi(
     page: Page,
     company: Company,
-    { forbidden, companyFields, title }: IncludeOptions = {
+    { forbidden, companyFields, title, editButton }: IncludeOptions = {
       forbidden: true,
       companyFields: true,
       title: "full",
+      editButton: true,
     }
   ) {
     if (title === "minimal") {
@@ -147,6 +164,10 @@ test.describe.only("view company", () => {
     }
     if (companyFields) {
       await expectCompanyFieldsToBeVisible(page, company, false);
+    }
+    if (editButton) {
+      const button = page.getByRole("link", { name: /edit/i });
+      await expect(button).not.toBeVisible();
     }
   }
 
