@@ -2,6 +2,7 @@ import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
+import type { OidcProfile } from "~/utils/oidc-strategy";
 
 type Company = {
   id: number;
@@ -17,11 +18,12 @@ type Company = {
 
 type LoaderData = {
   company: Company;
+  user: OidcProfile
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request, {
-    permissions: ["ViewCompany"],
+    permissions: ["ViewCompany", "UpdateCompany"],
   });
   if (!user.permissions.includes("ViewCompany")) {
     throw new Response(null, { status: 403 });
@@ -41,16 +43,18 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   }
 
   const company = await response.json();
-  return json({ company });
+  return json({ company, user });
 };
 
 export default function CompanyRoute() {
-  const { company } = useLoaderData<LoaderData>();
+  const { company, user } = useLoaderData<LoaderData>();
 
   return (
     <>
+      {user.permissions.includes("UpdateCompany") ? (
+        <Link to={`companies/${company.id}/edit`}>Edit</Link>
+      ) : null}
       <Link to={`companies/${company.id}/delete`}>Delete</Link>
-      <Link to={`companies/${company.id}/edit`}>Edit</Link>
       <div>
         {Object.entries(company).map(([key, name], i) => (
           <p key={i}>
