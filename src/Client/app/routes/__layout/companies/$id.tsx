@@ -52,10 +52,10 @@ export default function CompanyRoute() {
   return (
     <>
       {user.permissions.includes("UpdateCompany") ? (
-        <Link to={`companies/${company.id}/edit`}>Edit</Link>
+        <Link to="edit">Edit</Link>
       ) : null}
       {user.permissions.includes("DeleteCompany") ? (
-        <Link to={`companies/${company.id}/delete`}>Delete</Link>
+        <Link to="delete">Delete</Link>
       ) : null}
       <div>
         {Object.entries(company).map(([key, name], i) => (

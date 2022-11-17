@@ -16,7 +16,7 @@ test.describe("view companies", () => {
     await expectMinimalUi(page);
   });
 
-  test("should see and click new company button", async ({
+  test("should be able to click new company button", async ({
     page,
     runAsDefaultUser,
   }) => {
@@ -83,7 +83,6 @@ test.describe("new company", () => {
 
     const submit = page.getByRole("button", { name: /create new company/i });
     await submit.click();
-
     await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
   });
 });
@@ -113,7 +112,7 @@ test.describe.only("view company", () => {
     await expectMinimalUi(page, company);
   });
 
-  test("should see edit company button", async ({
+  test("should be able to click edit company button", async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -123,9 +122,13 @@ test.describe.only("view company", () => {
     await page.goto(`/companies/${company.id}`);
 
     await expectMinimalUi(page, company, { editButton: true });
+
+    const button = page.getByRole("link", { name: /edit/i });
+    await button.click();
+    await expect(page).toHaveURL(`companies/${company.id}/edit`);
   });
 
-  test("should see delete company button", async ({
+  test("should be able to click delete company button", async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -135,6 +138,10 @@ test.describe.only("view company", () => {
     await page.goto(`/companies/${company.id}`);
 
     await expectMinimalUi(page, company, { deleteButton: true });
+
+    const button = page.getByRole("link", { name: /delete/i });
+    await button.click();
+    await expect(page).toHaveURL(`companies/${company.id}/delete`);
   });
 
   type VisibilityOptions = {
