@@ -134,3 +134,9 @@ export function CatchBoundary() {
 
   throw new Error(`Unsupported thrown response status code: ${res.status}`);
 }
+
+export function meta() {
+  return {
+    title: "New company",
+  };
+}
