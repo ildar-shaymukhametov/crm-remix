@@ -17,6 +17,7 @@ public class GetUserPermissionsQueryTests : BaseTest
             "CreateCompany",
             "UpdateCompany",
             "ViewCompany",
+            "DeleteCompany",
         };
 
         var request = new GetUserPermissionsQuery
@@ -39,6 +40,7 @@ public class GetUserPermissionsQueryTests : BaseTest
             "CreateCompany",
             "UpdateCompany",
             "ViewCompany",
+            "DeleteCompany",
         };
 
         var request = new GetUserPermissionsQuery

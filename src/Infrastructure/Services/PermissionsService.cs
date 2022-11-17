@@ -41,6 +41,10 @@ public class PermissionsService : IPermissionsService
         {
             result.Add(Policies.ViewCompany);
         }
+        if (permissions.Contains(Policies.DeleteCompany) && _authorizationService.CanDeleteCompany(principal))
+        {
+            result.Add(Policies.DeleteCompany);
+        }
 
         return result.ToArray();
     }

@@ -18,12 +18,12 @@ type Company = {
 
 type LoaderData = {
   company: Company;
-  user: OidcProfile
+  user: OidcProfile;
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request, {
-    permissions: ["ViewCompany", "UpdateCompany"],
+    permissions: ["ViewCompany", "UpdateCompany", "DeleteCompany"],
   });
   if (!user.permissions.includes("ViewCompany")) {
     throw new Response(null, { status: 403 });
@@ -54,7 +54,9 @@ export default function CompanyRoute() {
       {user.permissions.includes("UpdateCompany") ? (
         <Link to={`companies/${company.id}/edit`}>Edit</Link>
       ) : null}
-      <Link to={`companies/${company.id}/delete`}>Delete</Link>
+      {user.permissions.includes("DeleteCompany") ? (
+        <Link to={`companies/${company.id}/delete`}>Delete</Link>
+      ) : null}
       <div>
         {Object.entries(company).map(([key, name], i) => (
           <p key={i}>
