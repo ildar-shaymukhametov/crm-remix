@@ -1,4 +1,4 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useActionData, useCatch, useLoaderData } from "@remix-run/react";
@@ -22,7 +22,7 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const user = await auth.requireUser(request, { permissions: ["UpdateCompany"] });
+  const user = await auth.requireUser(request, { permissions: ["UpdateCompany", "ViewCompany"] });
   if (!user.permissions.includes("UpdateCompany")) {
     throw new Response(null, { status: 403 });
   }
@@ -188,3 +188,15 @@ export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error.message);
   return <p>{error.message}</p>;
 }
+
+export const meta: MetaFunction<LoaderData> = ({ data }) => {
+  if (!data?.company) {
+    return {
+      title: "Edit company",
+    };
+  }
+
+  return {
+    title: data.company.name,
+  };
+};

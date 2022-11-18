@@ -52,8 +52,8 @@ test.describe("view companies", () => {
   }
 });
 
-test.describe.only("new company", () => {
-  test("should see forbidden", async ({ page, runAsDefaultUser }) => {
+test.describe("new company", () => {
+  test("should be forbidden", async ({ page, runAsDefaultUser }) => {
     await runAsDefaultUser();
     await page.goto("/companies/new");
 
@@ -135,7 +135,7 @@ test.describe.only("new company", () => {
 });
 
 test.describe("view company", () => {
-  test("should see forbidden", async ({
+  test("should be forbidden", async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -250,23 +250,34 @@ test.describe("view company", () => {
   }
 });
 
-test.describe("edit company", () => {
-  test("default user", async ({ page, runAsDefaultUser, createCompany }) => {
+test.describe.only("edit company", () => {
+  test("should be forbidden", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+  }) => {
     await runAsDefaultUser();
     const company = await createCompany();
     await page.goto(`/companies/${company.id}/edit`);
 
-    const forbidden = page.getByText(/forbidden/i);
-    await expect(forbidden).toBeVisible();
+    await expectMinimalUi(page, company, {
+      forbidden: true,
+      companyFields: false,
+      submitButton: false,
+      title: "minimal",
+    });
   });
 
-  test("admin", async ({ page, runAsAdministrator, createCompany }) => {
-    await runAsAdministrator();
+  test("should be able to edit company", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+  }) => {
+    await runAsDefaultUser({ claims: ["company.update", "company.view"] });
     const company = await createCompany();
     await page.goto(`/companies/${company.id}/edit`);
 
-    const forbidden = page.getByText(/forbidden/i);
-    await expect(forbidden).not.toBeVisible();
+    await expectMinimalUi(page, company);
 
     const name = page.getByLabel(/name/i);
     const address = page.getByLabel(/address/i);
@@ -298,9 +309,57 @@ test.describe("edit company", () => {
     await type.selectOption(newCompany.type);
 
     const submit = page.getByRole("button", { name: /save changes/i });
-    await expect(submit).toBeVisible();
     await submit.click();
 
-    await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+    await expect(page).toHaveURL(`/companies/${company.id}`);
   });
+
+  type VisibilityOptions = {
+    forbidden?: boolean;
+    companyFields?: boolean;
+    submitButton?: boolean;
+    title?: "minimal" | "full";
+  };
+
+  async function expectMinimalUi(
+    page: Page,
+    company: Company,
+    {
+      forbidden = false,
+      companyFields = true,
+      submitButton = true,
+      title = "full",
+    }: VisibilityOptions = {}
+  ) {
+    if (title === "minimal") {
+      await expect(page).toHaveTitle("Edit company");
+    } else {
+      await expect(page).toHaveTitle(company.name);
+    }
+    await expect(page.getByText(/forbidden/i)).toBeVisible({
+      visible: forbidden,
+    });
+    await expectCompanyFieldsToBeVisible(page, companyFields);
+
+    const save = page.getByRole("button", { name: /save changes/i });
+    await expect(save).toBeVisible({
+      visible: submitButton,
+    });
+  }
+
+  async function expectCompanyFieldsToBeVisible(page: Page, visible: boolean) {
+    const fields = [
+      /name/i,
+      /address/i,
+      /ceo/i,
+      /contacts/i,
+      /email/i,
+      /inn/i,
+      /phone/i,
+      /type/i,
+    ];
+    for (const field of fields) {
+      await expect(page.getByLabel(field)).toBeVisible({ visible });
+    }
+  }
 });
