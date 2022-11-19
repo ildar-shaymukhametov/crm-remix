@@ -1,13 +1,45 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Link, useCatch, useParams } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const user = await auth.requireUser(request);
-  if (!user.permissions.includes("company.delete")) {
-    throw new Response(null, { status: 403, statusText: "Forbidden" });
+type Company = {
+  id: number;
+  name: string;
+};
+
+type LoaderData = {
+  company: Company;
+};
+
+export const loader: LoaderFunction = async ({ request, params }) => {
+  const user = await auth.requireUser(request, {
+    permissions: ["DeleteCompany", "ViewCompany"],
+  });
+  if (!user.permissions.includes("DeleteCompany")) {
+    throw new Response(null, { status: 403 });
   }
+
+  const response = await fetch(
+    `${process.env.API_URL}/companies/${params.id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${user.extra?.access_token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw response;
+  }
+
+  const data = await response.json();
+  return json({ company: data });
 
   return user;
 };
@@ -42,7 +74,7 @@ export default function DeleteCompany() {
           Cancel
         </Link>
         <form method="post">
-          <button type="submit">Delete</button>
+          <button type="submit">Delete company</button>
         </form>
       </div>
     </>
@@ -63,3 +95,15 @@ export function CatchBoundary() {
 
   throw new Error(`Unsupported thrown response status code: ${res.status}`);
 }
+
+export const meta: MetaFunction<LoaderData> = ({ data }) => {
+  if (!data?.company) {
+    return {
+      title: "Delete company",
+    };
+  }
+
+  return {
+    title: `${data.company.name} • Delete`,
+  };
+};

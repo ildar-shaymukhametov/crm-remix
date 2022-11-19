@@ -359,3 +359,80 @@ test.describe("edit company", () => {
     }
   }
 });
+
+test.describe("delete company", () => {
+  test("should be forbidden", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+  }) => {
+    await runAsDefaultUser();
+    const company = await createCompany();
+    await page.goto(`/companies/${company.id}/delete`);
+
+    await expectMinimalUi(page, company, {
+      cancelButton: false,
+      forbidden: true,
+      okButton: false,
+      title: "minimal",
+    });
+  });
+
+  test("should be able to delete company", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+  }) => {
+    await runAsDefaultUser({ claims: ["company.delete", "company.view"] });
+    const company = await createCompany();
+    await page.goto(`/companies/${company.id}/delete`);
+
+    await expectMinimalUi(page, company);
+
+    const deleteButton = page.getByRole("button", {
+      name: /delete company/i,
+    });
+    await deleteButton.click();
+
+    await expect(page).toHaveURL("/companies");
+  });
+
+  type VisibilityOptions = {
+    forbidden?: boolean;
+    okButton?: boolean;
+    cancelButton?: boolean;
+    title?: "minimal" | "full";
+  };
+
+  async function expectMinimalUi(
+    page: Page,
+    company: Company,
+    {
+      forbidden = false,
+      okButton = true,
+      cancelButton = true,
+      title = "full",
+    }: VisibilityOptions = {}
+  ) {
+    if (title === "minimal") {
+      await expect(page).toHaveTitle("Delete company");
+    } else {
+      await expect(page).toHaveTitle(`${company.name} • Delete`);
+    }
+    await expect(page.getByText(/forbidden/i)).toBeVisible({
+      visible: forbidden,
+    });
+
+    const deleteButtonElem = page.getByRole("button", {
+      name: /delete company/i,
+    });
+    await expect(deleteButtonElem).toBeVisible({
+      visible: okButton,
+    });
+
+    const cancelButtonElem = page.getByRole("link", { name: /cancel/i });
+    await expect(cancelButtonElem).toBeVisible({
+      visible: cancelButton,
+    });
+  }
+});
