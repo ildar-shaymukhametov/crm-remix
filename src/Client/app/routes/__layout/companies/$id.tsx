@@ -60,7 +60,7 @@ export default function CompanyRoute() {
       <div>
         {Object.entries(company).map(([key, name], i) => (
           <p key={i}>
-            {key}: {name}
+            <span aria-label={key}>{key}</span>: {name}
           </p>
         ))}
       </div>

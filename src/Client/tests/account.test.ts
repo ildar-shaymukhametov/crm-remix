@@ -1,6 +1,10 @@
 import { expect } from "@playwright/test";
 import { test } from "./test";
 
+test.beforeEach(async ({ resetDb }) => {
+  await resetDb();
+});
+
 test.describe("account", () => {
   test.describe("access", () => {
     test("should be able to save changes", async ({

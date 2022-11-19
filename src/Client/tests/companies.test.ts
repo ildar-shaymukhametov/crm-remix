@@ -3,6 +3,10 @@ import { expect } from "@playwright/test";
 import type { Company } from "~/routes/__layout/companies/index";
 import { buildCompany, test } from "./companies-test";
 
+test.beforeEach(async ({ resetDb }) => {
+  await resetDb();
+});
+
 test.describe("view companies", () => {
   test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
     await runAsDefaultUser();
@@ -131,6 +135,14 @@ test.describe("new company", () => {
 });
 
 test.describe("view company", () => {
+  test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
+    await runAsDefaultUser({ claims: ["company.view"] });
+    const company = await createCompany();
+    await page.goto(`/companies/${company.id}`);
+
+    await expectMinimalUi(page, company);
+  });
+
   test("should be forbidden", async ({
     page,
     runAsDefaultUser,
@@ -146,14 +158,6 @@ test.describe("view company", () => {
       forbidden: true,
       notFound: false,
     });
-  });
-
-  test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
-    await runAsDefaultUser({ claims: ["company.view"] });
-    const company = await createCompany();
-    await page.goto(`/companies/${company.id}`);
-
-    await expectMinimalUi(page, company);
   });
 
   test("should be able to click edit company button", async ({
@@ -247,20 +251,22 @@ test.describe("view company", () => {
     });
   }
 
-  async function expectCompanyFieldsToBeVisible(page: Page, visible = true) {
+  async function expectCompanyFieldsToBeVisible(page: Page, visible: boolean) {
     const fields = [
-      /name/i,
-      /address/i,
-      /ceo/i,
-      /contacts/i,
-      /email/i,
-      /inn/i,
-      /phone/i,
-      /type/i,
+      "name",
+      "address",
+      "ceo",
+      "contacts",
+      "email",
+      "inn",
+      "phone",
+      "type",
     ];
 
     for (const field of fields) {
-      await expect(page.getByLabel(field)).toBeVisible({ visible });
+      await expect(page.locator(`[aria-label="${field}"]`)).toBeVisible({
+        visible,
+      });
     }
   }
 
