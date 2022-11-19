@@ -144,6 +144,7 @@ test.describe("view company", () => {
       title: "minimal",
       companyFields: false,
       forbidden: true,
+      notFound: false,
     });
   });
 
@@ -187,44 +188,83 @@ test.describe("view company", () => {
     await expect(page).toHaveURL(`companies/${company.id}/delete`);
   });
 
+  test("should see not found", async ({ page, runAsDefaultUser }) => {
+    await runAsDefaultUser({ claims: ["company.view"] });
+    await page.goto(`/companies/1`);
+
+    await expectMinimalUi(page, undefined, {
+      title: "minimal",
+      companyFields: false,
+      forbidden: false,
+      notFound: true,
+    });
+  });
+
   type VisibilityOptions = {
     forbidden?: boolean;
     companyFields?: boolean;
     title?: "minimal" | "full";
     editButton?: boolean;
     deleteButton?: boolean;
+    notFound?: boolean;
   };
 
   async function expectMinimalUi(
     page: Page,
-    company: Company,
+    company?: Company,
     {
       forbidden = false,
       companyFields = true,
       title = "full",
       editButton = false,
       deleteButton = false,
+      notFound = false,
     }: VisibilityOptions = {}
   ) {
     if (title === "minimal") {
       await expect(page).toHaveTitle("View company");
     } else {
-      await expect(page).toHaveTitle(company.name);
+      if (company) {
+        await expect(page).toHaveTitle(company.name);
+      }
     }
 
     await expect(page.getByText(/forbidden/i)).toBeVisible({
       visible: forbidden,
     });
-    await expectCompanyFieldsToBeVisible(page, company, companyFields);
+    await expectCompanyFieldsToBeVisible(page, companyFields);
+    if (company) {
+      await expectCompanyFieldsToValues(page, company, companyFields);
+    }
     await expect(page.getByRole("link", { name: /edit/i })).toBeVisible({
       visible: editButton,
     });
     await expect(page.getByRole("link", { name: /delete/i })).toBeVisible({
       visible: deleteButton,
     });
+    await expect(page.getByText(/company not found/i)).toBeVisible({
+      visible: notFound,
+    });
   }
 
-  async function expectCompanyFieldsToBeVisible(
+  async function expectCompanyFieldsToBeVisible(page: Page, visible = true) {
+    const fields = [
+      /name/i,
+      /address/i,
+      /ceo/i,
+      /contacts/i,
+      /email/i,
+      /inn/i,
+      /phone/i,
+      /type/i,
+    ];
+
+    for (const field of fields) {
+      await expect(page.getByLabel(field)).toBeVisible({ visible });
+    }
+  }
+
+  async function expectCompanyFieldsToValues(
     page: Page,
     company: Company,
     visible = true
