@@ -44,6 +44,10 @@ export const test = base.extend<{
   ],
 });
 
+test.beforeEach(async ({ resetDb }) => {
+  await resetDb();
+});
+
 async function addClaims(page: Page, user: OidcProfile, claims: string[]) {
   const response = await page.request.post(
     `${process.env.API_URL}/User/AuthorizationClaims`,

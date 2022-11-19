@@ -3,10 +3,6 @@ import { expect } from "@playwright/test";
 import type { Company } from "~/routes/__layout/companies/index";
 import { buildCompany, test } from "./companies-test";
 
-test.beforeEach(async ({ resetDb }) => {
-  await resetDb();
-});
-
 test.describe("view companies", () => {
   test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
     await runAsDefaultUser();
@@ -250,7 +246,7 @@ test.describe("view company", () => {
   }
 });
 
-test.describe.only("edit company", () => {
+test.describe("edit company", () => {
   test("should be forbidden", async ({
     page,
     runAsDefaultUser,

@@ -27,10 +27,10 @@ namespace CRM.Infrastructure.Persistence.Migrations
                 columns: new[] { "Id", "Name", "Value" },
                 values: new object[,]
                 {
-                    { 1, "Компания. Добавление", "company.create" },
-                    { 2, "Компания. Редактирование", "company.update" },
-                    { 3, "Компания. Удаление", "company.delete" },
-                    { 4, "Компания. Просмотр", "company.view" }
+                    { 1, "Company. Create", "company.create" },
+                    { 2, "Company. Update", "company.update" },
+                    { 3, "Company. Delete", "company.delete" },
+                    { 4, "Company. View", "company.view" }
                 });
         }
 

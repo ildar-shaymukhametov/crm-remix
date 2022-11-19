@@ -31,7 +31,8 @@ public class TestService : ITestService
                 "DeviceCodes",
                 "Keys",
                 "PersistedGrants",
-                "ApplicationUsers"
+                "ApplicationUsers",
+                "UserClaimTypes"
             }
         });
     }

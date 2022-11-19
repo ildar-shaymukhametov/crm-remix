@@ -1,11 +1,7 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useCatch, useLoaderData, useSubmit } from "@remix-run/react";
+import { useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
-import Select from "react-select";
-import { useRef } from "react";
-import invariant from "tiny-invariant";
-import StateManagedSelect from "react-select";
 
 type ClaimType = {
   id: number;
@@ -15,7 +11,7 @@ type ClaimType = {
 
 type LoaderData = {
   claimTypes: ClaimType[];
-  claims: string[]
+  claims: string[];
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -24,6 +20,7 @@ export const action: ActionFunction = async ({ request }) => {
   const data = {
     claims: Object.values(Object.fromEntries(formData)),
   };
+
   const response = await fetch(
     `${process.env.API_URL}/User/AuthorizationClaims`,
     {
@@ -60,15 +57,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   );
 
   if (!response.ok) {
-    if (response.status === 404) {
-      throw new Response("Not Found", { status: 404 });
-    }
-
-    if (response.status === 401) {
-      throw new Response("Unauthorized", { status: 401 });
-    }
-
-    return json(null, { status: response.status });
+    throw response;
   }
 
   const claimTypes = await response.json();
@@ -77,38 +66,25 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function AccessRoute() {
-  const submit = useSubmit();
-  const selectElem = useRef<any>(null);
   const { claimTypes, claims } = useLoaderData<LoaderData>();
-  const options = claimTypes.map((x) => ({
-    value: x.value,
-    label: x.name,
-  }));
-  const selectedOptions = options.filter(x => claims.includes(x.value));
-  
-  const onButtonClick = () => {
-    const formData = new FormData();
-    const items = selectElem.current.getValue() as [{ value: string }];
-    items.forEach((item, index) => {
-      formData.append(index.toString(), item.value);
-    });
-
-    submit(formData, { method: "post" });
-  };
 
   return (
-    <>
-      <Select
-        ref={selectElem}
-        instanceId="user-claims"
-        isMulti
-        options={options}
-        defaultValue={selectedOptions}
-      />
-      <button type="button" onClick={onButtonClick}>
-        Save
-      </button>
-    </>
+    <form method="post">
+      {claimTypes.map((x, i) => (
+        <p key={x.id}>
+          <label>
+            {x.name}
+            <input
+              type="checkbox"
+              name={`claims[${i}]`}
+              value={x.value}
+              defaultChecked={claims.includes(x.value)}
+            />
+          </label>
+        </p>
+      ))}
+      <button type="submit">Save</button>
+    </form>
   );
 }
 
@@ -116,6 +92,9 @@ export function CatchBoundary() {
   const res = useCatch();
   if (res.status === 401) {
     return <p>Unauthorized</p>;
+  }
+  if (res.status === 403) {
+    return <p>Forbidden</p>;
   }
   if (res.status === 404) {
     return <p>Company not found</p>;
