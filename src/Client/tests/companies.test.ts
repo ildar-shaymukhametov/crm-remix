@@ -406,7 +406,7 @@ test.describe("edit company", () => {
   }
 });
 
-test.describe("delete company", () => {
+test.describe.only("delete company", () => {
   test("should be forbidden", async ({
     page,
     runAsDefaultUser,
@@ -424,7 +424,7 @@ test.describe("delete company", () => {
     });
   });
 
-  test("should be able to delete company", async ({
+  test("should be able to click delete company", async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -441,6 +441,23 @@ test.describe("delete company", () => {
     await deleteButton.click();
 
     await expect(page).toHaveURL("/companies");
+  });
+
+  test("should be able to cancel", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+  }) => {
+    await runAsDefaultUser({ claims: ["company.delete", "company.view"] });
+    const company = await createCompany();
+    await page.goto(`/companies/${company.id}/delete`);
+
+    await expectMinimalUi(page, company);
+
+    const cancel = page.getByRole("link", { name: /cancel/i });
+    await cancel.click();
+
+    await expect(page).toHaveURL(`/companies/${company.id}`);
   });
 
   type VisibilityOptions = {
