@@ -42,8 +42,6 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
-  data.id = params.id;
-
   await updateCompany(params.id, data, user.extra?.access_token);
 
   return redirect(`/companies/${params.id}`);

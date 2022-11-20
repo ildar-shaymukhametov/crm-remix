@@ -39,8 +39,9 @@ public class CompaniesController : ApiControllerBase
 
     [HttpPut]
     [Route("{id}")]
-    public async Task<ActionResult> Update(UpdateCompanyCommand command)
+    public async Task<ActionResult> Update(int id, UpdateCompanyCommand command)
     {
+        command.Id = id;
         return Ok(await Mediator.Send(command));
     }
 }
