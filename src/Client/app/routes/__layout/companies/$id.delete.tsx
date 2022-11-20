@@ -6,12 +6,10 @@ import type {
 import { json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Link, useCatch, useParams } from "@remix-run/react";
+import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
-
-type Company = {
-  id: number;
-  name: string;
-};
+import type { Company} from "~/utils/companies.server";
+import { getCompany } from "~/utils/companies.server";
 
 type LoaderData = {
   company: Company;
@@ -25,23 +23,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     throw new Response(null, { status: 403 });
   }
 
-  const response = await fetch(
-    `${process.env.API_URL}/companies/${params.id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${user.extra?.access_token}`
-      }
-    }
-  );
-
-  if (!response.ok) {
-    throw response;
-  }
-
-  const data = await response.json();
-  return json({ company: data });
-
-  return user;
+  invariant(params.id, "Company id must be set");
+  const company = await getCompany(params.id, user.extra?.access_token);
+  return json({ company });
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
