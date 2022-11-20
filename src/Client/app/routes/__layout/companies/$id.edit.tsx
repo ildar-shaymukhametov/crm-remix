@@ -9,6 +9,7 @@ import { useActionData, useCatch, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
 import type { Company} from "~/utils/companies.server";
+import { updateCompany } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
 
 type LoaderData = {
@@ -37,35 +38,13 @@ type ActionData = {
 
 export const action: ActionFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request);
-  invariant(params?.id, "Missing id parameter");
+  invariant(params.id, "Missing id parameter");
 
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   data.id = params.id;
 
-  const response = await fetch(
-    `${process.env.API_URL}/companies/${params.id}`,
-    {
-      method: "put",
-      body: JSON.stringify(data),
-      headers: {
-        Authorization: `Bearer ${user.extra?.access_token}`,
-        "Content-Type": "application/json"
-      }
-    }
-  );
-
-  if (!response.ok) {
-    if (response.status !== 400) {
-      throw response;
-    }
-
-    const responseData = await response.json();
-    return json(
-      { fields: data, errors: responseData.errors },
-      { status: response.status }
-    );
-  }
+  await updateCompany(params.id, data, user.extra?.access_token);
 
   return redirect(`/companies/${params.id}`);
 };

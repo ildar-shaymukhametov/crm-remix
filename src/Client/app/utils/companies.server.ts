@@ -64,3 +64,29 @@ export async function deleteCompany(
     throw response;
   }
 }
+
+export async function updateCompany(
+  id: string,
+  data: { [key: string]: any },
+  accessToken: string
+): Promise<{ errors: string[][] } | undefined> {
+  const response = await fetch(`${process.env.API_URL}/companies/${id}`, {
+    method: "put",
+    body: JSON.stringify(data),
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (response.ok) {
+    return;
+  }
+
+  if (response.status !== 400) {
+    throw response;
+  }
+
+  const { errors } = await response.json();
+  return errors;
+}
