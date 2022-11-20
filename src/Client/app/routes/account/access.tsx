@@ -1,6 +1,7 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useCatch, useLoaderData } from "@remix-run/react";
+import { updateAuthorizationClaims } from "~/utils/account.server";
 import { auth } from "~/utils/auth.server";
 
 type ClaimType = {
@@ -18,26 +19,10 @@ export const action: ActionFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
   const formData = await request.formData();
   const data = {
-    claims: Object.values(Object.fromEntries(formData))
+    claims: Object.values(Object.fromEntries(formData)) as string[]
   };
 
-  const response = await fetch(
-    `${process.env.API_URL}/User/AuthorizationClaims`,
-    {
-      method: "post",
-      body: JSON.stringify(data),
-      headers: {
-        Authorization: `Bearer ${user.extra?.access_token}`,
-        "Content-Type": "application/json"
-      }
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(`${response.statusText} (${response.status})`);
-  }
-
-  return null;
+  await updateAuthorizationClaims(data, user.extra?.access_token);
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
