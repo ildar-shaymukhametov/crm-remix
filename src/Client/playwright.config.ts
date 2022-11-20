@@ -1,11 +1,12 @@
 import type { PlaywrightTestConfig } from "@playwright/test";
 import { devices } from "@playwright/test";
+import { config as dotenvConfig } from "dotenv";
 
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-require("dotenv").config();
+dotenvConfig();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
