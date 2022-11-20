@@ -2,7 +2,7 @@ import type { Page } from "@playwright/test";
 import { test as base } from "@playwright/test";
 import { parse } from "cookie";
 import invariant from "tiny-invariant";
-import { commitSession, getSession } from "~/utils/auth.server";
+import { commitSession, getSession } from "~/utils/session.server";
 import type { OidcProfile } from "~/utils/oidc-strategy";
 
 let defaultUserAccessToken = "";

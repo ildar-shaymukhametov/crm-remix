@@ -2,7 +2,8 @@ import { redirect } from "@remix-run/node";
 import type { Session } from "@remix-run/server-runtime";
 import { Authenticator } from "remix-auth";
 import invariant from "tiny-invariant";
-import { auth, getSession, commitSession } from "./auth.server";
+import { getSession, commitSession } from "~/utils/session.server";
+import { auth } from "~/utils/auth.server";
 import type { OidcProfile } from "./oidc-strategy";
 
 export class OidcAuthenticator extends Authenticator<OidcProfile> {
