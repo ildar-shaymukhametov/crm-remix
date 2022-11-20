@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CRM.App.Controllers;
+namespace CRM.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]

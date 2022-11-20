@@ -5,7 +5,7 @@ using CRM.Application.Companies.Queries.GetCompanies;
 using CRM.Application.Companies.Queries.GetCompany;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CRM.App.Controllers;
+namespace CRM.Api.Controllers;
 
 public class CompaniesController : ApiControllerBase
 {

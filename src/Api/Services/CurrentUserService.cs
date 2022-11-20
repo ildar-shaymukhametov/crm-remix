@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using CRM.Application.Common.Interfaces;
 
-namespace CRM.App.Services;
+namespace CRM.Api.Services;
 
 public class CurrentUserService : ICurrentUserService
 {

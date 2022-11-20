@@ -3,7 +3,7 @@ using CRM.Application.Users.Queries.GetUserAuthorizationClaims;
 using CRM.Application.Users.Queries.GetUserPermissions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CRM.App.Controllers;
+namespace CRM.Api.Controllers;
 
 public class UserController : ApiControllerBase
 {

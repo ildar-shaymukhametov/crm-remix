@@ -15,7 +15,7 @@ public class CompanyCreatedEventHandler : INotificationHandler<CompanyCreatedEve
 
     public Task Handle(CompanyCreatedEvent notification, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("CRM.App Domain Event: {DomainEvent}", notification.GetType().Name);
+        _logger.LogInformation("CRM.Api Domain Event: {DomainEvent}", notification.GetType().Name);
 
         return Task.CompletedTask;
     }

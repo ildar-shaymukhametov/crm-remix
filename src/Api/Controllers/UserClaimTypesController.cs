@@ -1,7 +1,7 @@
 using CRM.Application.Companies.Queries.GetUserClaimsTypes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CRM.App.Controllers;
+namespace CRM.Api.Controllers;
 
 public class UserClaimTypesController : ApiControllerBase
 {
