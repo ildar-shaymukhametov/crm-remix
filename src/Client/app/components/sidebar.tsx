@@ -6,23 +6,6 @@ export default function Sidebar() {
       <nav className="fixed w-80 border-r p-4 h-full">
         <ul>
           <li>
-            <a
-              target="_blank"
-              href="https://remix.run/tutorials/jokes"
-              rel="noreferrer"
-            >
-              Deep Dive Jokes App Tutorial
-            </a>
-          </li>
-          <li>
-            <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-              Remix Docs
-            </a>
-          </li>
-          <li>
-            <Link to="private">Private</Link>
-          </li>
-          <li>
             <Link to="companies">Companies</Link>
           </li>
         </ul>

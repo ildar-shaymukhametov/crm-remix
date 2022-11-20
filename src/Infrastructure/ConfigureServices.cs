@@ -43,7 +43,6 @@ public static class ConfigureServices
             })
             .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
             {
-                options.ApiScopes.AddRange(Config.ApiScopes.ToArray());
                 options.Clients.AddRange(Config.Clients.ToArray());
             });
 
