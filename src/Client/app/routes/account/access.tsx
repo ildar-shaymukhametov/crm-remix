@@ -18,7 +18,7 @@ export const action: ActionFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
   const formData = await request.formData();
   const data = {
-    claims: Object.values(Object.fromEntries(formData)),
+    claims: Object.values(Object.fromEntries(formData))
   };
 
   const response = await fetch(
@@ -28,8 +28,8 @@ export const action: ActionFunction = async ({ request }) => {
       body: JSON.stringify(data),
       headers: {
         Authorization: `Bearer ${user.extra?.access_token}`,
-        "Content-Type": "application/json",
-      },
+        "Content-Type": "application/json"
+      }
     }
   );
 
@@ -44,15 +44,15 @@ export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
   const response = await fetch(`${process.env.API_URL}/UserClaimTypes`, {
     headers: {
-      Authorization: `Bearer ${user.extra?.access_token}`,
-    },
+      Authorization: `Bearer ${user.extra?.access_token}`
+    }
   });
   const userClaimsResponse = await fetch(
     `${process.env.API_URL}/User/AuthorizationClaims`,
     {
       headers: {
-        Authorization: `Bearer ${user.extra?.access_token}`,
-      },
+        Authorization: `Bearer ${user.extra?.access_token}`
+      }
     }
   );
 

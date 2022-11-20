@@ -20,14 +20,14 @@ export const test = base.extend<{
         runAsDefaultUser(page, baseURL, claims)
       );
     },
-    { auto: true },
+    { auto: true }
   ],
   runAsAdministrator: [
     async ({ page, baseURL }, use) => {
       invariant(baseURL, "baseURL must be set");
       use(() => runAsAdministrator(page, baseURL));
     },
-    { auto: true },
+    { auto: true }
   ],
   resetDb: [
     async ({ page }, use) => {
@@ -35,13 +35,13 @@ export const test = base.extend<{
         const token = await getAdminAccessToken(page);
         await page.request.post(`${process.env.API_URL}/test/resetdb`, {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         });
       });
     },
-    { auto: true },
-  ],
+    { auto: true }
+  ]
 });
 
 async function addClaims(page: Page, user: OidcProfile, claims: string[]) {
@@ -49,9 +49,9 @@ async function addClaims(page: Page, user: OidcProfile, claims: string[]) {
     `${process.env.API_URL}/User/AuthorizationClaims`,
     {
       headers: {
-        Authorization: `Bearer ${user.extra.access_token}`,
+        Authorization: `Bearer ${user.extra.access_token}`
       },
-      data: { claims },
+      data: { claims }
     }
   );
 
@@ -96,8 +96,8 @@ async function login(
       url: baseURL,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      value: _session,
-    },
+      value: _session
+    }
   ]);
   return user;
 }
@@ -148,13 +148,13 @@ async function requestAccessToken(
         grant_type: "password",
         scope: "openid profile CRM.ApiAPI",
         username,
-        password,
+        password
       },
       headers: {
         Authorization: `Basic ${Buffer.from(
           `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`
-        ).toString("base64")}`,
-      },
+        ).toString("base64")}`
+      }
     }
   );
 
@@ -170,7 +170,7 @@ function createUser(): OidcProfile {
     name: {
       familyName: "",
       givenName: "",
-      middleName: "",
+      middleName: ""
     },
     emails: [],
     photos: [],
@@ -180,7 +180,7 @@ function createUser(): OidcProfile {
       id_token: "",
       scope: "",
       token_type: "Bearer",
-      access_token: "",
+      access_token: ""
     },
     _json: {
       sub: "",
@@ -202,10 +202,10 @@ function createUser(): OidcProfile {
       phone_number: "",
       phone_number_verified: false,
       address: {
-        country: "",
+        country: ""
       },
-      updated_at: "",
+      updated_at: ""
     },
-    provider: "",
+    provider: ""
   };
 }

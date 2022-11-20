@@ -18,7 +18,7 @@ test.describe("view companies", () => {
 
   test("should be able to click new company button", async ({
     page,
-    runAsDefaultUser,
+    runAsDefaultUser
   }) => {
     await runAsDefaultUser({ claims: ["company.create"] });
     await page.goto("/companies");
@@ -39,7 +39,7 @@ test.describe("view companies", () => {
     page: Page,
     {
       newCompanyButton = false,
-      noCompaniesFound = true,
+      noCompaniesFound = true
     }: VisibilityOptions = {}
   ) {
     await expect(page).toHaveTitle(/companies/i);
@@ -60,13 +60,13 @@ test.describe("new company", () => {
     await expectMinimalUi(page, {
       forbidden: true,
       companyFields: false,
-      submitButton: false,
+      submitButton: false
     });
   });
 
   test("should be able to create new company", async ({
     page,
-    runAsDefaultUser,
+    runAsDefaultUser
   }) => {
     await runAsDefaultUser({ claims: ["company.create"] });
     await page.goto("/companies/new");
@@ -102,18 +102,18 @@ test.describe("new company", () => {
     {
       forbidden = false,
       companyFields = true,
-      submitButton = true,
+      submitButton = true
     }: VisibilityOptions = {}
   ) {
     await expect(page).toHaveTitle("New company");
     await expect(page.getByText(/forbidden/i)).toBeVisible({
-      visible: forbidden,
+      visible: forbidden
     });
     await expectCompanyFieldsToBeVisible(page, companyFields);
 
     const save = page.getByRole("button", { name: /create new company/i });
     await expect(save).toBeVisible({
-      visible: submitButton,
+      visible: submitButton
     });
   }
 
@@ -126,7 +126,7 @@ test.describe("new company", () => {
       /email/i,
       /inn/i,
       /phone/i,
-      /type/i,
+      /type/i
     ];
     for (const field of fields) {
       await expect(page.getByLabel(field)).toBeVisible({ visible });
@@ -146,7 +146,7 @@ test.describe("view company", () => {
   test("should be forbidden", async ({
     page,
     runAsDefaultUser,
-    createCompany,
+    createCompany
   }) => {
     await runAsDefaultUser();
     const company = await createCompany();
@@ -156,14 +156,14 @@ test.describe("view company", () => {
       title: "minimal",
       companyFields: false,
       forbidden: true,
-      notFound: false,
+      notFound: false
     });
   });
 
   test("should be able to click edit company button", async ({
     page,
     runAsDefaultUser,
-    createCompany,
+    createCompany
   }) => {
     await runAsDefaultUser({ claims: ["company.view", "company.update"] });
     const company = await createCompany();
@@ -179,7 +179,7 @@ test.describe("view company", () => {
   test("should be able to click delete company button", async ({
     page,
     runAsDefaultUser,
-    createCompany,
+    createCompany
   }) => {
     await runAsDefaultUser({ claims: ["company.view", "company.delete"] });
     const company = await createCompany();
@@ -200,7 +200,7 @@ test.describe("view company", () => {
       title: "minimal",
       companyFields: false,
       forbidden: false,
-      notFound: true,
+      notFound: true
     });
   });
 
@@ -222,7 +222,7 @@ test.describe("view company", () => {
       title = "full",
       editButton = false,
       deleteButton = false,
-      notFound = false,
+      notFound = false
     }: VisibilityOptions = {}
   ) {
     if (title === "minimal") {
@@ -234,20 +234,20 @@ test.describe("view company", () => {
     }
 
     await expect(page.getByText(/forbidden/i)).toBeVisible({
-      visible: forbidden,
+      visible: forbidden
     });
     await expectCompanyFieldsToBeVisible(page, companyFields);
     if (company) {
       await expectCompanyFieldsToValues(page, company, companyFields);
     }
     await expect(page.getByRole("link", { name: /edit/i })).toBeVisible({
-      visible: editButton,
+      visible: editButton
     });
     await expect(page.getByRole("link", { name: /delete/i })).toBeVisible({
-      visible: deleteButton,
+      visible: deleteButton
     });
     await expect(page.getByText(/company not found/i)).toBeVisible({
-      visible: notFound,
+      visible: notFound
     });
   }
 
@@ -260,12 +260,12 @@ test.describe("view company", () => {
       "email",
       "inn",
       "phone",
-      "type",
+      "type"
     ];
 
     for (const field of fields) {
       await expect(page.locator(`[aria-label="${field}"]`)).toBeVisible({
-        visible,
+        visible
       });
     }
   }
@@ -283,7 +283,7 @@ test.describe("view company", () => {
       company.email,
       company.inn,
       company.phone,
-      company.type,
+      company.type
     ];
 
     for (const field of fields) {
@@ -296,7 +296,7 @@ test.describe("edit company", () => {
   test("should be forbidden", async ({
     page,
     runAsDefaultUser,
-    createCompany,
+    createCompany
   }) => {
     await runAsDefaultUser();
     const company = await createCompany();
@@ -306,14 +306,14 @@ test.describe("edit company", () => {
       forbidden: true,
       companyFields: false,
       submitButton: false,
-      title: "minimal",
+      title: "minimal"
     });
   });
 
   test("should be able to edit company", async ({
     page,
     runAsDefaultUser,
-    createCompany,
+    createCompany
   }) => {
     await runAsDefaultUser({ claims: ["company.update", "company.view"] });
     const company = await createCompany();
@@ -364,7 +364,7 @@ test.describe("edit company", () => {
       companyFields: false,
       submitButton: false,
       title: "minimal",
-      notFound: true,
+      notFound: true
     });
   });
 
@@ -384,7 +384,7 @@ test.describe("edit company", () => {
       companyFields = true,
       submitButton = true,
       title = "full",
-      notFound = false,
+      notFound = false
     }: VisibilityOptions = {}
   ) {
     if (title === "minimal") {
@@ -395,17 +395,17 @@ test.describe("edit company", () => {
       }
     }
     await expect(page.getByText(/forbidden/i)).toBeVisible({
-      visible: forbidden,
+      visible: forbidden
     });
     await expectCompanyFieldsToBeVisible(page, companyFields);
 
     const save = page.getByRole("button", { name: /save changes/i });
     await expect(save).toBeVisible({
-      visible: submitButton,
+      visible: submitButton
     });
 
     await expect(page.getByText(/company not found/i)).toBeVisible({
-      visible: notFound,
+      visible: notFound
     });
   }
 
@@ -418,7 +418,7 @@ test.describe("edit company", () => {
       /email/i,
       /inn/i,
       /phone/i,
-      /type/i,
+      /type/i
     ];
     for (const field of fields) {
       await expect(page.getByLabel(field)).toBeVisible({ visible });
@@ -430,7 +430,7 @@ test.describe("delete company", () => {
   test("should be forbidden", async ({
     page,
     runAsDefaultUser,
-    createCompany,
+    createCompany
   }) => {
     await runAsDefaultUser();
     const company = await createCompany();
@@ -440,14 +440,14 @@ test.describe("delete company", () => {
       cancelButton: false,
       forbidden: true,
       okButton: false,
-      title: "minimal",
+      title: "minimal"
     });
   });
 
   test("should be able to click delete company", async ({
     page,
     runAsDefaultUser,
-    createCompany,
+    createCompany
   }) => {
     await runAsDefaultUser({ claims: ["company.delete", "company.view"] });
     const company = await createCompany();
@@ -456,7 +456,7 @@ test.describe("delete company", () => {
     await expectMinimalUi(page, company);
 
     const deleteButton = page.getByRole("button", {
-      name: /delete company/i,
+      name: /delete company/i
     });
     await deleteButton.click();
 
@@ -466,7 +466,7 @@ test.describe("delete company", () => {
   test("should be able to cancel", async ({
     page,
     runAsDefaultUser,
-    createCompany,
+    createCompany
   }) => {
     await runAsDefaultUser({ claims: ["company.delete", "company.view"] });
     const company = await createCompany();
@@ -488,7 +488,7 @@ test.describe("delete company", () => {
       cancelButton: false,
       okButton: false,
       title: "minimal",
-      notFound: true,
+      notFound: true
     });
   });
 
@@ -508,7 +508,7 @@ test.describe("delete company", () => {
       okButton = true,
       cancelButton = true,
       title = "full",
-      notFound = false,
+      notFound = false
     }: VisibilityOptions = {}
   ) {
     if (title === "minimal") {
@@ -519,23 +519,23 @@ test.describe("delete company", () => {
       }
     }
     await expect(page.getByText(/forbidden/i)).toBeVisible({
-      visible: forbidden,
+      visible: forbidden
     });
 
     const deleteButtonElem = page.getByRole("button", {
-      name: /delete company/i,
+      name: /delete company/i
     });
     await expect(deleteButtonElem).toBeVisible({
-      visible: okButton,
+      visible: okButton
     });
 
     const cancelButtonElem = page.getByRole("link", { name: /cancel/i });
     await expect(cancelButtonElem).toBeVisible({
-      visible: cancelButton,
+      visible: cancelButton
     });
 
     await expect(page.getByText(/company not found/i)).toBeVisible({
-      visible: notFound,
+      visible: notFound
     });
   }
 });

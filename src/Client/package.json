@@ -12,7 +12,8 @@
     "test:e2e:dev": "playwright test",
     "test:e2e:dev:debug": "playwright test --debug",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "prettier:fix": "npx prettier --write ."
   },
   "dependencies": {
     "@remix-run/node": "^1.7.4",

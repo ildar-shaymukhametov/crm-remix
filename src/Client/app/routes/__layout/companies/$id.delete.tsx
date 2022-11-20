@@ -1,7 +1,7 @@
 import type {
   ActionFunction,
   LoaderFunction,
-  MetaFunction,
+  MetaFunction
 } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
@@ -19,7 +19,7 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request, {
-    permissions: ["DeleteCompany", "ViewCompany"],
+    permissions: ["DeleteCompany", "ViewCompany"]
   });
   if (!user.permissions.includes("DeleteCompany")) {
     throw new Response(null, { status: 403 });
@@ -29,8 +29,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     `${process.env.API_URL}/companies/${params.id}`,
     {
       headers: {
-        Authorization: `Bearer ${user.extra?.access_token}`,
-      },
+        Authorization: `Bearer ${user.extra?.access_token}`
+      }
     }
   );
 
@@ -51,8 +51,8 @@ export const action: ActionFunction = async ({ request, params }) => {
     {
       method: "delete",
       headers: {
-        Authorization: `Bearer ${user.extra.access_token}`,
-      },
+        Authorization: `Bearer ${user.extra.access_token}`
+      }
     }
   );
 
@@ -99,11 +99,11 @@ export function CatchBoundary() {
 export const meta: MetaFunction<LoaderData> = ({ data }) => {
   if (!data?.company) {
     return {
-      title: "Delete company",
+      title: "Delete company"
     };
   }
 
   return {
-    title: `${data.company.name} • Delete`,
+    title: `${data.company.name} • Delete`
   };
 };

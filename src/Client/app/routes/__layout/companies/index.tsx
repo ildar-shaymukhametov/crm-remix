@@ -23,12 +23,12 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request, {
-    permissions: ["CreateCompany"],
+    permissions: ["CreateCompany"]
   });
   const response = await fetch(`${process.env.API_URL}/companies`, {
     headers: {
-      Authorization: `Bearer ${user.extra?.access_token}`,
-    },
+      Authorization: `Bearer ${user.extra?.access_token}`
+    }
   });
 
   if (!response.ok) {

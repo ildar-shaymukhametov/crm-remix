@@ -1,7 +1,7 @@
 import type {
   LinksFunction,
   LoaderFunction,
-  MetaFunction,
+  MetaFunction
 } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -11,7 +11,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useCatch,
+  useCatch
 } from "@remix-run/react";
 import Navbar from "./components/navbar";
 import styles from "./styles/tailwind.css";
@@ -24,13 +24,13 @@ export const links: LinksFunction = () => {
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
   title: "New Remix App",
-  viewport: "width=device-width,initial-scale=1",
+  viewport: "width=device-width,initial-scale=1"
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
   return json({
-    user: user,
+    user: user
   });
 };
 

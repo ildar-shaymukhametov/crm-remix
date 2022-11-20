@@ -5,7 +5,7 @@ import { auth } from "~/utils/auth.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request, {
-    permissions: ["CreateCompany"],
+    permissions: ["CreateCompany"]
   });
   if (!user.permissions.includes("CreateCompany")) {
     throw new Response(null, { status: 403 });
@@ -30,8 +30,8 @@ export const action: ActionFunction = async ({ request }) => {
     body: JSON.stringify(data),
     headers: {
       Authorization: `Bearer ${user.extra?.access_token}`,
-      "Content-Type": "application/json",
-    },
+      "Content-Type": "application/json"
+    }
   });
 
   const responseData = await response.json();
@@ -137,6 +137,6 @@ export function CatchBoundary() {
 
 export function meta() {
   return {
-    title: "New company",
+    title: "New company"
   };
 }
