@@ -4,6 +4,7 @@ import { parse } from "cookie";
 import invariant from "tiny-invariant";
 import { commitSession, getSession } from "~/utils/session.server";
 import type { OidcProfile } from "~/utils/oidc-strategy";
+import { updateAuthorizationClaims } from "~/utils/account.server";
 
 let defaultUserAccessToken = "";
 let adminAccessToken = "";
@@ -44,22 +45,6 @@ export const test = base.extend<{
   ]
 });
 
-async function addClaims(page: Page, user: OidcProfile, claims: string[]) {
-  const response = await page.request.post(
-    `${process.env.API_URL}/User/AuthorizationClaims`,
-    {
-      headers: {
-        Authorization: `Bearer ${user.extra.access_token}`
-      },
-      data: { claims }
-    }
-  );
-
-  if (!response.ok()) {
-    throw new Error(`${response.status()}: ${response.statusText()}`);
-  }
-}
-
 async function runAsDefaultUser(
   page: Page,
   baseURL: string,
@@ -67,7 +52,7 @@ async function runAsDefaultUser(
 ) {
   const user = await login(page, baseURL, "tester@localhost", "Tester1!");
   if (claims.length > 0) {
-    await addClaims(page, user, claims);
+    await updateAuthorizationClaims({ claims }, user.extra?.access_token);
   }
   return user;
 }
