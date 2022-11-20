@@ -1,16 +1,9 @@
 using Duende.IdentityServer.Models;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CRM.Infrastructure.Identity;
 
 public static class Config
 {
-    public static IEnumerable<ApiScope> ApiScopes => new ApiScope[]
-    {
-        new ApiScope("company.read"),
-        new ApiScope("weather.read"),
-    };
-
     public static IEnumerable<IdentityResource> IdentityResources => new IdentityResource[]
     {
         new IdentityResources.OpenId(),
@@ -28,8 +21,6 @@ public static class Config
             {
                 "openid",
                 "profile",
-                "company.read",
-                "weather.read",
                 "CRM.ApiAPI"
             },
             ClientName = "Remix App",
