@@ -11,9 +11,7 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
     private readonly ICurrentUserService _currentUserService;
     private readonly IIdentityService _identityService;
 
-    public AuthorizationBehaviour(
-        ICurrentUserService currentUserService,
-        IIdentityService identityService)
+    public AuthorizationBehaviour(ICurrentUserService currentUserService, IIdentityService identityService)
     {
         _currentUserService = currentUserService;
         _identityService = identityService;
@@ -65,7 +63,6 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
                 foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
                 {
                     var authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, policy);
-
                     if (!authorized)
                     {
                         throw new ForbiddenAccessException();

@@ -23,7 +23,7 @@ public static class Config
         {
             ClientId = "remix",
             ClientSecrets = { new Secret("secret".Sha256()) },
-            AllowedGrantTypes = { GrantType.AuthorizationCode, GrantType.ClientCredentials },
+            AllowedGrantTypes = { GrantType.AuthorizationCode, GrantType.ResourceOwnerPassword },
             AllowedScopes =
             {
                 "openid",

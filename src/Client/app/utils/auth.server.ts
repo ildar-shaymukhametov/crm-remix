@@ -1,5 +1,5 @@
-import type { Session } from "@remix-run/node";
 import { createCookieSessionStorage } from "@remix-run/node";
+import invariant from "tiny-invariant";
 import { OidcAuthenticator } from "./oidc-authenticator";
 import { OidcStrategy } from "./oidc-strategy";
 
@@ -8,9 +8,10 @@ if (!sessionSecret) {
   throw new Error("SESSION_SECRET must be set");
 }
 
+// todo: extract to session.server.ts
 const storage = createCookieSessionStorage({
   cookie: {
-    name: "crm.session",
+    name: "_session",
     secure: process.env.NODE_ENV === "production",
     secrets: [sessionSecret],
     sameSite: "lax",
@@ -20,27 +21,25 @@ const storage = createCookieSessionStorage({
   },
 });
 
+invariant(process.env.CLIENT_ID, "CLIENT_ID must be set");
+invariant(process.env.CLIENT_SECRET, "CLIENT_SECRET must be set");
+invariant(process.env.CALLBACK_URL, "CALLBACK_URL must be set");
 export const auth = new OidcAuthenticator(storage);
 auth.use(
   new OidcStrategy(
     {
-      clientID: process.env.CLIENT_ID!,
-      clientSecret: process.env.CLIENT_SECRET!,
-      callbackURL: process.env.CALLBACK_URL!,
+      clientID: process.env.CLIENT_ID,
+      clientSecret: process.env.CLIENT_SECRET,
+      callbackURL: process.env.CALLBACK_URL,
       scope: "openid profile CRM.ApiAPI",
       authority: "https://localhost:5001",
       nonce: "nonce",
     },
     async ({ accessToken, refreshToken, extraParams, profile }) => {
-      return { ...profile, extra: { ...extraParams, accessToken } };
+      extraParams.access_token = accessToken;
+      return { ...profile, extra: { ...extraParams } };
     }
   )
 );
 
-export function getSession(request: Request) {
-  return storage.getSession(request.headers.get("Cookie"));
-}
-
-export function commitSession(session: Session) {
-  return storage.commitSession(session);
-}
+export const { getSession, commitSession, destroySession } = storage;

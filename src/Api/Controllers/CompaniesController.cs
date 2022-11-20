@@ -3,12 +3,10 @@ using CRM.Application.Companies.Commands.DeleteCompany;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Application.Companies.Queries.GetCompanies;
 using CRM.Application.Companies.Queries.GetCompany;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM.App.Controllers;
 
-[Authorize]
 public class CompaniesController : ApiControllerBase
 {
     [HttpGet]

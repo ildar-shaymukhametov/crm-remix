@@ -1,3 +1,4 @@
+using CRM.Application.Common.Interfaces;
 using CRM.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
@@ -14,7 +15,7 @@ builder.Services.Configure<JwtBearerOptions>("IdentityServerJwtBearer", o => o.A
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
 {
     app.UseMigrationsEndPoint();
     app.UseSwagger();
@@ -29,6 +30,13 @@ if (app.Environment.IsDevelopment())
         var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
         await initialiser.InitialiseAsync();
         await initialiser.SeedAsync();
+
+        if (app.Environment.IsEnvironment("Testing"))
+        {
+            await initialiser.SeedTestUsersAsync();
+            var testService = app.Services.GetRequiredService<ITestService>();
+            await testService.CreateCheckpointAsync();
+        }
     }
 }
 else

@@ -19,6 +19,7 @@ export interface OidcExtraParams extends Record<string, string | number> {
   scope: string;
   expires_in: 86_400;
   token_type: "Bearer";
+  access_token: string
 }
 
 export interface OidcProfile extends OAuth2Profile {
@@ -31,6 +32,7 @@ export interface OidcProfile extends OAuth2Profile {
   };
   emails: Array<{ value: string }>;
   photos: Array<{ value: string }>;
+  permissions: string[];
   extra: OidcExtraParams;
   _json: {
     sub: string;
@@ -107,13 +109,13 @@ export class OidcStrategy<User> extends OAuth2Strategy<
     accessToken: string,
     params: OidcExtraParams
   ): Promise<OidcProfile> {
-    let response = await fetch(this.userInfoURL, {
+    const response = await fetch(this.userInfoURL, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    let data: OidcProfile["_json"] = await response.json();
+    const data: OidcProfile["_json"] = await response.json();
 
-    let profile: OidcProfile = {
+    const profile: OidcProfile = {
       provider: "oidc",
       displayName: data.name,
       id: data.sub,
@@ -125,6 +127,7 @@ export class OidcStrategy<User> extends OAuth2Strategy<
       emails: [{ value: data.email }],
       photos: [{ value: data.picture }],
       extra: params,
+      permissions: [],
       _json: data,
     };
 

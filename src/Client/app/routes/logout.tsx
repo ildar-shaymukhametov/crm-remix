@@ -3,8 +3,8 @@ import { redirect } from "@remix-run/node";
 import { auth } from "~/utils/auth.server";
 
 export const action: ActionFunction = async ({ request }) => {
-  let user = await auth.requireUser(request);
-  return await auth.logout(request, user);
+  const user = await auth.requireUser(request);
+  return await auth.logout(request, { user, redirectTo: "/" });
 };
 
 export const loader: LoaderFunction = async () => {

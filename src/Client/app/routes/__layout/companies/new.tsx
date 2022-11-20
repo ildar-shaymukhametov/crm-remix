@@ -1,36 +1,42 @@
-import type { ActionFunction, LoaderFunction} from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
+import { useActionData, useCatch } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  return await auth.requireUser(request);
+  const user = await auth.requireUser(request, {
+    permissions: ["CreateCompany"],
+  });
+  if (!user.permissions.includes("CreateCompany")) {
+    throw new Response(null, { status: 403 });
+  }
+
+  return user;
 };
 
 type ActionData = {
   errors?: {
     [index: string]: string[];
   };
-  fields?: any;
+  fields?: { [index: string]: string };
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  const user = await auth.requireUser(request);
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
-  const user = await auth.requireUser(request);
   const response = await fetch(`${process.env.API_URL}/companies`, {
     method: "post",
     body: JSON.stringify(data),
     headers: {
-      Authorization: `Bearer ${user.extra?.accessToken}`,
+      Authorization: `Bearer ${user.extra?.access_token}`,
       "Content-Type": "application/json",
     },
   });
 
   const responseData = await response.json();
   if (!response.ok) {
-    return json({ fields: data, errors: responseData.errors }, { status: 400 });
+    throw response;
   }
 
   return redirect(responseData.id);
@@ -57,10 +63,10 @@ export default function NewCompanyRoute() {
           Type:
           <select name="type" defaultValue={data?.fields?.type}>
             <option value=""></option>
-            <option value="1">ООО</option>
-            <option value="2">АО</option>
-            <option value="3">ПАО</option>
-            <option value="4">ИП</option>
+            <option value="ООО">ООО</option>
+            <option value="АО">АО</option>
+            <option value="ПАО">ПАО</option>
+            <option value="ИП">ИП</option>
           </select>
         </label>
       </div>
@@ -109,7 +115,28 @@ export default function NewCompanyRoute() {
           <input name="contacts" defaultValue={data?.fields?.contacts} />
         </label>
       </div>
-      <button type="submit">Create</button>
+      <button type="submit">Create new company</button>
     </form>
   );
+}
+
+export function CatchBoundary() {
+  const res = useCatch();
+  if (res.status === 401) {
+    return <p>Unauthorized</p>;
+  }
+  if (res.status === 403) {
+    return <p>Forbidden</p>;
+  }
+  if (res.status === 404) {
+    return <p>Company not found</p>;
+  }
+
+  throw new Error(`Unsupported thrown response status code: ${res.status}`);
+}
+
+export function meta() {
+  return {
+    title: "New company",
+  };
 }

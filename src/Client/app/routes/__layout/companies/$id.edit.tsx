@@ -1,4 +1,4 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useActionData, useCatch, useLoaderData } from "@remix-run/react";
@@ -22,26 +22,22 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const user = await auth.requireUser(request);
+  const user = await auth.requireUser(request, { permissions: ["UpdateCompany", "ViewCompany"] });
+  if (!user.permissions.includes("UpdateCompany")) {
+    throw new Response(null, { status: 403 });
+  }
+
   const response = await fetch(
     `${process.env.API_URL}/companies/${params.id}`,
     {
       headers: {
-        Authorization: `Bearer ${user.extra?.accessToken}`,
+        Authorization: `Bearer ${user.extra?.access_token}`,
       },
     }
   );
 
   if (!response.ok) {
-    if (response.status === 404) {
-      throw new Response("Not Found", { status: 404 });
-    }
-
-    if (response.status === 401) {
-      throw new Response("Unauthorized", { status: 401 });
-    }
-
-    return json(null, { status: response.status });
+    throw response;
   }
 
   const data = await response.json();
@@ -52,43 +48,39 @@ type ActionData = {
   errors?: {
     [index: string]: string[];
   };
-  fields?: any;
+  fields?: { [index: string]: string | number };
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
+  const user = await auth.requireUser(request);
   invariant(params?.id, "Missing id parameter");
 
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   data.id = params.id;
 
-  const user = await auth.requireUser(request);
   const response = await fetch(
     `${process.env.API_URL}/companies/${params.id}`,
     {
       method: "put",
       body: JSON.stringify(data),
       headers: {
-        Authorization: `Bearer ${user.extra?.accessToken}`,
+        Authorization: `Bearer ${user.extra?.access_token}`,
         "Content-Type": "application/json",
       },
     }
   );
 
   if (!response.ok) {
-    if (response.status === 404) {
-      throw new Error("Company not found");
+    if (response.status !== 400) {
+      throw response;
     }
 
-    if (response.status === 400) {
-      const responseData = await response.json();
-      return json(
-        { fields: data, errors: responseData.errors },
-        { status: response.status }
-      );
-    }
-
-    throw new Error(`${response.statusText} (${response.status})`);
+    const responseData = await response.json();
+    return json(
+      { fields: data, errors: responseData.errors },
+      { status: response.status }
+    );
   }
 
   return redirect(`/companies/${params.id}`);
@@ -97,7 +89,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 export default function EditCompanyRoute() {
   const actionData = useActionData<ActionData>();
   const loaderData = useLoaderData<LoaderData>();
-  let data: ActionData = {
+  const data: ActionData = {
     fields: { ...loaderData.company, ...actionData?.fields },
     errors: actionData?.errors,
   };
@@ -111,26 +103,26 @@ export default function EditCompanyRoute() {
             name="name"
             required
             maxLength={200}
-            defaultValue={data?.fields.name}
+            defaultValue={data?.fields?.name}
           />
         </label>
       </div>
       <div>
         <label>
           Type:
-          <select name="type" defaultValue={data?.fields.type}>
+          <select name="type" defaultValue={data?.fields?.type}>
             <option value=""></option>
-            <option value="1">ООО</option>
-            <option value="2">АО</option>
-            <option value="3">ПАО</option>
-            <option value="4">ИП</option>
+            <option value="ООО">ООО</option>
+            <option value="АО">АО</option>
+            <option value="ПАО">ПАО</option>
+            <option value="ИП">ИП</option>
           </select>
         </label>
       </div>
       <div>
         <label>
           Inn:
-          <input name="inn" defaultValue={data?.fields.inn} />
+          <input name="inn" defaultValue={data?.fields?.inn} />
         </label>
         {data?.errors?.Inn
           ? data.errors.Inn.map((error, i) => <p key={i}>{error}</p>)
@@ -139,13 +131,13 @@ export default function EditCompanyRoute() {
       <div>
         <label>
           Address:
-          <input name="address" defaultValue={data?.fields.address} />
+          <input name="address" defaultValue={data?.fields?.address} />
         </label>
       </div>
       <div>
         <label>
           CEO:
-          <input name="ceo" defaultValue={data?.fields.ceo} />
+          <input name="ceo" defaultValue={data?.fields?.ceo} />
         </label>
         {data?.errors?.Ceo
           ? data.errors.Ceo.map((error, i) => <p key={i}>{error}</p>)
@@ -154,13 +146,13 @@ export default function EditCompanyRoute() {
       <div>
         <label>
           Phone:
-          <input name="phone" defaultValue={data?.fields.phone} />
+          <input name="phone" defaultValue={data?.fields?.phone} />
         </label>
       </div>
       <div>
         <label>
           Email:
-          <input name="email" defaultValue={data?.fields.email} />
+          <input name="email" defaultValue={data?.fields?.email} />
         </label>
         {data?.errors?.Email
           ? data.errors.Email.map((error, i) => <p key={i}>{error}</p>)
@@ -169,10 +161,10 @@ export default function EditCompanyRoute() {
       <div>
         <label>
           Contacts:
-          <input name="contacts" defaultValue={data?.fields.contacts} />
+          <input name="contacts" defaultValue={data?.fields?.contacts} />
         </label>
       </div>
-      <button type="submit">Save</button>
+      <button type="submit">Save changes</button>
     </form>
   );
 }
@@ -182,6 +174,9 @@ export function CatchBoundary() {
   if (res.status === 401) {
     return <p>Unauthorized</p>;
   }
+  if (res.status === 403) {
+    return <p>Forbidden</p>;
+  }
   if (res.status === 404) {
     return <p>Company not found</p>;
   }
@@ -190,6 +185,18 @@ export function CatchBoundary() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  console.log(error.message);
+  console.error(error.message);
   return <p>{error.message}</p>;
 }
+
+export const meta: MetaFunction<LoaderData> = ({ data }) => {
+  if (!data?.company) {
+    return {
+      title: "Edit company",
+    };
+  }
+
+  return {
+    title: data.company.name,
+  };
+};

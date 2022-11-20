@@ -8,13 +8,14 @@
     "dev": "run-p dev:*",
     "dev:remix": "remix dev",
     "dev:css": "tailwindcss -w -i ./styles/tailwind.css -o ./app/styles/tailwind.css",
-    "start": "remix-serve build"
+    "start": "remix-serve build",
+    "test:e2e:dev": "playwright test",
+    "test:e2e:dev:debug": "playwright test --debug"
   },
   "dependencies": {
-    "@remix-run/node": "^1.7.2",
-    "@remix-run/react": "^1.7.2",
-    "@remix-run/serve": "^1.7.2",
-    "npm-run-all": "^4.1.5",
+    "@remix-run/node": "^1.7.4",
+    "@remix-run/react": "^1.7.4",
+    "@remix-run/serve": "^1.7.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "remix-auth": "^3.3.0",
@@ -22,15 +23,22 @@
     "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {
-    "@remix-run/dev": "^1.7.2",
-    "@remix-run/eslint-config": "^1.7.2",
+    "@faker-js/faker": "^7.6.0",
+    "@playwright/test": "^1.27.1",
+    "@remix-run/dev": "^1.7.4",
+    "@remix-run/eslint-config": "^1.7.4",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
+    "binode": "^1.0.5",
+    "cookie": "^0.5.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.3",
     "eslint": "^8.23.1",
+    "npm-run-all": "^4.1.5",
     "tailwindcss": "^3.2.1",
     "typescript": "^4.7.4"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   }
 }
