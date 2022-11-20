@@ -292,7 +292,7 @@ test.describe("view company", () => {
   }
 });
 
-test.describe.only("edit company", () => {
+test.describe("edit company", () => {
   test("should be forbidden", async ({
     page,
     runAsDefaultUser,
@@ -384,7 +384,7 @@ test.describe.only("edit company", () => {
       companyFields = true,
       submitButton = true,
       title = "full",
-      notFound = false
+      notFound = false,
     }: VisibilityOptions = {}
   ) {
     if (title === "minimal") {
@@ -426,7 +426,7 @@ test.describe.only("edit company", () => {
   }
 });
 
-test.describe("delete company", () => {
+test.describe.only("delete company", () => {
   test("should be forbidden", async ({
     page,
     runAsDefaultUser,
@@ -480,27 +480,43 @@ test.describe("delete company", () => {
     await expect(page).toHaveURL(`/companies/${company.id}`);
   });
 
+  test("should see not found", async ({ page, runAsDefaultUser }) => {
+    await runAsDefaultUser({ claims: ["company.delete", "company.view"] });
+    await page.goto(`/companies/1/delete`);
+
+    await expectMinimalUi(page, undefined, {
+      cancelButton: false,
+      okButton: false,
+      title: "minimal",
+      notFound: true,
+    });
+  });
+
   type VisibilityOptions = {
     forbidden?: boolean;
     okButton?: boolean;
     cancelButton?: boolean;
     title?: "minimal" | "full";
+    notFound?: boolean;
   };
 
   async function expectMinimalUi(
     page: Page,
-    company: Company,
+    company?: Company,
     {
       forbidden = false,
       okButton = true,
       cancelButton = true,
       title = "full",
+      notFound = false,
     }: VisibilityOptions = {}
   ) {
     if (title === "minimal") {
       await expect(page).toHaveTitle("Delete company");
     } else {
-      await expect(page).toHaveTitle(`${company.name} • Delete`);
+      if (company) {
+        await expect(page).toHaveTitle(`${company.name} • Delete`);
+      }
     }
     await expect(page.getByText(/forbidden/i)).toBeVisible({
       visible: forbidden,
@@ -516,6 +532,10 @@ test.describe("delete company", () => {
     const cancelButtonElem = page.getByRole("link", { name: /cancel/i });
     await expect(cancelButtonElem).toBeVisible({
       visible: cancelButton,
+    });
+
+    await expect(page.getByText(/company not found/i)).toBeVisible({
+      visible: notFound,
     });
   }
 });
