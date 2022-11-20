@@ -48,3 +48,19 @@ export async function getCompany(
   const company = await response.json();
   return company;
 }
+
+export async function deleteCompany(
+  id: string,
+  accessToken: string
+): Promise<void> {
+  const response = await fetch(`${process.env.API_URL}/companies/${id}`, {
+    method: "delete",
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
+
+  if (!response.ok) {
+    throw response;
+  }
+}

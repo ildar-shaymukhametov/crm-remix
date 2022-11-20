@@ -9,7 +9,7 @@ import { Link, useCatch, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
 import type { Company} from "~/utils/companies.server";
-import { getCompany } from "~/utils/companies.server";
+import { getCompany , deleteCompany} from "~/utils/companies.server";
 
 type LoaderData = {
   company: Company;
@@ -30,19 +30,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
 export const action: ActionFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request);
-  const response = await fetch(
-    `${process.env.API_URL}/companies/${params.id}`,
-    {
-      method: "delete",
-      headers: {
-        Authorization: `Bearer ${user.extra.access_token}`
-      }
-    }
-  );
 
-  if (!response.ok) {
-    throw response;
-  }
+  invariant(params.id, "Company id must be set");
+  await deleteCompany(params.id, user.extra?.access_token);
 
   return redirect("/companies");
 };
