@@ -90,3 +90,18 @@ export async function updateCompany(
   const { errors } = await response.json();
   return errors;
 }
+
+export async function getCompanies(accessToken: string): Promise<Company[]> {
+  const response = await fetch(`${process.env.API_URL}/companies`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
+
+  if (!response.ok) {
+    throw response;
+  }
+
+  const companies = await response.json();
+  return companies;
+}
