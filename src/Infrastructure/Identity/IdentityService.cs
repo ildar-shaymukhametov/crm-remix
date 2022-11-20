@@ -2,11 +2,9 @@
 using CRM.Application;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Models;
-using CRM.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace CRM.Infrastructure.Identity;
 
@@ -15,21 +13,12 @@ public class IdentityService : IIdentityService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService;
-    private readonly ApplicationDbContext _dbContext;
-    private readonly ILogger<IdentityService> _logger;
 
-    public IdentityService(
-        UserManager<ApplicationUser> userManager,
-        IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
-        IAuthorizationService authorizationService,
-        ApplicationDbContext dbContext,
-        ILogger<IdentityService> logger)
+    public IdentityService(UserManager<ApplicationUser> userManager, IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory, IAuthorizationService authorizationService)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         _authorizationService = authorizationService;
-        _dbContext = dbContext;
-        _logger = logger;
     }
 
     public async Task<string> GetUserNameAsync(string userId)
