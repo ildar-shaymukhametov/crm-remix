@@ -292,7 +292,7 @@ test.describe("view company", () => {
   }
 });
 
-test.describe("edit company", () => {
+test.describe.only("edit company", () => {
   test("should be forbidden", async ({
     page,
     runAsDefaultUser,
@@ -356,27 +356,43 @@ test.describe("edit company", () => {
     await expect(page).toHaveURL(`/companies/${company.id}`);
   });
 
+  test("should see not found", async ({ page, runAsDefaultUser }) => {
+    await runAsDefaultUser({ claims: ["company.update", "company.view"] });
+    await page.goto(`/companies/1/edit`);
+
+    await expectMinimalUi(page, undefined, {
+      companyFields: false,
+      submitButton: false,
+      title: "minimal",
+      notFound: true,
+    });
+  });
+
   type VisibilityOptions = {
     forbidden?: boolean;
     companyFields?: boolean;
     submitButton?: boolean;
     title?: "minimal" | "full";
+    notFound?: boolean;
   };
 
   async function expectMinimalUi(
     page: Page,
-    company: Company,
+    company?: Company,
     {
       forbidden = false,
       companyFields = true,
       submitButton = true,
       title = "full",
+      notFound = false
     }: VisibilityOptions = {}
   ) {
     if (title === "minimal") {
       await expect(page).toHaveTitle("Edit company");
     } else {
-      await expect(page).toHaveTitle(company.name);
+      if (company) {
+        await expect(page).toHaveTitle(company.name);
+      }
     }
     await expect(page.getByText(/forbidden/i)).toBeVisible({
       visible: forbidden,
@@ -386,6 +402,10 @@ test.describe("edit company", () => {
     const save = page.getByRole("button", { name: /save changes/i });
     await expect(save).toBeVisible({
       visible: submitButton,
+    });
+
+    await expect(page.getByText(/company not found/i)).toBeVisible({
+      visible: notFound,
     });
   }
 
@@ -406,7 +426,7 @@ test.describe("edit company", () => {
   }
 });
 
-test.describe.only("delete company", () => {
+test.describe("delete company", () => {
   test("should be forbidden", async ({
     page,
     runAsDefaultUser,
