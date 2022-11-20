@@ -1,7 +1,7 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useCatch, useLoaderData } from "@remix-run/react";
-import { updateAuthorizationClaims } from "~/utils/account.server";
+import { getAuthorizationClaims, updateAuthorizationClaims } from "~/utils/account.server";
 import { auth } from "~/utils/auth.server";
 
 type ClaimType = {
@@ -32,21 +32,9 @@ export const loader: LoaderFunction = async ({ request }) => {
       Authorization: `Bearer ${user.extra?.access_token}`
     }
   });
-  const userClaimsResponse = await fetch(
-    `${process.env.API_URL}/User/AuthorizationClaims`,
-    {
-      headers: {
-        Authorization: `Bearer ${user.extra?.access_token}`
-      }
-    }
-  );
-
-  if (!response.ok) {
-    throw response;
-  }
 
   const claimTypes = await response.json();
-  const claims = await userClaimsResponse.json();
+  const claims = await getAuthorizationClaims(user.extra?.access_token);
   return json({ claimTypes, claims });
 };
 

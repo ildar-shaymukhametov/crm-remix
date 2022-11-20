@@ -18,3 +18,23 @@ export async function updateAuthorizationClaims(
     throw response;
   }
 }
+
+export async function getAuthorizationClaims(
+  accessToken: string
+): Promise<string[]> {
+  const response = await fetch(
+    `${process.env.API_URL}/User/AuthorizationClaims`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }
+  );
+
+  if (!response.ok) {
+    throw response;
+  }
+
+  const claims = await response.json();
+  return claims;
+}
