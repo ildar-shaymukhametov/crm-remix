@@ -14,9 +14,9 @@ export const test = base.extend<{
           `${process.env.API_URL}/companies`,
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${accessToken}`
             },
-            data: company,
+            data: company
           }
         );
 
@@ -29,8 +29,8 @@ export const test = base.extend<{
         return company;
       });
     },
-    { auto: true },
-  ],
+    { auto: true }
+  ]
 });
 
 export function buildCompany(): Company {

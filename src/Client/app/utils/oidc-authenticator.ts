@@ -17,14 +17,14 @@ export class OidcAuthenticator extends Authenticator<OidcProfile> {
       }
 
       const params: string[][] = [];
-      permissions.forEach((x) => params.push(["q", x]));
+      permissions.forEach(x => params.push(["q", x]));
       const query = new URLSearchParams(params);
       const response = await fetch(
         `${process.env.API_URL}/User/Permissions?${query}`,
         {
           headers: {
-            Authorization: `Bearer ${user.extra?.access_token}`,
-          },
+            Authorization: `Bearer ${user.extra?.access_token}`
+          }
         }
       );
 
@@ -45,8 +45,8 @@ export class OidcAuthenticator extends Authenticator<OidcProfile> {
     session.set("returnUrl", request.url);
     throw redirect("/login", {
       headers: {
-        "Set-Cookie": await commitSession(session),
-      },
+        "Set-Cookie": await commitSession(session)
+      }
     });
   }
 
@@ -62,11 +62,11 @@ export class OidcAuthenticator extends Authenticator<OidcProfile> {
 
     const query = new URLSearchParams({
       id_token_hint: options.user.extra.id_token,
-      post_logout_redirect_uri: process.env.POST_LOGOUT_REDIRECT_URI,
+      post_logout_redirect_uri: process.env.POST_LOGOUT_REDIRECT_URI
     });
     const url = new URL(`${process.env.ENDSESSION_URL}?${query}`);
     return super.logout(request, {
-      redirectTo: url.toString(),
+      redirectTo: url.toString()
     });
   }
 }

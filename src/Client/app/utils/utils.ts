@@ -13,7 +13,7 @@ export function useMatchesData(
 ): Record<string, unknown> | undefined {
   const matchingRoutes = useMatches();
   const route = useMemo(
-    () => matchingRoutes.find((route) => route.id === id),
+    () => matchingRoutes.find(route => route.id === id),
     [matchingRoutes, id]
   );
   return route?.data;
@@ -27,9 +27,7 @@ function isUser(user: OidcProfile) {
 
 export function useOptionalUser(): OidcProfile | undefined {
   const data = useMatchesData("root");
-  if (
-    !data || !isUser(data.user as OidcProfile)
-  ) {
+  if (!data || !isUser(data.user as OidcProfile)) {
     return undefined;
   }
 

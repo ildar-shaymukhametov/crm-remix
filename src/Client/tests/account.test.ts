@@ -9,7 +9,7 @@ test.describe("account", () => {
   test.describe("access", () => {
     test("should be able to save changes", async ({
       page,
-      runAsDefaultUser,
+      runAsDefaultUser
     }) => {
       await runAsDefaultUser();
       page.goto("/account/access");
@@ -19,8 +19,8 @@ test.describe("account", () => {
         "Company. Create",
         "Company. Update",
         "Company. Delete",
-        "Company. View",
-      ].map((x) => page.getByLabel(x));
+        "Company. View"
+      ].map(x => page.getByLabel(x));
 
       for (const item of elements) {
         await expect(item).toBeVisible();

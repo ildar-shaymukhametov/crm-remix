@@ -1,7 +1,7 @@
 import type { StrategyVerifyCallback } from "remix-auth";
 import type {
   OAuth2Profile,
-  OAuth2StrategyVerifyParams,
+  OAuth2StrategyVerifyParams
 } from "remix-auth-oauth2";
 import { OAuth2Strategy } from "remix-auth-oauth2";
 
@@ -19,7 +19,7 @@ export interface OidcExtraParams extends Record<string, string | number> {
   scope: string;
   expires_in: 86_400;
   token_type: "Bearer";
-  access_token: string
+  access_token: string;
 }
 
 export interface OidcProfile extends OAuth2Profile {
@@ -83,7 +83,7 @@ export class OidcStrategy<User> extends OAuth2Strategy<
         tokenURL: `${options.authority}/connect/token`,
         clientID: options.clientID,
         clientSecret: options.clientSecret,
-        callbackURL: options.callbackURL,
+        callbackURL: options.callbackURL
       },
       verify
     );
@@ -95,7 +95,7 @@ export class OidcStrategy<User> extends OAuth2Strategy<
 
   protected authorizationParams() {
     const urlSearchParams: Record<string, string> = {
-      scope: this.scope,
+      scope: this.scope
     };
 
     if (this.nonce) {
@@ -110,7 +110,7 @@ export class OidcStrategy<User> extends OAuth2Strategy<
     params: OidcExtraParams
   ): Promise<OidcProfile> {
     const response = await fetch(this.userInfoURL, {
-      headers: { Authorization: `Bearer ${accessToken}` },
+      headers: { Authorization: `Bearer ${accessToken}` }
     });
 
     const data: OidcProfile["_json"] = await response.json();
@@ -122,13 +122,13 @@ export class OidcStrategy<User> extends OAuth2Strategy<
       name: {
         familyName: data.family_name,
         givenName: data.given_name,
-        middleName: data.middle_name,
+        middleName: data.middle_name
       },
       emails: [{ value: data.email }],
       photos: [{ value: data.picture }],
       extra: params,
       permissions: [],
-      _json: data,
+      _json: data
     };
 
     return profile;

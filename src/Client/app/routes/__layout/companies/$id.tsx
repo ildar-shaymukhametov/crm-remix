@@ -23,7 +23,7 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request, {
-    permissions: ["ViewCompany", "UpdateCompany", "DeleteCompany"],
+    permissions: ["ViewCompany", "UpdateCompany", "DeleteCompany"]
   });
   if (!user.permissions.includes("ViewCompany")) {
     throw new Response(null, { status: 403 });
@@ -33,8 +33,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     `${process.env.API_URL}/companies/${params.id}`,
     {
       headers: {
-        Authorization: `Bearer ${user.extra?.access_token}`,
-      },
+        Authorization: `Bearer ${user.extra?.access_token}`
+      }
     }
   );
 
@@ -86,11 +86,11 @@ export function CatchBoundary() {
 export const meta: MetaFunction<LoaderData> = ({ data }) => {
   if (!data?.company) {
     return {
-      title: "View company",
+      title: "View company"
     };
   }
 
   return {
-    title: data.company.name,
+    title: data.company.name
   };
 };
