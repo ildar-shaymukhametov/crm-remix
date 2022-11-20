@@ -20,7 +20,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     throw new Response(null, { status: 403 });
   }
 
-  invariant(params.id, "Company id must be set");
+  invariant(params.id, "Missing id parameter");
   const company = await getCompany(params.id, user.extra?.access_token);
   return json({ company, user });
 };
