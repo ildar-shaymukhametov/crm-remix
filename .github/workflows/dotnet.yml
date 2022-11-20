@@ -23,7 +23,7 @@ jobs:
           Write-Host "Installing"
           Start-Process -FilePath "SqlLocalDB.msi" -Wait -ArgumentList "/qn", "/norestart", "/l*v SqlLocalDBInstall.log", "IACCEPTSQLLOCALDBLICENSETERMS=YES";
           Write-Host "Checking"
-          sqlcmd -l 60 -S "(localdb)\test" -Q "SELECT @@VERSION;"
+          sqlcmd -l 60 -S "(localdb)\MSSQLLocalDB" -Q "SELECT @@VERSION;"
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
