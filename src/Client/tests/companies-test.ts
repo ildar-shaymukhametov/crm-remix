@@ -1,6 +1,7 @@
 import { getAdminAccessToken, test as base } from "./test";
 import type { Company } from "~/routes/__layout/companies/index";
 import { faker } from "@faker-js/faker";
+import { createCompany } from "~/utils/companies.server";
 
 export const test = base.extend<{
   createCompany: () => Promise<Company>;
@@ -10,22 +11,9 @@ export const test = base.extend<{
       use(async () => {
         const accessToken = await getAdminAccessToken(page);
         const company = buildCompany();
-        const response = await page.request.post(
-          `${process.env.API_URL}/companies`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`
-            },
-            data: company
-          }
-        );
-
-        if (!response.ok()) {
-          throw new Error(`${response.status()}: ${response.statusText()}`);
-        }
-
-        const { id } = await response.json();
+        const id = await createCompany(company, accessToken);
         company.id = id;
+
         return company;
       });
     },
