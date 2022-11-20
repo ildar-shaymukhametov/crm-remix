@@ -426,7 +426,7 @@ test.describe("edit company", () => {
   }
 });
 
-test.describe.only("delete company", () => {
+test.describe("delete company", () => {
   test("should be forbidden", async ({
     page,
     runAsDefaultUser,
