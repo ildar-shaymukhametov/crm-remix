@@ -38,3 +38,24 @@ export async function getAuthorizationClaims(
   const claims = await response.json();
   return claims;
 }
+
+export type ClaimType = {
+  id: number;
+  name: string;
+  value: string;
+};
+
+export async function getClaimTypes(accessToken: string): Promise<ClaimType[]> {
+  const response = await fetch(`${process.env.API_URL}/UserClaimTypes`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
+
+  if (!response.ok) {
+    throw response;
+  }
+
+  const claims = await response.json();
+  return claims;
+}
