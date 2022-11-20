@@ -1,6 +1,6 @@
 ﻿using CRM.Application.Common.Interfaces;
-using CRM.App.Filters;
-using CRM.App.Services;
+using CRM.Api.Filters;
+using CRM.Api.Services;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;

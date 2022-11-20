@@ -28,6 +28,6 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
             userName = await _identityService.GetUserNameAsync(userId);
         }
 
-        _logger.LogInformation("CRM.App Request: {Name} {@UserId} {@UserName} {@Request}", requestName, userId, userName, request);
+        _logger.LogInformation("CRM.Api Request: {Name} {@UserId} {@UserName} {@Request}", requestName, userId, userName, request);
     }
 }

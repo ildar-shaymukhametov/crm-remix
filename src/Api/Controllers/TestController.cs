@@ -1,4 +1,4 @@
-using CRM.App.Controllers;
+using CRM.Api.Controllers;
 using CRM.Application.Tests;
 using Microsoft.AspNetCore.Mvc;
 

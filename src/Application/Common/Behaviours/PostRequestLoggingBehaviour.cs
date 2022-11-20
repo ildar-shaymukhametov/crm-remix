@@ -29,6 +29,6 @@ public class PostRequestLoggingBehaviour<TRequest, TResponse> : IRequestPostProc
             userName = await _identityService.GetUserNameAsync(userId);
         }
 
-        _logger.LogInformation("CRM.App Response: {Name} {@UserId} {@UserName} {@Request}", responseName, userId, userName, response);
+        _logger.LogInformation("CRM.Api Response: {Name} {@UserId} {@UserName} {@Request}", responseName, userId, userName, response);
     }
 }

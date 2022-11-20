@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CRM.App.Controllers;
+namespace CRM.Api.Controllers;
 
 public class OidcConfigurationController : Controller
 {
