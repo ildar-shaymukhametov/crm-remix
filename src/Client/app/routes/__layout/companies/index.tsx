@@ -2,19 +2,9 @@ import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
+import type { Company} from "~/utils/companies.server";
+import { getCompanies } from "~/utils/companies.server";
 import type { OidcProfile } from "~/utils/oidc-strategy";
-
-export type Company = {
-  id: number;
-  type: string;
-  name: string;
-  inn: string;
-  address: string;
-  ceo: string;
-  phone: string;
-  email: string;
-  contacts: string;
-};
 
 type LoaderData = {
   companies: Company[];
@@ -25,18 +15,9 @@ export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request, {
     permissions: ["CreateCompany"]
   });
-  const response = await fetch(`${process.env.API_URL}/companies`, {
-    headers: {
-      Authorization: `Bearer ${user.extra?.access_token}`
-    }
-  });
 
-  if (!response.ok) {
-    throw response;
-  }
-
-  const data = await response.json();
-  return json({ companies: data, user });
+  const companies = await getCompanies(user.extra?.access_token);
+  return json({ companies, user });
 };
 
 export default function CompanyIndex() {

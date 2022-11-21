@@ -2,6 +2,7 @@ import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useActionData, useCatch } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
+import { createCompany } from "~/utils/companies.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request, {
@@ -25,21 +26,9 @@ export const action: ActionFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
-  const response = await fetch(`${process.env.API_URL}/companies`, {
-    method: "post",
-    body: JSON.stringify(data),
-    headers: {
-      Authorization: `Bearer ${user.extra?.access_token}`,
-      "Content-Type": "application/json"
-    }
-  });
+  const id = await createCompany(data, user.extra?.access_token);
 
-  const responseData = await response.json();
-  if (!response.ok) {
-    throw response;
-  }
-
-  return redirect(responseData.id);
+  return redirect(id.toString());
 };
 
 export default function NewCompanyRoute() {

@@ -1,30 +1,13 @@
-import { createCookieSessionStorage } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { OidcAuthenticator } from "./oidc-authenticator";
 import { OidcStrategy } from "./oidc-strategy";
-
-const sessionSecret = process.env.SESSION_SECRET;
-if (!sessionSecret) {
-  throw new Error("SESSION_SECRET must be set");
-}
-
-// todo: extract to session.server.ts
-const storage = createCookieSessionStorage({
-  cookie: {
-    name: "_session",
-    secure: process.env.NODE_ENV === "production",
-    secrets: [sessionSecret],
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
-    httpOnly: true
-  }
-});
+import { sessionStorage } from "./session.server";
 
 invariant(process.env.CLIENT_ID, "CLIENT_ID must be set");
 invariant(process.env.CLIENT_SECRET, "CLIENT_SECRET must be set");
 invariant(process.env.CALLBACK_URL, "CALLBACK_URL must be set");
-export const auth = new OidcAuthenticator(storage);
+
+export const auth = new OidcAuthenticator(sessionStorage);
 auth.use(
   new OidcStrategy(
     {
@@ -41,5 +24,3 @@ auth.use(
     }
   )
 );
-
-export const { getSession, commitSession, destroySession } = storage;
