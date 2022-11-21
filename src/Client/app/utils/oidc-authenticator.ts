@@ -5,6 +5,7 @@ import invariant from "tiny-invariant";
 import { getSession, commitSession } from "~/utils/session.server";
 import { auth } from "~/utils/auth.server";
 import type { OidcProfile } from "./oidc-strategy";
+import { getUserPermissions } from "./user.server";
 
 export class OidcAuthenticator extends Authenticator<OidcProfile> {
   async requireUser(
@@ -17,27 +18,10 @@ export class OidcAuthenticator extends Authenticator<OidcProfile> {
         return user;
       }
 
-      const params: string[][] = [];
-      permissions.forEach(x => params.push(["q", x]));
-      const query = new URLSearchParams(params);
-      const response = await fetch(
-        `${process.env.API_URL}/User/Permissions?${query}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.extra?.access_token}`
-          }
-        }
+      user.permissions = await getUserPermissions(
+        permissions,
+        user.extra?.access_token
       );
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          await auth.logout(request, { user, redirectTo: "/" });
-          throw redirect("/login");
-        }
-      } else {
-        const { permissions } = await response.json();
-        user.permissions = permissions;
-      }
 
       return user;
     }
