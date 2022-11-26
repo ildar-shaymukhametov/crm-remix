@@ -19,6 +19,7 @@ export const action: ActionFunction = async ({ request }) => {
   };
 
   await updateAuthorizationClaims(data, user.extra?.access_token);
+  return {};
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
