@@ -1,6 +1,7 @@
 import { handleErrorResponse } from "./utils";
 
 export async function createCompany(
+  request: Request,
   data: { [key: string]: any },
   accessToken: string
 ): Promise<number> {
@@ -14,7 +15,7 @@ export async function createCompany(
   });
 
   if (!response.ok) {
-    throw response;
+    await handleErrorResponse(request, response);
   }
 
   const { id } = await response.json();
@@ -33,7 +34,7 @@ export type Company = {
   contacts: string;
 };
 
-export async function getCompany(
+export async function getCompany(request: Request,
   id: string,
   accessToken: string
 ): Promise<Company> {
@@ -44,14 +45,14 @@ export async function getCompany(
   });
 
   if (!response.ok) {
-    throw response;
+    await handleErrorResponse(request, response);
   }
 
   const company = await response.json();
   return company;
 }
 
-export async function deleteCompany(
+export async function deleteCompany(request: Request,
   id: string,
   accessToken: string
 ): Promise<void> {
@@ -63,11 +64,11 @@ export async function deleteCompany(
   });
 
   if (!response.ok) {
-    throw response;
+    await handleErrorResponse(request, response);
   }
 }
 
-export async function updateCompany(
+export async function updateCompany(request: Request,
   id: string,
   data: { [key: string]: any },
   accessToken: string
@@ -86,7 +87,9 @@ export async function updateCompany(
   }
 
   if (response.status !== 400) {
-    throw response;
+    if (!response.ok) {
+      await handleErrorResponse(request, response);
+    }
   }
 
   const { errors } = await response.json();

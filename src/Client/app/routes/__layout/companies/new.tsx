@@ -26,7 +26,7 @@ export const action: ActionFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
-  const id = await createCompany(data, user.extra?.access_token);
+  const id = await createCompany(request, data, user.extra?.access_token);
 
   return redirect(id.toString());
 };
