@@ -41,6 +41,7 @@ function createDatabaseSessionStorage({ cookie }: { cookie: Cookie }) {
           expires
         }
       });
+      console.log(`🟢 Created session with id: ${session.id}.`);
       return session.id;
     },
     async readData(id) {
@@ -75,6 +76,7 @@ function createDatabaseSessionStorage({ cookie }: { cookie: Cookie }) {
             expires
           }
         });
+        console.log(`🟢 Updated session with id: ${id}.`);
       } catch (error) {
         console.log(`🔴 Update session: did not found session with id: ${id}.`);
       }
@@ -90,7 +92,7 @@ function createDatabaseSessionStorage({ cookie }: { cookie: Cookie }) {
             id
           }
         });
-        console.log(">>>>>>>>> deleted session");
+        console.log(`🟢 Deleted session with id: ${id}.`);
       } catch (error) {
          console.log(
            `🔴 Delete session: did not found session with id: ${id}.`
