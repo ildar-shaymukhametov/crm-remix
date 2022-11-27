@@ -1,3 +1,5 @@
+import { handleErrorResponse } from "./utils";
+
 export async function createCompany(
   data: { [key: string]: any },
   accessToken: string
@@ -91,7 +93,7 @@ export async function updateCompany(
   return errors;
 }
 
-export async function getCompanies(accessToken: string): Promise<Company[]> {
+export async function getCompanies(request: Request, accessToken: string): Promise<Company[]> {
   const response = await fetch(`${process.env.API_URL}/companies`, {
     headers: {
       Authorization: `Bearer ${accessToken}`
@@ -99,7 +101,7 @@ export async function getCompanies(accessToken: string): Promise<Company[]> {
   });
 
   if (!response.ok) {
-    throw response;
+    await handleErrorResponse(request, response);
   }
 
   const companies = await response.json();

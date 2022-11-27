@@ -16,7 +16,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     permissions: ["CreateCompany"]
   });
 
-  const companies = await getCompanies(user.extra?.access_token);
+  const companies = await getCompanies(request, user.extra.access_token);
   return json({ companies, user });
 };
 
