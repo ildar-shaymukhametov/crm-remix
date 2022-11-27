@@ -1,4 +1,5 @@
-import type { Cookie } from "@remix-run/node";
+import type { Cookie} from "@remix-run/node";
+import { createCookieSessionStorage } from "@remix-run/node";
 import { createCookie, createSessionStorage } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import crypto from "crypto";
@@ -27,7 +28,7 @@ export const returnURlCookie = createCookie("_session.returnUrl", {
   httpOnly: true
 });
 
-export const returnUrlSession = createDatabaseSessionStorage({
+export const returnUrlSession = createCookieSessionStorage({
   cookie: returnURlCookie
 });
 
