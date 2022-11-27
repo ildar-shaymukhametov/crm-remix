@@ -9,16 +9,21 @@ import { updateAuthorizationClaims } from "~/utils/account.server";
 let defaultUserAccessToken = "";
 let adminAccessToken = "";
 
+type DefaultUserOptions = {
+  claims?: string[];
+  accessToken?: string;
+};
+
 export const test = base.extend<{
-  runAsDefaultUser: (options?: { claims: string[] }) => Promise<OidcProfile>;
+  runAsDefaultUser: (options?: DefaultUserOptions) => Promise<OidcProfile>;
   runAsAdministrator: () => Promise<OidcProfile>;
   resetDb: () => Promise<void>;
 }>({
   runAsDefaultUser: [
     async ({ page, baseURL }, use) => {
       invariant(baseURL, "baseURL must be set");
-      use(({ claims } = { claims: [] }) =>
-        runAsDefaultUser(page, baseURL, claims)
+      use((options: DefaultUserOptions = { claims: [] }) =>
+        runAsDefaultUser(page, baseURL, options)
       );
     },
     { auto: true }
@@ -48,11 +53,21 @@ export const test = base.extend<{
 async function runAsDefaultUser(
   page: Page,
   baseURL: string,
-  claims: string[] = []
+  options: DefaultUserOptions
 ) {
-  const user = await login(page, baseURL, "tester@localhost", "Tester1!");
-  if (claims.length > 0) {
-    await updateAuthorizationClaims({ claims }, user.extra?.access_token);
+  const user = await login(
+    page,
+    baseURL,
+    "tester@localhost",
+    "Tester1!",
+    options.accessToken
+  );
+  if (options.claims && options.claims.length > 0) {
+    await updateAuthorizationClaims(
+      new Request("http://foobar.com"),
+      { claims: options.claims },
+      user.extra?.access_token
+    );
   }
   return user;
 }
@@ -65,10 +80,12 @@ async function login(
   page: Page,
   baseURL: string,
   username: string,
-  password: string
+  password: string,
+  accessToken?: string
 ) {
   const user = createUser();
-  user.extra.access_token = await getAccessToken(page, username, password);
+  user.extra.access_token =
+    accessToken ?? (await getAccessToken(page, username, password));
 
   const session = await getSession();
   session.set("user", user);

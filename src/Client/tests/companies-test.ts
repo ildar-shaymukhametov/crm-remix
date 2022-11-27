@@ -1,6 +1,6 @@
 import { getAdminAccessToken, test as base } from "./test";
-import type { Company } from "~/routes/__layout/companies/index";
 import { faker } from "@faker-js/faker";
+import type { Company } from "~/utils/companies.server";
 import { createCompany } from "~/utils/companies.server";
 
 export const test = base.extend<{
@@ -11,7 +11,11 @@ export const test = base.extend<{
       use(async () => {
         const accessToken = await getAdminAccessToken(page);
         const company = buildCompany();
-        const id = await createCompany(company, accessToken);
+        const id = await createCompany(
+          new Request("http://foobar.com"),
+          company,
+          accessToken
+        );
         company.id = id;
 
         return company;

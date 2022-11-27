@@ -1,5 +1,6 @@
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
+import { auth } from "./auth.server";
 import type { OidcProfile } from "./oidc-strategy";
 
 /**
@@ -42,4 +43,22 @@ export function useUser(): OidcProfile {
     );
   }
   return maybeUser;
+}
+
+export async function handleErrorResponse(
+  request: Request,
+  response: Response
+) {
+  if (response.status === 401) {
+    return await handle401Response(request);
+  }
+
+  throw response;
+}
+
+export async function handle401Response(request: Request): Promise<never> {
+  return await auth.logout(request, {
+    redirectTo: "/login",
+    rememberReturnUrl: true
+  });
 }

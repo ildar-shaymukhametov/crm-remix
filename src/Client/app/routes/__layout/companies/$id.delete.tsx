@@ -8,8 +8,8 @@ import { redirect } from "@remix-run/node";
 import { Link, useCatch, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
-import type { Company} from "~/utils/companies.server";
-import { getCompany , deleteCompany} from "~/utils/companies.server";
+import type { Company } from "~/utils/companies.server";
+import { getCompany, deleteCompany } from "~/utils/companies.server";
 
 type LoaderData = {
   company: Company;
@@ -24,7 +24,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   }
 
   invariant(params.id, "Missing id parameter");
-  const company = await getCompany(params.id, user.extra?.access_token);
+  const company = await getCompany(
+    request,
+    params.id,
+    user.extra?.access_token
+  );
   return json({ company });
 };
 
@@ -32,7 +36,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request);
 
   invariant(params.id, "Missing id parameter");
-  await deleteCompany(params.id, user.extra?.access_token);
+  await deleteCompany(request, params.id, user.extra?.access_token);
 
   return redirect("/companies");
 };

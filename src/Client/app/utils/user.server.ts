@@ -1,4 +1,7 @@
+import { handleErrorResponse } from "./utils";
+
 export async function getUserPermissions(
+  request: Request,
   requestedPermissions: string[],
   accessToken: string
 ): Promise<string[]> {
@@ -16,7 +19,7 @@ export async function getUserPermissions(
   );
 
   if (!response.ok) {
-    throw response;
+    await handleErrorResponse(request, response);
   }
 
   const { permissions } = await response.json();

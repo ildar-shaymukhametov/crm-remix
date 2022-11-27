@@ -1,9 +1,12 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useCatch, useLoaderData } from "@remix-run/react";
-import type { ClaimType} from "~/utils/account.server";
-import { getClaimTypes} from "~/utils/account.server";
-import { getAuthorizationClaims, updateAuthorizationClaims } from "~/utils/account.server";
+import type { ClaimType } from "~/utils/account.server";
+import { getClaimTypes } from "~/utils/account.server";
+import {
+  getAuthorizationClaims,
+  updateAuthorizationClaims
+} from "~/utils/account.server";
 import { auth } from "~/utils/auth.server";
 
 type LoaderData = {
@@ -18,14 +21,17 @@ export const action: ActionFunction = async ({ request }) => {
     claims: Object.values(Object.fromEntries(formData)) as string[]
   };
 
-  await updateAuthorizationClaims(data, user.extra?.access_token);
+  await updateAuthorizationClaims(request, data, user.extra?.access_token);
   return {};
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
-  const claimTypes = await getClaimTypes(user.extra?.access_token);
-  const claims = await getAuthorizationClaims(user.extra?.access_token);
+  const claimTypes = await getClaimTypes(request, user.extra?.access_token);
+  const claims = await getAuthorizationClaims(
+    request,
+    user.extra?.access_token
+  );
 
   return json({ claimTypes, claims });
 };

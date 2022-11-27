@@ -2,7 +2,7 @@ import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
-import type { Company} from "~/utils/companies.server";
+import type { Company } from "~/utils/companies.server";
 import { getCompanies } from "~/utils/companies.server";
 import type { OidcProfile } from "~/utils/oidc-strategy";
 
@@ -16,7 +16,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     permissions: ["CreateCompany"]
   });
 
-  const companies = await getCompanies(user.extra?.access_token);
+  const companies = await getCompanies(request, user.extra.access_token);
   return json({ companies, user });
 };
 
