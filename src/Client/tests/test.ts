@@ -55,7 +55,13 @@ async function runAsDefaultUser(
   baseURL: string,
   options: DefaultUserOptions
 ) {
-  const user = await login(page, baseURL, "tester@localhost", "Tester1!", options.accessToken);
+  const user = await login(
+    page,
+    baseURL,
+    "tester@localhost",
+    "Tester1!",
+    options.accessToken
+  );
   if (options.claims && options.claims.length > 0) {
     await updateAuthorizationClaims(
       new Request("http://foobar.com"),
@@ -78,7 +84,8 @@ async function login(
   accessToken?: string
 ) {
   const user = createUser();
-  user.extra.access_token = accessToken ?? await getAccessToken(page, username, password);
+  user.extra.access_token =
+    accessToken ?? (await getAccessToken(page, username, password));
 
   const session = await getSession();
   session.set("user", user);

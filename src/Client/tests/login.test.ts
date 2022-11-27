@@ -24,7 +24,7 @@ test("should login", async ({ page }) => {
   await page.waitForURL(`${process.env.AUTHORITY}/Identity/Account/Login**`);
 });
 
-test("should return to correct url", async ({ page, runAsDefaultUser }) => {
+test("should return to correct url", async ({ page }) => {
   await page.goto("/companies");
   await page.waitForURL(`${process.env.AUTHORITY}/Identity/Account/Login**`);
   await page.getByLabel("Email").fill("tester@localhost");
@@ -51,5 +51,7 @@ test("should logout if clicked logout button", async ({
   await runAsDefaultUser();
   await page.goto("/");
   await page.getByRole("button", { name: /log out/i }).click();
-  await expect(page.getByText(/you have successfully logged out/i)).toBeVisible();
+  await expect(
+    page.getByText(/you have successfully logged out/i)
+  ).toBeVisible();
 });

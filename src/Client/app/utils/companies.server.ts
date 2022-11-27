@@ -34,7 +34,8 @@ export type Company = {
   contacts: string;
 };
 
-export async function getCompany(request: Request,
+export async function getCompany(
+  request: Request,
   id: string,
   accessToken: string
 ): Promise<Company> {
@@ -52,7 +53,8 @@ export async function getCompany(request: Request,
   return company;
 }
 
-export async function deleteCompany(request: Request,
+export async function deleteCompany(
+  request: Request,
   id: string,
   accessToken: string
 ): Promise<void> {
@@ -68,7 +70,8 @@ export async function deleteCompany(request: Request,
   }
 }
 
-export async function updateCompany(request: Request,
+export async function updateCompany(
+  request: Request,
   id: string,
   data: { [key: string]: any },
   accessToken: string
@@ -96,7 +99,10 @@ export async function updateCompany(request: Request,
   return errors;
 }
 
-export async function getCompanies(request: Request, accessToken: string): Promise<Company[]> {
+export async function getCompanies(
+  request: Request,
+  accessToken: string
+): Promise<Company[]> {
   const response = await fetch(`${process.env.API_URL}/companies`, {
     headers: {
       Authorization: `Bearer ${accessToken}`

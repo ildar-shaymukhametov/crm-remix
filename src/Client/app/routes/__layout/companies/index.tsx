@@ -2,7 +2,7 @@ import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
-import type { Company} from "~/utils/companies.server";
+import type { Company } from "~/utils/companies.server";
 import { getCompanies } from "~/utils/companies.server";
 import type { OidcProfile } from "~/utils/oidc-strategy";
 

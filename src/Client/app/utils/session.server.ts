@@ -1,4 +1,4 @@
-import type { Cookie} from "@remix-run/node";
+import type { Cookie } from "@remix-run/node";
 import { createCookieSessionStorage } from "@remix-run/node";
 import { createCookie, createSessionStorage } from "@remix-run/node";
 import invariant from "tiny-invariant";
@@ -55,7 +55,7 @@ function createDatabaseSessionStorage({ cookie }: { cookie: Cookie }) {
             id
           }
         });
-  
+
         return session?.data ? JSON.parse(session.data) : null;
       } catch (error) {
         console.log(`🔴 Read session: did not found session with id: ${id}.`);
@@ -94,9 +94,7 @@ function createDatabaseSessionStorage({ cookie }: { cookie: Cookie }) {
         });
         console.log(`🟢 Deleted session with id: ${id}.`);
       } catch (error) {
-         console.log(
-           `🔴 Delete session: did not found session with id: ${id}.`
-         );
+        console.log(`🔴 Delete session: did not found session with id: ${id}.`);
       }
     }
   });

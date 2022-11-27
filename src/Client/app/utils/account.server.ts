@@ -1,6 +1,7 @@
 import { handleErrorResponse } from "./utils";
 
-export async function updateAuthorizationClaims(request: Request,
+export async function updateAuthorizationClaims(
+  request: Request,
   data: { claims: string[] },
   accessToken: string
 ): Promise<void> {
@@ -21,7 +22,8 @@ export async function updateAuthorizationClaims(request: Request,
   }
 }
 
-export async function getAuthorizationClaims(request: Request,
+export async function getAuthorizationClaims(
+  request: Request,
   accessToken: string
 ): Promise<string[]> {
   const response = await fetch(
@@ -47,7 +49,10 @@ export type ClaimType = {
   value: string;
 };
 
-export async function getClaimTypes(request: Request, accessToken: string): Promise<ClaimType[]> {
+export async function getClaimTypes(
+  request: Request,
+  accessToken: string
+): Promise<ClaimType[]> {
   const response = await fetch(`${process.env.API_URL}/UserClaimTypes`, {
     headers: {
       Authorization: `Bearer ${accessToken}`
