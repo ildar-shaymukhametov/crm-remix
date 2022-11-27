@@ -20,16 +20,14 @@ export const sessionStorage = createDatabaseSessionStorage({
   cookie: sessionCookie
 });
 
-export const returnURlCookie = createCookie("_session.returnUrl", {
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
-  path: "/",
-  maxAge: 60,
-  httpOnly: true
-});
-
 export const returnUrlSession = createCookieSessionStorage({
-  cookie: returnURlCookie
+  cookie: createCookie("_session.returnUrl", {
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60,
+    httpOnly: true
+  })
 });
 
 function createDatabaseSessionStorage({ cookie }: { cookie: Cookie }) {
