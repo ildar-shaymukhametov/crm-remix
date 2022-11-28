@@ -4,11 +4,10 @@ import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { getCompanies } from "~/utils/companies.server";
-import type { OidcProfile } from "~/utils/oidc-strategy";
 
 type LoaderData = {
   companies: Company[];
-  user: OidcProfile;
+  permissions: string[];
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -17,15 +16,15 @@ export const loader: LoaderFunction = async ({ request }) => {
   });
 
   const companies = await getCompanies(request, user.extra.access_token);
-  return json({ companies, user });
+  return json({ companies, permissions: user.permissions });
 };
 
 export default function CompanyIndex() {
-  const { companies, user } = useLoaderData<LoaderData>();
+  const { companies, permissions } = useLoaderData<LoaderData>();
 
   return (
     <>
-      {user.permissions.includes("CreateCompany") ? (
+      {permissions.includes("CreateCompany") ? (
         <Link to="/companies/new">New company</Link>
       ) : null}
       <ul>

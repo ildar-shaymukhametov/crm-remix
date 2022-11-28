@@ -5,11 +5,10 @@ import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
-import type { OidcProfile } from "~/utils/oidc-strategy";
 
 type LoaderData = {
   company: Company;
-  user: OidcProfile;
+  permissions: string[];
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -26,18 +25,18 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     params.id,
     user.extra?.access_token
   );
-  return json({ company, user });
+  return json({ company, permissions: user.permissions });
 };
 
 export default function CompanyRoute() {
-  const { company, user } = useLoaderData<LoaderData>();
+  const { company, permissions } = useLoaderData<LoaderData>();
 
   return (
     <>
-      {user.permissions.includes("UpdateCompany") ? (
+      {permissions.includes("UpdateCompany") ? (
         <Link to="edit">Edit</Link>
       ) : null}
-      {user.permissions.includes("DeleteCompany") ? (
+      {permissions.includes("DeleteCompany") ? (
         <Link to="delete">Delete</Link>
       ) : null}
       <div>
