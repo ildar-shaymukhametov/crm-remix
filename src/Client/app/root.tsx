@@ -30,7 +30,9 @@ export const meta: MetaFunction = () => ({
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
   return json({
-    user: user
+    user: {
+      displayName: user.displayName
+    }
   });
 };
 

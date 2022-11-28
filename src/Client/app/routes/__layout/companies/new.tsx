@@ -12,7 +12,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     throw new Response(null, { status: 403 });
   }
 
-  return user;
+  return {};
 };
 
 type ActionData = {

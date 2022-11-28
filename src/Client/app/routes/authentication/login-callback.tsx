@@ -10,8 +10,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   console.log(`🟢 Login-callback: return url: ${returnUrl}`);
 
-  return await auth.authenticate("oidc", request, {
+  await auth.authenticate("oidc", request, {
     successRedirect: returnUrl,
     failureRedirect: "/"
   });
+
+  return {};
 };
