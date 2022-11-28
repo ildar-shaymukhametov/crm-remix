@@ -136,9 +136,6 @@ export default function EditCompanyRoute() {
 
 export function CatchBoundary() {
   const res = useCatch();
-  if (res.status === 401) {
-    return <p>Unauthorized</p>;
-  }
   if (res.status === 403) {
     return <p>Forbidden</p>;
   }
