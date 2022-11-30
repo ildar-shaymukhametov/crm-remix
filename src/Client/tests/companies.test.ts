@@ -1,6 +1,7 @@
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import type { Company } from "~/utils/companies.server";
+import { routes } from "~/utils/constants";
 import { buildCompany, test } from "./companies-test";
 
 test.beforeEach(async ({ resetDb }) => {
@@ -11,7 +12,7 @@ test.describe("view companies", () => {
   test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
     await runAsDefaultUser();
     await createCompany();
-    await page.goto("/companies");
+    await page.goto(routes.companies.index);
 
     await expectMinimalUi(page);
   });
@@ -21,13 +22,13 @@ test.describe("view companies", () => {
     runAsDefaultUser
   }) => {
     await runAsDefaultUser({ claims: ["company.create"] });
-    await page.goto("/companies");
+    await page.goto(routes.companies.index);
 
     await expectMinimalUi(page, { newCompanyButton: true });
 
     const link = page.getByRole("link", { name: /new company/i });
     await link.click();
-    await expect(page).toHaveURL(/companies\/new/i);
+    await expect(page).toHaveURL(routes.companies.new);
   });
 
   type VisibilityOptions = {
@@ -55,7 +56,7 @@ test.describe("view companies", () => {
 test.describe("new company", () => {
   test("should be forbidden", async ({ page, runAsDefaultUser }) => {
     await runAsDefaultUser();
-    await page.goto("/companies/new");
+    await page.goto(routes.companies.new);
 
     await expectMinimalUi(page, {
       forbidden: true,
@@ -69,7 +70,7 @@ test.describe("new company", () => {
     runAsDefaultUser
   }) => {
     await runAsDefaultUser({ claims: ["company.create"] });
-    await page.goto("/companies/new");
+    await page.goto(routes.companies.new);
 
     await expectMinimalUi(page);
 
@@ -138,7 +139,7 @@ test.describe("view company", () => {
   test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
     await runAsDefaultUser({ claims: ["company.view"] });
     const company = await createCompany();
-    await page.goto(`/companies/${company.id}`);
+    await page.goto(routes.companies.view(company.id));
 
     await expectMinimalUi(page, company);
   });
@@ -150,7 +151,7 @@ test.describe("view company", () => {
   }) => {
     await runAsDefaultUser();
     const company = await createCompany();
-    await page.goto(`/companies/${company.id}`);
+    await page.goto(routes.companies.view(company.id));
 
     await expectMinimalUi(page, company, {
       title: "minimal",
@@ -167,13 +168,13 @@ test.describe("view company", () => {
   }) => {
     await runAsDefaultUser({ claims: ["company.view", "company.update"] });
     const company = await createCompany();
-    await page.goto(`/companies/${company.id}`);
+    await page.goto(routes.companies.view(company.id));
 
     await expectMinimalUi(page, company, { editButton: true });
 
     const button = page.getByRole("link", { name: /edit/i });
     await button.click();
-    await expect(page).toHaveURL(`companies/${company.id}/edit`);
+    await expect(page).toHaveURL(routes.companies.edit(company.id));
   });
 
   test("should be able to click delete company button", async ({
@@ -183,18 +184,18 @@ test.describe("view company", () => {
   }) => {
     await runAsDefaultUser({ claims: ["company.view", "company.delete"] });
     const company = await createCompany();
-    await page.goto(`/companies/${company.id}`);
+    await page.goto(routes.companies.view(company.id));
 
     await expectMinimalUi(page, company, { deleteButton: true });
 
     const button = page.getByRole("link", { name: /delete/i });
     await button.click();
-    await expect(page).toHaveURL(`companies/${company.id}/delete`);
+    await expect(page).toHaveURL(routes.companies.delete(company.id));
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
     await runAsDefaultUser({ claims: ["company.view"] });
-    await page.goto(`/companies/1`);
+    await page.goto(routes.companies.view("1"));
 
     await expectMinimalUi(page, undefined, {
       title: "minimal",
@@ -300,7 +301,7 @@ test.describe("edit company", () => {
   }) => {
     await runAsDefaultUser();
     const company = await createCompany();
-    await page.goto(`/companies/${company.id}/edit`);
+    await page.goto(routes.companies.edit(company.id));
 
     await expectMinimalUi(page, company, {
       forbidden: true,
@@ -317,7 +318,7 @@ test.describe("edit company", () => {
   }) => {
     await runAsDefaultUser({ claims: ["company.update", "company.view"] });
     const company = await createCompany();
-    await page.goto(`/companies/${company.id}/edit`);
+    await page.goto(routes.companies.edit(company.id));
 
     await expectMinimalUi(page, company);
 
@@ -353,12 +354,12 @@ test.describe("edit company", () => {
     const submit = page.getByRole("button", { name: /save changes/i });
     await submit.click();
 
-    await expect(page).toHaveURL(`/companies/${company.id}`);
+    await expect(page).toHaveURL(routes.companies.view(company.id));
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
     await runAsDefaultUser({ claims: ["company.update", "company.view"] });
-    await page.goto(`/companies/1/edit`);
+    await page.goto(routes.companies.edit(1));
 
     await expectMinimalUi(page, undefined, {
       companyFields: false,
@@ -434,7 +435,7 @@ test.describe("delete company", () => {
   }) => {
     await runAsDefaultUser();
     const company = await createCompany();
-    await page.goto(`/companies/${company.id}/delete`);
+    await page.goto(routes.companies.delete(company.id));
 
     await expectMinimalUi(page, company, {
       cancelButton: false,
@@ -451,7 +452,7 @@ test.describe("delete company", () => {
   }) => {
     await runAsDefaultUser({ claims: ["company.delete", "company.view"] });
     const company = await createCompany();
-    await page.goto(`/companies/${company.id}/delete`);
+    await page.goto(routes.companies.delete(company.id));
 
     await expectMinimalUi(page, company);
 
@@ -460,7 +461,7 @@ test.describe("delete company", () => {
     });
     await deleteButton.click();
 
-    await expect(page).toHaveURL("/companies");
+    await expect(page).toHaveURL(routes.companies.index);
   });
 
   test("should be able to cancel", async ({
@@ -470,19 +471,19 @@ test.describe("delete company", () => {
   }) => {
     await runAsDefaultUser({ claims: ["company.delete", "company.view"] });
     const company = await createCompany();
-    await page.goto(`/companies/${company.id}/delete`);
+    await page.goto(routes.companies.delete(company.id));
 
     await expectMinimalUi(page, company);
 
     const cancel = page.getByRole("link", { name: /cancel/i });
     await cancel.click();
 
-    await expect(page).toHaveURL(`/companies/${company.id}`);
+    await expect(page).toHaveURL(routes.companies.view(company.id));
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
     await runAsDefaultUser({ claims: ["company.delete", "company.view"] });
-    await page.goto(`/companies/1/delete`);
+    await page.goto(routes.companies.delete(1));
 
     await expectMinimalUi(page, undefined, {
       cancelButton: false,

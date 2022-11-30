@@ -11,7 +11,7 @@ import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { updateCompany } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
-import { permissions } from "~/utils/constants";
+import { permissions, routes } from "~/utils/constants";
 
 type LoaderData = {
   company: Company;
@@ -49,7 +49,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const data = Object.fromEntries(formData);
   await updateCompany(request, params.id, data, user.extra?.access_token);
 
-  return redirect(`/companies/${params.id}`);
+  return redirect(routes.companies.view(params.id));
 };
 
 export default function EditCompanyRoute() {

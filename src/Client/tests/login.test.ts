@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { routes } from "~/utils/constants";
 import { test } from "./test";
 
 test.beforeEach(async ({ resetDb }) => {
@@ -25,12 +26,12 @@ test("should login", async ({ page }) => {
 });
 
 test("should return to correct url", async ({ page }) => {
-  await page.goto("/companies");
+  await page.goto(routes.companies.index);
   await page.waitForURL(`${process.env.AUTHORITY}/Identity/Account/Login**`);
   await page.getByLabel("Email").fill("tester@localhost");
   await page.getByLabel("Password").fill("Tester1!");
   await page.getByRole("button", { name: /log in/i }).click();
-  await page.waitForURL("/companies");
+  await page.waitForURL(routes.companies.index);
 });
 
 test("should logout if bad access token", async ({
@@ -38,7 +39,7 @@ test("should logout if bad access token", async ({
   runAsDefaultUser
 }) => {
   await runAsDefaultUser({ accessToken: "bad_token" });
-  await page.goto("/companies");
+  await page.goto(routes.companies.index);
   await expect(
     page.getByText(/you have successfully logged out/i)
   ).toBeVisible();

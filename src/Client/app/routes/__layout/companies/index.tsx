@@ -4,7 +4,7 @@ import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { getCompanies } from "~/utils/companies.server";
-import { permissions } from "~/utils/constants";
+import { permissions, routes } from "~/utils/constants";
 
 type LoaderData = {
   companies: Company[];
@@ -26,13 +26,13 @@ export default function CompanyIndex() {
   return (
     <>
       {userPermissions.includes(permissions.createCompany) ? (
-        <Link to="/companies/new">New company</Link>
+        <Link to={routes.companies.new}>New company</Link>
       ) : null}
       <ul>
         {companies.length > 0 ? (
           companies.map((x, i) => (
             <li key={i}>
-              <Link to={x.id.toString()}>{x.name}</Link>
+              <Link to={routes.companies.view(x.id)}>{x.name}</Link>
             </li>
           ))
         ) : (

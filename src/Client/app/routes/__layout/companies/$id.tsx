@@ -1,11 +1,11 @@
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, useCatch, useLoaderData } from "@remix-run/react";
+import { Link, useCatch, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
-import { permissions } from "~/utils/constants";
+import { permissions, routes } from "~/utils/constants";
 
 type LoaderData = {
   company: Company;
@@ -35,14 +35,15 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
 export default function CompanyRoute() {
   const { company, userPermissions } = useLoaderData<LoaderData>();
+  const { id } = useParams();
 
   return (
     <>
       {userPermissions.includes(permissions.updateCompany) ? (
-        <Link to="edit">Edit</Link>
+        <Link to={routes.companies.edit(id)}>Edit</Link>
       ) : null}
       {userPermissions.includes(permissions.deleteCompany) ? (
-        <Link to="delete">Delete</Link>
+        <Link to={routes.companies.delete(id)}>Delete</Link>
       ) : null}
       <div>
         {Object.entries(company).map(([key, name], i) => (
