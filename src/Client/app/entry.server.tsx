@@ -3,8 +3,12 @@ import type { EntryContext } from "@remix-run/node";
 import { Response } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import { renderToPipeableStream } from "react-dom/server";
+import { init, getEnv } from "./utils/env.server";
 
 const ABORT_DELAY = 5000;
+
+init();
+global.ENV = getEnv();
 
 export default function handleRequest(
   request: Request,

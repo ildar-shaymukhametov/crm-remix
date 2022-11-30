@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { routes } from "~/utils/constants";
 import { test } from "./test";
 
 test.beforeEach(async ({ resetDb }) => {
@@ -12,7 +13,7 @@ test.describe("account", () => {
       runAsDefaultUser
     }) => {
       await runAsDefaultUser();
-      page.goto("/account/access");
+      page.goto(routes.account.access);
       await expect(page.getByText(/forbidden/i)).not.toBeVisible();
 
       const elements = [

@@ -10,6 +10,7 @@ import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { getCompany, deleteCompany } from "~/utils/companies.server";
+import { permissions, routes } from "~/utils/constants";
 
 type LoaderData = {
   company: Company;
@@ -17,9 +18,9 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request, {
-    permissions: ["DeleteCompany", "ViewCompany"]
+    permissions: [permissions.deleteCompany, permissions.viewCompany]
   });
-  if (!user.permissions.includes("DeleteCompany")) {
+  if (!user.permissions.includes(permissions.deleteCompany)) {
     throw new Response(null, { status: 403 });
   }
 
@@ -38,7 +39,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   invariant(params.id, "Missing id parameter");
   await deleteCompany(request, params.id, user.extra?.access_token);
 
-  return redirect("/companies");
+  return redirect(routes.companies.index);
 };
 
 export default function DeleteCompany() {
@@ -48,7 +49,7 @@ export default function DeleteCompany() {
     <>
       <p>Company will be deleted.</p>
       <div>
-        <Link to={`/companies/${params.id}`} className="mr-2">
+        <Link to={routes.companies.view(params.id)} className="mr-2">
           Cancel
         </Link>
         <form method="post">

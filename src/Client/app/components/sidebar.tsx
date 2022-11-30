@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react";
+import { routes } from "~/utils/constants";
 
 export default function Sidebar() {
   return (
@@ -6,7 +7,7 @@ export default function Sidebar() {
       <nav className="fixed w-80 border-r p-4 h-full">
         <ul>
           <li>
-            <Link to="companies">Companies</Link>
+            <Link to={routes.companies.index}>Companies</Link>
           </li>
         </ul>
       </nav>

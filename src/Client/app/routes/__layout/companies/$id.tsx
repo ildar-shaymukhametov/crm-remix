@@ -1,21 +1,26 @@
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, useCatch, useLoaderData } from "@remix-run/react";
+import { Link, useCatch, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
+import { permissions, routes } from "~/utils/constants";
 
 type LoaderData = {
   company: Company;
-  permissions: string[];
+  userPermissions: string[];
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request, {
-    permissions: ["ViewCompany", "UpdateCompany", "DeleteCompany"]
+    permissions: [
+      permissions.viewCompany,
+      permissions.updateCompany,
+      permissions.deleteCompany
+    ]
   });
-  if (!user.permissions.includes("ViewCompany")) {
+  if (!user.permissions.includes(permissions.viewCompany)) {
     throw new Response(null, { status: 403 });
   }
 
@@ -25,19 +30,20 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     params.id,
     user.extra?.access_token
   );
-  return json({ company, permissions: user.permissions });
+  return json({ company, userPermissions: user.permissions });
 };
 
 export default function CompanyRoute() {
-  const { company, permissions } = useLoaderData<LoaderData>();
+  const { company, userPermissions } = useLoaderData<LoaderData>();
+  const { id } = useParams();
 
   return (
     <>
-      {permissions.includes("UpdateCompany") ? (
-        <Link to="edit">Edit</Link>
+      {userPermissions.includes(permissions.updateCompany) ? (
+        <Link to={routes.companies.edit(id)}>Edit</Link>
       ) : null}
-      {permissions.includes("DeleteCompany") ? (
-        <Link to="delete">Delete</Link>
+      {userPermissions.includes(permissions.deleteCompany) ? (
+        <Link to={routes.companies.delete(id)}>Delete</Link>
       ) : null}
       <div>
         {Object.entries(company).map(([key, name], i) => (
