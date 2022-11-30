@@ -11,6 +11,7 @@ import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { updateCompany } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
+import { permissions } from "~/utils/constants";
 
 type LoaderData = {
   company: Company;
@@ -18,9 +19,9 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request, {
-    permissions: ["UpdateCompany", "ViewCompany"]
+    permissions: [permissions.updateCompany, permissions.viewCompany]
   });
-  if (!user.permissions.includes("UpdateCompany")) {
+  if (!user.permissions.includes(permissions.updateCompany)) {
     throw new Response(null, { status: 403 });
   }
 

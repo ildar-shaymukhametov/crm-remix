@@ -5,17 +5,22 @@ import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
+import { permissions } from "~/utils/constants";
 
 type LoaderData = {
   company: Company;
-  permissions: string[];
+  userPermissions: string[];
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request, {
-    permissions: ["ViewCompany", "UpdateCompany", "DeleteCompany"]
+    permissions: [
+      permissions.viewCompany,
+      permissions.updateCompany,
+      permissions.deleteCompany
+    ]
   });
-  if (!user.permissions.includes("ViewCompany")) {
+  if (!user.permissions.includes(permissions.viewCompany)) {
     throw new Response(null, { status: 403 });
   }
 
@@ -25,18 +30,18 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     params.id,
     user.extra?.access_token
   );
-  return json({ company, permissions: user.permissions });
+  return json({ company, userPermissions: user.permissions });
 };
 
 export default function CompanyRoute() {
-  const { company, permissions } = useLoaderData<LoaderData>();
+  const { company, userPermissions } = useLoaderData<LoaderData>();
 
   return (
     <>
-      {permissions.includes("UpdateCompany") ? (
+      {userPermissions.includes(permissions.updateCompany) ? (
         <Link to="edit">Edit</Link>
       ) : null}
-      {permissions.includes("DeleteCompany") ? (
+      {userPermissions.includes(permissions.deleteCompany) ? (
         <Link to="delete">Delete</Link>
       ) : null}
       <div>

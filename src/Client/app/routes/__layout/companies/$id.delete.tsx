@@ -10,6 +10,7 @@ import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { getCompany, deleteCompany } from "~/utils/companies.server";
+import { permissions } from "~/utils/constants";
 
 type LoaderData = {
   company: Company;
@@ -17,9 +18,9 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request, {
-    permissions: ["DeleteCompany", "ViewCompany"]
+    permissions: [permissions.deleteCompany, permissions.viewCompany]
   });
-  if (!user.permissions.includes("DeleteCompany")) {
+  if (!user.permissions.includes(permissions.deleteCompany)) {
     throw new Response(null, { status: 403 });
   }
 

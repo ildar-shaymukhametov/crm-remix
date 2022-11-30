@@ -4,27 +4,28 @@ import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { getCompanies } from "~/utils/companies.server";
+import { permissions } from "~/utils/constants";
 
 type LoaderData = {
   companies: Company[];
-  permissions: string[];
+  userPermissions: string[];
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request, {
-    permissions: ["CreateCompany"]
+    permissions: [permissions.createCompany]
   });
 
   const companies = await getCompanies(request, user.extra.access_token);
-  return json({ companies, permissions: user.permissions });
+  return json({ companies, userPermissions: user.permissions });
 };
 
 export default function CompanyIndex() {
-  const { companies, permissions } = useLoaderData<LoaderData>();
+  const { companies, userPermissions } = useLoaderData<LoaderData>();
 
   return (
     <>
-      {permissions.includes("CreateCompany") ? (
+      {userPermissions.includes(permissions.createCompany) ? (
         <Link to="/companies/new">New company</Link>
       ) : null}
       <ul>
