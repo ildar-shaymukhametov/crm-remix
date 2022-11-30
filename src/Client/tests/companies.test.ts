@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-import type { Company } from "~/routes/__layout/companies/index";
+import type { Company } from "~/utils/companies.server";
 import { buildCompany, test } from "./companies-test";
 
 test.beforeEach(async ({ resetDb }) => {
