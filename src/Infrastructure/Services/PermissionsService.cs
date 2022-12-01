@@ -29,21 +29,21 @@ public class PermissionsService : IPermissionsService
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
         var result = new List<string>();
 
-        if (permissions.Contains(Policies.CreateCompany) && _authorizationService.CanCreateCompany(principal))
+        if (permissions.Contains(Permissions.CreateCompany) && _authorizationService.CanCreateCompany(principal))
         {
-            result.Add(Policies.CreateCompany);
+            result.Add(Permissions.CreateCompany);
         }
-        if (permissions.Contains(Policies.UpdateCompany) && _authorizationService.CanUpdateCompany(principal))
+        if (permissions.Contains(Permissions.UpdateCompany) && _authorizationService.CanUpdateCompany(principal))
         {
-            result.Add(Policies.UpdateCompany);
+            result.Add(Permissions.UpdateCompany);
         }
-        if (permissions.Contains(Policies.ViewCompany) && _authorizationService.CanViewCompany(principal))
+        if (permissions.Contains(Permissions.ViewCompany) && _authorizationService.CanViewCompany(principal))
         {
-            result.Add(Policies.ViewCompany);
+            result.Add(Permissions.ViewCompany);
         }
-        if (permissions.Contains(Policies.DeleteCompany) && _authorizationService.CanDeleteCompany(principal))
+        if (permissions.Contains(Permissions.DeleteCompany) && _authorizationService.CanDeleteCompany(principal))
         {
-            result.Add(Policies.DeleteCompany);
+            result.Add(Permissions.DeleteCompany);
         }
 
         return result.ToArray();
