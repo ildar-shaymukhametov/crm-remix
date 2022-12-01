@@ -316,7 +316,7 @@ test.describe("edit company", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    await runAsDefaultUser({ claims: ["company.update", "company.view"] });
+    await runAsDefaultUser({ claims: ["company.update"] });
     const company = await createCompany();
     await page.goto(routes.companies.edit(company.id));
 
@@ -358,7 +358,7 @@ test.describe("edit company", () => {
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
-    await runAsDefaultUser({ claims: ["company.update", "company.view"] });
+    await runAsDefaultUser({ claims: ["company.update"] });
     await page.goto(routes.companies.edit(1));
 
     await expectMinimalUi(page, undefined, {
@@ -450,7 +450,7 @@ test.describe("delete company", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    await runAsDefaultUser({ claims: ["company.delete", "company.view"] });
+    await runAsDefaultUser({ claims: ["company.delete"] });
     const company = await createCompany();
     await page.goto(routes.companies.delete(company.id));
 
@@ -469,7 +469,7 @@ test.describe("delete company", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    await runAsDefaultUser({ claims: ["company.delete", "company.view"] });
+    await runAsDefaultUser({ claims: ["company.delete"] });
     const company = await createCompany();
     await page.goto(routes.companies.delete(company.id));
 
@@ -482,7 +482,7 @@ test.describe("delete company", () => {
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
-    await runAsDefaultUser({ claims: ["company.delete", "company.view"] });
+    await runAsDefaultUser({ claims: ["company.delete"] });
     await page.goto(routes.companies.delete(1));
 
     await expectMinimalUi(page, undefined, {

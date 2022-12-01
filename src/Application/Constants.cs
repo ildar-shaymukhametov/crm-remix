@@ -20,6 +20,15 @@ public static class Constants
         public const string ViewCompany = "ViewCompany";
     }
 
+    public static class Permissions
+    {
+        public const string UpdateCompany = "UpdateCompany";
+        public const string CreateCompany = "CreateCompany";
+        public const string DeleteCompany = "DeleteCompany";
+        public const string GetCompany = "GetCompany";
+        public const string ViewCompany = "ViewCompany";
+    }
+
     public static class Roles
     {
         public const string Administrator = "Administrator";

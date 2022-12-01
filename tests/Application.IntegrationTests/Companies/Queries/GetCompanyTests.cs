@@ -22,12 +22,15 @@ public class GetCompanyTests : BaseTest
         Assert.Equal(company.Id, result.Id);
     }
 
-    [Fact]
-    public async Task User_has_claim___Returns_company()
+    [Theory]
+    [InlineData(Constants.Claims.ViewCompany)]
+    [InlineData(Constants.Claims.DeleteCompany)]
+    [InlineData(Constants.Claims.UpdateCompany)]
+    public async Task User_has_claim___Returns_company(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new []
+        await _fixture.RunAsDefaultUserAsync(new []
         {
-            Utils.CreateAuthorizationClaim(Constants.Claims.ViewCompany)
+            Utils.CreateAuthorizationClaim(claim)
         });
 
         var company = Faker.Builders.Company();

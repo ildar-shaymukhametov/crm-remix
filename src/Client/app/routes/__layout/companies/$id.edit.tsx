@@ -19,7 +19,7 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request, {
-    permissions: [permissions.updateCompany, permissions.viewCompany]
+    permissions: [permissions.updateCompany]
   });
   if (!user.permissions.includes(permissions.updateCompany)) {
     throw new Response(null, { status: 403 });
