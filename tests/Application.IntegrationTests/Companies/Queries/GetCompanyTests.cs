@@ -25,6 +25,7 @@ public class GetCompanyTests : BaseTest
     [Theory]
     [InlineData(Constants.Claims.ViewCompany)]
     [InlineData(Constants.Claims.DeleteCompany)]
+    [InlineData(Constants.Claims.UpdateCompany)]
     public async Task User_has_claim___Returns_company(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(new []
