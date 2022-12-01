@@ -15,7 +15,7 @@ public class UserAuthorizationService : IUserAuthorizationService
 {
     public bool CanViewCompany(ClaimsPrincipal principal)
     {
-        return IsAdmin(principal) || HasClaim(principal, Claims.ViewCompany);
+        return IsAdmin(principal) || HasClaim(principal, Claims.ViewCompany, Claims.DeleteCompany);
     }
 
     public bool CanUpdateCompany(ClaimsPrincipal principal)
@@ -38,8 +38,8 @@ public class UserAuthorizationService : IUserAuthorizationService
         return user.IsInRole(Roles.Administrator);
     }
 
-    private bool HasClaim(ClaimsPrincipal user, string claimValue)
+    private bool HasClaim(ClaimsPrincipal user, params string[] claimValues)
     {
-        return user.HasClaim(x => x.Value == claimValue);
+        return user.Claims.Any(x => claimValues.Contains(x.Value));
     }
 }
