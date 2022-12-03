@@ -18,7 +18,7 @@ public class PermissionsService : IPermissionsService
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
     }
 
-    public async Task<string[]> CheckUserPermissionsAsync(string userId, string[] permissions)
+    public async Task<string[]> CheckUserPermissionsAsync(string userId, params string[] permissions)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
