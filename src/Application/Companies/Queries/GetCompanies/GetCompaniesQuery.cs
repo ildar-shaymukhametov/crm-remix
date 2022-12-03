@@ -14,25 +14,26 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
-    private readonly IPermissionsService _permissionsService;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IIdentityService _identityService;
 
-    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, IPermissionsService permissionsService, ICurrentUserService currentUserService)
+    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IIdentityService identityService)
     {
-        _permissionsService = permissionsService;
         _currentUserService = currentUserService;
+        _identityService = identityService;
         _dbContext = dbContext;
         _mapper = mapper;
     }
 
     public async Task<CompanyDto[]> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
     {
-        var permissions = await _permissionsService.CheckUserPermissionsAsync(_currentUserService.UserId!, new[] { "ViewCompany" });
 
-        if (permissions.Contains("ViewCompany"))
+        var claims = await _identityService.GetUserAuthorizationClaimsAsync(_currentUserService.UserId!);
+        if (claims.Contains(Constants.Claims.ViewCompany) || claims.Contains(Constants.Claims.DeleteCompany) || claims.Contains(Constants.Claims.UpdateCompany))
         {
             return await _dbContext.Companies
                 .AsNoTracking()
+                .Where(x => x.ManagerId == _currentUserService.UserId)
                 .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
                 .ToArrayAsync(cancellationToken);
         }
