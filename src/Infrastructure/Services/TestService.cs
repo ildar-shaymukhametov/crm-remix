@@ -32,6 +32,7 @@ public class TestService : ITestService
                 "Keys",
                 "PersistedGrants",
                 "AspNetUsers",
+                "ApplicationUsers",
                 "UserClaimTypes"
             }
         });
