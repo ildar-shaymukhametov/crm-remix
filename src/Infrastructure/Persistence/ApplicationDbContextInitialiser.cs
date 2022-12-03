@@ -1,4 +1,5 @@
-﻿using CRM.Infrastructure.Identity;
+﻿using CRM.Application.Common.Interfaces;
+using CRM.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -11,13 +12,15 @@ public class ApplicationDbContextInitialiser
     private readonly ApplicationDbContext _context;
     private readonly UserManager<AspNetUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IIdentityService _identityService;
 
-    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<AspNetUser> userManager, RoleManager<IdentityRole> roleManager)
+    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<AspNetUser> userManager, RoleManager<IdentityRole> roleManager, IIdentityService identityService)
     {
         _logger = logger;
         _context = context;
         _userManager = userManager;
         _roleManager = roleManager;
+        _identityService = identityService;
     }
 
     public async Task InitialiseAsync()
@@ -79,12 +82,12 @@ public class ApplicationDbContextInitialiser
         }
 
         // Default users
-        var administrator = new AspNetUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
-
-        if (_userManager.Users.All(u => u.UserName != administrator.UserName))
+        var userName = "administrator@localhost";
+        if (_userManager.Users.All(u => u.UserName != userName))
         {
-            await _userManager.CreateAsync(administrator, "Administrator1!");
-            await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name, testerRole.Name });
+            var (result, userId) = await _identityService.CreateUserAsync(userName, "Administrator1!");
+            var user = await _userManager.FindByIdAsync(userId);
+            await _userManager.AddToRolesAsync(user, new[] { administratorRole.Name, testerRole.Name });
         }
     }
 
@@ -99,12 +102,12 @@ public class ApplicationDbContextInitialiser
         }
 
         // Default users
-        var defaultUser = new AspNetUser { UserName = "tester@localhost", Email = "tester@localhost" };
-
-        if (_userManager.Users.All(u => u.UserName != defaultUser.UserName))
+        var userName = "tester@localhost";
+        if (_userManager.Users.All(u => u.UserName != userName))
         {
-            await _userManager.CreateAsync(defaultUser, "Tester1!");
-            await _userManager.AddToRolesAsync(defaultUser, new[] { testerRole.Name });
+            var (result, userId) = await _identityService.CreateUserAsync(userName, "Tester1!");
+            var user = await _userManager.FindByIdAsync(userId);
+            await _userManager.AddToRolesAsync(user, new[] { testerRole.Name });
         }
     }
 }

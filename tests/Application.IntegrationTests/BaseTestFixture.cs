@@ -161,4 +161,9 @@ public class BaseTestFixture
 
         return await context.Set<TEntity>().CountAsync();
     }
+
+    public IServiceScope GetServiceScope()
+    {
+        return _scopeFactory.CreateScope();
+    }
 }
