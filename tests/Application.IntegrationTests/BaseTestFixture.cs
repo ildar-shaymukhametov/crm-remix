@@ -55,25 +55,25 @@ public class BaseTestFixture
 
     public async Task<ApplicationUser> RunAsDefaultUserAsync()
     {
-        return await RunAsDefaultUserAsync(Array.Empty<Claim>());
+        return await RunAsDefaultUserAsync(Array.Empty<string>());
     }
 
-    public async Task<ApplicationUser> RunAsDefaultUserAsync(Claim[] claims)
+    public async Task<ApplicationUser> RunAsDefaultUserAsync(string[] claims)
     {
         return await RunAsUserAsync("test@local", "Testing1234!", Array.Empty<string>(), claims);
     }
 
-    public async Task<ApplicationUser> RunAsDefaultUserAsync(Claim[] claims, string[] roles)
+    public async Task<ApplicationUser> RunAsDefaultUserAsync(string[] claims, string[] roles)
     {
         return await RunAsUserAsync("test@local", "Testing1234!", roles, claims);
     }
 
     public async Task<ApplicationUser> RunAsAdministratorAsync()
     {
-        return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Constants.Roles.Administrator }, Array.Empty<Claim>());
+        return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Constants.Roles.Administrator }, Array.Empty<string>());
     }
 
-    public async Task<ApplicationUser> RunAsUserAsync(string userName, string password, string[] roles, Claim[] claims)
+    public async Task<ApplicationUser> RunAsUserAsync(string userName, string password, string[] roles, string[] claims)
     {
         using var scope = _scopeFactory.CreateScope();
 
@@ -95,7 +95,7 @@ public class BaseTestFixture
 
         if (claims.Any())
         {
-            await userManager.AddClaimsAsync(user, claims);
+            await userManager.AddClaimsAsync(user, claims.Select(x => new Claim(Constants.Claims.ClaimType, x)));
         }
 
         if (result.Succeeded)
