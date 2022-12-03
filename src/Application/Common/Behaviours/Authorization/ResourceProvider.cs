@@ -2,6 +2,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CRM.Application.Common.Behaviours.Authorization.Resources;
 using CRM.Application.Common.Interfaces;
+using CRM.Application.Companies.Commands.DeleteCompany;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Application.Companies.Queries.GetCompany;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,7 @@ public class ResourceProvider : IResourceProvider
         {
             Constants.Policies.GetCompany when request is GetCompanyQuery query => await GetCompanyAsync(query.Id),
             Constants.Policies.UpdateCompany when request is UpdateCompanyCommand query => await GetCompanyAsync(query.Id),
+            Constants.Policies.DeleteCompany when request is DeleteCompanyCommand query => await GetCompanyAsync(query.Id),
             _ => null,
         };
     }
