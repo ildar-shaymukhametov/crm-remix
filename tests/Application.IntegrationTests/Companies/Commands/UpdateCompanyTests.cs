@@ -18,14 +18,14 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim___Updates_company()
+    public async Task User_has_claim_and_is_manager___Updates_company()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new []
         {
             Constants.Claims.UpdateCompany
         });
 
-        var company = Faker.Builders.Company();
+        var company = Faker.Builders.Company(managerId: user.Id);
         await _fixture.AddAsync(company);
 
         var manager = await _fixture.CreateUserAsync();
@@ -37,6 +37,23 @@ public class UpdateCompanyTests : BaseTest
         Assert.Equal(user.Id, company.LastModifiedBy);
         command.Should().BeEquivalentTo(updatedCompany, options =>
             options.ExcludingNestedObjects().ExcludingMissingMembers());
+    }
+
+    [Fact]
+    public async Task User_has_claim_and_is_not_manager___Throws_forbidden_access()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Constants.Claims.UpdateCompany
+        });
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var manager = await _fixture.CreateUserAsync();
+        var command = CreateCommand(company.Id, managerId: manager.Id);
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]

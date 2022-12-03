@@ -2,6 +2,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CRM.Application.Common.Behaviours.Authorization.Resources;
 using CRM.Application.Common.Interfaces;
+using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Application.Companies.Queries.GetCompany;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,11 +28,17 @@ public class ResourceProvider : IResourceProvider
     {
         return policy switch
         {
-            Constants.Policies.GetCompany when request is GetCompanyQuery query => await _dbContext.Companies
-                .Where(x => x.Id == query.Id)
-                .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync(),
+            Constants.Policies.GetCompany when request is GetCompanyQuery query => await GetCompanyAsync(query.Id),
+            Constants.Policies.UpdateCompany when request is UpdateCompanyCommand query => await GetCompanyAsync(query.Id),
             _ => null,
         };
+    }
+
+    private async Task<CompanyDto?> GetCompanyAsync(int id)
+    {
+        return await _dbContext.Companies
+            .Where(x => x.Id == id)
+            .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync();
     }
 }
