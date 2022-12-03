@@ -28,9 +28,9 @@ public class GetCompanyTests : BaseTest
     [InlineData(Constants.Claims.UpdateCompany)]
     public async Task User_has_claim___Returns_company(string claim)
     {
-        await _fixture.RunAsDefaultUserAsync(new []
+        await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Utils.CreateAuthorizationClaim(claim)
+            claim
         });
 
         var company = Faker.Builders.Company();

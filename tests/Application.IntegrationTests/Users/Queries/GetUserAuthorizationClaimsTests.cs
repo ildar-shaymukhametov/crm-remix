@@ -12,7 +12,7 @@ public class GetUserAuthorizationClaimsTests : BaseTest
     {
         var initialClaims = new[]
         {
-            Utils.CreateAuthorizationClaim(Faker.Name.First())
+            Faker.Name.First()
         };
 
         await _fixture.RunAsDefaultUserAsync(initialClaims);
@@ -20,6 +20,6 @@ public class GetUserAuthorizationClaimsTests : BaseTest
 
         var claims = await _fixture.SendAsync(request);
 
-        Assert.Equal(initialClaims.Select(x => x.Value), claims);
+        Assert.Equal(initialClaims, claims);
     }
 }

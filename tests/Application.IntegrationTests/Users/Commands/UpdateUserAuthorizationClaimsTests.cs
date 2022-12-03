@@ -12,7 +12,7 @@ public class UpdateUserAuthorizationClaimsTests : BaseTest
     {
         var initialClaims = new []
         {
-            Utils.CreateAuthorizationClaim(Faker.Name.First())
+            Faker.Name.First()
         };
 
         var user = await _fixture.RunAsDefaultUserAsync(initialClaims);
