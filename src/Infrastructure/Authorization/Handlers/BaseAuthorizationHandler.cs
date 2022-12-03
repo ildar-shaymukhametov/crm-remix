@@ -22,5 +22,10 @@ public abstract class BaseAuthorizationHandler<TRequirement> : AuthorizationHand
     {
         return context.User.HasClaim(x => x.Value == claimValue);
     }
+
+    protected bool HasAnyClaim(AuthorizationHandlerContext context, params string[] claimValues)
+    {
+        return context.User.Claims.Any(x => claimValues.Contains(x.Value));
+    }
 }
 

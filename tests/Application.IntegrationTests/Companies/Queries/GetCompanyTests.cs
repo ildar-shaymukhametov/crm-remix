@@ -11,11 +11,9 @@ public class GetCompanyTests : BaseTest
     [InlineData(Constants.Claims.ViewCompany)]
     [InlineData(Constants.Claims.DeleteCompany)]
     [InlineData(Constants.Claims.UpdateCompany)]
-    public async Task User_has_claim_and_is_manager__Returns_company(string claim)
+    public async Task User_has_claim_and_is_manager___Returns_company(string claim)
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { claim });
-
-        var user = await _fixture.CreateUserAsync();
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = Faker.Builders.Company(managerId: user.Id);
         await _fixture.AddAsync(company);
 
@@ -23,6 +21,21 @@ public class GetCompanyTests : BaseTest
         var result = await _fixture.SendAsync(request);
 
         Assert.Equal(company.Id, result.Id);
+    }
+
+    [Theory]
+    [InlineData(Constants.Claims.ViewCompany)]
+    [InlineData(Constants.Claims.DeleteCompany)]
+    [InlineData(Constants.Claims.UpdateCompany)]
+    public async Task User_has_claim_and_is_not_manager___Throws_forbidden_access(string claim)
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { claim });
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var request = new GetCompanyQuery { Id = company.Id };
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
     }
 
     [Fact]

@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using CRM.Application.Common.Behaviours;
+using CRM.Application.Common.Behaviours.Authorization;
 using FluentValidation;
 using MediatR;
 
@@ -16,6 +17,7 @@ public static class ConfigureServices
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
+        services.AddScoped<IResourceProvider, ResourceProvider>();
 
         return services;
     }

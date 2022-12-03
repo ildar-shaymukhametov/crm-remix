@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using CRM.Application.Common.Behaviours.Authorization;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
@@ -10,11 +11,13 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
 {
     private readonly ICurrentUserService _currentUserService;
     private readonly IIdentityService _identityService;
+    private readonly IResourceProvider _resourceProvider;
 
-    public AuthorizationBehaviour(ICurrentUserService currentUserService, IIdentityService identityService)
+    public AuthorizationBehaviour(ICurrentUserService currentUserService, IIdentityService identityService, IResourceProvider resourceProvider)
     {
         _currentUserService = currentUserService;
         _identityService = identityService;
+        _resourceProvider = resourceProvider;
     }
 
     public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
@@ -62,7 +65,8 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
             {
                 foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
                 {
-                    var authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, policy);
+                    var resource = await _resourceProvider.GetResourceAsync(policy, request);
+                    var authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, resource, policy);
                     if (!authorized)
                     {
                         throw new ForbiddenAccessException();
