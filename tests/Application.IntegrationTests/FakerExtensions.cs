@@ -1,6 +1,4 @@
-﻿using CRM.Domain.Entities;
-
-namespace Faker;
+﻿namespace Faker;
 
 public static class Date
 {
@@ -24,7 +22,7 @@ public static class Date
 
 public static class Builders
 {
-    public static CRM.Domain.Entities.Company Company()
+    public static CRM.Domain.Entities.Company Company(string? managerId = null)
     {
         var result = new CRM.Domain.Entities.Company
         {
@@ -36,7 +34,8 @@ public static class Builders
             Phone = Faker.Phone.Number(),
             Email = Faker.Internet.Email(),
             Contacts = Faker.Internet.FreeEmail(),
-            CreatedAtUtc = Faker.Date.RandomDateTimeUtc()
+            CreatedAtUtc = Faker.Date.RandomDateTimeUtc(),
+            ManagerId = managerId
         };
 
         return result;

@@ -79,9 +79,10 @@ public class BaseTestFixture
     {
         using var scope = _scopeFactory.CreateScope();
 
+        var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
+        var (result, userId) = await identityService.CreateUserAsync(userName, password);
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
-        var user = new AspNetUser { UserName = userName, Email = userName };
-        var result = await userManager.CreateAsync(user, password);
+        var user = await userManager.FindByIdAsync(userId);
 
         if (roles.Any())
         {
@@ -107,7 +108,7 @@ public class BaseTestFixture
             return user;
         }
 
-        var errors = string.Join(Environment.NewLine, result.ToApplicationResult().Errors);
+        var errors = string.Join(Environment.NewLine, result.Errors);
 
         throw new Exception($"Unable to create {userName}.{Environment.NewLine}{errors}");
     }
