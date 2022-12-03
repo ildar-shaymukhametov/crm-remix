@@ -1,4 +1,3 @@
-using Application.IntegrationTests;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Queries.GetCompany;
 
@@ -8,32 +7,16 @@ public class GetCompanyTests : BaseTest
 {
     public GetCompanyTests(BaseTestFixture fixture) : base(fixture) { }
 
-    [Fact]
-    public async Task User_is_admin___Returns_company()
-    {
-        var user = await _fixture.RunAsAdministratorAsync();
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
-
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
-
-        Assert.Equal(company.Id, result.Id);
-    }
-
     [Theory]
     [InlineData(Constants.Claims.ViewCompany)]
     [InlineData(Constants.Claims.DeleteCompany)]
     [InlineData(Constants.Claims.UpdateCompany)]
-    public async Task User_has_claim___Returns_company(string claim)
+    public async Task User_has_claim_and_is_manager__Returns_company(string claim)
     {
-        await _fixture.RunAsDefaultUserAsync(new[]
-        {
-            claim
-        });
+        await _fixture.RunAsDefaultUserAsync(new[] { claim });
 
-        var company = Faker.Builders.Company();
+        var user = await _fixture.CreateUserAsync();
+        var company = Faker.Builders.Company(managerId: user.Id);
         await _fixture.AddAsync(company);
 
         var request = new GetCompanyQuery { Id = company.Id };
