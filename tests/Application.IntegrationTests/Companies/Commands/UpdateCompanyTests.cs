@@ -1,4 +1,3 @@
-using Application.IntegrationTests;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Domain.Entities;
@@ -19,24 +18,6 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_is_admin___Updates_company()
-    {
-        var user = await _fixture.RunAsAdministratorAsync();
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
-
-        var command = CreateCommand(company.Id);
-        await _fixture.SendAsync(command);
-        var updatedCompany = await _fixture.FindAsync<Company>(company.Id);
-
-        Assert.Equal(BaseTestFixture.UtcNow, company.LastModifiedAtUtc);
-        Assert.Equal(user.Id, company.LastModifiedBy);
-        command.Should().BeEquivalentTo(updatedCompany, options =>
-            options.ExcludingNestedObjects().ExcludingMissingMembers());
-    }
-
-    [Fact]
     public async Task User_has_claim___Updates_company()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new []
@@ -47,7 +28,8 @@ public class UpdateCompanyTests : BaseTest
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
 
-        var command = CreateCommand(company.Id);
+        var manager = await _fixture.CreateUserAsync();
+        var command = CreateCommand(company.Id, managerId: manager.Id);
         await _fixture.SendAsync(command);
         var updatedCompany = await _fixture.FindAsync<Company>(company.Id);
 
@@ -70,7 +52,7 @@ public class UpdateCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    private static UpdateCompanyCommand CreateCommand(int id)
+    private static UpdateCompanyCommand CreateCommand(int id, string? managerId = null)
     {
         var data = Faker.Builders.Company();
         var command = new UpdateCompanyCommand
@@ -83,7 +65,8 @@ public class UpdateCompanyTests : BaseTest
             Inn = data.Inn,
             Name = data.Name,
             Phone = data.Phone,
-            Type = data.Type
+            Type = data.Type,
+            ManagerId = managerId
         };
 
         return command;
