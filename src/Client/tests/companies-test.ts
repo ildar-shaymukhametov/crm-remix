@@ -3,14 +3,18 @@ import { faker } from "@faker-js/faker";
 import type { Company } from "~/utils/companies.server";
 import { createCompany } from "~/utils/companies.server";
 
+type CreateCompanyOptions = {
+  managerId?: string
+};
+
 export const test = base.extend<{
-  createCompany: () => Promise<Company>;
+  createCompany: (options?: CreateCompanyOptions) => Promise<Company>;
 }>({
   createCompany: [
     async ({ page }, use) => {
-      use(async () => {
+      use(async (options = {}) => {
         const accessToken = await getAdminAccessToken(page);
-        const company = buildCompany();
+        const company = buildCompany(options);
         const id = await createCompany(
           new Request("http://foobar.com"),
           company,
@@ -25,7 +29,7 @@ export const test = base.extend<{
   ]
 });
 
-export function buildCompany(): Company {
+export function buildCompany(options: CreateCompanyOptions = {}): Company {
   return {
     address: faker.address.streetAddress(),
     ceo: faker.name.fullName(),
@@ -35,6 +39,7 @@ export function buildCompany(): Company {
     inn: faker.random.numeric(10),
     name: faker.company.name(),
     phone: faker.phone.number(),
-    type: faker.helpers.arrayElement(["ООО", "АО", "ПАО", "ИП"])
+    type: faker.helpers.arrayElement(["ООО", "АО", "ПАО", "ИП"]),
+    managerId: options.managerId
   };
 }

@@ -17,14 +17,16 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
+  invariant(params.id, "Missing id parameter");
+
   const user = await auth.requireUser(request, {
+    key: params.id,
     permissions: [permissions.deleteCompany]
   });
   if (!user.permissions.includes(permissions.deleteCompany)) {
     throw new Response(null, { status: 403 });
   }
 
-  invariant(params.id, "Missing id parameter");
   const company = await getCompany(
     request,
     params.id,

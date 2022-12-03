@@ -89,6 +89,12 @@ public class IdentityService : IIdentityService
         return await AuthorizeAsync(userId, null, policyName);
     }
 
+    public async Task<bool> AuthorizeAsync(ClaimsPrincipal principal, string policyName)
+    {
+        var result = await _authorizationService.AuthorizeAsync(principal, policyName);
+        return result.Succeeded;
+    }
+
     public async Task<bool> AuthorizeAsync(string userId, object? resource, string policyName)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -100,8 +106,12 @@ public class IdentityService : IIdentityService
 
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
 
-        var result = await _authorizationService.AuthorizeAsync(principal, resource, policyName);
+        return await AuthorizeAsync(principal, resource, policyName);
+    }
 
+    public async Task<bool> AuthorizeAsync(ClaimsPrincipal principal, object? resource, string policyName)
+    {
+        var result = await _authorizationService.AuthorizeAsync(principal, resource, policyName);
         return result.Succeeded;
     }
 

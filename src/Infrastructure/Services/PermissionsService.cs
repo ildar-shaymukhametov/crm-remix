@@ -1,3 +1,6 @@
+using CRM.Application.Common.Behaviours.Authorization;
+using CRM.Application.Common.Exceptions;
+using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -7,18 +10,20 @@ namespace CRM.Infrastructure.Services;
 
 public class PermissionsService : IPermissionsService
 {
-    private readonly IUserAuthorizationService _authorizationService;
     private readonly UserManager<AspNetUser> _userManager;
     private readonly IUserClaimsPrincipalFactory<AspNetUser> _userClaimsPrincipalFactory;
+    private readonly IIdentityService _identityService;
+    private readonly IResourceProvider _resourceProvider;
 
-    public PermissionsService(IUserAuthorizationService authorizationService, UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory)
+    public PermissionsService(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory, IIdentityService identityService, IResourceProvider resourceProvider)
     {
-        _authorizationService = authorizationService;
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
+        _identityService = identityService;
+        _resourceProvider = resourceProvider;
     }
 
-    public async Task<string[]> CheckUserPermissionsAsync(string userId, params string[] permissions)
+    public async Task<string[]> CheckUserPermissionsAsync(string userId, string? resourceKey, params string[] permissions)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -29,21 +34,26 @@ public class PermissionsService : IPermissionsService
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
         var result = new List<string>();
 
-        if (permissions.Contains(Permissions.CreateCompany) && _authorizationService.CanCreateCompany(principal))
+        if (permissions.Contains(Permissions.CreateCompany) && await _identityService.AuthorizeAsync(principal, Policies.CreateCompany))
         {
             result.Add(Permissions.CreateCompany);
         }
-        if (permissions.Contains(Permissions.UpdateCompany) && _authorizationService.CanUpdateCompany(principal))
+
+        if (permissions.ContainsAny(Permissions.UpdateCompany, Permissions.ViewCompany, Permissions.DeleteCompany) && int.TryParse(resourceKey, out var id))
         {
-            result.Add(Permissions.UpdateCompany);
-        }
-        if (permissions.Contains(Permissions.ViewCompany) && _authorizationService.CanViewCompany(principal))
-        {
-            result.Add(Permissions.ViewCompany);
-        }
-        if (permissions.Contains(Permissions.DeleteCompany) && _authorizationService.CanDeleteCompany(principal))
-        {
-            result.Add(Permissions.DeleteCompany);
+            var resource = await _resourceProvider.GetCompanyAsync(id) ?? throw new NotFoundException("Company", id);
+            if (permissions.Contains(Permissions.UpdateCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.UpdateCompany))
+            {
+                result.Add(Permissions.UpdateCompany);
+            }
+            if (permissions.Contains(Permissions.ViewCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.GetCompany))
+            {
+                result.Add(Permissions.ViewCompany);
+            }
+            if (permissions.Contains(Permissions.DeleteCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.DeleteCompany))
+            {
+                result.Add(Permissions.DeleteCompany);
+            }
         }
 
         return result.ToArray();

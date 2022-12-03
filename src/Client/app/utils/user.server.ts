@@ -1,12 +1,22 @@
 import { handleErrorResponse } from "./utils";
 
+export type ResourcePermissions = {
+  key?: string;
+  permissions: string[];
+};
+
 export async function getUserPermissions(
   request: Request,
-  requestedPermissions: string[],
+  resource: ResourcePermissions,
   accessToken: string
 ): Promise<string[]> {
   const params: string[][] = [];
-  requestedPermissions.forEach(x => params.push(["q", x]));
+  resource.permissions.forEach(x => params.push(["q", x]));
+
+  if (resource.key) {
+    params.push(["resourceKey", resource.key]);
+  }
+
   const query = new URLSearchParams(params);
 
   const response = await fetch(

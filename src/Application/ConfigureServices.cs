@@ -18,6 +18,7 @@ public static class ConfigureServices
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
         services.AddScoped<IResourceProvider, ResourceProvider>();
+        services.AddScoped<IRequestResourceProvider, RequestResourceProvider>();
 
         return services;
     }

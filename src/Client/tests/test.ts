@@ -60,7 +60,8 @@ async function runAsDefaultUser(
     baseURL,
     "tester@localhost",
     "Tester1!",
-    options.accessToken
+    "f3ad4d5d-1ebe-4c22-8570-ca237fd1c7c4",
+    options.accessToken,
   );
   if (options.claims && options.claims.length > 0) {
     await updateAuthorizationClaims(
@@ -73,7 +74,13 @@ async function runAsDefaultUser(
 }
 
 function runAsAdministrator(page: Page, baseURL: string) {
-  return login(page, baseURL, "administrator@localhost", "Administrator1!");
+  return login(
+    page,
+    baseURL,
+    "administrator@localhost",
+    "Administrator1!",
+    "0ad62604-08dc-400b-b1f8-4cdb7f2e7674"
+  );
 }
 
 async function login(
@@ -81,9 +88,10 @@ async function login(
   baseURL: string,
   username: string,
   password: string,
-  accessToken?: string
+  id: string,
+  accessToken?: string,
 ) {
-  const user = createUser();
+  const user = createUser(id);
   user.extra.access_token =
     accessToken ?? (await getAccessToken(page, username, password));
 
@@ -165,10 +173,10 @@ async function requestAccessToken(
   return access_token as string;
 }
 
-function createUser(): OidcProfile {
+function createUser(id: string): OidcProfile {
   return {
     displayName: "test@localhost",
-    id: "testUser",
+    id: id,
     name: {
       familyName: "",
       givenName: "",

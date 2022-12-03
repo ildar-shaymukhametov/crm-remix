@@ -9,10 +9,11 @@ namespace CRM.Application.Users.Queries.GetUserPermissions;
 public record GetUserPermissionsQuery : IRequest<GetUserPermissionsQueryResponse>
 {
     public string[] RequestedPermissions { get; set; } = Array.Empty<string>();
+    public string? ResourceKey { get; set; }
 
     protected virtual bool PrintMembers(StringBuilder stringBuilder)
     {
-        stringBuilder.Append($"{nameof(RequestedPermissions)} = [{string.Join(", ", RequestedPermissions)}]");
+        stringBuilder.Append($"{nameof(ResourceKey)} = {ResourceKey}, {nameof(RequestedPermissions)} = [{string.Join(", ", RequestedPermissions)}]");
         return true;
     }
 }
@@ -32,7 +33,7 @@ public class GetUserPermissionsQueryHandler : IRequestHandler<GetUserPermissions
     {
         return new GetUserPermissionsQueryResponse
         {
-            Permissions = await _permissionsService.CheckUserPermissionsAsync(_currentUserService.UserId!, request.RequestedPermissions)
+            Permissions = await _permissionsService.CheckUserPermissionsAsync(_currentUserService.UserId!, request.ResourceKey, request.RequestedPermissions)
         };
     }
 }

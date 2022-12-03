@@ -23,8 +23,12 @@ public class UserController : ApiControllerBase
 
     [HttpGet]
     [Route("Permissions")]
-    public async Task<ActionResult> GetPermissions([FromQuery] string[] q)
+    public async Task<ActionResult> GetPermissions([FromQuery] string[] q, string? resourceKey)
     {
-        return Ok(await Mediator.Send(new GetUserPermissionsQuery { RequestedPermissions = q }));
+        return Ok(await Mediator.Send(new GetUserPermissionsQuery
+        {
+            ResourceKey = resourceKey,
+            RequestedPermissions = q
+        }));
     }
 }

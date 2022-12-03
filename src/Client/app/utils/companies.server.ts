@@ -32,6 +32,7 @@ export type Company = {
   phone: string;
   email: string;
   contacts: string;
+  managerId?: string;
 };
 
 export async function getCompany(
