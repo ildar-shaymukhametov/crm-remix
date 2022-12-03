@@ -120,7 +120,7 @@ namespace CRM.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("CRM.Infrastructure.Identity.ApplicationUser", b =>
+            modelBuilder.Entity("CRM.Infrastructure.Identity.AspNetUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -474,7 +474,7 @@ namespace CRM.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("CRM.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("CRM.Infrastructure.Identity.AspNetUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -483,7 +483,7 @@ namespace CRM.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("CRM.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("CRM.Infrastructure.Identity.AspNetUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -498,7 +498,7 @@ namespace CRM.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CRM.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("CRM.Infrastructure.Identity.AspNetUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -507,7 +507,7 @@ namespace CRM.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("CRM.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("CRM.Infrastructure.Identity.AspNetUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

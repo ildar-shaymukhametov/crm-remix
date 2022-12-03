@@ -8,10 +8,10 @@ namespace CRM.Infrastructure.Services;
 public class PermissionsService : IPermissionsService
 {
     private readonly IUserAuthorizationService _authorizationService;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
+    private readonly UserManager<AspNetUser> _userManager;
+    private readonly IUserClaimsPrincipalFactory<AspNetUser> _userClaimsPrincipalFactory;
 
-    public PermissionsService(IUserAuthorizationService authorizationService, UserManager<ApplicationUser> userManager, IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory)
+    public PermissionsService(IUserAuthorizationService authorizationService, UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory)
     {
         _authorizationService = authorizationService;
         _userManager = userManager;

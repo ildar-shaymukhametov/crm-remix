@@ -31,7 +31,7 @@ public class TestService : ITestService
                 "DeviceCodes",
                 "Keys",
                 "PersistedGrants",
-                "ApplicationUsers",
+                "AspNetUsers",
                 "UserClaimTypes"
             }
         });
