@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using CRM.Application.Common.Interfaces;
+using CRM.Domain.Entities;
 using CRM.Infrastructure.Identity;
 using CRM.Infrastructure.Persistence;
 using MediatR;
@@ -165,5 +167,13 @@ public class BaseTestFixture
     public IServiceScope GetServiceScope()
     {
         return _scopeFactory.CreateScope();
+    }
+
+    public async Task<ApplicationUser> CreateUserAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IIdentityService>();
+        var (result, userId) = await service.CreateUserAsync(Faker.Internet.Email(), "Foobar1!");
+        return await FindAsync<ApplicationUser>(userId) ?? throw new InvalidOperationException("Failed to create a user");
     }
 }

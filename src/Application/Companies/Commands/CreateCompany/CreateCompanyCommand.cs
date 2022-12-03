@@ -18,6 +18,7 @@ public record CreateCompanyCommand : IRequest<int>
     public string? Phone { get; set; }
     public string? Email { get; set; }
     public string? Contacts { get; set; }
+    public string? ManagerId { get; set; }
 }
 
 public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand, int>

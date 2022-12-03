@@ -1,4 +1,3 @@
-using Application.IntegrationTests;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Commands.CreateCompany;
 using CRM.Domain.Entities;
@@ -18,21 +17,6 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_is_admin___Creates_company()
-    {
-        var user = await _fixture.RunAsAdministratorAsync();
-
-        var command = CreateCommand();
-        var companyId = await _fixture.SendAsync(command);
-        var company = await _fixture.FindAsync<Company>(companyId);
-
-        Assert.NotNull(company);
-        Assert.Equal(companyId, company!.Id);
-        Assert.Equal(BaseTestFixture.UtcNow, company.CreatedAtUtc);
-        Assert.Equal(user.Id, company.CreatedBy);
-    }
-
-    [Fact]
     public async Task User_has_claim___Creates_company()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new []
@@ -40,7 +24,9 @@ public class CreateCompanyTests : BaseTest
             Constants.Claims.CreateCompany
         });
 
-        var command = CreateCommand();
+        var manager = await _fixture.CreateUserAsync();
+        var command = CreateCommand(managerId: manager.Id);
+
         var companyId = await _fixture.SendAsync(command);
         var company = await _fixture.FindAsync<Company>(companyId);
 
@@ -48,6 +34,7 @@ public class CreateCompanyTests : BaseTest
         Assert.Equal(companyId, company!.Id);
         Assert.Equal(BaseTestFixture.UtcNow, company.CreatedAtUtc);
         Assert.Equal(user.Id, company.CreatedBy);
+        Assert.Equal(manager.Id, company.ManagerId);
     }
 
     [Fact]
@@ -59,7 +46,7 @@ public class CreateCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    public static CreateCompanyCommand CreateCommand()
+    public static CreateCompanyCommand CreateCommand(string? managerId = null)
     {
         var data = Faker.Builders.Company();
         var command = new CreateCompanyCommand
@@ -71,7 +58,8 @@ public class CreateCompanyTests : BaseTest
             Inn = data.Inn,
             Name = data.Name,
             Phone = data.Phone,
-            Type = data.Type
+            Type = data.Type,
+            ManagerId = managerId
         };
 
         return command;
