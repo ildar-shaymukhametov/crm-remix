@@ -104,6 +104,7 @@ export type CompanyIndex = {
   id: number;
   name: string;
   canBeEdited: boolean;
+  canBeDeleted: boolean;
 };
 
 export async function getCompanies(

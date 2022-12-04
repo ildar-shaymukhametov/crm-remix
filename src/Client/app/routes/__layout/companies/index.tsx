@@ -34,7 +34,20 @@ export default function CompaniesIndexRoute() {
             <li key={i}>
               <Link to={routes.companies.view(x.id)}>{x.name}</Link>
               {x.canBeEdited ? (
-                <Link to={routes.companies.edit(x.id)} aria-label="edit company">✏</Link>
+                <Link
+                  to={routes.companies.edit(x.id)}
+                  aria-label="edit company"
+                >
+                  ✏
+                </Link>
+              ) : null}
+              {x.canBeDeleted ? (
+                <Link
+                  to={routes.companies.delete(x.id)}
+                  aria-label="delete company"
+                >
+                  🗑
+                </Link>
               ) : null}
             </li>
           ))

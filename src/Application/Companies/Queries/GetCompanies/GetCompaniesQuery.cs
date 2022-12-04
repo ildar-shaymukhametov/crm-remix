@@ -39,6 +39,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             foreach (var item in list)
             {
                 item.CanBeEdited = true;
+                item.CanBeDeleted = true;
             }
 
             return list;
@@ -70,6 +71,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         foreach (var item in result)
         {
             item.CanBeEdited = claims.Contains(Claims.UpdateCompany);
+            item.CanBeDeleted = claims.Contains(Claims.DeleteCompany);
         }
 
         return result;
