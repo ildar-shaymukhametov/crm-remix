@@ -68,7 +68,7 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
                     var (resource, isResourceRequest) = await _requestResourceProvider.GetResourceAsync(request);
                     if (isResourceRequest && resource is null)
                     {
-                        throw new NotFoundException($"Resource from request {typeof(TRequest)}");
+                        throw new NotFoundException($"Resource request: {typeof(TRequest)}");
                     }
 
                     var authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, resource, policy);
