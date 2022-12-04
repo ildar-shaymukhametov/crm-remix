@@ -1,9 +1,11 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using static CRM.Application.Constants;
 
 namespace CRM.Application.Companies.Queries.GetCompanies;
 
@@ -27,17 +29,35 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
 
     public async Task<CompanyDto[]> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
     {
-
-        var claims = await _identityService.GetUserAuthorizationClaimsAsync(_currentUserService.UserId!);
-        if (claims.Contains(Constants.Claims.ViewCompany) || claims.Contains(Constants.Claims.DeleteCompany) || claims.Contains(Constants.Claims.UpdateCompany))
+        if (await _identityService.IsAdminAsync(_currentUserService.UserId!))
         {
             return await _dbContext.Companies
                 .AsNoTracking()
-                .Where(x => x.ManagerId == _currentUserService.UserId)
                 .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
                 .ToArrayAsync(cancellationToken);
         }
 
-        return Array.Empty<CompanyDto>();
+        var requiredClaims = new[]
+        {
+            Claims.ViewCompany,
+            Claims.DeleteCompany,
+            Claims.UpdateCompany
+        };
+
+        var claims = await _identityService.GetUserAuthorizationClaimsAsync(_currentUserService.UserId!);
+        if (!claims.ContainsAny(requiredClaims))
+        {
+            return Array.Empty<CompanyDto>();
+        }
+
+        var query = _dbContext.Companies.AsNoTracking();
+        if (claims.ContainsAny(Claims.ViewCompany, Claims.DeleteCompany, Claims.UpdateCompany))
+        {
+            query = query.Where(x => x.ManagerId == _currentUserService.UserId);
+        }
+
+        return await query
+            .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
+            .ToArrayAsync(cancellationToken);
     }
 }

@@ -151,4 +151,9 @@ public class IdentityService : IIdentityService
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
         return principal.Claims.Where(x => x.Type == Constants.Claims.ClaimType).Select(x => x.Value).ToArray();
     }
+
+    public async Task<bool> IsAdminAsync(string userId)
+    {
+        return await IsInRoleAsync(userId, Constants.Roles.Administrator);
+    }
 }

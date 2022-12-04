@@ -15,4 +15,5 @@ public interface IIdentityService
     Task<Result> DeleteUserAsync(string userId);
     Task<Result> UpdateAuthorizationClaimsAsync(string userId, string[] claims);
     Task<string[]> GetUserAuthorizationClaimsAsync(string userId);
+    Task<bool> IsAdminAsync(string userId);
 }
