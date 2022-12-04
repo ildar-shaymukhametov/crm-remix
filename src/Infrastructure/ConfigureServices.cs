@@ -25,7 +25,6 @@ public static class ConfigureServices
         services.AddScoped<ApplicationDbContextInitialiser>();
 
         services.AddAuthorizationHandlers();
-        services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
         services.AddScoped<IPermissionsService, PermissionsService>();
 
         services.AddSingleton<ITestService, TestService>();

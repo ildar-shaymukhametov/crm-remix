@@ -1,5 +1,4 @@
 using CRM.Application.Common.Behaviours.Authorization.Resources;
-using CRM.Infrastructure.Services;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using static CRM.Application.Constants;
@@ -10,8 +9,6 @@ public class UpdateCompanyRequirement : IAuthorizationRequirement { }
 
 public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<UpdateCompanyRequirement>
 {
-    public UpdateCompanyAuthorizationHandler(IUserAuthorizationService userAuthorizationService) : base(userAuthorizationService) { }
-
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
     {
         if (IsAdmin(context) || HasAnyClaim(context, Claims.UpdateCompany) && context.Resource is CompanyDto company && company.ManagerId == context.User.GetSubjectId())
