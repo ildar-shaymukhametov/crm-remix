@@ -23,6 +23,13 @@ public class PermissionsService : IPermissionsService
         _resourceProvider = resourceProvider;
     }
 
+    /// <summary>
+    /// Checks whether user has specific permissions.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="resourceKey">Optional resource id.</param>
+    /// <param name="permissions">Permissions to check.</param>
+    /// <returns>Permissions that passed the check.</returns>
     public async Task<string[]> CheckUserPermissionsAsync(string userId, string? resourceKey, params string[] permissions)
     {
         var user = await _userManager.FindByIdAsync(userId);
