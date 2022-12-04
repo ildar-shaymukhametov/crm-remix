@@ -1,6 +1,7 @@
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Commands.CreateCompany;
 using CRM.Domain.Entities;
+using CRM.Infrastructure.Identity;
 
 namespace CRM.Application.IntegrationTests.Companies;
 
@@ -17,16 +18,27 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Fact]
+    public async Task User_is_admin___Creates_company()
+    {
+        var user = await _fixture.RunAsAdministratorAsync();
+        await AssertCompanyCreatedAsync(user);
+    }
+
+    [Fact]
     public async Task User_has_claim___Creates_company()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new []
+        var user = await _fixture.RunAsDefaultUserAsync(new[]
         {
             Constants.Claims.CreateCompany
         });
 
+        await AssertCompanyCreatedAsync(user);
+    }
+
+    private async Task AssertCompanyCreatedAsync(AspNetUser user)
+    {
         var manager = await _fixture.CreateUserAsync();
         var command = CreateCommand(managerId: manager.Id);
-
         var companyId = await _fixture.SendAsync(command);
         var company = await _fixture.FindAsync<Company>(companyId);
 

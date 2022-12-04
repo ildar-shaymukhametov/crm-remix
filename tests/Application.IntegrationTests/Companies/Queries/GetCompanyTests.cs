@@ -7,6 +7,19 @@ public class GetCompanyTests : BaseTest
 {
     public GetCompanyTests(BaseTestFixture fixture) : base(fixture) { }
 
+    [Fact]
+    public async Task User_is_admin___Returns_company()
+    {
+        await _fixture.RunAsAdministratorAsync();
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var request = new GetCompanyQuery { Id = company.Id };
+        var result = await _fixture.SendAsync(request);
+
+        Assert.Equal(company.Id, result.Id);
+    }
+
     [Theory]
     [InlineData(Constants.Claims.ViewCompany)]
     [InlineData(Constants.Claims.DeleteCompany)]

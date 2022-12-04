@@ -9,6 +9,21 @@ public class DeleteCompanyTests : BaseTest
     public DeleteCompanyTests(BaseTestFixture fixture) : base(fixture) { }
 
     [Fact]
+    public async Task User_is_admin___Deletes_company()
+    {
+        await _fixture.RunAsAdministratorAsync();
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var command = new DeleteCompanyCommand { Id = company.Id };
+        await _fixture.SendAsync(command);
+        var foundCompany = await _fixture.FindAsync<Company>(company.Id);
+
+        Assert.Null(foundCompany);
+    }
+
+    [Fact]
     public async Task User_has_claim_and_is_manager___Deletes_company()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new []

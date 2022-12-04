@@ -1,6 +1,7 @@
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Domain.Entities;
+using CRM.Infrastructure.Identity;
 using FluentAssertions;
 
 namespace CRM.Application.IntegrationTests.Companies;
@@ -22,9 +23,20 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
+    public async Task User_is_admin___Updates_company()
+    {
+        var user = await _fixture.RunAsAdministratorAsync();
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        await AssertCompanyUpdatedAsync(user, company);
+    }
+
+    [Fact]
     public async Task User_has_claim_and_is_manager___Updates_company()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new []
+        var user = await _fixture.RunAsDefaultUserAsync(new[]
         {
             Constants.Claims.UpdateCompany
         });
@@ -32,6 +44,11 @@ public class UpdateCompanyTests : BaseTest
         var company = Faker.Builders.Company(managerId: user.Id);
         await _fixture.AddAsync(company);
 
+        await AssertCompanyUpdatedAsync(user, company);
+    }
+
+    private async Task AssertCompanyUpdatedAsync(AspNetUser user, Company company)
+    {
         var manager = await _fixture.CreateUserAsync();
         var command = CreateCommand(company.Id, managerId: manager.Id);
         await _fixture.SendAsync(command);
