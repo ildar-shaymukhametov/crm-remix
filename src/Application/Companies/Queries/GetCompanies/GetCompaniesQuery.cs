@@ -31,10 +31,17 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
     {
         if (await _identityService.IsAdminAsync(_currentUserService.UserId!))
         {
-            return await _dbContext.Companies
+            var list = await _dbContext.Companies
                 .AsNoTracking()
                 .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
                 .ToArrayAsync(cancellationToken);
+
+            foreach (var item in list)
+            {
+                item.CanBeEdited = true;
+            }
+
+            return list;
         }
 
         var requiredClaims = new[]
@@ -56,8 +63,15 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             query = query.Where(x => x.ManagerId == _currentUserService.UserId);
         }
 
-        return await query
+        var result = await query
             .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
             .ToArrayAsync(cancellationToken);
+
+        foreach (var item in result)
+        {
+            item.CanBeEdited = claims.Contains(Claims.UpdateCompany);
+        }
+
+        return result;
     }
 }

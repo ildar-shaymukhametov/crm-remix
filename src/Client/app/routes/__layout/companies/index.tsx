@@ -2,12 +2,12 @@ import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
-import type { Company } from "~/utils/companies.server";
+import type { CompanyIndex } from "~/utils/companies.server";
 import { getCompanies } from "~/utils/companies.server";
 import { permissions, routes } from "~/utils/constants";
 
 type LoaderData = {
-  companies: Company[];
+  companies: CompanyIndex[];
   userPermissions: string[];
 };
 
@@ -20,7 +20,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json({ companies, userPermissions: user.permissions });
 };
 
-export default function CompanyIndex() {
+export default function CompaniesIndexRoute() {
   const { companies, userPermissions } = useLoaderData<LoaderData>();
 
   return (
@@ -33,6 +33,9 @@ export default function CompanyIndex() {
           companies.map((x, i) => (
             <li key={i}>
               <Link to={routes.companies.view(x.id)}>{x.name}</Link>
+              {x.canBeEdited ? (
+                <Link to={routes.companies.edit(x.id)} aria-label="edit company">✏</Link>
+              ) : null}
             </li>
           ))
         ) : (

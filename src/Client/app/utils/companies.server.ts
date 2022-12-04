@@ -100,10 +100,16 @@ export async function updateCompany(
   return errors;
 }
 
+export type CompanyIndex = {
+  id: number;
+  name: string;
+  canBeEdited: boolean;
+};
+
 export async function getCompanies(
   request: Request,
   accessToken: string
-): Promise<Company[]> {
+): Promise<CompanyIndex[]> {
   const response = await fetch(`${process.env.API_URL}/companies`, {
     headers: {
       Authorization: `Bearer ${accessToken}`

@@ -17,7 +17,7 @@ public class GetCompaniesTests : BaseTest
         var request = new GetCompaniesQuery();
         var actual = await _fixture.SendAsync(request);
 
-        Assert.Collection(actual, x => Assert.Equal(company.Id, x.Id));
+        Assert.Collection(actual, x => Assert.True(x.Id == company.Id && x.CanBeEdited));
     }
 
     [Theory]
@@ -34,7 +34,8 @@ public class GetCompaniesTests : BaseTest
         var request = new GetCompaniesQuery();
         var actual = await _fixture.SendAsync(request);
 
-        Assert.Collection(actual, x => Assert.Equal(company.Id, x.Id));
+        Assert.Collection(actual, x => Assert.True(x.Id == company.Id
+            && x.CanBeEdited == (claim == Constants.Claims.UpdateCompany)));
     }
 
     [Theory]

@@ -14,7 +14,7 @@ test.describe("view companies", () => {
     await createCompany();
     await page.goto(routes.companies.index);
 
-    await expectMinimalUi(page);
+    await expectMinimalUi(page, { noCompaniesFound: true });
   });
 
   test("should be able to click new company button", async ({
@@ -24,32 +24,56 @@ test.describe("view companies", () => {
     await runAsDefaultUser({ claims: ["company.create"] });
     await page.goto(routes.companies.index);
 
-    await expectMinimalUi(page, { newCompanyButton: true });
+    await expectMinimalUi(page, {
+      newCompanyButton: true,
+      noCompaniesFound: true
+    });
 
     const link = page.getByRole("link", { name: /new company/i });
     await link.click();
     await expect(page).toHaveURL(routes.companies.new);
   });
 
+  test("should be able to click edit company button", async ({
+    page,
+    runAsDefaultUser,
+    createCompany
+  }) => {
+    const user = await runAsDefaultUser({ claims: ["company.update"] });
+    const company = await createCompany({ managerId: user.id });
+    await page.goto(routes.companies.index);
+
+    await expectMinimalUi(page, { editCompanyButton: true });
+
+    const link = page.getByRole("link", { name: /edit company/i });
+    await link.click();
+    await expect(page).toHaveURL(routes.companies.edit(company.id));
+  });
+
   type VisibilityOptions = {
     newCompanyButton?: boolean;
     noCompaniesFound?: boolean;
+    editCompanyButton?: boolean;
   };
 
   async function expectMinimalUi(
     page: Page,
     {
       newCompanyButton = false,
-      noCompaniesFound = true
+      noCompaniesFound = false,
+      editCompanyButton = false
     }: VisibilityOptions = {}
   ) {
     await expect(page).toHaveTitle(/companies/i);
 
-    const link = page.getByRole("link", { name: /new company/i });
-    await expect(link).toBeVisible({ visible: newCompanyButton });
+    const newCompany = page.getByRole("link", { name: /new company/i });
+    await expect(newCompany).toBeVisible({ visible: newCompanyButton });
 
     const companiesNotFound = page.getByText(/no companies found/i);
     await expect(companiesNotFound).toBeVisible({ visible: noCompaniesFound });
+
+    const editCompany = page.getByRole("link", { name: /edit company/i });
+    await expect(editCompany).toBeVisible({ visible: editCompanyButton });
   }
 });
 
