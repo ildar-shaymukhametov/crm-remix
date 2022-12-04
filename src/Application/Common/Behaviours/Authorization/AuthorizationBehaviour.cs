@@ -23,59 +23,60 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
     public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
     {
         var authorizeAttributes = request.GetType().GetCustomAttributes<AuthorizeAttribute>();
-
-        if (authorizeAttributes.Any())
+        if (!authorizeAttributes.Any())
         {
-            // Must be authenticated user
-            if (_currentUserService.UserId == null)
+            return await next();
+        }
+
+        // Must be authenticated user
+        if (_currentUserService.UserId == null)
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        // Role-based authorization
+        var authorizeAttributesWithRoles = authorizeAttributes.Where(a => !string.IsNullOrWhiteSpace(a.Roles));
+
+        if (authorizeAttributesWithRoles.Any())
+        {
+            var authorized = false;
+
+            foreach (var roles in authorizeAttributesWithRoles.Select(a => a.Roles.Split(',')))
             {
-                throw new UnauthorizedAccessException();
-            }
-
-            // Role-based authorization
-            var authorizeAttributesWithRoles = authorizeAttributes.Where(a => !string.IsNullOrWhiteSpace(a.Roles));
-
-            if (authorizeAttributesWithRoles.Any())
-            {
-                var authorized = false;
-
-                foreach (var roles in authorizeAttributesWithRoles.Select(a => a.Roles.Split(',')))
+                foreach (var role in roles)
                 {
-                    foreach (var role in roles)
+                    var isInRole = await _identityService.IsInRoleAsync(_currentUserService.UserId, role.Trim());
+                    if (isInRole)
                     {
-                        var isInRole = await _identityService.IsInRoleAsync(_currentUserService.UserId, role.Trim());
-                        if (isInRole)
-                        {
-                            authorized = true;
-                            break;
-                        }
+                        authorized = true;
+                        break;
                     }
                 }
+            }
 
-                // Must be a member of at least one role in roles
+            // Must be a member of at least one role in roles
+            if (!authorized)
+            {
+                throw new ForbiddenAccessException();
+            }
+        }
+
+        // Policy-based authorization
+        var authorizeAttributesWithPolicies = authorizeAttributes.Where(a => !string.IsNullOrWhiteSpace(a.Policy));
+        if (authorizeAttributesWithPolicies.Any())
+        {
+            foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
+            {
+                var (resource, key) = await _requestResourceProvider.GetResourceAsync(request);
+                if (key != null && resource is null)
+                {
+                    throw new NotFoundException($"Resource request: {typeof(TRequest)}", key);
+                }
+
+                var authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, resource, policy);
                 if (!authorized)
                 {
                     throw new ForbiddenAccessException();
-                }
-            }
-
-            // Policy-based authorization
-            var authorizeAttributesWithPolicies = authorizeAttributes.Where(a => !string.IsNullOrWhiteSpace(a.Policy));
-            if (authorizeAttributesWithPolicies.Any())
-            {
-                foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
-                {
-                    var (resource, key) = await _requestResourceProvider.GetResourceAsync(request);
-                    if (key != null && resource is null)
-                    {
-                        throw new NotFoundException($"Resource request: {typeof(TRequest)}", key);
-                    }
-
-                    var authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, resource, policy);
-                    if (!authorized)
-                    {
-                        throw new ForbiddenAccessException();
-                    }
                 }
             }
         }
