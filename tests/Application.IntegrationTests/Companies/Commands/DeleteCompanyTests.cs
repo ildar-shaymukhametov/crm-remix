@@ -42,6 +42,17 @@ public class DeleteCompanyTests : BaseTest
     }
 
     [Fact]
+    public async Task Not_found()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Constants.Claims.DeleteCompany
+        });
+        var command = new DeleteCompanyCommand { Id = 1 };
+        await Assert.ThrowsAsync<NotFoundException>(() => _fixture.SendAsync(command));
+    }
+
+    [Fact]
     public async Task User_has_no_claim___Throws_fobidden_access()
     {
         var user = await _fixture.RunAsDefaultUserAsync();

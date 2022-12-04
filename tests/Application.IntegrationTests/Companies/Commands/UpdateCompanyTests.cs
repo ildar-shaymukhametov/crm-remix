@@ -13,7 +13,11 @@ public class UpdateCompanyTests : BaseTest
     public async Task Requires_minimum_fields()
     {
         await _fixture.RunAsAdministratorAsync();
-        var command = new UpdateCompanyCommand();
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var command = new UpdateCompanyCommand { Id = company.Id };
+
         await Assert.ThrowsAsync<ValidationException>(() => _fixture.SendAsync(command));
     }
 
@@ -67,6 +71,17 @@ public class UpdateCompanyTests : BaseTest
         var command = CreateCommand(company.Id);
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
+    [Fact]
+    public async Task Not_found()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Constants.Claims.UpdateCompany
+        });
+        var command = CreateCommand(1);
+        await Assert.ThrowsAsync<NotFoundException>(() => _fixture.SendAsync(command));
     }
 
     private static UpdateCompanyCommand CreateCommand(int id, string? managerId = null)
