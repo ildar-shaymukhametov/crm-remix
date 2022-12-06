@@ -5,11 +5,15 @@ import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
-import { permissions, routes } from "~/utils/constants";
+import { routes } from "~/utils/constants";
+import { permissions } from "~/utils/constants.server";
 
 type LoaderData = {
   company: Company;
-  userPermissions: string[];
+  userPermissions: {
+    canUpdateCompany: boolean;
+    canDeleteCompany: boolean;
+  };
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -32,7 +36,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     params.id,
     user.extra?.access_token
   );
-  return json({ company, userPermissions: user.permissions });
+  return json({ company, userPermissions: {
+    canUpdateCompany: user.permissions.includes(permissions.updateCompany),
+    canDeleteCompany: user.permissions.includes(permissions.deleteCompany)
+  } });
 };
 
 export default function CompanyRoute() {
@@ -41,10 +48,10 @@ export default function CompanyRoute() {
 
   return (
     <>
-      {userPermissions.includes(permissions.updateCompany) ? (
+      {userPermissions.canUpdateCompany ? (
         <Link to={routes.companies.edit(id)}>Edit</Link>
       ) : null}
-      {userPermissions.includes(permissions.deleteCompany) ? (
+      {userPermissions.canDeleteCompany ? (
         <Link to={routes.companies.delete(id)}>Delete</Link>
       ) : null}
       <div>

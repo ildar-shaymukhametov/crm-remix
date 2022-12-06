@@ -11,7 +11,8 @@ import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
 import { updateCompany } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
-import { permissions, routes } from "~/utils/constants";
+import { routes } from "~/utils/constants";
+import { permissions } from "~/utils/constants.server";
 
 type LoaderData = {
   company: Company;

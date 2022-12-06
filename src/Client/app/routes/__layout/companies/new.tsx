@@ -3,7 +3,7 @@ import { redirect } from "@remix-run/node";
 import { useActionData, useCatch } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 import { createCompany } from "~/utils/companies.server";
-import { permissions } from "~/utils/constants";
+import { permissions } from "~/utils/constants.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request, {

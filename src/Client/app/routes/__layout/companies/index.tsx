@@ -4,11 +4,14 @@ import { Link, useCatch, useLoaderData } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 import type { CompanyIndex } from "~/utils/companies.server";
 import { getCompanies } from "~/utils/companies.server";
-import { permissions, routes } from "~/utils/constants";
+import { routes } from "~/utils/constants";
+import { permissions } from "~/utils/constants.server";
 
 type LoaderData = {
   companies: CompanyIndex[];
-  userPermissions: string[];
+  userPermissions: {
+    canCreateCompany: boolean
+  }
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -17,7 +20,12 @@ export const loader: LoaderFunction = async ({ request }) => {
   });
 
   const companies = await getCompanies(request, user.extra.access_token);
-  return json({ companies, userPermissions: user.permissions });
+  return json({
+    companies,
+    userPermissions: {
+      canCreateCompany: user.permissions.includes(permissions.createCompany)
+    }
+  });
 };
 
 export default function CompaniesIndexRoute() {
@@ -25,7 +33,7 @@ export default function CompaniesIndexRoute() {
 
   return (
     <>
-      {userPermissions.includes(permissions.createCompany) ? (
+      {userPermissions.canCreateCompany ? (
         <Link to={routes.companies.new}>New company</Link>
       ) : null}
       <ul>

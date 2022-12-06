@@ -4,3 +4,10 @@ export const claims = {
   deleteCompany: "company.delete",
   updateCompany: "company.update"
 };
+
+export const permissions = {
+  createCompany: "CreateCompany",
+  deleteCompany: "DeleteCompany",
+  updateCompany: "UpdateCompany",
+  viewCompany: "ViewCompany"
+};
