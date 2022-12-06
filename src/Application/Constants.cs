@@ -9,6 +9,9 @@ public static class Constants
         public const string UpdateCompany = "company.update";
         public const string DeleteCompany = "company.delete";
         public const string ViewCompany = "company.view";
+        public const string ViewAnyCompany = "company.view.any";
+        public const string DeleteAnyCompany = "company.delete.any";
+        public const string UpdateAnyCompany = "company.update.any";
     }
 
     public static class Policies
