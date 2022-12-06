@@ -2,6 +2,7 @@ import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import type { Company } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
+import { claims } from "~/utils/constants.server";
 import { buildCompany, test } from "./companies-test";
 
 test.beforeEach(async ({ resetDb }) => {
@@ -21,7 +22,7 @@ test.describe("view companies", () => {
     page,
     runAsDefaultUser
   }) => {
-    await runAsDefaultUser({ claims: ["company.create"] });
+    await runAsDefaultUser({ claims: [claims.createCompany] });
     await page.goto(routes.companies.index);
 
     await expectMinimalUi(page, {
@@ -39,7 +40,7 @@ test.describe("view companies", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: ["company.update"] });
+    const user = await runAsDefaultUser({ claims: [claims.updateCompany] });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.index);
 
@@ -55,7 +56,7 @@ test.describe("view companies", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: ["company.delete"] });
+    const user = await runAsDefaultUser({ claims: [claims.deleteCompany] });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.index);
 
@@ -114,7 +115,7 @@ test.describe("new company", () => {
     page,
     runAsDefaultUser
   }) => {
-    await runAsDefaultUser({ claims: ["company.create"] });
+    await runAsDefaultUser({ claims: [claims.createCompany] });
     await page.goto(routes.companies.new);
 
     await expectMinimalUi(page);
@@ -182,7 +183,7 @@ test.describe("new company", () => {
 
 test.describe("view company", () => {
   test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
-    const user = await runAsDefaultUser({ claims: ["company.view"] });
+    const user = await runAsDefaultUser({ claims: [claims.viewCompany] });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.view(company.id));
 
@@ -212,7 +213,7 @@ test.describe("view company", () => {
     createCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: ["company.update"]
+      claims: [claims.updateCompany]
     });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.view(company.id));
@@ -229,7 +230,7 @@ test.describe("view company", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: ["company.delete"] });
+    const user = await runAsDefaultUser({ claims: [claims.deleteCompany] });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.view(company.id));
 
@@ -241,7 +242,7 @@ test.describe("view company", () => {
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
-    await runAsDefaultUser({ claims: ["company.view"] });
+    await runAsDefaultUser({ claims: [claims.viewCompany] });
     await page.goto(routes.companies.view("1"));
 
     await expectMinimalUi(page, undefined, {
@@ -363,7 +364,7 @@ test.describe("edit company", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: ["company.update"] });
+    const user = await runAsDefaultUser({ claims: [claims.updateCompany] });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.edit(company.id));
 
@@ -405,7 +406,7 @@ test.describe("edit company", () => {
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
-    await runAsDefaultUser({ claims: ["company.update"] });
+    await runAsDefaultUser({ claims: [claims.updateCompany] });
     await page.goto(routes.companies.edit(1));
 
     await expectMinimalUi(page, undefined, {
@@ -497,7 +498,7 @@ test.describe("delete company", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: ["company.delete"] });
+    const user = await runAsDefaultUser({ claims: [claims.deleteCompany] });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.delete(company.id));
 
@@ -516,7 +517,7 @@ test.describe("delete company", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: ["company.delete"] });
+    const user = await runAsDefaultUser({ claims: [claims.deleteCompany] });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.delete(company.id));
 
@@ -529,7 +530,7 @@ test.describe("delete company", () => {
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
-    await runAsDefaultUser({ claims: ["company.delete"] });
+    await runAsDefaultUser({ claims: [claims.deleteCompany] });
     await page.goto(routes.companies.delete(1));
 
     await expectMinimalUi(page, undefined, {
