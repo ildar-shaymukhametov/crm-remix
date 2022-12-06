@@ -2,7 +2,7 @@ using CRM.Application.Common.Exceptions;
 using CRM.Application.IntegrationTests;
 using CRM.Application.Users.Queries.GetUserPermissions;
 
-namespace Application.IntegrationTests.Companies.Users.Queries;
+namespace Application.IntegrationTests.Users.Queries;
 
 public class GetUserPermissionsQueryTests : BaseTest
 {
