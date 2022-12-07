@@ -65,4 +65,50 @@ public class PermissionsVerifier : IPermissionsVerifier
 
         return result.ToArray();
     }
+
+    public async Task<Dictionary<int, string[]>> VerifyCompanyPermissionsAsync(string userId, int[] ids, params string[] permissions)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return new Dictionary<int, string[]>();
+        }
+
+        var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
+        var result = new Dictionary<int, string[]>();
+
+        if (!permissions.ContainsAny(Permissions.UpdateCompany, Permissions.ViewCompany, Permissions.DeleteCompany))
+        {
+            return result;
+        }
+
+        var resources = await _resourceProvider.GetCompaniesAsync(ids);
+        foreach (var id in ids)
+        {
+            var list = new List<string>();
+            var resource = resources.Find(x => x.Id == id);
+            if (resource == null)
+            {
+                result.Add(id, list.ToArray());
+                continue;
+            }
+
+            if (permissions.Contains(Permissions.UpdateCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.UpdateCompany))
+            {
+                list.Add(Permissions.UpdateCompany);
+            }
+            if (permissions.Contains(Permissions.ViewCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.GetCompany))
+            {
+                list.Add(Permissions.ViewCompany);
+            }
+            if (permissions.Contains(Permissions.DeleteCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.DeleteCompany))
+            {
+                list.Add(Permissions.DeleteCompany);
+            }
+
+            result.Add(id, list.ToArray());
+        }
+
+        return result;
+    }
 }

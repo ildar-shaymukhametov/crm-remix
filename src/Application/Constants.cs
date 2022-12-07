@@ -27,8 +27,18 @@ public static class Constants
         public const string UpdateCompany = "UpdateCompany";
         public const string CreateCompany = "CreateCompany";
         public const string DeleteCompany = "DeleteCompany";
-        public const string GetCompany = "GetCompany";
         public const string ViewCompany = "ViewCompany";
+    }
+
+    public static class Access
+    {
+        public const string CreateCompany = "CreateCompany";
+        public const string UpdateOwnCompany = "UpdateOwnCompany";
+        public const string DeleteOwnCompany = "DeleteOwnCompany";
+        public const string ViewOwnCompany = "ViewOwnCompany";
+        public const string ViewAnyCompany = "ViewAnyCompany";
+        public const string DeleteAnyCompany = "DeleteAnyCompany";
+        public const string UpdateAnyCompany = "UpdateAnyCompany";
     }
 
     public static class Roles

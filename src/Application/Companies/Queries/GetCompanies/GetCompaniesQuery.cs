@@ -1,8 +1,9 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
+using CRM.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using static CRM.Application.Constants;
@@ -17,61 +18,61 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IIdentityService _identityService;
+    private readonly IPermissionsService _permissionsService;
+    private readonly IPermissionsVerifier _permissionsVerifier;
 
-    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IIdentityService identityService)
+    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IPermissionsService permissionsService, IPermissionsVerifier permissionsVerifier)
     {
         _currentUserService = currentUserService;
-        _identityService = identityService;
+        _permissionsService = permissionsService;
+        _permissionsVerifier = permissionsVerifier;
         _dbContext = dbContext;
         _mapper = mapper;
     }
 
     public async Task<CompanyDto[]> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
     {
-        if (await _identityService.IsAdminAsync(_currentUserService.UserId!))
+        var accessRightsToCheck = new[]
         {
-            var list = await _dbContext.Companies
-                .AsNoTracking()
-                .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
-                .ToArrayAsync(cancellationToken);
-
-            foreach (var item in list)
-            {
-                item.CanBeEdited = true;
-                item.CanBeDeleted = true;
-            }
-
-            return list;
-        }
-
-        var requiredClaims = new[]
-        {
-            Claims.ViewCompany,
-            Claims.DeleteCompany,
-            Claims.UpdateCompany
+            Access.ViewAnyCompany,
+            Access.ViewOwnCompany
         };
 
-        var claims = await _identityService.GetUserAuthorizationClaimsAsync(_currentUserService.UserId!);
-        if (!claims.ContainsAny(requiredClaims))
+        var accessRights = await _permissionsService.CheckAccessAsync(_currentUserService.UserId!, accessRightsToCheck);
+        if (!accessRights.Any())
         {
             return Array.Empty<CompanyDto>();
         }
 
-        var query = _dbContext.Companies.AsNoTracking();
-        if (claims.ContainsAny(Claims.ViewCompany, Claims.DeleteCompany, Claims.UpdateCompany))
+        var expressions = new List<Expression<Func<Company, bool>>>();
+        if (!accessRights.Contains(Access.ViewAnyCompany))
         {
-            query = query.Where(x => x.ManagerId == _currentUserService.UserId);
+            if (accessRights.Contains(Access.ViewOwnCompany))
+            {
+                expressions.Add(x => x.ManagerId == _currentUserService.UserId);
+            }
+        }
+
+        var query = _dbContext.Companies.AsNoTracking();
+        foreach (var expression in expressions)
+        {
+            query = query.Where(expression);
         }
 
         var result = await query
             .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
             .ToArrayAsync(cancellationToken);
 
+        var permissions = await _permissionsVerifier.VerifyCompanyPermissionsAsync(_currentUserService.UserId!, result.Select(x => x.Id).ToArray(), new [] { Permissions.UpdateCompany, Permissions.DeleteCompany });
         foreach (var item in result)
         {
-            item.CanBeEdited = claims.Contains(Claims.UpdateCompany);
-            item.CanBeDeleted = claims.Contains(Claims.DeleteCompany);
+            if (!permissions.ContainsKey(item.Id))
+            {
+                continue;
+            }
+
+            item.CanBeEdited = permissions[item.Id].Contains(Permissions.UpdateCompany);
+            item.CanBeDeleted = permissions[item.Id].Contains(Permissions.DeleteCompany);
         }
 
         return result;

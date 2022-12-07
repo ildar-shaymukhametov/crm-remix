@@ -1,6 +1,4 @@
-using CRM.Application.Common.Behaviours.Authorization;
-using CRM.Application.Common.Exceptions;
-using CRM.Application.Common.Extensions;
+using System.Security.Claims;
 using CRM.Application.Common.Interfaces;
 using CRM.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -12,25 +10,14 @@ public class PermissionsService : IPermissionsService
 {
     private readonly UserManager<AspNetUser> _userManager;
     private readonly IUserClaimsPrincipalFactory<AspNetUser> _userClaimsPrincipalFactory;
-    private readonly IIdentityService _identityService;
-    private readonly IResourceProvider _resourceProvider;
 
-    public PermissionsService(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory, IIdentityService identityService, IResourceProvider resourceProvider)
+    public PermissionsService(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
-        _identityService = identityService;
-        _resourceProvider = resourceProvider;
     }
 
-    /// <summary>
-    /// Checks whether user has specific permissions.
-    /// </summary>
-    /// <param name="userId"></param>
-    /// <param name="resourceKey">Optional resource id.</param>
-    /// <param name="permissions">Permissions to check.</param>
-    /// <returns>Permissions that passed the check.</returns>
-    public async Task<string[]> CheckUserPermissionsAsync(string userId, string? resourceKey, params string[] permissions)
+    public async Task<string[]> CheckAccessAsync(string userId, params string[] accessRights)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -41,28 +28,65 @@ public class PermissionsService : IPermissionsService
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
         var result = new List<string>();
 
-        if (permissions.Contains(Permissions.CreateCompany) && await _identityService.AuthorizeAsync(principal, Policies.CreateCompany))
+        if (accessRights.Contains(Access.CreateCompany)
+            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.CreateCompany)))
         {
-            result.Add(Permissions.CreateCompany);
+            result.Add(Access.CreateCompany);
         }
 
-        if (permissions.ContainsAny(Permissions.UpdateCompany, Permissions.ViewCompany, Permissions.DeleteCompany) && int.TryParse(resourceKey, out var id))
+        if (accessRights.Contains(Access.ViewOwnCompany)
+            && (IsAdmin(principal) || HasAnyClaim(principal,
+                Claims.ViewCompany,
+                Claims.UpdateCompany,
+                Claims.DeleteCompany,
+                Claims.ViewAnyCompany,
+                Claims.UpdateAnyCompany,
+                Claims.DeleteAnyCompany)
+            ))
         {
-            var resource = await _resourceProvider.GetCompanyAsync(id) ?? throw new NotFoundException("Company", id);
-            if (permissions.Contains(Permissions.UpdateCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.UpdateCompany))
-            {
-                result.Add(Permissions.UpdateCompany);
-            }
-            if (permissions.Contains(Permissions.ViewCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.GetCompany))
-            {
-                result.Add(Permissions.ViewCompany);
-            }
-            if (permissions.Contains(Permissions.DeleteCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.DeleteCompany))
-            {
-                result.Add(Permissions.DeleteCompany);
-            }
+            result.Add(Access.ViewOwnCompany);
+        }
+
+        if (accessRights.Contains(Access.UpdateOwnCompany)
+            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.UpdateCompany, Claims.UpdateAnyCompany)))
+        {
+            result.Add(Access.UpdateOwnCompany);
+        }
+
+        if (accessRights.Contains(Access.DeleteOwnCompany)
+            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.DeleteCompany, Claims.DeleteAnyCompany)))
+        {
+            result.Add(Access.DeleteOwnCompany);
+        }
+
+        if (accessRights.Contains(Access.DeleteAnyCompany)
+            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.DeleteAnyCompany)))
+        {
+            result.Add(Access.DeleteAnyCompany);
+        }
+
+        if (accessRights.Contains(Access.ViewAnyCompany)
+            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.ViewAnyCompany)))
+        {
+            result.Add(Access.ViewAnyCompany);
+        }
+
+        if (accessRights.Contains(Access.UpdateAnyCompany)
+            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.UpdateAnyCompany)))
+        {
+            result.Add(Access.UpdateAnyCompany);
         }
 
         return result.ToArray();
+    }
+
+    protected static bool HasAnyClaim(ClaimsPrincipal user, params string[] claimValues)
+    {
+        return user.Claims.Any(x => claimValues.Contains(x.Value));
+    }
+
+    protected static bool IsAdmin(ClaimsPrincipal user)
+    {
+        return user.IsInRole(Roles.Administrator);
     }
 }
