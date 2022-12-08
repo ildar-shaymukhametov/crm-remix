@@ -26,16 +26,22 @@ public class PermissionsService : IPermissionsService
         }
 
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
+
+        return CheckAccess(principal, accessRights);
+    }
+
+    public string[] CheckAccess(ClaimsPrincipal user, params string[] accessRights)
+    {
         var result = new List<string>();
 
         if (accessRights.Contains(Access.CreateCompany)
-            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.CreateCompany)))
+            && (IsAdmin(user) || HasAnyClaim(user, Claims.CreateCompany)))
         {
             result.Add(Access.CreateCompany);
         }
 
         if (accessRights.Contains(Access.ViewOwnCompany)
-            && (IsAdmin(principal) || HasAnyClaim(principal,
+            && (IsAdmin(user) || HasAnyClaim(user,
                 Claims.ViewCompany,
                 Claims.UpdateCompany,
                 Claims.DeleteCompany,
@@ -48,31 +54,31 @@ public class PermissionsService : IPermissionsService
         }
 
         if (accessRights.Contains(Access.UpdateOwnCompany)
-            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.UpdateCompany, Claims.UpdateAnyCompany)))
+            && (IsAdmin(user) || HasAnyClaim(user, Claims.UpdateCompany, Claims.UpdateAnyCompany)))
         {
             result.Add(Access.UpdateOwnCompany);
         }
 
         if (accessRights.Contains(Access.DeleteOwnCompany)
-            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.DeleteCompany, Claims.DeleteAnyCompany)))
+            && (IsAdmin(user) || HasAnyClaim(user, Claims.DeleteCompany, Claims.DeleteAnyCompany)))
         {
             result.Add(Access.DeleteOwnCompany);
         }
 
         if (accessRights.Contains(Access.DeleteAnyCompany)
-            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.DeleteAnyCompany)))
+            && (IsAdmin(user) || HasAnyClaim(user, Claims.DeleteAnyCompany)))
         {
             result.Add(Access.DeleteAnyCompany);
         }
 
         if (accessRights.Contains(Access.ViewAnyCompany)
-            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.ViewAnyCompany, Claims.DeleteAnyCompany, Claims.UpdateAnyCompany)))
+            && (IsAdmin(user) || HasAnyClaim(user, Claims.ViewAnyCompany, Claims.DeleteAnyCompany, Claims.UpdateAnyCompany)))
         {
             result.Add(Access.ViewAnyCompany);
         }
 
         if (accessRights.Contains(Access.UpdateAnyCompany)
-            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.UpdateAnyCompany)))
+            && (IsAdmin(user) || HasAnyClaim(user, Claims.UpdateAnyCompany)))
         {
             result.Add(Access.UpdateAnyCompany);
         }

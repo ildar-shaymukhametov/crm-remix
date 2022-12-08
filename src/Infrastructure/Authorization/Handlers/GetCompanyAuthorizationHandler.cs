@@ -1,4 +1,5 @@
 using CRM.Application.Common.Behaviours.Authorization.Resources;
+using CRM.Application.Common.Interfaces;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using static CRM.Application.Constants;
@@ -9,6 +10,10 @@ public class GetCompanyRequirement : IAuthorizationRequirement { }
 
 public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompanyRequirement>
 {
+    public GetCompanyAuthorizationHandler(IPermissionsService permissionsService) : base(permissionsService)
+    {
+    }
+
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {
         if (IsAdmin(context)

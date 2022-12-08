@@ -33,13 +33,12 @@ public class UpdateCompanyTests : BaseTest
         await AssertCompanyUpdatedAsync(user, company);
     }
 
-    [Fact]
-    public async Task User_has_claim_and_is_manager___Updates_company()
+    [Theory]
+    [InlineData(Constants.Claims.UpdateCompany)]
+    [InlineData(Constants.Claims.UpdateAnyCompany)]
+    public async Task User_has_claim_and_is_manager___Updates_company(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[]
-        {
-            Constants.Claims.UpdateCompany
-        });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
 
         var company = Faker.Builders.Company(managerId: user.Id);
         await _fixture.AddAsync(company);
@@ -75,6 +74,20 @@ public class UpdateCompanyTests : BaseTest
         var command = CreateCommand(company.Id, managerId: manager.Id);
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
+    [Fact]
+    public async Task User_has_claim_and_is_not_manager___Updates_company()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Constants.Claims.UpdateAnyCompany
+        });
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        await AssertCompanyUpdatedAsync(user, company);
     }
 
     [Fact]
