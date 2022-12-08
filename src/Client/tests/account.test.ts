@@ -17,10 +17,13 @@ test.describe("account", () => {
       await expect(page.getByText(/forbidden/i)).not.toBeVisible();
 
       const elements = [
-        "Company. Create",
-        "Company. Update",
-        "Company. Delete",
-        "Company. View"
+        /^company. create$/i,
+        /^company. update$/i,
+        /^company. delete$/i,
+        /^company. view$/i,
+        /^company. view any$/i,
+        /^company. delete any$/i,
+        /^company. update any$/i,
       ].map(x => page.getByLabel(x));
 
       for (const item of elements) {
