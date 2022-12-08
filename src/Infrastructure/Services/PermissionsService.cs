@@ -66,7 +66,7 @@ public class PermissionsService : IPermissionsService
         }
 
         if (accessRights.Contains(Access.ViewAnyCompany)
-            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.ViewAnyCompany)))
+            && (IsAdmin(principal) || HasAnyClaim(principal, Claims.ViewAnyCompany, Claims.DeleteAnyCompany, Claims.UpdateAnyCompany)))
         {
             result.Add(Access.ViewAnyCompany);
         }

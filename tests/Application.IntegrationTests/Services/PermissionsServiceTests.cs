@@ -22,6 +22,9 @@ public class PermissionsServiceTests : BaseTest
     [InlineData(Constants.Access.ViewOwnCompany, Constants.Claims.UpdateCompany)]
     [InlineData(Constants.Access.UpdateOwnCompany, Constants.Claims.UpdateCompany)]
     [InlineData(Constants.Access.UpdateOwnCompany, Constants.Claims.UpdateAnyCompany)]
+    [InlineData(Constants.Access.ViewAnyCompany, Constants.Claims.ViewAnyCompany)]
+    [InlineData(Constants.Access.ViewAnyCompany, Constants.Claims.DeleteAnyCompany)]
+    [InlineData(Constants.Access.ViewAnyCompany, Constants.Claims.UpdateAnyCompany)]
     public async Task DefaultUser(string expected, string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
