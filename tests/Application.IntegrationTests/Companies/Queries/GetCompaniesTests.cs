@@ -26,6 +26,9 @@ public class GetCompaniesTests : BaseTest
     [InlineData(Constants.Claims.ViewCompany)]
     [InlineData(Constants.Claims.DeleteCompany)]
     [InlineData(Constants.Claims.UpdateCompany)]
+    [InlineData(Constants.Claims.ViewAnyCompany)]
+    [InlineData(Constants.Claims.DeleteAnyCompany)]
+    [InlineData(Constants.Claims.UpdateAnyCompany)]
     public async Task User_has_claim_and_is_manager___Returns_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -37,8 +40,8 @@ public class GetCompaniesTests : BaseTest
         var actual = await _fixture.SendAsync(request);
 
         Assert.Collection(actual, x => Assert.True(x.Id == company.Id
-            && x.CanBeEdited == (claim == Constants.Claims.UpdateCompany)
-            && x.CanBeDeleted == (claim == Constants.Claims.DeleteCompany)));
+            && x.CanBeEdited == (claim == Constants.Claims.UpdateCompany || claim == Constants.Claims.UpdateAnyCompany)
+            && x.CanBeDeleted == (claim == Constants.Claims.DeleteCompany || claim == Constants.Claims.DeleteAnyCompany)));
     }
 
     [Theory]
