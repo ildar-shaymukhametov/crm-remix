@@ -23,7 +23,8 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         });
 
         if (accessRights.Contains(Access.UpdateAnyCompany)
-            || accessRights.Contains(Access.UpdateOwnCompany) && context.Resource is CompanyDto company && company.ManagerId == context.User.GetSubjectId())
+            || accessRights.Contains(Access.UpdateOwnCompany)
+                && context.Resource is CompanyDto company && company.ManagerId == context.User.GetSubjectId())
         {
             context.Succeed(requirement);
         }
