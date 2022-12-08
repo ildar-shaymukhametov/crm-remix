@@ -6,12 +6,12 @@ using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Services;
 
-public class PermissionsService : IPermissionsService
+public class AccessService : IAccessService
 {
     private readonly UserManager<AspNetUser> _userManager;
     private readonly IUserClaimsPrincipalFactory<AspNetUser> _userClaimsPrincipalFactory;
 
-    public PermissionsService(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory)
+    public AccessService(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;

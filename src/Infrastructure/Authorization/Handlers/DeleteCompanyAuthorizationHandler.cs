@@ -10,13 +10,13 @@ public class DeleteCompanyRequirement : IAuthorizationRequirement { }
 
 public class DeleteCompanyAuthorizationHandler : BaseAuthorizationHandler<DeleteCompanyRequirement>
 {
-    public DeleteCompanyAuthorizationHandler(IPermissionsService permissionsService) : base(permissionsService)
+    public DeleteCompanyAuthorizationHandler(IAccessService accessService) : base(accessService)
     {
     }
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
     {
-        var accessRights = _permissionsService.CheckAccess(context.User, new[]
+        var accessRights = _accessService.CheckAccess(context.User, new[]
         {
             Access.DeleteAnyCompany,
             Access.DeleteOwnCompany

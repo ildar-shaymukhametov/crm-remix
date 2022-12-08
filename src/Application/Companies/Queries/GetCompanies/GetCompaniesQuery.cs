@@ -18,13 +18,13 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IPermissionsService _permissionsService;
+    private readonly IAccessService _accessService;
     private readonly IPermissionsVerifier _permissionsVerifier;
 
-    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IPermissionsService permissionsService, IPermissionsVerifier permissionsVerifier)
+    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IAccessService accessService, IPermissionsVerifier permissionsVerifier)
     {
         _currentUserService = currentUserService;
-        _permissionsService = permissionsService;
+        _accessService = accessService;
         _permissionsVerifier = permissionsVerifier;
         _dbContext = dbContext;
         _mapper = mapper;
@@ -38,7 +38,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             Access.ViewOwnCompany
         };
 
-        var accessRights = await _permissionsService.CheckAccessAsync(_currentUserService.UserId!, accessRightsToCheck);
+        var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!, accessRightsToCheck);
         if (!accessRights.Any())
         {
             return Array.Empty<CompanyDto>();

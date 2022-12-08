@@ -8,13 +8,13 @@ public class CreateCompanyRequirement : IAuthorizationRequirement { }
 
 public class CreateCompanyAthorizationHandler : BaseAuthorizationHandler<CreateCompanyRequirement>
 {
-    public CreateCompanyAthorizationHandler(IPermissionsService permissionsService) : base(permissionsService)
+    public CreateCompanyAthorizationHandler(IAccessService accessService) : base(accessService)
     {
     }
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CreateCompanyRequirement requirement)
     {
-        var accessRights = _permissionsService.CheckAccess(context.User, new[]
+        var accessRights = _accessService.CheckAccess(context.User, new[]
         {
             Access.CreateCompany,
         });

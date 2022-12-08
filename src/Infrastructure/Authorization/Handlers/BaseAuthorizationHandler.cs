@@ -6,11 +6,11 @@ namespace CRM.Infrastructure.Authorization.Handlers;
 
 public abstract class BaseAuthorizationHandler<TRequirement> : AuthorizationHandler<TRequirement> where TRequirement : IAuthorizationRequirement
 {
-    protected readonly IPermissionsService _permissionsService;
+    protected readonly IAccessService _accessService;
 
-    public BaseAuthorizationHandler(IPermissionsService permissionsService)
+    public BaseAuthorizationHandler(IAccessService accessService)
     {
-        _permissionsService = permissionsService;
+        _accessService = accessService;
     }
 
     protected bool IsAdmin(AuthorizationHandlerContext context)

@@ -10,13 +10,13 @@ public class GetCompanyRequirement : IAuthorizationRequirement { }
 
 public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompanyRequirement>
 {
-    public GetCompanyAuthorizationHandler(IPermissionsService permissionsService) : base(permissionsService)
+    public GetCompanyAuthorizationHandler(IAccessService accessService) : base(accessService)
     {
     }
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {
-        var accessRights = _permissionsService.CheckAccess(context.User, new[]
+        var accessRights = _accessService.CheckAccess(context.User, new[]
         {
             Access.ViewAnyCompany,
             Access.ViewOwnCompany
