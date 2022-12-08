@@ -16,8 +16,14 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {
-        if (IsAdmin(context)
-            || HasAnyClaim(context, Claims.ViewCompany, Claims.DeleteCompany, Claims.UpdateCompany)
+        var accessRights = _permissionsService.CheckAccess(context.User, new[]
+        {
+            Access.ViewAnyCompany,
+            Access.ViewOwnCompany
+        });
+
+        if (accessRights.Contains(Access.ViewAnyCompany)
+            || accessRights.Contains(Access.ViewOwnCompany)
                 && context.Resource is CompanyDto company && company.ManagerId == context.User.GetSubjectId())
         {
             context.Succeed(requirement);
