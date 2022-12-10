@@ -10,10 +10,12 @@ public class GetCompanyManagersQueryTests : BaseTest
 {
     public GetCompanyManagersQueryTests(BaseTestFixture fixture) : base(fixture) { }
 
-    [Fact]
-    public async Task User_can_set_self_from_none___Returns_self()
+    [Theory]
+    [InlineData(Constants.Claims.SetManagerToSelfFromNone)]
+    [InlineData(Constants.Claims.SetManagerToAnyFromNone)]
+    public async Task User_can_set_self_from_none___Returns_self(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.SetManagerToSelfFromNone);
+        var user = await _fixture.RunAsDefaultUserAsync(claim);
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
 
