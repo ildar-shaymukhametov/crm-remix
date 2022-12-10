@@ -29,6 +29,23 @@ public class GetCompanyManagersQueryTests : BaseTest
     }
 
     [Fact]
+    public async Task User_can_set_any_from_none___Returns_users()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.SetManagerToAnyFromNone);
+        var someUser = await _fixture.AddUserAsync();
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var query = new GetCompanyManagersQuery(company.Id);
+        var result = await _fixture.SendAsync(query);
+
+        var expected = new[] { user.Id, someUser.Id };
+        var actual = result.Managers.Select(x => x.Id);
+
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
     public async Task User_has_no_claim___Returns_empty_list()
     {
         var user = await _fixture.RunAsDefaultUserAsync();

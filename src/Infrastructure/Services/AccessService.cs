@@ -89,6 +89,12 @@ public class AccessService : IAccessService
             result.Add(Access.SetManagerToSelfFromNone);
         }
 
+        if (accessRights.Contains(Access.SetManagerToAnyFromNone)
+            && (IsAdmin(user) || HasAnyClaim(user, Claims.SetManagerToAnyFromNone)))
+        {
+            result.Add(Access.SetManagerToAnyFromNone);
+        }
+
         return result.ToArray();
     }
 
