@@ -21,7 +21,8 @@ public class CreateCompanyTests : BaseTest
     public async Task User_is_admin___Creates_company()
     {
         var user = await _fixture.RunAsAdministratorAsync();
-        await AssertCompanyCreatedAsync(user);
+        var command = CreateCommand();
+        await AssertCompanyCreatedAsync(user, command);
     }
 
     [Fact]
@@ -32,13 +33,12 @@ public class CreateCompanyTests : BaseTest
             Constants.Claims.CreateCompany
         });
 
-        await AssertCompanyCreatedAsync(user);
+        var command = CreateCommand();
+        await AssertCompanyCreatedAsync(user, command);
     }
 
-    private async Task AssertCompanyCreatedAsync(AspNetUser user)
+    private async Task AssertCompanyCreatedAsync(AspNetUser user, CreateCompanyCommand command)
     {
-        var manager = await _fixture.CreateUserAsync();
-        var command = CreateCommand(managerId: manager.Id);
         var companyId = await _fixture.SendAsync(command);
         var company = await _fixture.FindAsync<Company>(companyId);
 
@@ -46,7 +46,7 @@ public class CreateCompanyTests : BaseTest
         Assert.Equal(companyId, company!.Id);
         Assert.Equal(BaseTestFixture.UtcNow, company.CreatedAtUtc);
         Assert.Equal(user.Id, company.CreatedBy);
-        Assert.Equal(manager.Id, company.ManagerId);
+        Assert.Equal(command.ManagerId, company.ManagerId);
     }
 
     [Fact]
