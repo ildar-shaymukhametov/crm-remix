@@ -12,6 +12,13 @@ public static class Constants
         public const string ViewAnyCompany = "company.view.any";
         public const string DeleteAnyCompany = "company.delete.any";
         public const string UpdateAnyCompany = "company.update.any";
+        public const string SetManagerToSelfFromNone = "company.manager.set.selfFromNone";
+        public const string SetManagerToAnyFromNone = "company.manager.set.anyFromNone";
+        public const string SetManagerToNoneFromSelf = "company.manager.set.noneFromSelf";
+        public const string SetManagerToAnyFromSelf = "company.manager.set.anyFromSelf";
+        public const string SetManagerToSelfFromAny = "company.manager.set.selfFromAny";
+        public const string SetManagerToNoneFromAny = "company.manager.set.noneFromAny";
+        public const string SetManagerToAnyFromAny = "company.manager.set.anyFromAny";
     }
 
     public static class Policies
@@ -39,6 +46,13 @@ public static class Constants
         public const string ViewAnyCompany = "ViewAnyCompany";
         public const string DeleteAnyCompany = "DeleteAnyCompany";
         public const string UpdateAnyCompany = "UpdateAnyCompany";
+        public const string SetManagerToSelfFromNone = "SetManagerToSelfFromNone";
+        public const string SetManagerToAnyFromNone = "SetManagerToAnyFromNone";
+        public const string SetManagerToNoneFromSelf = "SetManagerToNoneFromSelf";
+        public const string SetManagerToAnyFromSelf = "SetManagerToAnyFromSelf";
+        public const string SetManagerToSelfFromAny = "SetManagerToSelfFromAny";
+        public const string SetManagerToNoneFromAny = "SetManagerToNoneFromAny";
+        public const string SetManagerToAnyFromAny = "SetManagerToAnyFromAny";
     }
 
     public static class Roles

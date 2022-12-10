@@ -17,7 +17,7 @@ public class AccessService : IAccessService
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
     }
 
-    public async Task<string[]> CheckAccessAsync(string userId, params string[] accessRights)
+    public async Task<string[]> CheckAccessAsync(string userId, string[] accessRights)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -30,7 +30,7 @@ public class AccessService : IAccessService
         return CheckAccess(principal, accessRights);
     }
 
-    public string[] CheckAccess(ClaimsPrincipal user, params string[] accessRights)
+    public string[] CheckAccess(ClaimsPrincipal user, string[] accessRights)
     {
         var result = new List<string>();
 
@@ -81,6 +81,12 @@ public class AccessService : IAccessService
             && (IsAdmin(user) || HasAnyClaim(user, Claims.UpdateAnyCompany)))
         {
             result.Add(Access.UpdateAnyCompany);
+        }
+
+        if (accessRights.Contains(Access.SetManagerToSelfFromNone)
+            && (IsAdmin(user) || HasAnyClaim(user, Claims.SetManagerToSelfFromNone)))
+        {
+            result.Add(Access.SetManagerToSelfFromNone);
         }
 
         return result.ToArray();

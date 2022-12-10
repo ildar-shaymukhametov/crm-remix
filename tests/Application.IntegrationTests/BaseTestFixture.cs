@@ -60,7 +60,7 @@ public class BaseTestFixture
         return await RunAsDefaultUserAsync(Array.Empty<string>());
     }
 
-    public async Task<AspNetUser> RunAsDefaultUserAsync(string[] claims)
+    public async Task<AspNetUser> RunAsDefaultUserAsync(params string[] claims)
     {
         return await RunAsUserAsync("test@local", "Testing1234!", Array.Empty<string>(), claims);
     }
@@ -111,6 +111,24 @@ public class BaseTestFixture
         var errors = string.Join(Environment.NewLine, result.Errors);
 
         throw new Exception($"Unable to create {userName}.{Environment.NewLine}{errors}");
+    }
+
+    public async Task<AspNetUser> AddUserAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+
+        var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
+        var (result, userId) = await identityService.CreateUserAsync(Faker.Internet.UserName(), $"{Faker.Internet.UserName()}Z1!");
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
+        var user = await userManager.FindByIdAsync(userId);
+
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(Environment.NewLine, result.Errors);
+            throw new Exception($"Unable to create a user.{Environment.NewLine}{errors}");
+        }
+
+        return user;
     }
 
     public async Task ResetStateAsync()

@@ -4,6 +4,6 @@ namespace CRM.Application.Common.Interfaces;
 
 public interface IAccessService
 {
-    Task<string[]> CheckAccessAsync(string userId, params string[] permissions);
-    string[] CheckAccess(ClaimsPrincipal user, params string[] accessRights);
+    Task<string[]> CheckAccessAsync(string userId, string[] permissions);
+    string[] CheckAccess(ClaimsPrincipal user, string[] accessRights);
 }
