@@ -76,6 +76,13 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyManage
                 expressions.Add(x => x.Id == _currentUserService.UserId);
             }
         }
+        else
+        {
+            if (accessRights.Contains(Access.Company.Any.Manager.Any.Set.Self))
+            {
+                expressions.Add(x => x.Id == _currentUserService.UserId);
+            }
+        }
 
         if (!expressions.Any())
         {

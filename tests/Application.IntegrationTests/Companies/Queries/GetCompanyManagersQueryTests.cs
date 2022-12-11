@@ -1,4 +1,3 @@
-using CRM.Application;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Queries.GetCompanyManagers;
 using CRM.Application.IntegrationTests;
@@ -38,6 +37,26 @@ public class GetCompanyManagersQueryTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(claim);
 
         var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var query = new GetCompanyManagersQuery(company.Id);
+        var result = await _fixture.SendAsync(query);
+
+        var expected = new[] { user.Id };
+        var actual = result.Managers.Select(x => x.Id);
+
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Theory]
+    [InlineData(Claims.Company.Any.Manager.Any.Set.Self)]
+    [InlineData(Claims.Company.Any.Manager.Any.Set.Any)]
+    public async Task User_can_set_manager_from_any_to_self_in_any_company___Returns_self(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(claim);
+        var someUser = await _fixture.AddUserAsync();
+
+        var company = Faker.Builders.Company(managerId: someUser.Id);
         await _fixture.AddAsync(company);
 
         var query = new GetCompanyManagersQuery(company.Id);

@@ -94,11 +94,15 @@ public class AccessService : IAccessService
             result.Add(Access.Company.Any.Manager.None.Set.Self);
         }
 
-        // if (accessRights.Contains(Access.SetManagerToAnyFromNone)
-        //     && (IsAdmin(user) || HasAnyClaim(user, Claims.SetManagerToAnyFromNone)))
-        // {
-        //     result.Add(Access.SetManagerToAnyFromNone);
-        // }
+        if (accessRights.Contains(Access.Company.Any.Manager.Any.Set.Self)
+            && (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.Any.Manager.Any.Set.Self,
+                Claims.Company.Any.Manager.Any.Set.Any
+            })))
+        {
+            result.Add(Access.Company.Any.Manager.Any.Set.Self);
+        }
 
         return result.ToArray();
     }
