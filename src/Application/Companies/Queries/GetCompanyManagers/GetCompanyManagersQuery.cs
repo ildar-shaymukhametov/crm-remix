@@ -40,13 +40,12 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyManage
     public async Task<GetCompanyManagersResponse> Handle(GetCompanyManagersQuery request, CancellationToken cancellationToken)
     {
         var company = await _dbContext.Companies
-            .Where(x => x.Id == request.Id)
-            .Select(x => new { x.ManagerId })
-            .FirstOrDefaultAsync(cancellationToken);
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (company == null)
         {
-            throw new NotFoundException("Company", request.Id);
+            throw new NotFoundException(nameof(Company), request.Id);
         }
 
         var accessRightsToCheck = new[]
@@ -68,22 +67,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyManage
             return await BuildResponseAsync(query, cancellationToken);
         }
 
-        var expressions = new List<Expression<Func<ApplicationUser, bool>>>();
-        if (company.ManagerId == null)
-        {
-            if (accessRights.Contains(Access.Company.Any.Manager.None.Set.Self))
-            {
-                expressions.Add(x => x.Id == _currentUserService.UserId);
-            }
-        }
-        else
-        {
-            if (accessRights.Contains(Access.Company.Any.Manager.Any.Set.Self))
-            {
-                expressions.Add(x => x.Id == _currentUserService.UserId);
-            }
-        }
-
+        var expressions = GetExpressions(company, accessRights, _currentUserService.UserId!);
         if (!expressions.Any())
         {
             return new GetCompanyManagersResponse();
@@ -95,6 +79,21 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyManage
         }
 
         return await BuildResponseAsync(query, cancellationToken);
+    }
+
+    private static List<Expression<Func<ApplicationUser, bool>>> GetExpressions(Company company, string[] accessRights, string userId)
+    {
+        var expressions = new List<Expression<Func<ApplicationUser, bool>>>();
+        if (company.ManagerId == null && accessRights.Contains(Access.Company.Any.Manager.None.Set.Self))
+        {
+            expressions.Add(x => x.Id == userId);
+        }
+        if (company.ManagerId != null && accessRights.Contains(Access.Company.Any.Manager.Any.Set.Self))
+        {
+            expressions.Add(x => x.Id == userId);
+        }
+
+        return expressions;
     }
 
     private async Task<GetCompanyManagersResponse> BuildResponseAsync(IQueryable<ApplicationUser> query, CancellationToken cancellationToken)
