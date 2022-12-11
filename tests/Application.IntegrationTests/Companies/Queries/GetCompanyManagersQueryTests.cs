@@ -68,16 +68,15 @@ public class GetCompanyManagersQueryTests : BaseTest
     [Fact]
     public async Task User_has_no_claim___Returns_empty_list()
     {
-        var currentUser = await _fixture.RunAsDefaultUserAsync();
-        var anotherUser = await _fixture.AddUserAsync();
+        await _fixture.RunAsDefaultUserAsync();
+        await _fixture.AddUserAsync();
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
 
         var query = new GetCompanyManagersQuery(company.Id);
         var result = await _fixture.SendAsync(query);
-        var actual = result.Managers.Select(x => x.Id);
 
-        Assert.Empty(actual);
+        Assert.Empty(result.Managers);
     }
 
     [Fact]
