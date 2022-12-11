@@ -22,7 +22,7 @@ public class GetCompanyManagersQueryTests : BaseTest
         var query = new GetCompanyManagersQuery(company.Id);
         var result = await _fixture.SendAsync(query);
 
-        var expected = new[] { currentUser.Id, anotherUser.Id };
+        var expected = new[] { currentUser.Id, anotherUser.Id, null };
         var actual = result.Managers.Select(x => x.Id);
 
         actual.Should().BeEquivalentTo(expected);

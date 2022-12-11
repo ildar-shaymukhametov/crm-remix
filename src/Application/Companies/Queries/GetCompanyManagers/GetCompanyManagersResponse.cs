@@ -5,7 +5,7 @@ namespace CRM.Application.Companies.Queries.GetCompanyManagers;
 
 public record GetCompanyManagersResponse
 {
-    public ManagerDto[] Managers { get; set; } = Array.Empty<ManagerDto>();
+    public List<ManagerDto> Managers { get; set; } = new List<ManagerDto>();
 }
 
 public record ManagerDto : IMapFrom<ApplicationUser>

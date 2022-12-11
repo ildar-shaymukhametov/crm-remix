@@ -64,7 +64,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyManage
         var query = _dbContext.ApplicationUsers.AsNoTracking();
         if (accessRights.Contains(Access.Company.Any.Manager.Any.Set.Any))
         {
-            return await BuildResponseAsync(query, cancellationToken);
+            return await BuildResponseAsync(query, true, cancellationToken);
         }
 
         var expressions = GetExpressions(company, accessRights, _currentUserService.UserId!);
@@ -78,7 +78,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyManage
             query = query.Where(expression);
         }
 
-        return await BuildResponseAsync(query, cancellationToken);
+        return await BuildResponseAsync(query, false, cancellationToken);
     }
 
     private static List<Expression<Func<ApplicationUser, bool>>> GetExpressions(Company company, string[] accessRights, string userId)
@@ -96,11 +96,16 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyManage
         return expressions;
     }
 
-    private async Task<GetCompanyManagersResponse> BuildResponseAsync(IQueryable<ApplicationUser> query, CancellationToken cancellationToken)
+    private async Task<GetCompanyManagersResponse> BuildResponseAsync(IQueryable<ApplicationUser> query, bool includeNullManager, CancellationToken cancellationToken)
     {
         var managers = await query
             .ProjectTo<ManagerDto>(_mapper.ConfigurationProvider)
-            .ToArrayAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
+            
+        if (includeNullManager)
+        {
+            managers.Add(new ManagerDto());
+        }
 
         return new GetCompanyManagersResponse
         {
