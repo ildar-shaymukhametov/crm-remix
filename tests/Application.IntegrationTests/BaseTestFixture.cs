@@ -140,10 +140,17 @@ public class BaseTestFixture
 
     public async Task InitStateAsync()
     {
-        _respawner ??= await Respawner.CreateAsync(_connectionString, new RespawnerOptions
+        if (_respawner != null)
+        {
+            return;
+        }
+
+        _respawner = await Respawner.CreateAsync(_connectionString, new RespawnerOptions
         {
             TablesToIgnore = new Table[] { "__EFMigrationsHistory" }
         });
+
+        await ResetStateAsync();
     }
 
     public async Task<TEntity?> FindAsync<TEntity>(params object[] keyValues) where TEntity : class
