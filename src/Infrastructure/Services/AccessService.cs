@@ -87,7 +87,8 @@ public class AccessService : IAccessService
             && (IsAdmin(user) || HasAnyClaim(user, new []
             {
                 Claims.Company.Any.Manager.None.Set.Self,
-                Claims.Company.Any.Manager.Any.Set.Any
+                Claims.Company.Any.Manager.Any.Set.Any,
+                Claims.Company.Any.Manager.Any.Set.Self
             })))
         {
             result.Add(Access.Company.Any.Manager.None.Set.Self);
