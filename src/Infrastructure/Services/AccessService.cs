@@ -83,17 +83,17 @@ public class AccessService : IAccessService
             result.Add(Access.UpdateAnyCompany);
         }
 
-        if (accessRights.Contains(Access.SetManagerToSelfFromNone)
-            && (IsAdmin(user) || HasAnyClaim(user, Claims.SetManagerToSelfFromNone, Claims.SetManagerToAnyFromNone)))
+        if (accessRights.Contains(Access.Company.Any.Manager.None.Set.Self)
+            && (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Manager.None.Set.Self)))
         {
-            result.Add(Access.SetManagerToSelfFromNone);
+            result.Add(Access.Company.Any.Manager.None.Set.Self);
         }
 
-        if (accessRights.Contains(Access.SetManagerToAnyFromNone)
-            && (IsAdmin(user) || HasAnyClaim(user, Claims.SetManagerToAnyFromNone)))
-        {
-            result.Add(Access.SetManagerToAnyFromNone);
-        }
+        // if (accessRights.Contains(Access.SetManagerToAnyFromNone)
+        //     && (IsAdmin(user) || HasAnyClaim(user, Claims.SetManagerToAnyFromNone)))
+        // {
+        //     result.Add(Access.SetManagerToAnyFromNone);
+        // }
 
         return result.ToArray();
     }

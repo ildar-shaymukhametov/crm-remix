@@ -50,8 +50,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyManage
 
         var accessRightsToCheck = new[]
         {
-            Constants.Access.SetManagerToSelfFromNone,
-            Constants.Access.SetManagerToAnyFromNone
+            Constants.Access.Company.Any.Manager.None.Set.Self,
         };
 
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!, accessRightsToCheck);
@@ -61,12 +60,12 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyManage
         }
 
         var expressions = new List<Expression<Func<ApplicationUser, bool>>>();
-        if (company.ManagerId == null && !accessRights.Contains(Constants.Access.SetManagerToAnyFromNone))
+        // if (company.ManagerId == null && !accessRights.Contains(Constants.Access.SetManagerToAnyFromNone))
+        // {
+        // }
+        if (accessRights.Contains(Constants.Access.Company.Any.Manager.None.Set.Self))
         {
-            if (accessRights.Contains(Constants.Access.SetManagerToSelfFromNone))
-            {
-                expressions.Add(x => x.Id == _currentUserService.UserId);
-            }
+            expressions.Add(x => x.Id == _currentUserService.UserId);
         }
 
         var query = _dbContext.ApplicationUsers.AsNoTracking();

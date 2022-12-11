@@ -170,44 +170,20 @@ namespace CRM.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 8,
-                            Name = "Company. Manager. Assign anyone from anyone",
-                            Value = "company.manager.set.anyFromAny"
+                            Name = "Company.Any.Manager.Any.Set.Any",
+                            Value = "company.any.manager.any.set.any"
                         },
                         new
                         {
                             Id = 9,
-                            Name = "Company. Manager. Assign anyone from none",
-                            Value = "company.manager.set.anyFromNone"
+                            Name = "Company.Any.Manager.Any.Set.Self",
+                            Value = "company.any.manager.any.set.self"
                         },
                         new
                         {
                             Id = 10,
-                            Name = "Company. Manager. Assign anyone from self",
-                            Value = "company.manager.set.anyFromSelf"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "Company. Manager. Assign none from anyone",
-                            Value = "company.manager.set.noneFromAny"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "Company. Manager. Assign none from self",
-                            Value = "company.manager.set.noneFromSelf"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Name = "Company. Manager. Assign self from anyone",
-                            Value = "company.manager.set.selfFromAny"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Name = "Company. Manager. Assign self from none",
-                            Value = "company.manager.set.selfFromNone"
+                            Name = "Company.Any.Manager.None.Set.Self",
+                            Value = "company.any.manager.none.set.self"
                         });
                 });
 

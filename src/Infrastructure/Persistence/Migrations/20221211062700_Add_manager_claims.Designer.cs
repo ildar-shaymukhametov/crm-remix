@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221210120801_Add_set_manager_claims")]
-    partial class Add_set_manager_claims
+    [Migration("20221211062700_Add_manager_claims")]
+    partial class Add_manager_claims
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -172,44 +172,20 @@ namespace CRM.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 8,
-                            Name = "Company. Manager. Assign anyone from anyone",
-                            Value = "company.manager.set.anyFromAny"
+                            Name = "Company.Any.Manager.Any.Set.Any",
+                            Value = "company.any.manager.any.set.any"
                         },
                         new
                         {
                             Id = 9,
-                            Name = "Company. Manager. Assign anyone from none",
-                            Value = "company.manager.set.anyFromNone"
+                            Name = "Company.Any.Manager.Any.Set.Self",
+                            Value = "company.any.manager.any.set.self"
                         },
                         new
                         {
                             Id = 10,
-                            Name = "Company. Manager. Assign anyone from self",
-                            Value = "company.manager.set.anyFromSelf"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "Company. Manager. Assign none from anyone",
-                            Value = "company.manager.set.noneFromAny"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "Company. Manager. Assign none from self",
-                            Value = "company.manager.set.noneFromSelf"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Name = "Company. Manager. Assign self from anyone",
-                            Value = "company.manager.set.selfFromAny"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Name = "Company. Manager. Assign self from none",
-                            Value = "company.manager.set.selfFromNone"
+                            Name = "Company.Any.Manager.None.Set.Self",
+                            Value = "company.any.manager.none.set.self"
                         });
                 });
 
