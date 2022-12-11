@@ -7,6 +7,7 @@ using CRM.Application.Common.Security;
 using CRM.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using static CRM.Application.Constants;
 
 namespace CRM.Application.Companies.Queries.GetCompanyManagers;
 
@@ -50,7 +51,8 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyManage
 
         var accessRightsToCheck = new[]
         {
-            Constants.Access.Company.Any.Manager.None.Set.Self,
+            Access.Company.Any.Manager.None.Set.Self,
+            Access.Company.Any.Manager.Any.Set.Any
         };
 
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!, accessRightsToCheck);
@@ -60,12 +62,12 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyManage
         }
 
         var expressions = new List<Expression<Func<ApplicationUser, bool>>>();
-        // if (company.ManagerId == null && !accessRights.Contains(Constants.Access.SetManagerToAnyFromNone))
-        // {
-        // }
-        if (accessRights.Contains(Constants.Access.Company.Any.Manager.None.Set.Self))
+        if (company.ManagerId == null && !accessRights.Contains(Access.Company.Any.Manager.Any.Set.Any))
         {
-            expressions.Add(x => x.Id == _currentUserService.UserId);
+            if (accessRights.Contains(Access.Company.Any.Manager.None.Set.Self))
+            {
+                expressions.Add(x => x.Id == _currentUserService.UserId);
+            }
         }
 
         var query = _dbContext.ApplicationUsers.AsNoTracking();

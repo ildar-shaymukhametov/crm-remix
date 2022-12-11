@@ -29,10 +29,12 @@ public class GetCompanyManagersQueryTests : BaseTest
     //     actual.Should().BeEquivalentTo(expected);
     // }
 
-    [Fact]
-    public async Task User_can_set_manager_from_none_to_self_in_any_company___Returns_self()
+    [Theory]
+    [InlineData(Claims.Company.Any.Manager.None.Set.Self)]
+    [InlineData(Claims.Company.Any.Manager.Any.Set.Any)]
+    public async Task User_can_set_manager_from_none_to_self_in_any_company___Returns_self(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(Claims.Company.Any.Manager.None.Set.Self);
+        var user = await _fixture.RunAsDefaultUserAsync(claim);
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
