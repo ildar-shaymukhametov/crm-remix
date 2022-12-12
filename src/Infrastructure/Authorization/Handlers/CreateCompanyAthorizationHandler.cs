@@ -24,7 +24,8 @@ public class CreateCompanyAthorizationHandler : BaseAuthorizationHandler<CreateC
         var accessRights = _accessService.CheckAccess(context.User, new[]
         {
             Access.CreateCompany,
-            Access.Company.Any.Manager.None.Set.Self
+            Access.Company.Any.Manager.None.Set.Self,
+            Access.Company.Any.Manager.Any.Set.Any
         });
 
         if (!accessRights.Contains(Access.CreateCompany))
@@ -32,9 +33,10 @@ public class CreateCompanyAthorizationHandler : BaseAuthorizationHandler<CreateC
             return Fail(context, "Create company");
         }
 
-        if (resource.Request.ManagerId == context.User.GetSubjectId())
+        if (resource.Request.ManagerId != null)
         {
-            if (!accessRights.Contains(Access.Company.Any.Manager.None.Set.Self))
+            var canSetSelfAsManager = resource.Request.ManagerId == context.User.GetSubjectId() && accessRights.Contains(Access.Company.Any.Manager.None.Set.Self);
+            if (!canSetSelfAsManager && !accessRights.Contains(Access.Company.Any.Manager.Any.Set.Any))
             {
                 return Fail(context, "Set self as manager");
             }

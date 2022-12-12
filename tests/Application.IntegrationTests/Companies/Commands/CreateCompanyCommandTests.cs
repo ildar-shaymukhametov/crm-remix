@@ -83,6 +83,33 @@ public class CreateCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
+    [Fact]
+    public async Task User_can_set_anyone_as_manager___Creates_company()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Constants.Claims.CreateCompany,
+            Constants.Claims.Company.Any.Manager.Any.Set.Any
+        });
+        var anotherUser = await _fixture.CreateUserAsync();
+
+        var command = CreateCommand(managerId: anotherUser.Id);
+        await AssertCompanyCreatedAsync(user, command);
+    }
+
+    [Fact]
+    public async Task User_cannot_set_anyone_as_manager___Throws_forbidden_access()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Constants.Claims.CreateCompany
+        });
+        var anotherUser = await _fixture.CreateUserAsync();
+
+        var command = CreateCommand(managerId: anotherUser.Id);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
     public static CreateCompanyCommand CreateCommand(string? managerId = null)
     {
         var data = Faker.Builders.Company();
