@@ -29,7 +29,7 @@ public static class Builders
             Type = Faker.Company.Suffix(),
             Name = Faker.Company.Name(),
             Inn = Faker.RandomNumber.Next(1_000_000_000, 9_999_999_999).ToString(),
-            Address = $"{Faker.Address.City}, {Faker.Address.StreetAddress}",
+            Address = $"{Faker.Address.City()}, {Faker.Address.StreetAddress()}",
             Ceo = Faker.Name.FullName(),
             Phone = Faker.Phone.Number(),
             Email = Faker.Internet.Email(),
