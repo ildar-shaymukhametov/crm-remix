@@ -58,13 +58,15 @@ public class CreateCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    [Fact]
-    public async Task User_can_set_self_as_manager___Creates_company()
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.None.Set.Self)]
+    [InlineData(Constants.Claims.Company.Any.Manager.Any.Set.Any)]
+    public async Task User_can_set_self_as_manager___Creates_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[]
         {
             Constants.Claims.CreateCompany,
-            Constants.Claims.Company.Any.Manager.None.Set.Self
+            claim
         });
 
         var command = CreateCommand(managerId: user.Id);
