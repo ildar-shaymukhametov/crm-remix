@@ -1,3 +1,5 @@
+using CRM.Application.Common.Behaviours.Authorization.Resources;
+using CRM.Application.Companies.Commands.CreateCompany;
 using CRM.Application.Companies.Commands.DeleteCompany;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Application.Companies.Queries.GetCompany;
@@ -25,6 +27,7 @@ public class RequestResourceProvider : IRequestResourceProvider
             GetCompanyQuery query => (await _resourceProvider.GetCompanyAsync(query.Id), query.Id),
             UpdateCompanyCommand query => (await _resourceProvider.GetCompanyAsync(query.Id), query.Id),
             DeleteCompanyCommand query => (await _resourceProvider.GetCompanyAsync(query.Id), query.Id),
+            CreateCompanyCommand query => (new CreateCompanyResource(query), null),
             _ => (null, null),
         };
     }

@@ -27,5 +27,17 @@ public abstract class BaseAuthorizationHandler<TRequirement> : AuthorizationHand
     {
         return context.User.Claims.Any(x => claimValues.Contains(x.Value));
     }
+
+    protected static Task Ok(AuthorizationHandlerContext context, IAuthorizationRequirement requirement)
+    {
+        context.Succeed(requirement);
+        return Task.CompletedTask;
+    }
+
+    protected Task Fail(AuthorizationHandlerContext context, string operation)
+    {
+        context.Fail(new AuthorizationFailureReason(this, $"Not enough access rights to perform this operation: {operation}"));
+        return Task.CompletedTask;
+    }
 }
 
