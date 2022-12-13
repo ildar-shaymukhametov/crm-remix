@@ -1,8 +1,10 @@
 using CRM.Application.Common.Behaviours.Authorization.Resources;
+using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Commands.CreateCompany;
 using CRM.Application.Companies.Commands.DeleteCompany;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Application.Companies.Queries.GetCompany;
+using CRM.Domain.Entities;
 
 namespace CRM.Application.Common.Behaviours.Authorization;
 
@@ -25,7 +27,7 @@ public class RequestResourceProvider : IRequestResourceProvider
         return request switch
         {
             GetCompanyQuery query => (await _resourceProvider.GetCompanyAsync(query.Id), query.Id),
-            UpdateCompanyCommand query => (await _resourceProvider.GetCompanyAsync(query.Id), query.Id),
+            UpdateCompanyCommand query => (new UpdateCompanyResource(query, await _resourceProvider.GetCompanyAsync(query.Id) ?? throw new NotFoundException(nameof(Company), query.Id)), query.Id),
             DeleteCompanyCommand query => (await _resourceProvider.GetCompanyAsync(query.Id), query.Id),
             CreateCompanyCommand query => (new CreateCompanyResource(query), null),
             _ => (null, null),

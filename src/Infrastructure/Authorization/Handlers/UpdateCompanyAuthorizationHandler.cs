@@ -16,9 +16,9 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
     {
-        if (context.Resource is not CompanyDto company)
+        if (context.Resource is not UpdateCompanyResource resource)
         {
-            throw new InvalidOperationException($"Resource has invalid type. Required type: {typeof(CompanyDto)}");
+            throw new InvalidOperationException($"Resource has invalid type. Required type: {typeof(UpdateCompanyResource)}");
         }
 
         var accessRights = _accessService.CheckAccess(context.User, new[]
@@ -32,7 +32,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             return Fail(context, "Update company");
         }
 
-        var canUpdateOwnCompany = company.ManagerId == context.User.GetSubjectId() && accessRights.Contains(Access.UpdateOwnCompany);
+        var canUpdateOwnCompany = resource.Company.ManagerId == context.User.GetSubjectId() && accessRights.Contains(Access.UpdateOwnCompany);
         if (!canUpdateOwnCompany && !accessRights.Contains(Access.UpdateAnyCompany))
         {
             return Fail(context, "Update company");
