@@ -2,20 +2,14 @@ using CRM.Application.Companies.Commands.UpdateCompany;
 
 namespace CRM.Application.Common.Behaviours.Authorization.Resources;
 
-public class UpdateCompanyResource : IResource<CompanyDto>
+public class UpdateCompanyResource : IResource<UpdateCompanyCommand>
 {
-    public CompanyDto Request { get; }
-    public UpdateCompanyCommand? Command { get; set; }
-
-
-    public UpdateCompanyResource(CompanyDto company)
-    {
-        Request = company;
-    }
+    public CompanyDto Company { get; }
+    public UpdateCompanyCommand Request { get; set; }
 
     public UpdateCompanyResource(CompanyDto company, UpdateCompanyCommand request)
     {
-        Request = company;
-        Command = request;
+        Company = company;
+        Request = request;
     }
 }
