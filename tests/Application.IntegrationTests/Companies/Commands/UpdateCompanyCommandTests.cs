@@ -29,8 +29,10 @@ public class UpdateCompanyTests : BaseTest
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
+        var manager = await _fixture.CreateUserAsync();
+        var command = CreateCommand(company.Id, managerId: manager.Id);
 
-        await AssertCompanyUpdatedAsync(user, company);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Theory]
@@ -42,14 +44,14 @@ public class UpdateCompanyTests : BaseTest
 
         var company = Faker.Builders.Company(managerId: user.Id);
         await _fixture.AddAsync(company);
-
-        await AssertCompanyUpdatedAsync(user, company);
-    }
-
-    private async Task AssertCompanyUpdatedAsync(AspNetUser user, Company company)
-    {
         var manager = await _fixture.CreateUserAsync();
         var command = CreateCommand(company.Id, managerId: manager.Id);
+
+        await AssertCompanyUpdatedAsync(user, company, command);
+    }
+
+    private async Task AssertCompanyUpdatedAsync(AspNetUser user, Company company, UpdateCompanyCommand command)
+    {
         await _fixture.SendAsync(command);
         var updatedCompany = await _fixture.FindAsync<Company>(company.Id);
 
@@ -86,8 +88,10 @@ public class UpdateCompanyTests : BaseTest
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
+        var manager = await _fixture.CreateUserAsync();
+        var command = CreateCommand(company.Id, managerId: manager.Id);
 
-        await AssertCompanyUpdatedAsync(user, company);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Fact]
