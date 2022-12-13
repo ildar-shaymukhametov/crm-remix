@@ -11,6 +11,10 @@ public static class Constants
         public const string ViewCompany = "company.view";
         public const string ViewAnyCompany = "company.view.any";
         public const string DeleteAnyCompany = "company.delete.any";
+
+        /// <summary>
+        /// Update any field in any company.
+        /// </summary>
         public const string UpdateAnyCompany = "company.update.any";
         public static class Company
         {
