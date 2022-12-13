@@ -78,13 +78,17 @@ public class AccessService : IAccessService
         }
 
         if (accessRights.Contains(Access.UpdateAnyCompany)
-            && (IsAdmin(user) || HasAnyClaim(user, Claims.UpdateAnyCompany)))
+            && (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.UpdateAnyCompany,
+                Claims.Company.Any.Manager.None.Set.Self
+            })))
         {
             result.Add(Access.UpdateAnyCompany);
         }
 
         if (accessRights.Contains(Access.Company.Any.Manager.None.Set.Self)
-            && (IsAdmin(user) || HasAnyClaim(user, new []
+            && (IsAdmin(user) || HasAnyClaim(user, new[]
             {
                 Claims.Company.Any.Manager.None.Set.Self,
                 Claims.Company.Any.Manager.Any.Set.Self

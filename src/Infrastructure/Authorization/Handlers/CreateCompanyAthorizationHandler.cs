@@ -16,11 +16,6 @@ public class CreateCompanyAthorizationHandler : BaseAuthorizationHandler<CreateC
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CreateCompanyRequirement requirement)
     {
-        if (context.Resource is not CreateCompanyResource resource)
-        {
-            throw new InvalidOperationException($"Resource has invalid type. Required type: {typeof(CreateCompanyResource)}");
-        }
-
         var accessRights = _accessService.CheckAccess(context.User, new[]
         {
             Access.CreateCompany,
@@ -33,12 +28,15 @@ public class CreateCompanyAthorizationHandler : BaseAuthorizationHandler<CreateC
             return Fail(context, "Create company");
         }
 
-        if (resource.Request.ManagerId != null)
+        if (context.Resource is CreateCompanyResource resource)
         {
-            var canSetSelfAsManager = resource.Request.ManagerId == context.User.GetSubjectId() && accessRights.Contains(Access.Company.Any.Manager.None.Set.Self);
-            if (!canSetSelfAsManager && !accessRights.Contains(Access.Company.Any.Manager.Any.Set.Any))
+            if (resource.Request.ManagerId != null)
             {
-                return Fail(context, "Set self as manager");
+                var canSetSelfAsManager = resource.Request.ManagerId == context.User.GetSubjectId() && accessRights.Contains(Access.Company.Any.Manager.None.Set.Self);
+                if (!canSetSelfAsManager && !accessRights.Contains(Access.Company.Any.Manager.Any.Set.Any))
+                {
+                    return Fail(context, "Set self as manager");
+                }
             }
         }
 

@@ -1,4 +1,5 @@
 using CRM.Application.Common.Behaviours.Authorization;
+using CRM.Application.Common.Behaviours.Authorization.Resources;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
@@ -49,7 +50,7 @@ public class PermissionsVerifier : IPermissionsVerifier
         if (permissions.ContainsAny(Permissions.UpdateCompany, Permissions.ViewCompany, Permissions.DeleteCompany) && int.TryParse(resourceKey, out var id))
         {
             var resource = await _resourceProvider.GetCompanyAsync(id) ?? throw new NotFoundException("Company", id);
-            if (permissions.Contains(Permissions.UpdateCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.UpdateCompany))
+            if (permissions.Contains(Permissions.UpdateCompany) && await _identityService.AuthorizeAsync(principal, new UpdateCompanyResource(resource), Policies.UpdateCompany))
             {
                 result.Add(Permissions.UpdateCompany);
             }
@@ -93,7 +94,7 @@ public class PermissionsVerifier : IPermissionsVerifier
                 continue;
             }
 
-            if (permissions.Contains(Permissions.UpdateCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.UpdateCompany))
+            if (permissions.Contains(Permissions.UpdateCompany) && await _identityService.AuthorizeAsync(principal, new UpdateCompanyResource(resource), Policies.UpdateCompany))
             {
                 list.Add(Permissions.UpdateCompany);
             }

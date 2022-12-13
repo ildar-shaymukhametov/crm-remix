@@ -27,10 +27,15 @@ public class RequestResourceProvider : IRequestResourceProvider
         return request switch
         {
             GetCompanyQuery query => (await _resourceProvider.GetCompanyAsync(query.Id), query.Id),
-            UpdateCompanyCommand query => (new UpdateCompanyResource(query, await _resourceProvider.GetCompanyAsync(query.Id) ?? throw new NotFoundException(nameof(Company), query.Id)), query.Id),
+            UpdateCompanyCommand query => (new UpdateCompanyResource(await GetResourceAsync(query), query), query.Id),
             DeleteCompanyCommand query => (await _resourceProvider.GetCompanyAsync(query.Id), query.Id),
             CreateCompanyCommand query => (new CreateCompanyResource(query), null),
             _ => (null, null),
         };
+    }
+
+    private async Task<CompanyDto> GetResourceAsync(UpdateCompanyCommand query)
+    {
+        return await _resourceProvider.GetCompanyAsync(query.Id) ?? throw new NotFoundException(nameof(Company), query.Id);
     }
 }

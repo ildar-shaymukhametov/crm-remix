@@ -118,6 +118,20 @@ public class UpdateCompanyTests : BaseTest
         await Assert.ThrowsAsync<NotFoundException>(() => _fixture.SendAsync(command));
     }
 
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.None.Set.Self)]
+    [InlineData(Constants.Claims.UpdateAnyCompany)]
+    public async Task User_can_set_manager_from_none_to_self_in_any_company___Updates_company(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+        var command = CreateCommand(company.Id, managerId: user.Id);
+
+        await AssertCompanyUpdatedAsync(user, company, command);
+    }
+
     private static UpdateCompanyCommand CreateCommand(int id, string? managerId = null)
     {
         var data = Faker.Builders.Company();

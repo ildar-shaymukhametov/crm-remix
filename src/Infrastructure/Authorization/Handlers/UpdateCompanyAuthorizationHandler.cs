@@ -24,7 +24,8 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         var accessRights = _accessService.CheckAccess(context.User, new[]
         {
             Access.UpdateAnyCompany,
-            Access.UpdateOwnCompany
+            Access.UpdateOwnCompany,
+            Access.Company.Any.Manager.None.Set.Self
         });
 
         if (!accessRights.Any())
@@ -32,10 +33,19 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             return Fail(context, "Update company");
         }
 
-        var canUpdateOwnCompany = resource.Company.ManagerId == context.User.GetSubjectId() && accessRights.Contains(Access.UpdateOwnCompany);
-        if (!canUpdateOwnCompany && !accessRights.Contains(Access.UpdateAnyCompany))
+        if (resource.Command != null)
         {
-            return Fail(context, "Update company");
+            var userId = context.User.GetSubjectId();
+            var canUpdateOwnCompany = resource.Request.ManagerId == userId && accessRights.Contains(Access.UpdateOwnCompany);
+            if (!canUpdateOwnCompany && !accessRights.Contains(Access.UpdateAnyCompany))
+            {
+                return Fail(context, "Update company");
+            }
+
+            if (resource.Command.ManagerId == null && resource.Request.ManagerId == userId && !accessRights.Contains(Access.Company.Any.Manager.None.Set.Self))
+            {
+                return Fail(context, "Set self as manager");
+            }
         }
 
         return Ok(context, requirement);
