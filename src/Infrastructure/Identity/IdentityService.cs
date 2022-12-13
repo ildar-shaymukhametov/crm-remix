@@ -54,7 +54,7 @@ public class IdentityService : IIdentityService
             Id = user.Id,
             Email = user.Email
         };
-        
+
         try
         {
             _dbContext.ApplicationUsers.Add(appUser);
@@ -84,24 +84,24 @@ public class IdentityService : IIdentityService
         return user != null && await _userManager.IsInRoleAsync(user, role);
     }
 
-    public async Task<bool> AuthorizeAsync(string userId, string policyName)
+    public async Task<Result> AuthorizeAsync(string userId, string policyName)
     {
         return await AuthorizeAsync(userId, null, policyName);
     }
 
-    public async Task<bool> AuthorizeAsync(ClaimsPrincipal principal, string policyName)
+    public async Task<Result> AuthorizeAsync(ClaimsPrincipal principal, string policyName)
     {
         var result = await _authorizationService.AuthorizeAsync(principal, policyName);
-        return result.Succeeded;
+        return result.ToApplicationResult();
     }
 
-    public async Task<bool> AuthorizeAsync(string userId, object? resource, string policyName)
+    public async Task<Result> AuthorizeAsync(string userId, object? resource, string policyName)
     {
         var user = await _userManager.FindByIdAsync(userId);
 
         if (user == null)
         {
-            return false;
+            return Result.Failure(new[] { "User is null" });
         }
 
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
@@ -109,10 +109,10 @@ public class IdentityService : IIdentityService
         return await AuthorizeAsync(principal, resource, policyName);
     }
 
-    public async Task<bool> AuthorizeAsync(ClaimsPrincipal principal, object? resource, string policyName)
+    public async Task<Result> AuthorizeAsync(ClaimsPrincipal principal, object? resource, string policyName)
     {
         var result = await _authorizationService.AuthorizeAsync(principal, resource, policyName);
-        return result.Succeeded;
+        return result.ToApplicationResult();
     }
 
     public async Task<Result> DeleteUserAsync(string userId)

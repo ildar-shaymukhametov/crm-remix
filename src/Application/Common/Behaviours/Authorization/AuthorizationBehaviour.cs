@@ -73,10 +73,10 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
                     throw new NotFoundException($"Resource request: {typeof(TRequest)}", key);
                 }
 
-                var authorized = await _identityService.AuthorizeAsync(_currentUserService.UserId, resource, policy);
-                if (!authorized)
+                var result = await _identityService.AuthorizeAsync(_currentUserService.UserId, resource, policy);
+                if (!result.Succeeded)
                 {
-                    throw new ForbiddenAccessException();
+                    throw new ForbiddenAccessException(result.Errors.FirstOrDefault() ?? string.Empty);
                 }
             }
         }
