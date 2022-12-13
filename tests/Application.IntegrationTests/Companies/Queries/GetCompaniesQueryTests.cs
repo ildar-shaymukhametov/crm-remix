@@ -2,9 +2,9 @@ using CRM.Application.Companies.Queries.GetCompanies;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
 
-public class GetCompaniesTests : BaseTest
+public class GetCompaniesQueryTests : BaseTest
 {
-    public GetCompaniesTests(BaseTestFixture fixture) : base(fixture) { }
+    public GetCompaniesQueryTests(BaseTestFixture fixture) : base(fixture) { }
 
     [Fact]
     public async Task User_is_admin___Returns_companies()
