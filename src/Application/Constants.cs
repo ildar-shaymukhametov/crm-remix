@@ -6,6 +6,10 @@ public static class Constants
     {
         public const string ClaimType = "authorization";
         public const string CreateCompany = "company.create";
+
+        /// <summary>
+        /// Update any field in own company.
+        /// </summary>
         public const string UpdateCompany = "company.update";
         public const string DeleteCompany = "company.delete";
         public const string ViewCompany = "company.view";
