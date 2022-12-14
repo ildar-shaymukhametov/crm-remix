@@ -18,7 +18,8 @@ public static class ApplicationDbContextSeed
             new UserClaimType { Id = 7, Value = Claims.UpdateAnyCompany, Name = "Company. Update any" },
             new UserClaimType { Id = 8, Value = Claims.Company.Any.Manager.Any.Set.Any, Name = "Company.Any.Manager.Any.Set.Any" },
             new UserClaimType { Id = 9, Value = Claims.Company.Any.Manager.Any.Set.Self, Name = "Company.Any.Manager.Any.Set.Self" },
-            new UserClaimType { Id = 10, Value = Claims.Company.Any.Manager.None.Set.Self, Name = "Company.Any.Manager.None.Set.Self" }
+            new UserClaimType { Id = 10, Value = Claims.Company.Any.Manager.None.Set.Self, Name = "Company.Any.Manager.None.Set.Self" },
+            new UserClaimType { Id = 11, Value = Claims.Company.Any.Manager.None.Set.Any, Name = "Company.Any.Manager.None.Set.Any" }
         );
     }
 }

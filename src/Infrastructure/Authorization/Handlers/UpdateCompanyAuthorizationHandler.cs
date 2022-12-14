@@ -21,7 +21,9 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         {
             Access.UpdateAnyCompany,
             Access.UpdateOwnCompany,
-            Access.Company.Any.Manager.None.Set.Self
+            Access.Company.Any.Manager.None.Set.Self,
+            Access.Company.Any.Manager.None.Set.Any,
+            Access.Company.Any.Manager.Any.Set.Any
         });
 
         if (!accessRights.Any())
@@ -39,9 +41,15 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
 
         if (request != null)
         {
-            if (request.ManagerId == null && company.ManagerId == userId && !accessRights.Contains(Access.Company.Any.Manager.None.Set.Self))
+            if (company.ManagerId == null)
             {
-                return Fail(context, "Set self as manager");
+                if (request.ManagerId != null && !accessRights.Contains(Access.Company.Any.Manager.None.Set.Any))
+                {
+                    if (request.ManagerId == userId && !accessRights.Contains(Access.Company.Any.Manager.None.Set.Self))
+                    {
+                        return Fail(context, "Set manager from none to self in any company");
+                    }
+                }
             }
         }
 

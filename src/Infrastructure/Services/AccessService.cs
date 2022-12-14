@@ -54,7 +54,11 @@ public class AccessService : IAccessService
         }
 
         if (accessRights.Contains(Access.UpdateOwnCompany)
-            && (IsAdmin(user) || HasAnyClaim(user, Claims.UpdateCompany, Claims.UpdateAnyCompany)))
+            && (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.UpdateCompany,
+                Claims.UpdateAnyCompany
+            })))
         {
             result.Add(Access.UpdateOwnCompany);
         }
@@ -81,7 +85,9 @@ public class AccessService : IAccessService
             && (IsAdmin(user) || HasAnyClaim(user, new[]
             {
                 Claims.UpdateAnyCompany,
-                Claims.Company.Any.Manager.None.Set.Self
+                Claims.Company.Any.Manager.None.Set.Self,
+                Claims.Company.Any.Manager.None.Set.Any,
+                Claims.Company.Any.Manager.Any.Set.Any
             })))
         {
             result.Add(Access.UpdateAnyCompany);
@@ -113,6 +119,17 @@ public class AccessService : IAccessService
             })))
         {
             result.Add(Access.Company.Any.Manager.Any.Set.Any);
+        }
+
+        if (accessRights.Contains(Access.Company.Any.Manager.None.Set.Any)
+            && (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.Any.Manager.None.Set.Any,
+                Claims.Company.Any.Manager.Any.Set.Any,
+                Claims.UpdateAnyCompany
+            })))
+        {
+            result.Add(Access.Company.Any.Manager.None.Set.Any);
         }
 
         return result.ToArray();

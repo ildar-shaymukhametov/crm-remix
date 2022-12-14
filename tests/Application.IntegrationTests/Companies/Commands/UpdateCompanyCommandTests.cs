@@ -132,6 +132,22 @@ public class UpdateCompanyTests : BaseTest
         await AssertCompanyUpdatedAsync(user, company, command);
     }
 
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.None.Set.Any)]
+    [InlineData(Constants.Claims.Company.Any.Manager.Any.Set.Any)]
+    [InlineData(Constants.Claims.UpdateAnyCompany)]
+    public async Task User_can_set_manager_from_none_to_any_in_any_company___Updates_company(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var anotherUser = await _fixture.AddUserAsync();
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+        var command = CreateCommand(company.Id, managerId: anotherUser.Id);
+
+        await AssertCompanyUpdatedAsync(user, company, command);
+    }
+
     private static UpdateCompanyCommand CreateCommand(int id, string? managerId = null)
     {
         var data = Faker.Builders.Company();

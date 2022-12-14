@@ -38,6 +38,7 @@ public static class Constants
                     {
                         public static class Set
                         {
+                            public const string Any = "company.any.manager.none.set.any";
                             public const string Self = "company.any.manager.none.set.self";
                         }
                     }
@@ -89,6 +90,7 @@ public static class Constants
                     {
                         public static class Set
                         {
+                            public const string Any = "company.any.manager.none.set.any";
                             public const string Self = "company.any.manager.none.set.self";
                         }
                     }
