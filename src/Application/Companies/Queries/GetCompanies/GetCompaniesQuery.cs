@@ -32,13 +32,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
 
     public async Task<CompanyDto[]> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
     {
-        var accessRightsToCheck = new[]
-        {
-            Access.ViewAnyCompany,
-            Access.ViewOwnCompany
-        };
-
-        var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!, accessRightsToCheck);
+        var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
         if (!accessRights.Any())
         {
             return Array.Empty<CompanyDto>();

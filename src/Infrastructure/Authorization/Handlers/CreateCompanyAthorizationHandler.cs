@@ -16,13 +16,7 @@ public class CreateCompanyAthorizationHandler : BaseAuthorizationHandler<CreateC
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CreateCompanyRequirement requirement)
     {
-        var accessRights = _accessService.CheckAccess(context.User, new[]
-        {
-            Access.CreateCompany,
-            Access.Company.Any.Manager.None.Set.Self,
-            Access.Company.Any.Manager.Any.Set.Any
-        });
-
+        var accessRights = _accessService.CheckAccess(context.User);
         if (!accessRights.Contains(Access.CreateCompany))
         {
             return Fail(context, "Create company");

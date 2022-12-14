@@ -48,14 +48,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyManage
             throw new NotFoundException(nameof(Company), request.Id);
         }
 
-        var accessRightsToCheck = new[]
-        {
-            Access.Company.Any.Manager.Any.Set.Any,
-            Access.Company.Any.Manager.None.Set.Self,
-            Access.Company.Any.Manager.Any.Set.Self
-        };
-
-        var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!, accessRightsToCheck);
+        var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
         if (!accessRights.Any())
         {
             return new GetCompanyManagersResponse();

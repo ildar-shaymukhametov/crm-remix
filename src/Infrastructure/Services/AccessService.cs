@@ -17,7 +17,7 @@ public class AccessService : IAccessService
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
     }
 
-    public async Task<string[]> CheckAccessAsync(string userId, string[] accessRights)
+    public async Task<string[]> CheckAccessAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -27,107 +27,96 @@ public class AccessService : IAccessService
 
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
 
-        return CheckAccess(principal, accessRights);
+        return CheckAccess(principal);
     }
 
-    public string[] CheckAccess(ClaimsPrincipal user, string[] accessRights)
+    public string[] CheckAccess(ClaimsPrincipal user)
     {
         var result = new List<string>();
 
-        if (accessRights.Contains(Access.CreateCompany)
-            && (IsAdmin(user) || HasAnyClaim(user, Claims.CreateCompany)))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.CreateCompany))
         {
             result.Add(Access.CreateCompany);
         }
 
-        if (accessRights.Contains(Access.ViewOwnCompany)
-            && (IsAdmin(user) || HasAnyClaim(user,
+        if (IsAdmin(user) || HasAnyClaim(user,
                 Claims.ViewCompany,
                 Claims.UpdateCompany,
                 Claims.DeleteCompany,
                 Claims.ViewAnyCompany,
                 Claims.UpdateAnyCompany,
                 Claims.DeleteAnyCompany)
-            ))
+            )
         {
             result.Add(Access.ViewOwnCompany);
         }
 
-        if (accessRights.Contains(Access.UpdateOwnCompany)
-            && (IsAdmin(user) || HasAnyClaim(user, new[]
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
                 Claims.UpdateCompany,
                 Claims.UpdateAnyCompany
-            })))
+            }))
         {
             result.Add(Access.UpdateOwnCompany);
         }
 
-        if (accessRights.Contains(Access.DeleteOwnCompany)
-            && (IsAdmin(user) || HasAnyClaim(user, Claims.DeleteCompany, Claims.DeleteAnyCompany)))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.DeleteCompany, Claims.DeleteAnyCompany))
         {
             result.Add(Access.DeleteOwnCompany);
         }
 
-        if (accessRights.Contains(Access.DeleteAnyCompany)
-            && (IsAdmin(user) || HasAnyClaim(user, Claims.DeleteAnyCompany)))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.DeleteAnyCompany))
         {
             result.Add(Access.DeleteAnyCompany);
         }
 
-        if (accessRights.Contains(Access.ViewAnyCompany)
-            && (IsAdmin(user) || HasAnyClaim(user, Claims.ViewAnyCompany, Claims.DeleteAnyCompany, Claims.UpdateAnyCompany)))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.ViewAnyCompany, Claims.DeleteAnyCompany, Claims.UpdateAnyCompany))
         {
             result.Add(Access.ViewAnyCompany);
         }
 
-        if (accessRights.Contains(Access.UpdateAnyCompany)
-            && (IsAdmin(user) || HasAnyClaim(user, new[]
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
                 Claims.UpdateAnyCompany,
                 Claims.Company.Any.Manager.None.Set.Self,
                 Claims.Company.Any.Manager.None.Set.Any,
                 Claims.Company.Any.Manager.Any.Set.Any
-            })))
+            }))
         {
             result.Add(Access.UpdateAnyCompany);
         }
 
-        if (accessRights.Contains(Access.Company.Any.Manager.None.Set.Self)
-            && (IsAdmin(user) || HasAnyClaim(user, new[]
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
                 Claims.Company.Any.Manager.None.Set.Self,
                 Claims.Company.Any.Manager.Any.Set.Self
-            })))
+            }))
         {
             result.Add(Access.Company.Any.Manager.None.Set.Self);
         }
 
-        if (accessRights.Contains(Access.Company.Any.Manager.Any.Set.Self)
-            && (IsAdmin(user) || HasAnyClaim(user, new[]
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
                 Claims.Company.Any.Manager.Any.Set.Self
-            })))
+            }))
         {
             result.Add(Access.Company.Any.Manager.Any.Set.Self);
         }
 
-        if (accessRights.Contains(Access.Company.Any.Manager.Any.Set.Any)
-            && (IsAdmin(user) || HasAnyClaim(user, new[]
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
                 Claims.Company.Any.Manager.Any.Set.Any
-            })))
+            }))
         {
             result.Add(Access.Company.Any.Manager.Any.Set.Any);
         }
 
-        if (accessRights.Contains(Access.Company.Any.Manager.None.Set.Any)
-            && (IsAdmin(user) || HasAnyClaim(user, new[]
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
                 Claims.Company.Any.Manager.None.Set.Any,
                 Claims.Company.Any.Manager.Any.Set.Any,
                 Claims.UpdateAnyCompany
-            })))
+            }))
         {
             result.Add(Access.Company.Any.Manager.None.Set.Any);
         }

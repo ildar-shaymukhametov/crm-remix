@@ -17,15 +17,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
     {
-        var accessRights = _accessService.CheckAccess(context.User, new[]
-        {
-            Access.UpdateAnyCompany,
-            Access.UpdateOwnCompany,
-            Access.Company.Any.Manager.None.Set.Self,
-            Access.Company.Any.Manager.None.Set.Any,
-            Access.Company.Any.Manager.Any.Set.Any
-        });
-
+        var accessRights = _accessService.CheckAccess(context.User);
         if (!accessRights.Any())
         {
             return Fail(context, "Update company");
