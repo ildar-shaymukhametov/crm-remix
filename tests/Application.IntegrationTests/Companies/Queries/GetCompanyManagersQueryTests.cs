@@ -13,7 +13,7 @@ public class GetCompanyManagersQueryTests : BaseTest
     [Fact]
     public async Task User_can_set_manager_from_any_to_any_in_any_company___Returns_all_users()
     {
-        var currentUser = await _fixture.RunAsDefaultUserAsync(Claims.Company.Any.Manager.Any.Set.Any);
+        var currentUser = await _fixture.RunAsDefaultUserAsync(Claims.Company.Any.SetManagerFromAnyToAny);
         var anotherUser = await _fixture.AddUserAsync();
 
         var company = Faker.Builders.Company(managerId: anotherUser.Id);
@@ -29,8 +29,8 @@ public class GetCompanyManagersQueryTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Claims.Company.Any.Manager.None.Set.Self)]
-    [InlineData(Claims.Company.Any.Manager.Any.Set.Self)]
+    [InlineData(Claims.Company.Any.SetManagerFromNoneToSelf)]
+    [InlineData(Claims.Company.Any.SetManagerFromAnyToSelf)]
     public async Task User_can_set_manager_from_none_to_self_in_any_company_without_manager___Returns_self(string claim)
     {
         var currentUser = await _fixture.RunAsDefaultUserAsync(claim);
@@ -50,7 +50,7 @@ public class GetCompanyManagersQueryTests : BaseTest
     [Fact]
     public async Task User_can_set_manager_from_any_to_self_in_any_company_with_manager___Returns_self()
     {
-        var currentUser = await _fixture.RunAsDefaultUserAsync(Claims.Company.Any.Manager.Any.Set.Self);
+        var currentUser = await _fixture.RunAsDefaultUserAsync(Claims.Company.Any.SetManagerFromAnyToSelf);
         var anotherUser = await _fixture.AddUserAsync();
 
         var company = Faker.Builders.Company(managerId: anotherUser.Id);

@@ -36,8 +36,8 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.UpdateCompany)]
-    [InlineData(Constants.Claims.UpdateAnyCompany)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Update)]
+    [InlineData(Constants.Claims.Company.Any.Update)]
     public async Task User_has_claim_and_is_manager___Updates_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -66,7 +66,7 @@ public class UpdateCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Constants.Claims.UpdateCompany
+            Constants.Claims.Company.WhereUserIsManager.Update
         });
 
         var company = Faker.Builders.Company();
@@ -83,7 +83,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Constants.Claims.UpdateAnyCompany
+            Constants.Claims.Company.Any.Update
         });
 
         var company = Faker.Builders.Company();
@@ -112,15 +112,15 @@ public class UpdateCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Constants.Claims.UpdateCompany
+            Constants.Claims.Company.WhereUserIsManager.Update
         });
         var command = CreateCommand(1);
         await Assert.ThrowsAsync<NotFoundException>(() => _fixture.SendAsync(command));
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Any.Manager.None.Set.Self)]
-    [InlineData(Constants.Claims.UpdateAnyCompany)]
+    [InlineData(Constants.Claims.Company.Any.SetManagerFromNoneToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Update)]
     public async Task User_can_set_manager_from_none_to_self_in_any_company___Updates_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -133,9 +133,9 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Any.Manager.None.Set.Any)]
-    [InlineData(Constants.Claims.Company.Any.Manager.Any.Set.Any)]
-    [InlineData(Constants.Claims.UpdateAnyCompany)]
+    [InlineData(Constants.Claims.Company.Any.SetManagerFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.SetManagerFromAnyToAny)]
+    [InlineData(Constants.Claims.Company.Any.Update)]
     public async Task User_can_set_manager_from_none_to_any_in_any_company___Updates_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });

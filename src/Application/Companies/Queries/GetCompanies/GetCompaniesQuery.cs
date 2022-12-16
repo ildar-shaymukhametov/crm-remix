@@ -39,9 +39,9 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         }
 
         var expressions = new List<Expression<Func<Company, bool>>>();
-        if (!accessRights.Contains(Access.ViewAnyCompany))
+        if (!accessRights.Contains(Access.Company.Any.View))
         {
-            if (accessRights.Contains(Access.ViewOwnCompany))
+            if (accessRights.Contains(Access.Company.WhereUserIsManager.View))
             {
                 expressions.Add(x => x.ManagerId == _currentUserService.UserId);
             }

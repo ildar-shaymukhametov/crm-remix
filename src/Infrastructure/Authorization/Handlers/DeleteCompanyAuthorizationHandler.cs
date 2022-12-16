@@ -17,8 +17,8 @@ public class DeleteCompanyAuthorizationHandler : BaseAuthorizationHandler<Delete
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        if (accessRights.Contains(Access.DeleteAnyCompany)
-            || accessRights.Contains(Access.DeleteOwnCompany)
+        if (accessRights.Contains(Access.Company.Any.Delete)
+            || accessRights.Contains(Access.Company.WhereUserIsManager.Delete)
                 && context.Resource is CompanyDto company && company.ManagerId == context.User.GetSubjectId())
         {
             context.Succeed(requirement);

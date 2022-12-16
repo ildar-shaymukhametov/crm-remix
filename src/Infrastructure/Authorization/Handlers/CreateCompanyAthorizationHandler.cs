@@ -17,7 +17,7 @@ public class CreateCompanyAthorizationHandler : BaseAuthorizationHandler<CreateC
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CreateCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        if (!accessRights.Contains(Access.CreateCompany))
+        if (!accessRights.Contains(Access.Company.Create))
         {
             return Fail(context, "Create company");
         }
@@ -26,8 +26,8 @@ public class CreateCompanyAthorizationHandler : BaseAuthorizationHandler<CreateC
         {
             if (resource.Request.ManagerId != null)
             {
-                var canSetSelfAsManager = resource.Request.ManagerId == context.User.GetSubjectId() && accessRights.Contains(Access.Company.Any.Manager.None.Set.Self);
-                if (!canSetSelfAsManager && !accessRights.Contains(Access.Company.Any.Manager.Any.Set.Any))
+                var canSetSelfAsManager = resource.Request.ManagerId == context.User.GetSubjectId() && accessRights.Contains(Access.Company.Any.SetManagerFromNoneToSelf);
+                if (!canSetSelfAsManager && !accessRights.Contains(Access.Company.Any.SetManagerFromAnyToAny))
                 {
                     return Fail(context, "Set self as manager");
                 }

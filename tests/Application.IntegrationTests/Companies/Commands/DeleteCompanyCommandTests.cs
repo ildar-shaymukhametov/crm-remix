@@ -24,8 +24,8 @@ public class DeleteCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.DeleteCompany)]
-    [InlineData(Constants.Claims.DeleteAnyCompany)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
+    [InlineData(Constants.Claims.Company.Any.Delete)]
     public async Task User_has_claim_and_is_manager___Deletes_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -45,7 +45,7 @@ public class DeleteCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Constants.Claims.DeleteCompany
+            Constants.Claims.Company.WhereUserIsManager.Delete
         });
 
         var company = Faker.Builders.Company();
@@ -60,7 +60,7 @@ public class DeleteCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Constants.Claims.DeleteAnyCompany
+            Constants.Claims.Company.Any.Delete
         });
 
         var company = Faker.Builders.Company();
@@ -77,7 +77,7 @@ public class DeleteCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Constants.Claims.DeleteCompany
+            Constants.Claims.Company.WhereUserIsManager.Delete
         });
         var command = new DeleteCompanyCommand { Id = 1 };
         await Assert.ThrowsAsync<NotFoundException>(() => _fixture.SendAsync(command));

@@ -5,44 +5,25 @@ public static class Constants
     public static class Claims
     {
         public const string ClaimType = "authorization";
-        public const string CreateCompany = "company.create";
-
-        /// <summary>
-        /// Update any field in own company.
-        /// </summary>
-        public const string UpdateCompany = "company.update";
-        public const string DeleteCompany = "company.delete";
-        public const string ViewCompany = "company.view";
-        public const string ViewAnyCompany = "company.view.any";
-        public const string DeleteAnyCompany = "company.delete.any";
-
-        /// <summary>
-        /// Update any field in any company.
-        /// </summary>
-        public const string UpdateAnyCompany = "company.update.any";
         public static class Company
         {
+            public const string Create = "Company.Create";
             public static class Any
             {
-                public static class Manager
-                {
-                    public static class Any
-                    {
-                        public static class Set
-                        {
-                            public const string Any = "company.any.manager.any.set.any";
-                            public const string Self = "company.any.manager.any.set.self";
-                        }
-                    }
-                    public static class None
-                    {
-                        public static class Set
-                        {
-                            public const string Any = "company.any.manager.none.set.any";
-                            public const string Self = "company.any.manager.none.set.self";
-                        }
-                    }
-                }
+                public const string View = "Company.Any.View";
+                public const string Delete = "Company.Any.Delete";
+                public const string Update = "Company.Any.Update";
+                public const string SetManagerFromAnyToAny = "Company.Any.SetManagerFromAnyToAny";
+                public const string SetManagerFromAnyToSelf = "Company.Any.SetManagerFromAnyToSelf";
+                public const string SetManagerFromNoneToAny = "Company.Any.SetManagerFromNoneToAny";
+                public const string SetManagerFromNoneToSelf = "Company.Any.SetManagerFromNoneToSelf";
+            }
+            public static class WhereUserIsManager
+            {
+                public const string View = "Company.WhereUserIsManager.View";
+                public const string Delete = "Company.WhereUserIsManager.Delete";
+                public const string Update = "Company.WhereUserIsManager.Update";
+                public const string SetManagerFromSelfToAny = "Company.WhereUserIsManager.SetManagerFromSelfToAny";
             }
         }
     }
@@ -65,36 +46,25 @@ public static class Constants
 
     public static class Access
     {
-        public const string CreateCompany = "CreateCompany";
-        public const string UpdateOwnCompany = "UpdateOwnCompany";
-        public const string DeleteOwnCompany = "DeleteOwnCompany";
-        public const string ViewOwnCompany = "ViewOwnCompany";
-        public const string ViewAnyCompany = "ViewAnyCompany";
-        public const string DeleteAnyCompany = "DeleteAnyCompany";
-        public const string UpdateAnyCompany = "UpdateAnyCompany";
         public static class Company
         {
+            public const string Create = "Company.Create";
             public static class Any
             {
-                public static class Manager
-                {
-                    public static class Any
-                    {
-                        public static class Set
-                        {
-                            public const string Any = "company.any.manager.any.set.any";
-                            public const string Self = "company.any.manager.any.set.self";
-                        }
-                    }
-                    public static class None
-                    {
-                        public static class Set
-                        {
-                            public const string Any = "company.any.manager.none.set.any";
-                            public const string Self = "company.any.manager.none.set.self";
-                        }
-                    }
-                }
+                public const string View = "Company.Any.View";
+                public const string Delete = "Company.Any.Delete";
+                public const string Update = "Company.Any.Update";
+                public const string SetManagerFromAnyToAny = "Company.Any.SetManagerFromAnyToAny";
+                public const string SetManagerFromAnyToSelf = "Company.Any.SetManagerFromAnyToSelf";
+                public const string SetManagerFromNoneToAny = "Company.Any.SetManagerFromNoneToAny";
+                public const string SetManagerFromNoneToSelf = "Company.Any.SetManagerFromNoneToSelf";
+            }
+            public static class WhereUserIsManager
+            {
+                public const string View = "Company.WhereUserIsManager.View";
+                public const string Delete = "Company.WhereUserIsManager.Delete";
+                public const string Update = "Company.WhereUserIsManager.Update";
+                public const string SetManagerFromSelfToAny = "Company.WhereUserIsManager.SetManagerFromSelfToAny";
             }
         }
     }
