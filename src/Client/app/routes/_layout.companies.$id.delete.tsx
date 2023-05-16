@@ -1,21 +1,13 @@
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction
-} from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
+import type { V2_MetaFunction } from "@remix-run/react";
 import { Link, useCatch, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
-import type { Company } from "~/utils/companies.server";
 import { getCompany, deleteCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 import { permissions } from "~/utils/constants.server";
-
-type LoaderData = {
-  company: Company;
-};
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   invariant(params.id, "Missing id parameter");
@@ -75,14 +67,18 @@ export function CatchBoundary() {
   throw new Error(`Unsupported thrown response status code: ${res.status}`);
 }
 
-export const meta: MetaFunction<LoaderData> = ({ data }) => {
+export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
   if (!data?.company) {
-    return {
-      title: "Delete company"
-    };
+    return [
+      {
+        title: "Delete company"
+      }
+    ];
   }
 
-  return {
-    title: `${data.company.name} • Delete`
-  };
+  return [
+    {
+      title: `${data.company.name} • Delete`
+    }
+  ];
 };

@@ -1,7 +1,6 @@
 import type {
   LinksFunction,
   LoaderFunction,
-  MetaFunction
 } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -21,11 +20,11 @@ export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
 };
 
-export const meta: MetaFunction = () => ({
-  charset: "utf-8",
-  title: "New Remix App",
-  viewport: "width=device-width,initial-scale=1"
-});
+export const meta = () => [
+  {
+    title: "New Remix App",
+  }
+];
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
@@ -40,6 +39,8 @@ export default function App() {
   return (
     <html lang="en" className="h-full">
       <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
       </head>
@@ -62,6 +63,8 @@ export function CatchBoundary() {
     <html>
       <head>
         <title>Oops!</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
       </head>
@@ -81,6 +84,8 @@ export function ErrorBoundary({ error }: { error: Error }) {
     <html>
       <head>
         <title>Oops!</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
       </head>

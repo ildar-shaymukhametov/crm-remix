@@ -1,10 +1,10 @@
 import type {
   ActionFunction,
   LoaderFunction,
-  MetaFunction
 } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import type { V2_MetaFunction} from "@remix-run/react";
 import { useActionData, useCatch, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
@@ -155,14 +155,18 @@ export function ErrorBoundary({ error }: { error: Error }) {
   return <p>{error.message}</p>;
 }
 
-export const meta: MetaFunction<LoaderData> = ({ data }) => {
+export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
   if (!data?.company) {
-    return {
-      title: "Edit company"
-    };
+    return [
+      {
+        title: "Edit company"
+      }
+    ];
   }
 
-  return {
-    title: data.company.name
-  };
+  return [
+    {
+      title: data.company.name
+    }
+  ];
 };

@@ -1,5 +1,6 @@
-import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import type { V2_MetaFunction } from "@remix-run/react";
 import { Link, useCatch, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
@@ -36,10 +37,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     params.id,
     user.extra?.access_token
   );
-  return json({ company, userPermissions: {
-    canUpdateCompany: user.permissions.includes(permissions.updateCompany),
-    canDeleteCompany: user.permissions.includes(permissions.deleteCompany)
-  } });
+  return json({
+    company,
+    userPermissions: {
+      canUpdateCompany: user.permissions.includes(permissions.updateCompany),
+      canDeleteCompany: user.permissions.includes(permissions.deleteCompany)
+    }
+  });
 };
 
 export default function CompanyRoute() {
@@ -77,14 +81,18 @@ export function CatchBoundary() {
   throw new Error(`Unsupported thrown response status code: ${res.status}`);
 }
 
-export const meta: MetaFunction<LoaderData> = ({ data }) => {
+export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
   if (!data?.company) {
-    return {
-      title: "View company"
-    };
+    return [
+      {
+        title: "View company"
+      }
+    ];
   }
 
-  return {
-    title: data.company.name
-  };
+  return [
+    {
+      title: data.company.name
+    }
+  ];
 };

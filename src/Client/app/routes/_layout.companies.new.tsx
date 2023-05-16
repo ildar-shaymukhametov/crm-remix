@@ -124,7 +124,9 @@ export function CatchBoundary() {
 }
 
 export function meta() {
-  return {
-    title: "New company"
-  };
+  return [
+    {
+      title: "New company"
+    }
+  ];
 }

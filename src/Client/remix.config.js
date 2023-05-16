@@ -6,6 +6,7 @@ module.exports = {
   // serverBuildPath: "build/index.js",
   // publicPath: "/build/",
   future: {
-    v2_routeConvention: true
+    v2_routeConvention: true,
+    v2_meta: true
   }
 };

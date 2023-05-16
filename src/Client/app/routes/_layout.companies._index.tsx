@@ -10,8 +10,8 @@ import { permissions } from "~/utils/constants.server";
 type LoaderData = {
   companies: CompanyIndex[];
   userPermissions: {
-    canCreateCompany: boolean
-  }
+    canCreateCompany: boolean;
+  };
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -80,7 +80,9 @@ export function CatchBoundary() {
 }
 
 export function meta() {
-  return {
-    title: "Companies"
-  };
+  return [
+    {
+      title: "Companies"
+    }
+  ];
 }
