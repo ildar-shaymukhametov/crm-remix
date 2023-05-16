@@ -17,7 +17,7 @@ export default function Navbar() {
             </Link>
           ) : null}
           {user ? (
-            <Form method="post" action="/logout">
+            <Form method="POST" action="/logout">
               <button>Log Out</button>
             </Form>
           ) : null}
