@@ -3,6 +3,7 @@ import { redirect } from "@remix-run/node";
 import { useActionData, useCatch } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 import { createCompany } from "~/utils/companies.server";
+import { routes } from "~/utils/constants";
 import { permissions } from "~/utils/constants.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -29,7 +30,7 @@ export const action: ActionFunction = async ({ request }) => {
   const data = Object.fromEntries(formData);
   const id = await createCompany(request, data, user.extra?.access_token);
 
-  return redirect(id.toString());
+  return redirect(routes.companies.view(id));
 };
 
 export default function NewCompanyRoute() {

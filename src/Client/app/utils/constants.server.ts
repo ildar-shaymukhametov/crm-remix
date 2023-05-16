@@ -1,8 +1,8 @@
 export const claims = {
-  viewCompany: "company.view",
-  createCompany: "company.create",
-  deleteCompany: "company.delete",
-  updateCompany: "company.update"
+  viewCompany: "Company.Any.View",
+  createCompany: "Company.Create",
+  deleteCompany: "Company.Any.Delete",
+  updateCompany: "Company.Any.Update"
 };
 
 export const permissions = {
