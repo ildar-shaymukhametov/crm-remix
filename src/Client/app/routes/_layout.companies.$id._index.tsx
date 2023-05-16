@@ -1,7 +1,8 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import type { V2_MetaFunction } from "@remix-run/react";
-import { Link, useCatch, useLoaderData, useParams } from "@remix-run/react";
+import type { V2_MetaFunction} from "@remix-run/react";
+import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
+import { Link, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
@@ -69,16 +70,21 @@ export default function CompanyRoute() {
   );
 }
 
-export function CatchBoundary() {
-  const res = useCatch();
-  if (res.status === 403) {
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return;
+  }
+
+  if (error.status === 403) {
     return <p>Forbidden</p>;
   }
-  if (res.status === 404) {
+
+  if (error.status === 404) {
     return <p>Company not found</p>;
   }
 
-  throw new Error(`Unsupported thrown response status code: ${res.status}`);
+  throw new Error(`Unsupported thrown response status code: ${error.status}`);
 }
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {

@@ -1,6 +1,10 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { useActionData, useCatch } from "@remix-run/react";
+import {
+  isRouteErrorResponse,
+  useActionData,
+  useRouteError
+} from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 import { createCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
@@ -111,16 +115,21 @@ export default function NewCompanyRoute() {
   );
 }
 
-export function CatchBoundary() {
-  const res = useCatch();
-  if (res.status === 403) {
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return;
+  }
+
+  if (error.status === 403) {
     return <p>Forbidden</p>;
   }
-  if (res.status === 404) {
+
+  if (error.status === 404) {
     return <p>Company not found</p>;
   }
 
-  throw new Error(`Unsupported thrown response status code: ${res.status}`);
+  throw new Error(`Unsupported thrown response status code: ${error.status}`);
 }
 
 export function meta() {

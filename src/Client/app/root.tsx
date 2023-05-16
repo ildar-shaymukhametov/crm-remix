@@ -1,7 +1,4 @@
-import type {
-  LinksFunction,
-  LoaderFunction,
-} from "@remix-run/node";
+import type { LinksFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Links,
@@ -10,7 +7,8 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useCatch
+  isRouteErrorResponse,
+  useRouteError
 } from "@remix-run/react";
 import Navbar from "./components/navbar";
 import styles from "./styles/tailwind.css";
@@ -22,7 +20,7 @@ export const links: LinksFunction = () => {
 
 export const meta = () => [
   {
-    title: "New Remix App",
+    title: "New Remix App"
   }
 ];
 
@@ -57,29 +55,9 @@ export default function App() {
   );
 }
 
-export function CatchBoundary() {
-  const caught = useCatch();
-  return (
-    <html>
-      <head>
-        <title>Oops!</title>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <h1>
-          {caught.status} {caught.statusText}
-        </h1>
-        <Scripts />
-      </body>
-    </html>
-  );
-}
+export function ErrorBoundary() {
+  const error = useRouteError();
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  console.error(error.message);
   return (
     <html>
       <head>
@@ -90,7 +68,13 @@ export function ErrorBoundary({ error }: { error: Error }) {
         <Links />
       </head>
       <body>
-        <h1>Unexpected error</h1>
+        {isRouteErrorResponse(error) ? (
+          <h1>
+            {error.status} {error.statusText}
+          </h1>
+        ) : (
+          <h1>Unexpected error</h1>
+        )}
         <Scripts />
       </body>
     </html>

@@ -1,11 +1,9 @@
-import type {
-  ActionFunction,
-  LoaderFunction,
-} from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import type { V2_MetaFunction} from "@remix-run/react";
-import { useActionData, useCatch, useLoaderData } from "@remix-run/react";
+import type { V2_MetaFunction } from "@remix-run/react";
+import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
+import { useActionData, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
 import type { Company } from "~/utils/companies.server";
@@ -138,21 +136,21 @@ export default function EditCompanyRoute() {
   );
 }
 
-export function CatchBoundary() {
-  const res = useCatch();
-  if (res.status === 403) {
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return <p>Unexpected error</p>;
+  }
+
+  if (error.status === 403) {
     return <p>Forbidden</p>;
   }
-  if (res.status === 404) {
+
+  if (error.status === 404) {
     return <p>Company not found</p>;
   }
 
-  throw new Error(`Unsupported thrown response status code: ${res.status}`);
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  console.error(error.message);
-  return <p>{error.message}</p>;
+  throw new Error(`Unsupported thrown response status code: ${error.status}`);
 }
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {

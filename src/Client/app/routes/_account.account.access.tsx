@@ -1,6 +1,10 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useCatch, useLoaderData } from "@remix-run/react";
+import {
+  isRouteErrorResponse,
+  useLoaderData,
+  useRouteError
+} from "@remix-run/react";
 import type { ClaimType } from "~/utils/account.server";
 import { getClaimTypes } from "~/utils/account.server";
 import {
@@ -59,19 +63,19 @@ export default function AccessRoute() {
   );
 }
 
-export function CatchBoundary() {
-  const res = useCatch();
-  if (res.status === 403) {
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return <p>Unexpected error</p>;
+  }
+
+  if (error.status === 403) {
     return <p>Forbidden</p>;
   }
-  if (res.status === 404) {
+
+  if (error.status === 404) {
     return <p>Company not found</p>;
   }
 
-  throw new Error(`Unsupported thrown response status code: ${res.status}`);
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  console.error(error.message);
-  return <p>Unexpected error</p>;
+  throw new Error(`Unsupported thrown response status code: ${error.status}`);
 }

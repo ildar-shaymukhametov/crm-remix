@@ -1,6 +1,11 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, useCatch, useLoaderData } from "@remix-run/react";
+import {
+  Link,
+  isRouteErrorResponse,
+  useLoaderData,
+  useRouteError
+} from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
 import type { CompanyIndex } from "~/utils/companies.server";
 import { getCompanies } from "~/utils/companies.server";
@@ -67,16 +72,21 @@ export default function CompaniesIndexRoute() {
   );
 }
 
-export function CatchBoundary() {
-  const res = useCatch();
-  if (res.status === 403) {
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return;
+  }
+
+  if (error.status === 403) {
     return <p>Forbidden</p>;
   }
-  if (res.status === 404) {
+
+  if (error.status === 404) {
     return <p>Company not found</p>;
   }
 
-  throw new Error(`Unsupported thrown response status code: ${res.status}`);
+  throw new Error(`Unsupported thrown response status code: ${error.status}`);
 }
 
 export function meta() {
