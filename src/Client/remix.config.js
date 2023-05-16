@@ -10,5 +10,6 @@ module.exports = {
     v2_meta: true,
     v2_errorBoundary: true,
     v2_normalizeFormMethod: true
-  }
+  },
+  serverModuleFormat: "cjs"
 };
