@@ -31,12 +31,12 @@ export const test = base.extend<{
 
 export function buildCompany(options: CreateCompanyOptions = {}): Company {
   return {
-    address: faker.address.streetAddress(),
-    ceo: faker.name.fullName(),
+    address: faker.location.streetAddress(),
+    ceo: faker.person.fullName(),
     contacts: faker.internet.email(),
     email: faker.internet.email(),
-    id: faker.datatype.number(),
-    inn: faker.random.numeric(10),
+    id: faker.number.int(),
+    inn: faker.string.numeric(10),
     name: faker.company.name(),
     phone: faker.phone.number(),
     type: faker.helpers.arrayElement(["ООО", "АО", "ПАО", "ИП"]),
