@@ -12,13 +12,13 @@ test("should login", async ({ page }) => {
   await page.getByLabel("Email").fill("tester@localhost");
   await page.getByLabel("Password").fill("Tester1!");
   await page.getByRole("button", { name: /log in/i }).click();
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL(routes.companies.index);
   await expect(
     page.getByRole("link", { name: "tester@localhost" })
   ).toBeVisible();
 
   await page.goto("/login");
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL(routes.companies.index);
 
   await page.context().clearCookies();
   await page.reload();
