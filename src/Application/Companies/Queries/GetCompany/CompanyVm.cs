@@ -14,4 +14,12 @@ public class CompanyVm : IMapFrom<Company>
     public string? Phone { get; set; }
     public string? Email { get; set; }
     public string? Contacts { get; set; }
+    public ManagerDto? Manager { get; set; }
+}
+
+public class ManagerDto : IMapFrom<ApplicationUser>
+{
+    public string? Id { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
 }

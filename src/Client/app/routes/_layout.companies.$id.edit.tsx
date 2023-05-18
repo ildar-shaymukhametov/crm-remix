@@ -57,7 +57,20 @@ export default function EditCompanyRoute() {
   const actionData = useActionData<ActionData>();
   const loaderData = useLoaderData<LoaderData>();
   const data: ActionData = {
-    fields: { ...loaderData.company, ...actionData?.fields },
+    fields: {
+      ...{
+        address: loaderData.company.address,
+        ceo: loaderData.company.ceo,
+        contacts: loaderData.company.contacts,
+        email: loaderData.company.email,
+        id: loaderData.company.id,
+        inn: loaderData.company.inn,
+        phone: loaderData.company.phone,
+        type: loaderData.company.type,
+        name: loaderData.company.name
+      },
+      ...actionData?.fields
+    },
     errors: actionData?.errors
   };
 

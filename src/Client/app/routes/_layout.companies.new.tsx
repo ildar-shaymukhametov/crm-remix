@@ -8,7 +8,7 @@ import {
   useRouteError
 } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
-import type { Manager } from "~/utils/companies.server";
+import type { Manager, NewCompany } from "~/utils/companies.server";
 import { createCompany, getInitData } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 import { permissions } from "~/utils/constants.server";
@@ -41,7 +41,7 @@ type LoaderData = {
 export const action: ActionFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
   const formData = await request.formData();
-  const data = Object.fromEntries(formData);
+  const data = Object.fromEntries(formData) as unknown as NewCompany;
   const id = await createCompany(request, data, user.extra?.access_token);
 
   return redirect(routes.companies.view(id));

@@ -29,6 +29,7 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
     {
         var item = await _dbContext.Companies
             .AsNoTracking()
+            .Include(x => x.Manager)
             .Where(x => x.Id == request.Id)
             .ProjectTo<CompanyVm>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);

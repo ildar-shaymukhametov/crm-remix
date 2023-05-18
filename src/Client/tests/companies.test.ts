@@ -212,7 +212,10 @@ test.describe("new company", () => {
 test.describe("view company", () => {
   test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
     const user = await runAsDefaultUser({ claims: [claims.company.any.view] });
-    const company = await createCompany({ managerId: user.id });
+    const company = await createCompany({
+      managerId: user.id
+    });
+
     await page.goto(routes.companies.view(company.id));
 
     await expectMinimalUi(page, company);
@@ -339,7 +342,8 @@ test.describe("view company", () => {
       "email",
       "inn",
       "phone",
-      "type"
+      "type",
+      "manager"
     ];
 
     for (const field of fields) {
@@ -362,13 +366,19 @@ test.describe("view company", () => {
       { key: "email", value: company.email },
       { key: "inn", value: company.inn },
       { key: "phone", value: company.phone },
-      { key: "type", value: company.type }
+      { key: "type", value: company.type },
+      {
+        key: "manager",
+        value: `${company.manager?.firstName} ${company.manager?.lastName}`
+      }
     ];
 
     for (const field of fields) {
       const element = page.getByLabel(field.key);
       await expect(element).toBeVisible({ visible });
-      await expect(element).toHaveText(field.value);
+      if (visible) {
+        await expect(element).toHaveText(field.value);
+      }
     }
   }
 });

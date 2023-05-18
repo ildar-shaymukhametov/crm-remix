@@ -1,8 +1,21 @@
 import { handleErrorResponse } from "./utils";
 
+export type NewCompany = {
+  id: number;
+  type: string;
+  name: string;
+  inn: string;
+  address: string;
+  ceo: string;
+  phone: string;
+  email: string;
+  contacts: string;
+  managerId?: string;
+};
+
 export async function createCompany(
   request: Request,
-  data: { [key: string]: any },
+  data: NewCompany,
   accessToken: string
 ): Promise<number> {
   const response = await fetch(`${process.env.API_URL}/companies`, {
@@ -32,7 +45,7 @@ export type Company = {
   phone: string;
   email: string;
   contacts: string;
-  managerId?: string;
+  manager?: Manager;
 };
 
 export async function getCompany(

@@ -1,6 +1,7 @@
 import { getAdminAccessToken, test as base } from "./test";
 import { faker } from "@faker-js/faker";
-import type { Company } from "~/utils/companies.server";
+import type { Company, NewCompany } from "~/utils/companies.server";
+import { getCompany } from "~/utils/companies.server";
 import { createCompany } from "~/utils/companies.server";
 
 type CreateCompanyOptions = {
@@ -15,21 +16,27 @@ export const test = base.extend<{
       use(async (options = {}) => {
         const accessToken = await getAdminAccessToken(page);
         const company = buildCompany(options);
+
         const id = await createCompany(
           new Request("http://foobar.com"),
           company,
           accessToken
         );
-        company.id = id;
 
-        return company;
+        const result = await getCompany(
+          new Request("http://foobar.com"),
+          id.toString(),
+          accessToken
+        );
+
+        return result;
       });
     },
     { auto: true }
   ]
 });
 
-export function buildCompany(options: CreateCompanyOptions = {}): Company {
+export function buildCompany(options: CreateCompanyOptions = {}): NewCompany {
   return {
     address: faker.location.streetAddress(),
     ceo: faker.person.fullName(),
