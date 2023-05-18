@@ -156,6 +156,7 @@ test.describe("new company", () => {
     await expectMinimalUi(page);
 
     const manager = page.getByLabel(/manager/i);
+    expect(manager.getByRole("option")).toHaveCount(1);
     expect(
       await manager
         .getByRole("option", {
