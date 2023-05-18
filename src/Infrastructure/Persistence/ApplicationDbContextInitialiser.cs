@@ -85,7 +85,7 @@ public class ApplicationDbContextInitialiser
         var userName = "administrator@localhost";
         if (_userManager.Users.All(u => u.UserName != userName))
         {
-            var (result, userId) = await _identityService.CreateUserAsync(userName, "Administrator1!");
+            var (result, userId) = await _identityService.CreateUserAsync(userName, "Administrator1!", "admin", "localhost");
             var user = await _userManager.FindByIdAsync(userId);
             await _userManager.AddToRolesAsync(user, new[] { administratorRole.Name, testerRole.Name });
         }
@@ -105,7 +105,7 @@ public class ApplicationDbContextInitialiser
         var userName = "tester@localhost";
         if (_userManager.Users.All(u => u.UserName != userName))
         {
-            var (result, userId) = await _identityService.CreateUserAsync(userName, "Tester1!");
+            var (result, userId) = await _identityService.CreateUserAsync(userName, "Tester1!", "tester", "localhost");
             var user = await _userManager.FindByIdAsync(userId);
             await _userManager.AddToRolesAsync(user, new[] { testerRole.Name });
         }

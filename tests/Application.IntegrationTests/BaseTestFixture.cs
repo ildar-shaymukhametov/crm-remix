@@ -62,7 +62,12 @@ public class BaseTestFixture
 
     public async Task<AspNetUser> RunAsDefaultUserAsync(params string[] claims)
     {
-        return await RunAsUserAsync("test@local", "Testing1234!", Array.Empty<string>(), claims);
+        return await RunAsDefaultUserAsync(string.Empty, string.Empty, claims);
+    }
+
+    public async Task<AspNetUser> RunAsDefaultUserAsync(string firstName, string lastName, params string[] claims)
+    {
+        return await RunAsUserAsync("test@local", "Testing1234!", Array.Empty<string>(), claims, firstName, lastName);
     }
 
     public async Task<AspNetUser> RunAsDefaultUserAsync(string[] claims, string[] roles)
@@ -72,15 +77,25 @@ public class BaseTestFixture
 
     public async Task<AspNetUser> RunAsAdministratorAsync()
     {
-        return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Constants.Roles.Administrator }, Array.Empty<string>());
+        return await RunAsAdministratorAsync(string.Empty, string.Empty);
+    }
+
+    public async Task<AspNetUser> RunAsAdministratorAsync(string firstName, string lastName)
+    {
+        return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Constants.Roles.Administrator }, Array.Empty<string>(), firstName, lastName);
     }
 
     public async Task<AspNetUser> RunAsUserAsync(string userName, string password, string[] roles, string[] claims)
     {
+        return await RunAsUserAsync(userName, password, roles, claims, string.Empty, string.Empty);
+    }
+
+    public async Task<AspNetUser> RunAsUserAsync(string userName, string password, string[] roles, string[] claims, string firstName, string lastName)
+    {
         using var scope = _scopeFactory.CreateScope();
 
         var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
-        var (result, userId) = await identityService.CreateUserAsync(userName, password);
+        var (result, userId) = await identityService.CreateUserAsync(userName, password, firstName, lastName);
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
         var user = await userManager.FindByIdAsync(userId);
 
@@ -115,10 +130,15 @@ public class BaseTestFixture
 
     public async Task<AspNetUser> AddUserAsync()
     {
+        return await AddUserAsync(string.Empty, string.Empty);
+    }
+
+    public async Task<AspNetUser> AddUserAsync(string firstName, string lastName)
+    {
         using var scope = _scopeFactory.CreateScope();
 
         var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
-        var (result, userId) = await identityService.CreateUserAsync(Faker.Internet.UserName(), $"{Faker.Internet.UserName()}Z1!");
+        var (result, userId) = await identityService.CreateUserAsync(Faker.Internet.UserName(), $"{Faker.Internet.UserName()}Z1!", firstName, lastName);
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
         var user = await userManager.FindByIdAsync(userId);
 

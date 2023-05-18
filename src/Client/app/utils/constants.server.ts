@@ -1,10 +1,18 @@
 export const claims = {
-  viewCompany: "Company.Any.View",
-  createCompany: "Company.Create",
-  deleteCompany: "Company.Any.Delete",
-  updateCompany: "Company.Any.Update"
+  company: {
+    create: "Company.Create",
+    new: {
+      setManagerToSelf: "Company.New.SetManagerToSelf"
+    },
+    any: {
+      view: "Company.Any.View",
+      delete: "Company.Any.Delete",
+      update: "Company.Any.Update"
+    }
+  }
 };
 
+// High level authorization data
 export const permissions = {
   createCompany: "CreateCompany",
   deleteCompany: "DeleteCompany",

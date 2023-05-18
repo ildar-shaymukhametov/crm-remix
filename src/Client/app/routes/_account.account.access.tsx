@@ -73,9 +73,5 @@ export function ErrorBoundary() {
     return <p>Forbidden</p>;
   }
 
-  if (error.status === 404) {
-    return <p>Company not found</p>;
-  }
-
   throw new Error(`Unsupported thrown response status code: ${error.status}`);
 }

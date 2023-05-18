@@ -16,11 +16,15 @@ public class IdentityServiceTests : BaseTest
         using var scope = _fixture.GetServiceScope();
         var sut = scope.ServiceProvider.GetRequiredService<IIdentityService>();
 
-        var (result, userId) = await sut.CreateUserAsync(Faker.Internet.UserName(), "Foobar1!");
+        var firstName = Faker.Name.First();
+        var lastName = Faker.Name.Last();
+        var (result, userId) = await sut.CreateUserAsync(Faker.Internet.UserName(), "Foobar1!", firstName, lastName);
         Assert.True(result.Succeeded);
 
         var appUser = await _fixture.FindAsync<ApplicationUser>(userId);
         Assert.NotNull(appUser);
+        Assert.Equal(firstName, appUser?.FirstName);
+        Assert.Equal(lastName, appUser?.LastName);
 
         var aspNetUser = await _fixture.FindAsync<AspNetUser>(userId);
         Assert.NotNull(aspNetUser);

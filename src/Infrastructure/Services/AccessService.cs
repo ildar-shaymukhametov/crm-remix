@@ -121,6 +121,23 @@ public class AccessService : IAccessService
             result.Add(Access.Company.Any.SetManagerFromNoneToAny);
         }
 
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Access.Company.New.SetManagerToAny,
+                Access.Company.New.SetManagerToSelf,
+            }))
+        {
+            result.Add(Access.Company.New.SetManagerToSelf);
+        }
+
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Access.Company.New.SetManagerToAny
+            }))
+        {
+            result.Add(Access.Company.New.SetManagerToAny);
+        }
+
         return result.ToArray();
     }
 

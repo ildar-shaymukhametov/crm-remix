@@ -124,3 +124,30 @@ export async function getCompanies(
   const companies = await response.json();
   return companies;
 }
+
+type CompanyInitData = {
+  managers: Manager[]
+};
+
+export type Manager = {
+  id: string,
+  firstName?: string,
+  lastName?: string
+}
+
+export async function getInitData(
+  request: Request,
+  accessToken: string
+): Promise<CompanyInitData> {
+  const response = await fetch(`${process.env.API_URL}/companies/initData`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
+
+  if (!response.ok) {
+    await handleErrorResponse(request, response);
+  }
+
+  return await response.json();
+}

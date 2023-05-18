@@ -1,12 +1,15 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import {
   isRouteErrorResponse,
   useActionData,
+  useLoaderData,
   useRouteError
 } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
-import { createCompany } from "~/utils/companies.server";
+import type { Manager } from "~/utils/companies.server";
+import { createCompany, getInitData } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 import { permissions } from "~/utils/constants.server";
 
@@ -14,11 +17,14 @@ export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request, {
     permissions: [permissions.createCompany]
   });
+
   if (!user.permissions.includes(permissions.createCompany)) {
     throw new Response(null, { status: 403 });
   }
 
-  return {};
+  const initData = await getInitData(request, user.extra?.access_token);
+
+  return json(initData);
 };
 
 type ActionData = {
@@ -26,6 +32,10 @@ type ActionData = {
     [index: string]: string[];
   };
   fields?: { [index: string]: string };
+};
+
+type LoaderData = {
+  managers?: Manager[];
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -39,24 +49,20 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewCompanyRoute() {
   const data = useActionData<ActionData>();
+  const { managers } = useLoaderData<LoaderData>();
 
   return (
     <form method="post">
       <div>
         <label>
           Name:
-          <input
-            name="name"
-            required
-            maxLength={200}
-            defaultValue={data?.fields?.name}
-          />
+          <input name="name" required maxLength={200} />
         </label>
       </div>
       <div>
         <label>
           Type:
-          <select name="type" defaultValue={data?.fields?.type}>
+          <select name="type">
             <option value=""></option>
             <option value="ООО">ООО</option>
             <option value="АО">АО</option>
@@ -68,7 +74,7 @@ export default function NewCompanyRoute() {
       <div>
         <label>
           Inn:
-          <input name="inn" defaultValue={data?.fields?.inn} />
+          <input name="inn" />
         </label>
         {data?.errors?.Inn
           ? data.errors.Inn.map((error, i) => <p key={i}>{error}</p>)
@@ -77,13 +83,13 @@ export default function NewCompanyRoute() {
       <div>
         <label>
           Address:
-          <input name="address" defaultValue={data?.fields?.address} />
+          <input name="address" />
         </label>
       </div>
       <div>
         <label>
           CEO:
-          <input name="ceo" defaultValue={data?.fields?.ceo} />
+          <input name="ceo" />
         </label>
         {data?.errors?.Ceo
           ? data.errors.Ceo.map((error, i) => <p key={i}>{error}</p>)
@@ -92,13 +98,13 @@ export default function NewCompanyRoute() {
       <div>
         <label>
           Phone:
-          <input name="phone" defaultValue={data?.fields?.phone} />
+          <input name="phone" />
         </label>
       </div>
       <div>
         <label>
           Email:
-          <input name="email" defaultValue={data?.fields?.email} />
+          <input name="email" />
         </label>
         {data?.errors?.Email
           ? data.errors.Email.map((error, i) => <p key={i}>{error}</p>)
@@ -107,7 +113,21 @@ export default function NewCompanyRoute() {
       <div>
         <label>
           Contacts:
-          <input name="contacts" defaultValue={data?.fields?.contacts} />
+          <input name="contacts" />
+        </label>
+      </div>
+      <div>
+        <label>
+          Manager:
+          <select name="manager">
+            {managers
+              ? managers.map((x, i) => (
+                  <option key={i} value={x.id}>
+                    {x.firstName} {x.lastName}
+                  </option>
+                ))
+              : null}
+          </select>
         </label>
       </div>
       <button type="submit">Create new company</button>
@@ -126,7 +146,7 @@ export function ErrorBoundary() {
   }
 
   if (error.status === 404) {
-    return <p>Company not found</p>;
+    return <p>Not found</p>;
   }
 
   throw new Error(`Unsupported thrown response status code: ${error.status}`);

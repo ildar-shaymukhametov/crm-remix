@@ -36,6 +36,11 @@ public class IdentityService : IIdentityService
 
     public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
     {
+        return await CreateUserAsync(userName, password, string.Empty, string.Empty);
+    }
+
+    public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password, string firstName, string lastName)
+    {
         var user = new AspNetUser
         {
             UserName = userName,
@@ -52,7 +57,9 @@ public class IdentityService : IIdentityService
         var appUser = new ApplicationUser
         {
             Id = user.Id,
-            Email = user.Email
+            Email = user.Email,
+            FirstName = firstName,
+            LastName = lastName
         };
 
         try

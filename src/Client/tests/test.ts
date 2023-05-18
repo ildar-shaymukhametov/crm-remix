@@ -12,6 +12,8 @@ let adminAccessToken = "";
 type DefaultUserOptions = {
   claims?: string[];
   accessToken?: string;
+  givenName?: string;
+  familiyName?: string;
 };
 
 export const test = base.extend<{
@@ -55,14 +57,13 @@ async function runAsDefaultUser(
   baseURL: string,
   options: DefaultUserOptions
 ) {
-  const user = await login(
-    page,
-    baseURL,
-    "tester@localhost",
-    "Tester1!",
-    "f3ad4d5d-1ebe-4c22-8570-ca237fd1c7c4",
-    options.accessToken,
-  );
+  const user = createUser("0ad62604-08dc-400b-b1f8-4cdb7f2e7674", "tester", "localhost");
+  user.extra.access_token =
+    options.accessToken ??
+    (await getAccessToken(page, "tester@localhost", "Tester1!"));
+
+  await login(page, baseURL, user);
+
   if (options.claims && options.claims.length > 0) {
     await updateAuthorizationClaims(
       new Request("http://foobar.com"),
@@ -70,31 +71,24 @@ async function runAsDefaultUser(
       user.extra?.access_token
     );
   }
+
   return user;
 }
 
-function runAsAdministrator(page: Page, baseURL: string) {
-  return login(
+async function runAsAdministrator(page: Page, baseURL: string) {
+  const user = createUser("0ad62604-08dc-400b-b1f8-4cdb7f2e7674");
+  user.extra.access_token = await getAccessToken(
     page,
-    baseURL,
     "administrator@localhost",
-    "Administrator1!",
-    "0ad62604-08dc-400b-b1f8-4cdb7f2e7674"
+    "Administrator1!"
   );
+
+  await login(page, baseURL, user);
+
+  return user;
 }
 
-async function login(
-  page: Page,
-  baseURL: string,
-  username: string,
-  password: string,
-  id: string,
-  accessToken?: string,
-) {
-  const user = createUser(id);
-  user.extra.access_token =
-    accessToken ?? (await getAccessToken(page, username, password));
-
+async function login(page: Page, baseURL: string, user: OidcProfile) {
   const session = await getSession();
   session.set("user", user);
   const cookieValue = await commitSession(session);
@@ -109,7 +103,6 @@ async function login(
       value: _session
     }
   ]);
-  return user;
 }
 
 async function getAccessToken(page: Page, username: string, password: string) {
@@ -173,13 +166,13 @@ async function requestAccessToken(
   return access_token as string;
 }
 
-function createUser(id: string): OidcProfile {
+function createUser(id: string, givenName = "", familyName = ""): OidcProfile {
   return {
     displayName: "test@localhost",
     id: id,
     name: {
-      familyName: "",
-      givenName: "",
+      familyName,
+      givenName,
       middleName: ""
     },
     emails: [],

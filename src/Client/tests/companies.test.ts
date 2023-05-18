@@ -22,7 +22,7 @@ test.describe("view companies", () => {
     page,
     runAsDefaultUser
   }) => {
-    await runAsDefaultUser({ claims: [claims.createCompany] });
+    await runAsDefaultUser({ claims: [claims.company.create] });
     await page.goto(routes.companies.index);
 
     await expectMinimalUi(page, {
@@ -40,7 +40,9 @@ test.describe("view companies", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: [claims.updateCompany] });
+    const user = await runAsDefaultUser({
+      claims: [claims.company.any.update]
+    });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.index);
 
@@ -56,7 +58,9 @@ test.describe("view companies", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: [claims.deleteCompany] });
+    const user = await runAsDefaultUser({
+      claims: [claims.company.any.delete]
+    });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.index);
 
@@ -115,9 +119,8 @@ test.describe("new company", () => {
     page,
     runAsDefaultUser
   }) => {
-    await runAsDefaultUser({ claims: [claims.createCompany] });
+    await runAsDefaultUser({ claims: [claims.company.create] });
     await page.goto(routes.companies.new);
-
     await expectMinimalUi(page);
 
     const company = buildCompany();
@@ -128,14 +131,41 @@ test.describe("new company", () => {
     await page.getByLabel(/email/i).fill(company.email);
     await page.getByLabel(/inn/i).fill(company.inn);
     await page.getByLabel(/phone/i).fill(company.phone);
+
     const type = page.getByLabel(/type/i);
     await type.selectOption({ index: 1 });
     company.type =
       (await type.getByRole("option", { selected: true }).textContent()) ?? "";
 
+    const manager = page.getByLabel(/manager/i);
+    expect(manager).toHaveText("");
+
     const submit = page.getByRole("button", { name: /create new company/i });
     await submit.click();
     await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+  });
+
+  test("should be able to set manager to self", async ({
+    page,
+    runAsDefaultUser
+  }) => {
+    const user = await runAsDefaultUser({
+      claims: [
+        claims.company.create,
+        claims.company.new.setManagerToSelf
+      ]
+    });
+    await page.goto(routes.companies.new);
+    await expectMinimalUi(page);
+
+    const manager = page.getByLabel(/manager/i);
+    expect(
+      await manager
+        .getByRole("option", {
+          name: `${user.name.givenName} ${user.name.familyName}`
+        })
+        .textContent()
+    ).toBe(`${user.name.givenName} ${user.name.familyName}`);
   });
 
   type VisibilityOptions = {
@@ -173,7 +203,8 @@ test.describe("new company", () => {
       /email/i,
       /inn/i,
       /phone/i,
-      /type/i
+      /type/i,
+      /manager/i
     ];
     for (const field of fields) {
       await expect(page.getByLabel(field)).toBeVisible({ visible });
@@ -183,7 +214,7 @@ test.describe("new company", () => {
 
 test.describe("view company", () => {
   test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
-    const user = await runAsDefaultUser({ claims: [claims.viewCompany] });
+    const user = await runAsDefaultUser({ claims: [claims.company.any.view] });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.view(company.id));
 
@@ -213,7 +244,7 @@ test.describe("view company", () => {
     createCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.updateCompany]
+      claims: [claims.company.any.update]
     });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.view(company.id));
@@ -230,7 +261,9 @@ test.describe("view company", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: [claims.deleteCompany] });
+    const user = await runAsDefaultUser({
+      claims: [claims.company.any.delete]
+    });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.view(company.id));
 
@@ -242,7 +275,7 @@ test.describe("view company", () => {
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
-    await runAsDefaultUser({ claims: [claims.viewCompany] });
+    await runAsDefaultUser({ claims: [claims.company.any.view] });
     await page.goto(routes.companies.view("1"));
 
     await expectMinimalUi(page, undefined, {
@@ -364,7 +397,9 @@ test.describe("edit company", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: [claims.updateCompany] });
+    const user = await runAsDefaultUser({
+      claims: [claims.company.any.update]
+    });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.edit(company.id));
 
@@ -406,7 +441,7 @@ test.describe("edit company", () => {
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
-    await runAsDefaultUser({ claims: [claims.updateCompany] });
+    await runAsDefaultUser({ claims: [claims.company.any.update] });
     await page.goto(routes.companies.edit(1));
 
     await expectMinimalUi(page, undefined, {
@@ -498,7 +533,9 @@ test.describe("delete company", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: [claims.deleteCompany] });
+    const user = await runAsDefaultUser({
+      claims: [claims.company.any.delete]
+    });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.delete(company.id));
 
@@ -517,7 +554,9 @@ test.describe("delete company", () => {
     runAsDefaultUser,
     createCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: [claims.deleteCompany] });
+    const user = await runAsDefaultUser({
+      claims: [claims.company.any.delete]
+    });
     const company = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.delete(company.id));
 
@@ -530,7 +569,7 @@ test.describe("delete company", () => {
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
-    await runAsDefaultUser({ claims: [claims.deleteCompany] });
+    await runAsDefaultUser({ claims: [claims.company.any.delete] });
     await page.goto(routes.companies.delete(1));
 
     await expectMinimalUi(page, undefined, {
