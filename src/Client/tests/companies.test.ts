@@ -150,10 +150,7 @@ test.describe("new company", () => {
     runAsDefaultUser
   }) => {
     const user = await runAsDefaultUser({
-      claims: [
-        claims.company.create,
-        claims.company.new.setManagerToSelf
-      ]
+      claims: [claims.company.create, claims.company.new.setManagerToSelf]
     });
     await page.goto(routes.companies.new);
     await expectMinimalUi(page);
@@ -346,7 +343,7 @@ test.describe("view company", () => {
     ];
 
     for (const field of fields) {
-      await expect(page.locator(`[aria-label="${field}"]`)).toBeVisible({
+      await expect(page.getByLabel(field)).toBeVisible({
         visible
       });
     }
@@ -358,18 +355,20 @@ test.describe("view company", () => {
     visible = true
   ) {
     const fields = [
-      company.name,
-      company.address,
-      company.ceo,
-      company.contacts,
-      company.email,
-      company.inn,
-      company.phone,
-      company.type
+      { key: "name", value: company.name },
+      { key: "address", value: company.address },
+      { key: "ceo", value: company.ceo },
+      { key: "contacts", value: company.contacts },
+      { key: "email", value: company.email },
+      { key: "inn", value: company.inn },
+      { key: "phone", value: company.phone },
+      { key: "type", value: company.type }
     ];
 
     for (const field of fields) {
-      await expect(page.getByText(field)).toBeVisible({ visible });
+      const element = page.getByLabel(field.key);
+      await expect(element).toBeVisible({ visible });
+      await expect(element).toHaveText(field.value);
     }
   }
 });

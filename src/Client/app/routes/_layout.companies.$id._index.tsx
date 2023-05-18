@@ -1,6 +1,6 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import type { V2_MetaFunction} from "@remix-run/react";
+import type { V2_MetaFunction } from "@remix-run/react";
 import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { Link, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
@@ -62,7 +62,7 @@ export default function CompanyRoute() {
       <div>
         {Object.entries(company).map(([key, name], i) => (
           <p key={i}>
-            <span aria-label={key}>{key}</span>: {name}
+            <span>{key}</span>: <span aria-label={key}>{name}</span>
           </p>
         ))}
       </div>
