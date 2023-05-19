@@ -61,32 +61,26 @@ export default function CompanyRoute() {
       ) : null}
       <div>
         <p>
-          <span>name</span>:{" "}
-          <span aria-label="name">{company.name}</span>
+          <span>name</span>: <span aria-label="name">{company.name}</span>
         </p>
         <p>
-          <span>type</span>:{" "}
-          <span aria-label="type">{company.type}</span>
+          <span>type</span>: <span aria-label="type">{company.type}</span>
         </p>
         <p>
-          <span>inn</span>:{" "}
-          <span aria-label="inn">{company.inn}</span>
+          <span>inn</span>: <span aria-label="inn">{company.inn}</span>
         </p>
         <p>
           <span>address</span>:{" "}
           <span aria-label="address">{company.address}</span>
         </p>
         <p>
-          <span>ceo</span>:{" "}
-          <span aria-label="ceo">{company.ceo}</span>
+          <span>ceo</span>: <span aria-label="ceo">{company.ceo}</span>
         </p>
         <p>
-          <span>phone</span>:{" "}
-          <span aria-label="phone">{company.phone}</span>
+          <span>phone</span>: <span aria-label="phone">{company.phone}</span>
         </p>
         <p>
-          <span>email</span>:{" "}
-          <span aria-label="email">{company.email}</span>
+          <span>email</span>: <span aria-label="email">{company.email}</span>
         </p>
         <p>
           <span>contacts</span>:{" "}
@@ -94,7 +88,11 @@ export default function CompanyRoute() {
         </p>
         <p>
           <span>manager</span>:{" "}
-          <span aria-label="manager">{company.manager?.firstName} {company.manager?.lastName}</span>
+          <span aria-label="manager">
+            {company.manager
+              ? `${company.manager?.firstName} ${company.manager?.lastName}`
+              : "-"}
+          </span>
         </p>
       </div>
     </>

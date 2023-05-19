@@ -166,6 +166,23 @@ test.describe("new company", () => {
     ).toBe(`${user.name.givenName} ${user.name.familyName}`);
   });
 
+  test("should be able to set manager to none", async ({
+    page,
+    runAsDefaultUser
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.create, claims.company.new.setManagerToNone]
+    });
+    await page.goto(routes.companies.new);
+    await expectMinimalUi(page);
+
+    const manager = page.getByLabel(/manager/i);
+    expect(manager.getByRole("option")).toHaveCount(1);
+
+    const text = (await manager.getByRole("option").textContent());
+    expect(text).toBe("-");
+  });
+
   type VisibilityOptions = {
     forbidden?: boolean;
     companyFields?: boolean;
@@ -211,11 +228,28 @@ test.describe("new company", () => {
 });
 
 test.describe("view company", () => {
-  test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
+  test("minimal ui, with manager", async ({
+    page,
+    runAsDefaultUser,
+    createCompany
+  }) => {
     const user = await runAsDefaultUser({ claims: [claims.company.any.view] });
     const company = await createCompany({
       managerId: user.id
     });
+
+    await page.goto(routes.companies.view(company.id));
+
+    await expectMinimalUi(page, company);
+  });
+
+  test("minimal ui, no manager", async ({
+    page,
+    runAsDefaultUser,
+    createCompany
+  }) => {
+    await runAsDefaultUser({ claims: [claims.company.any.view] });
+    const company = await createCompany();
 
     await page.goto(routes.companies.view(company.id));
 
@@ -320,8 +354,8 @@ test.describe("view company", () => {
       visible: forbidden
     });
     await expectCompanyFieldsToBeVisible(page, companyFields);
-    if (company) {
-      await expectCompanyFieldsToValues(page, company, companyFields);
+    if (company && companyFields) {
+      await expectCompanyFieldsToValues(page, company);
     }
     await expect(page.getByRole("link", { name: /edit/i })).toBeVisible({
       visible: editButton
@@ -354,11 +388,7 @@ test.describe("view company", () => {
     }
   }
 
-  async function expectCompanyFieldsToValues(
-    page: Page,
-    company: Company,
-    visible = true
-  ) {
+  async function expectCompanyFieldsToValues(page: Page, company: Company) {
     const fields = [
       { key: "name", value: company.name },
       { key: "address", value: company.address },
@@ -370,16 +400,15 @@ test.describe("view company", () => {
       { key: "type", value: company.type },
       {
         key: "manager",
-        value: `${company.manager?.firstName} ${company.manager?.lastName}`
+        value: company.manager
+          ? `${company.manager?.firstName} ${company.manager?.lastName}`
+          : "-"
       }
     ];
 
     for (const field of fields) {
       const element = page.getByLabel(field.key);
-      await expect(element).toBeVisible({ visible });
-      if (visible) {
-        await expect(element).toHaveText(field.value);
-      }
+      await expect(element).toHaveText(field.value);
     }
   }
 });

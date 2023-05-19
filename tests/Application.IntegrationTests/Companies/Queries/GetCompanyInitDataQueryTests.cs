@@ -61,6 +61,20 @@ public class GetCompanyManagersQueryTests : BaseTest
     }
 
     [Fact]
+    public async Task User_can_set_manager_to_none_in_new_company___Returns_empty_manager()
+    {
+        var currentUser = await _fixture.RunAsDefaultUserAsync(Claims.Company.New.SetManagerToNone);
+        var user2 = await _fixture.AddUserAsync("user", "2");
+
+        var query = new GetCompanyInitDataQuery();
+        var result = await _fixture.SendAsync(query);
+
+        Assert.Collection(result.Managers,
+            x => Assert.True(x.Id == null)
+        );
+    }
+
+    [Fact]
     public async Task User_has_no_claim___Returns_empty_list()
     {
         await _fixture.RunAsDefaultUserAsync();

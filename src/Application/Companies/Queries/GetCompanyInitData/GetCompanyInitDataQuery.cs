@@ -44,10 +44,20 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             return await BuildResponseAsync(query, true, cancellationToken);
         }
 
+        var includeNullManager = accessRights.Contains(Access.Company.New.SetManagerToNone);
         var expressions = GetExpressions(accessRights, _currentUserService.UserId!);
         if (!expressions.Any())
         {
-            return new GetCompanyInitDataResponse();
+            var result = new GetCompanyInitDataResponse();
+            if (includeNullManager)
+            {
+                result.Managers = new List<ManagerDto>
+                {
+                    new ManagerDto()
+                };
+            }
+
+            return result;
         }
 
         foreach (var expression in expressions)
@@ -55,7 +65,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             query = query.Where(expression);
         }
 
-        return await BuildResponseAsync(query, false, cancellationToken);
+        return await BuildResponseAsync(query, includeNullManager, cancellationToken);
     }
 
     private static List<Expression<Func<ApplicationUser, bool>>> GetExpressions(string[] accessRights, string userId)

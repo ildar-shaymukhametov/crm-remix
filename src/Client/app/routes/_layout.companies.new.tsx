@@ -123,7 +123,9 @@ export default function NewCompanyRoute() {
             {managers
               ? managers.map((x, i) => (
                   <option key={i} value={x.id}>
-                    {x.firstName} {x.lastName}
+                    {x.firstName && x.lastName
+                      ? `${x.firstName} ${x.lastName}`
+                      : "-"}
                   </option>
                 ))
               : null}

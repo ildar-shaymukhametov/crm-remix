@@ -12,6 +12,7 @@ public static class Constants
             {
                 public const string SetManagerToAny = "Company.New.SetManagerToAny";
                 public const string SetManagerToSelf = "Company.New.SetManagerToSelf";
+                public const string SetManagerToNone = "Company.New.SetManagerToNone";
             }
             public static class Any
             {
@@ -58,6 +59,7 @@ public static class Constants
             {
                 public const string SetManagerToAny = "Company.New.SetManagerToAny";
                 public const string SetManagerToSelf = "Company.New.SetManagerToSelf";
+                public const string SetManagerToNone = "Company.New.SetManagerToNone";
             }
             public static class Any
             {
