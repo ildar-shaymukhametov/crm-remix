@@ -17,21 +17,23 @@ public class IdentityService : IIdentityService
     private readonly IAuthorizationService _authorizationService;
     private readonly IApplicationDbContext _dbContext;
     private readonly ILogger<IdentityService> _logger;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public IdentityService(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory, IAuthorizationService authorizationService, IApplicationDbContext dbContext, ILogger<IdentityService> logger)
+    public IdentityService(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory, IAuthorizationService authorizationService, IApplicationDbContext dbContext, ILogger<IdentityService> logger, RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         _authorizationService = authorizationService;
         _dbContext = dbContext;
         _logger = logger;
+        _roleManager = roleManager;
     }
 
-    public async Task<string> GetUserNameAsync(string userId)
+    public async Task<string?> GetUserNameAsync(string userId)
     {
-        var user = await _userManager.Users.FirstAsync(u => u.Id == userId);
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
-        return user.UserName;
+        return user?.UserName;
     }
 
     public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
@@ -40,6 +42,11 @@ public class IdentityService : IIdentityService
     }
 
     public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password, string firstName, string lastName)
+    {
+        return await CreateUserAsync(userName, password, firstName, lastName, Array.Empty<string>(), Array.Empty<string>());
+    }
+
+    public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password, string firstName, string lastName, string[] claims, string[] roles)
     {
         var user = new AspNetUser
         {
@@ -52,6 +59,37 @@ public class IdentityService : IIdentityService
         if (!result.Succeeded)
         {
             return (result.ToApplicationResult(), user.Id);
+        }
+
+        if (claims.Any())
+        {
+            var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
+            var authorizationClaims = principal.Claims.Where(x => x.Type == Constants.Claims.ClaimType);
+            var removeClaimsResult = await _userManager.RemoveClaimsAsync(user, authorizationClaims);
+            var newAuthorizationClaims = claims.Select(x => new Claim(Constants.Claims.ClaimType, x));
+            var addClaimsResult = await _userManager.AddClaimsAsync(user, newAuthorizationClaims);
+            if (!addClaimsResult.Succeeded)
+            {
+                return (result.ToApplicationResult(), user.Id);
+            }
+        }
+
+        if (roles.Any())
+        {
+            foreach (var roleName in roles)
+            {
+                var role = new IdentityRole(roleName);
+                if (!await _roleManager.RoleExistsAsync(role.Name))
+                {
+                    await _roleManager.CreateAsync(role);
+                }
+            }
+
+            var addToRolesResult = await _userManager.AddToRolesAsync(user, roles);
+            if (!addToRolesResult.Succeeded)
+            {
+                return (result.ToApplicationResult(), user.Id);
+            }
         }
 
         var appUser = new ApplicationUser

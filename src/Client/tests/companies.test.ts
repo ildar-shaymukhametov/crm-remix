@@ -5,8 +5,9 @@ import { routes } from "~/utils/constants";
 import { claims } from "~/utils/constants.server";
 import { buildCompany, test } from "./companies-test";
 
-test.beforeEach(async ({ resetDb }) => {
+test.beforeEach(async ({ resetDb, createAdminUser }) => {
   await resetDb();
+  await createAdminUser();
 });
 
 test.describe("view companies", () => {
@@ -179,7 +180,7 @@ test.describe("new company", () => {
     const manager = page.getByLabel(/manager/i);
     expect(manager.getByRole("option")).toHaveCount(1);
 
-    const text = (await manager.getByRole("option").textContent());
+    const text = await manager.getByRole("option").textContent();
     expect(text).toBe("-");
   });
 

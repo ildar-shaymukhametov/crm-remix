@@ -1,9 +1,10 @@
-using CRM.Api.Controllers;
+using AwesomeApi.Filters;
 using CRM.Application.Tests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM.Api.Controllers;
 
+[TestApiKey]
 public class TestController : ApiControllerBase
 {
     [HttpPost]

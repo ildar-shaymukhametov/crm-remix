@@ -182,12 +182,38 @@ public class BaseTestFixture
         return await context.FindAsync<TEntity>(keyValues);
     }
 
+    public async Task<TEntity?> FindAsync<TEntity>(object key, params string[] inlcudePropertyNames) where TEntity : class
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var result = await context.FindAsync<TEntity>(key);
+        if (result == null)
+        {
+            return null;
+        }
+
+        foreach (var propName in inlcudePropertyNames)
+        {
+            await context.Entry(result).Reference(propName).LoadAsync();
+        }
+
+        return result;
+    }
+
     public async Task<List<Claim>> GetAuthorizationClaimsAsync(AspNetUser user)
     {
         using var scope = _scopeFactory.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
         var claims = await userManager.GetClaimsAsync(user);
         return claims.Where(x => x.Type == Constants.Claims.ClaimType).ToList();
+    }
+
+    public async Task<List<string>> GetUserRolesAsync(AspNetUser user)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
+        var roles = await userManager.GetRolesAsync(user);
+        return roles.ToList();
     }
 
     public async Task AddAsync<TEntity>(TEntity entity) where TEntity : class

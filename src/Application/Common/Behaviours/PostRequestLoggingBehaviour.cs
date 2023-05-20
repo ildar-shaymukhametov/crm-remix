@@ -22,7 +22,7 @@ public class PostRequestLoggingBehaviour<TRequest, TResponse> : IRequestPostProc
     {
         var responseName = typeof(TResponse).Name;
         var userId = _currentUserService.UserId ?? string.Empty;
-        string userName = string.Empty;
+        string? userName = string.Empty;
 
         if (!string.IsNullOrEmpty(userId))
         {
