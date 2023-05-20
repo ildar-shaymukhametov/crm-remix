@@ -8,8 +8,6 @@ import type { NewUser } from "~/utils/user.server";
 import { createUser } from "~/utils/user.server";
 import { faker } from "@faker-js/faker";
 
-let adminId = "";
-
 type DefaultUserOptions = {
   claims?: string[];
   accessToken?: string;
@@ -37,7 +35,6 @@ export const test = base.extend<{
   runAsDefaultUser: (options?: DefaultUserOptions) => Promise<OidcProfile>;
   runAsAdministrator: () => Promise<OidcProfile>;
   resetDb: () => Promise<void>;
-  createAdminUser: () => Promise<OidcProfile>;
   createUser: () => Promise<User>;
 }>({
   runAsDefaultUser: [
@@ -64,29 +61,6 @@ export const test = base.extend<{
             "X-API-Key": "TestApiKey"
           }
         });
-      });
-    },
-    { auto: true }
-  ],
-  createAdminUser: [
-    async ({ page, baseURL }, use) => {
-      invariant(baseURL, "baseURL must be set");
-      use(async () => {
-        adminId = await createUser(new Request("http://foobar.com"), adminUser);
-
-        const profile = createOidcProfile(
-          adminId,
-          adminUser.firstName,
-          adminUser.lastName
-        );
-
-        profile.extra.access_token = await getAccessToken(
-          page,
-          adminUser.userName,
-          adminUser.password
-        );
-
-        return profile;
       });
     },
     { auto: true }
@@ -131,10 +105,7 @@ async function runAsDefaultUser(
 }
 
 async function runAsAdministrator(page: Page, baseURL: string) {
-  if (!adminId) {
-    adminId = await createUser(new Request("http://foobar.com"), adminUser);
-  }
-
+  const adminId = await createUser(new Request("http://foobar.com"), adminUser);
   const user = createOidcProfile(adminId);
   user.extra.access_token = await getAccessToken(
     page,
@@ -166,22 +137,14 @@ async function login(page: Page, baseURL: string, user: OidcProfile) {
 
 async function getAccessToken(page: Page, username: string, password: string) {
   if (username === adminUser.userName) {
-    return await getAdminAccessToken(page);
+    return await requestAccessToken(
+      page,
+      adminUser.userName,
+      adminUser.password
+    );
   }
 
-  return await getDefaultUserAccessToken(page, username, password);
-}
-
-async function getDefaultUserAccessToken(
-  page: Page,
-  username = defaultUser.userName,
-  password = defaultUser.password
-) {
   return await requestAccessToken(page, username, password);
-}
-
-export async function getAdminAccessToken(page: Page) {
-  return await requestAccessToken(page, adminUser.userName, adminUser.password);
 }
 
 async function requestAccessToken(

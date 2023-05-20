@@ -35,6 +35,27 @@ export async function createCompany(
   return id as number;
 }
 
+export async function createTestCompany(
+  request: Request,
+  data: NewCompany
+): Promise<number> {
+  const response = await fetch(`${process.env.API_URL}/test/companies`, {
+    method: "post",
+    body: JSON.stringify(data),
+    headers: {
+      "X-API-Key": "TestApiKey",
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    await handleErrorResponse(request, response);
+  }
+
+  const { id } = await response.json();
+  return id as number;
+}
+
 export type Company = {
   id: number;
   type: string;
@@ -56,6 +77,24 @@ export async function getCompany(
   const response = await fetch(`${process.env.API_URL}/companies/${id}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`
+    }
+  });
+
+  if (!response.ok) {
+    await handleErrorResponse(request, response);
+  }
+
+  const company = await response.json();
+  return company;
+}
+
+export async function getTestCompany(
+  request: Request,
+  id: string
+): Promise<Company> {
+  const response = await fetch(`${process.env.API_URL}/test/companies/${id}`, {
+    headers: {
+      "X-API-Key": "TestApiKey"
     }
   });
 
