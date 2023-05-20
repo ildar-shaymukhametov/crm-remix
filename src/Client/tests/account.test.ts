@@ -29,7 +29,8 @@ test.describe("account", () => {
         /^Company.Any.SetManagerFromNoneToSelf$/i,
         /^Company.Any.SetManagerFromNoneToAny$/i,
         /^Company.WhereUserIsManager.SetManagerFromSelfToAny$/i,
-        /^Company.New.SetManagerToSelf$/i
+        /^Company.New.SetManagerToSelf$/i,
+        /^Company.New.SetManagerToNone$/i,
       ].map(x => page.getByLabel(x));
 
       for (const item of elements) {
