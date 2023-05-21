@@ -187,6 +187,43 @@ test.describe("new company", () => {
     expect(text).toBe("-");
   });
 
+  test.only("should be able to set manager to any", async ({
+    page,
+    runAsDefaultUser,
+    createUser
+  }) => {
+    const currentUser = await runAsDefaultUser({
+      claims: [claims.company.create, claims.company.new.setManagerToAny]
+    });
+    const someUser = await createUser();
+
+    await page.goto(routes.companies.new);
+    await expectMinimalUi(page);
+
+    const manager = page.getByLabel(/manager/i);
+    expect(manager.getByRole("option")).toHaveCount(3);
+
+    expect(
+      await manager
+        .getByRole("option", { name: "-", exact: true })
+        .textContent()
+    ).toBe("-");
+
+    const currentUserFullName = `${currentUser.name.givenName} ${currentUser.name.familyName}`;
+    expect(
+      await manager
+        .getByRole("option", { name: currentUserFullName, exact: true })
+        .textContent()
+    ).toBe(currentUserFullName);
+
+    const someUserFullName = `${someUser.firstName} ${someUser.lastName}`;
+    expect(
+      await manager
+        .getByRole("option", { name: someUserFullName, exact: true })
+        .textContent()
+    ).toBe(someUserFullName);
+  });
+
   type VisibilityOptions = {
     forbidden?: boolean;
     companyFields?: boolean;

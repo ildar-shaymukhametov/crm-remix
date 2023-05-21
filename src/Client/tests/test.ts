@@ -180,8 +180,6 @@ type User = {
   password: string;
   firstName?: string;
   lastName?: string;
-  claims?: string[];
-  roles?: string[];
 };
 
 function createRandomUser(): NewUser {

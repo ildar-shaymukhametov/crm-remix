@@ -4,6 +4,7 @@ export const claims = {
     new: {
       setManagerToSelf: "Company.New.SetManagerToSelf",
       setManagerToNone: "Company.New.SetManagerToNone",
+      setManagerToAny: "Company.New.SetManagerToAny",
     },
     any: {
       view: "Company.Any.View",
