@@ -20,9 +20,10 @@ test.describe("view companies", () => {
 
   test("should be able to click new company button", async ({
     page,
-    runAsDefaultUser
+    runAsDefaultUser, createCompany
   }) => {
     await runAsDefaultUser({ claims: [claims.company.create] });
+    await createCompany();
     await page.goto(routes.companies.index);
 
     await expectMinimalUi(page, {

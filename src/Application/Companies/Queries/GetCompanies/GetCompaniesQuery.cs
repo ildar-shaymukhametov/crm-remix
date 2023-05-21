@@ -38,13 +38,10 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             return Array.Empty<CompanyDto>();
         }
 
-        var expressions = new List<Expression<Func<Company, bool>>>();
-        if (!accessRights.Contains(Access.Company.Any.View))
+        var expressions = GetExpressions(accessRights);
+        if (!expressions.Any())
         {
-            if (accessRights.Contains(Access.Company.WhereUserIsManager.View))
-            {
-                expressions.Add(x => x.ManagerId == _currentUserService.UserId);
-            }
+            return Array.Empty<CompanyDto>();
         }
 
         var query = _dbContext.Companies.AsNoTracking();
@@ -57,7 +54,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
             .ToArrayAsync(cancellationToken);
 
-        var permissions = await _permissionsVerifier.VerifyCompanyPermissionsAsync(_currentUserService.UserId!, result.Select(x => x.Id).ToArray(), new [] { Permissions.UpdateCompany, Permissions.DeleteCompany });
+        var permissions = await _permissionsVerifier.VerifyCompanyPermissionsAsync(_currentUserService.UserId!, result.Select(x => x.Id).ToArray(), new[] { Permissions.UpdateCompany, Permissions.DeleteCompany });
         foreach (var item in result)
         {
             if (!permissions.ContainsKey(item.Id))
@@ -67,6 +64,23 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
 
             item.CanBeEdited = permissions[item.Id].Contains(Permissions.UpdateCompany);
             item.CanBeDeleted = permissions[item.Id].Contains(Permissions.DeleteCompany);
+        }
+
+        return result;
+    }
+
+    private List<Expression<Func<Company, bool>>> GetExpressions(string[] accessRights)
+    {
+        var result = new List<Expression<Func<Company, bool>>>();
+        if (accessRights.Contains(Access.Company.Any.View))
+        {
+            result.Add(x => true);
+            return result;
+        }
+
+        if (accessRights.Contains(Access.Company.WhereUserIsManager.View))
+        {
+            result.Add(x => x.ManagerId == _currentUserService.UserId);
         }
 
         return result;
