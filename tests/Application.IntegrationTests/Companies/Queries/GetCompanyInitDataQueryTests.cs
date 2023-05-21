@@ -28,9 +28,9 @@ public class GetCompanyManagersQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_set_manager_to_any_in_new_company___Returns_all_users()
+    public async Task User_can_set_manager_to_from_none_to_any_in_any_company___Returns_all_users()
     {
-        var currentUser = await _fixture.RunAsDefaultUserAsync("user", "1", Claims.Company.New.SetManagerToAny);
+        var currentUser = await _fixture.RunAsDefaultUserAsync("user", "1", Claims.Company.Any.SetManagerFromNoneToAny);
 
         var user3 = await _fixture.AddUserAsync("user", "3");
         var user2 = await _fixture.AddUserAsync("user", "2");
