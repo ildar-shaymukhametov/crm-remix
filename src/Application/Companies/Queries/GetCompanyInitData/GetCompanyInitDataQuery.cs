@@ -71,7 +71,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
     private static List<Expression<Func<ApplicationUser, bool>>> GetExpressions(string[] accessRights, string userId)
     {
         var expressions = new List<Expression<Func<ApplicationUser, bool>>>();
-        if (accessRights.Contains(Access.Company.New.SetManagerToSelf))
+        if (accessRights.Contains(Access.Company.Any.SetManagerFromNoneToSelf))
         {
             expressions.Add(x => x.Id == userId);
         }

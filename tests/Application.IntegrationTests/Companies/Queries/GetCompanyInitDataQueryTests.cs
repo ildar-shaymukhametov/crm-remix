@@ -28,7 +28,7 @@ public class GetCompanyManagersQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_set_manager_to_from_none_to_any_in_any_company___Returns_all_users()
+    public async Task User_can_set_manager_from_none_to_any_in_any_company___Returns_all_users()
     {
         var currentUser = await _fixture.RunAsDefaultUserAsync("user", "1", Claims.Company.Any.SetManagerFromNoneToAny);
 
@@ -47,9 +47,9 @@ public class GetCompanyManagersQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_set_manager_to_self_in_new_company___Returns_self()
+    public async Task User_can_set_manager_from_none_to_self_in_any_company___Returns_self()
     {
-        var currentUser = await _fixture.RunAsDefaultUserAsync(Claims.Company.New.SetManagerToSelf);
+        var currentUser = await _fixture.RunAsDefaultUserAsync(Claims.Company.Any.SetManagerFromNoneToSelf);
         var user2 = await _fixture.AddUserAsync("user", "2");
 
         var query = new GetCompanyInitDataQuery();
