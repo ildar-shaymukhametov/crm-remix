@@ -88,8 +88,7 @@ public class AccessService : IAccessService
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
-                Claims.Company.Any.SetManagerFromNoneToSelf,
-                Claims.Company.Any.SetManagerFromAnyToSelf
+                Claims.Company.Any.SetManagerFromNoneToSelf
             }))
         {
             result.Add(Access.Company.Any.SetManagerFromNoneToSelf);
@@ -114,7 +113,6 @@ public class AccessService : IAccessService
         if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
                 Claims.Company.Any.SetManagerFromNoneToAny,
-                Claims.Company.Any.SetManagerFromAnyToAny,
             }))
         {
             result.Add(Access.Company.Any.SetManagerFromNoneToAny);
