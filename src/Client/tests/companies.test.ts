@@ -634,6 +634,52 @@ test.describe("edit company", () => {
     });
   }
 
+  for (const claim of [
+    { value: claims.company.any.setManagerFromAnyToAny, count: 3 }
+  ]) {
+    test.only(`should be able to set manager from any to any with claim ${claim.value}`, async ({
+      page,
+      runAsDefaultUser,
+      createUser,
+      createCompany,
+      getCompany
+    }) => {
+      const currentUser = await runAsDefaultUser({
+        claims: [claims.company.any.update, claim.value]
+      });
+      const someUser = await createUser();
+
+      const companyId = await createCompany();
+      await page.goto(routes.companies.edit(companyId));
+
+      const company = await getCompany(companyId);
+      await expectMinimalUi(page, company);
+
+      const manager = page.getByLabel(/manager/i);
+      expect(manager.getByRole("option")).toHaveCount(claim.count);
+
+      expect(
+        await manager
+          .getByRole("option", { name: "-", exact: true })
+          .textContent()
+      ).toBe("-");
+
+      const currentUserFullName = `${currentUser.name.givenName} ${currentUser.name.familyName}`;
+      expect(
+        await manager
+          .getByRole("option", { name: currentUserFullName, exact: true })
+          .textContent()
+      ).toBe(currentUserFullName);
+
+      const someUserFullName = `${someUser.firstName} ${someUser.lastName}`;
+      expect(
+        await manager
+          .getByRole("option", { name: someUserFullName, exact: true })
+          .textContent()
+      ).toBe(someUserFullName);
+    });
+  }
+
   type VisibilityOptions = {
     forbidden?: boolean;
     companyFields?: boolean;
