@@ -639,7 +639,7 @@ test.describe("edit company", () => {
     { value: claims.company.any.setManagerFromNoneToAny, count: 3 },
     { value: claims.company.any.setManagerFromSelfToAny, count: 3 },
   ]) {
-    test.only(`should be able to set manager from any to any with claim ${claim.value}`, async ({
+    test(`should be able to set manager from any to any with claim ${claim.value}`, async ({
       page,
       runAsDefaultUser,
       createUser,

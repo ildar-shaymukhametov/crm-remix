@@ -38,17 +38,13 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             return new GetCompanyInitDataResponse();
         }
 
-        var query = _dbContext.ApplicationUsers.AsNoTracking();
-        if (new[]
+        var includeNullManager = new[]
         {
+            Access.Company.Any.SetManagerFromAnyToNone,
             Access.Company.Any.SetManagerFromNoneToAny,
             Access.Company.Any.SetManagerFromSelfToAny
-        }.Any(accessRights.Contains))
-        {
-            return await BuildResponseAsync(query, true, cancellationToken);
-        }
+        }.Any(accessRights.Contains);
 
-        var includeNullManager = accessRights.Contains(Access.Company.Any.SetManagerFromAnyToNone);
         var expressions = GetExpressions(accessRights, _currentUserService.UserId!);
         if (!expressions.Any())
         {
@@ -64,6 +60,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             return result;
         }
 
+        var query = _dbContext.ApplicationUsers.AsNoTracking();
         foreach (var expression in expressions)
         {
             query = query.Where(expression);
@@ -74,13 +71,25 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
 
     private static List<Expression<Func<ApplicationUser, bool>>> GetExpressions(string[] accessRights, string userId)
     {
-        var expressions = new List<Expression<Func<ApplicationUser, bool>>>();
-        if (accessRights.Contains(Access.Company.Any.SetManagerFromNoneToSelf))
+        var result = new List<Expression<Func<ApplicationUser, bool>>>();
+
+        if (new[]
         {
-            expressions.Add(x => x.Id == userId);
+            Access.Company.Any.SetManagerFromNoneToAny,
+            Access.Company.Any.SetManagerFromSelfToAny,
+            Access.Company.Any.SetManagerFromAnyToAny
+        }.Any(accessRights.Contains))
+        {
+            result.Add(x => true);
+            return result;
         }
 
-        return expressions;
+        if (accessRights.Contains(Access.Company.Any.SetManagerFromNoneToSelf))
+        {
+            result.Add(x => x.Id == userId);
+        }
+
+        return result;
     }
 
     private async Task<GetCompanyInitDataResponse> BuildResponseAsync(IQueryable<ApplicationUser> query, bool includeNullManager, CancellationToken cancellationToken)
