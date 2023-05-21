@@ -26,7 +26,12 @@ public class CreateCompanyAthorizationHandler : BaseAuthorizationHandler<CreateC
         {
             if (resource.Request.ManagerId != null)
             {
-                var canSetSelfAsManager = resource.Request.ManagerId == context.User.GetSubjectId() && accessRights.Contains(Access.Company.Any.SetManagerFromNoneToSelf);
+                var canSetSelfAsManager = resource.Request.ManagerId == context.User.GetSubjectId() && new[]
+                {
+                    Access.Company.Any.SetManagerFromNoneToSelf,
+                    Access.Company.Any.SetManagerFromNoneToAny,
+                }.Any(accessRights.Contains);
+
                 if (!canSetSelfAsManager && !accessRights.Contains(Access.Company.Any.SetManagerFromAnyToAny))
                 {
                     return Fail(context, "Set self as manager");
