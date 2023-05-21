@@ -248,4 +248,9 @@ public class BaseTestFixture
         var (result, userId) = await service.CreateUserAsync(Faker.Internet.Email(), "Foobar1!");
         return await FindAsync<ApplicationUser>(userId) ?? throw new InvalidOperationException("Failed to create a user");
     }
+
+    internal Task RunAsDefaultUserAsync(object setManagerFromAnyToNone)
+    {
+        throw new NotImplementedException();
+    }
 }

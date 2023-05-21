@@ -123,27 +123,10 @@ public class AccessService : IAccessService
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
-                Access.Company.New.SetManagerToAny,
-                Access.Company.New.SetManagerToSelf,
+                Claims.Company.Any.SetManagerFromAnyToNone
             }))
         {
-            result.Add(Access.Company.New.SetManagerToSelf);
-        }
-
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Access.Company.New.SetManagerToAny
-            }))
-        {
-            result.Add(Access.Company.New.SetManagerToAny);
-        }
-
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Access.Company.New.SetManagerToNone
-            }))
-        {
-            result.Add(Access.Company.New.SetManagerToNone);
+            result.Add(Access.Company.Any.SetManagerFromAnyToNone);
         }
 
         return result.ToArray();

@@ -44,7 +44,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             return await BuildResponseAsync(query, true, cancellationToken);
         }
 
-        var includeNullManager = accessRights.Contains(Access.Company.New.SetManagerToNone);
+        var includeNullManager = accessRights.Contains(Access.Company.Any.SetManagerFromAnyToNone);
         var expressions = GetExpressions(accessRights, _currentUserService.UserId!);
         if (!expressions.Any())
         {
