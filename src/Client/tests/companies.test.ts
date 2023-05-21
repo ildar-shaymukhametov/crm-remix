@@ -20,7 +20,8 @@ test.describe("view companies", () => {
 
   test("should be able to click new company button", async ({
     page,
-    runAsDefaultUser, createCompany
+    runAsDefaultUser,
+    createCompany
   }) => {
     await runAsDefaultUser({ claims: [claims.company.create] });
     await createCompany();
@@ -181,7 +182,7 @@ test.describe("new company", () => {
   for (const claim of [
     { value: claims.company.any.setManagerFromAnyToNone, count: 1 },
     { value: claims.company.any.setManagerFromNoneToAny, count: 2 },
-    { value: claims.company.any.setManagerFromAnyToAny, count: 2 },
+    { value: claims.company.any.setManagerFromAnyToAny, count: 2 }
   ]) {
     test(`should be able to set manager to none with claim ${claim.value}`, async ({
       page,
@@ -568,6 +569,41 @@ test.describe("edit company", () => {
     });
   });
 
+  for (const claim of [
+    { value: claims.company.any.setManagerFromNoneToSelf, count: 1 },
+    { value: claims.company.any.setManagerFromNoneToAny, count: 2 },
+    { value: claims.company.any.setManagerFromAnyToSelf, count: 1 },
+    { value: claims.company.any.setManagerFromAnyToAny, count: 2 }
+  ]) {
+    test(`should be able to set manager from none to self with claim ${claim.value}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      const user = await runAsDefaultUser({
+        claims: [claims.company.any.update, claim.value]
+      });
+
+      const companyId = await createCompany();
+      await page.goto(routes.companies.edit(companyId));
+
+      const company = await getCompany(companyId);
+      await expectMinimalUi(page, company);
+
+      const manager = page.getByLabel(/manager/i);
+      expect(manager.getByRole("option")).toHaveCount(claim.count);
+
+      expect(
+        await manager
+          .getByRole("option", {
+            name: `${user.name.givenName} ${user.name.familyName}`
+          })
+          .textContent()
+      ).toBe(`${user.name.givenName} ${user.name.familyName}`);
+    });
+  }
+
   type VisibilityOptions = {
     forbidden?: boolean;
     companyFields?: boolean;
@@ -618,7 +654,8 @@ test.describe("edit company", () => {
       /email/i,
       /inn/i,
       /phone/i,
-      /type/i
+      /type/i,
+      /manager/i
     ];
     for (const field of fields) {
       await expect(page.getByLabel(field)).toBeVisible({ visible });

@@ -115,7 +115,6 @@ public class AccessService : IAccessService
             {
                 Access.Company.Any.SetManagerFromNoneToAny,
                 Claims.Company.Any.SetManagerFromAnyToAny,
-                Claims.Company.Any.Update
             }))
         {
             result.Add(Access.Company.Any.SetManagerFromNoneToAny);

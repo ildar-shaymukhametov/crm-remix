@@ -6,7 +6,8 @@ import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { useActionData, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
-import type { Company } from "~/utils/companies.server";
+import type { Company, Manager } from "~/utils/companies.server";
+import { getInitData } from "~/utils/companies.server";
 import { updateCompany } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
@@ -14,6 +15,7 @@ import { permissions } from "~/utils/constants.server";
 
 type LoaderData = {
   company: Company;
+  managers?: Manager[];
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -32,7 +34,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     params.id,
     user.extra?.access_token
   );
-  return json({ company });
+
+  const initData = await getInitData(request, user.extra?.access_token);
+
+  return json({ company, ...initData });
 };
 
 type ActionData = {
@@ -55,19 +60,19 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export default function EditCompanyRoute() {
   const actionData = useActionData<ActionData>();
-  const loaderData = useLoaderData<LoaderData>();
+  const { company, managers } = useLoaderData<LoaderData>();
   const data: ActionData = {
     fields: {
       ...{
-        address: loaderData.company.address,
-        ceo: loaderData.company.ceo,
-        contacts: loaderData.company.contacts,
-        email: loaderData.company.email,
-        id: loaderData.company.id,
-        inn: loaderData.company.inn,
-        phone: loaderData.company.phone,
-        type: loaderData.company.type,
-        name: loaderData.company.name
+        address: company.address,
+        ceo: company.ceo,
+        contacts: company.contacts,
+        email: company.email,
+        id: company.id,
+        inn: company.inn,
+        phone: company.phone,
+        type: company.type,
+        name: company.name
       },
       ...actionData?.fields
     },
@@ -142,6 +147,22 @@ export default function EditCompanyRoute() {
         <label>
           Contacts:
           <input name="contacts" defaultValue={data?.fields?.contacts} />
+        </label>
+      </div>
+      <div>
+        <label>
+          Manager:
+          <select name="manager">
+            {managers
+              ? managers.map((x, i) => (
+                  <option key={i} value={x.id}>
+                    {x.firstName && x.lastName
+                      ? `${x.firstName} ${x.lastName}`
+                      : "-"}
+                  </option>
+                ))
+              : null}
+          </select>
         </label>
       </div>
       <button type="submit">Save changes</button>
