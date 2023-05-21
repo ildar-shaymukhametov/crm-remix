@@ -150,7 +150,9 @@ test.describe("new company", () => {
 
   for (const claim of [
     { value: claims.company.any.setManagerFromNoneToSelf, count: 1 },
-    { value: claims.company.any.setManagerFromNoneToAny, count: 2 }
+    { value: claims.company.any.setManagerFromNoneToAny, count: 2 },
+    { value: claims.company.any.setManagerFromAnyToSelf, count: 1 },
+    { value: claims.company.any.setManagerFromAnyToAny, count: 2 }
   ]) {
     test(`should be able to set manager to self with claim ${claim.value}`, async ({
       page,
@@ -178,7 +180,8 @@ test.describe("new company", () => {
 
   for (const claim of [
     { value: claims.company.any.setManagerFromAnyToNone, count: 1 },
-    { value: claims.company.any.setManagerFromNoneToAny, count: 2 }
+    { value: claims.company.any.setManagerFromNoneToAny, count: 2 },
+    { value: claims.company.any.setManagerFromAnyToAny, count: 2 },
   ]) {
     test(`should be able to set manager to none with claim ${claim.value}`, async ({
       page,
