@@ -604,6 +604,36 @@ test.describe("edit company", () => {
     });
   }
 
+  for (const claim of [
+    { value: claims.company.any.setManagerFromAnyToNone, count: 1 },
+    { value: claims.company.any.setManagerFromAnyToAny, count: 2 }
+  ]) {
+    test(`should be able to set manager from any to none with claim ${claim.value}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      await runAsDefaultUser({
+        claims: [claims.company.any.update, claim.value]
+      });
+
+      const companyId = await createCompany();
+      await page.goto(routes.companies.edit(companyId));
+
+      const company = await getCompany(companyId);
+      await expectMinimalUi(page, company);
+
+      const manager = page.getByLabel(/manager/i);
+      expect(manager.getByRole("option")).toHaveCount(claim.count);
+
+      const text = await manager
+        .getByRole("option", { name: "-", exact: true })
+        .textContent();
+      expect(text).toBe("-");
+    });
+  }
+
   type VisibilityOptions = {
     forbidden?: boolean;
     companyFields?: boolean;
