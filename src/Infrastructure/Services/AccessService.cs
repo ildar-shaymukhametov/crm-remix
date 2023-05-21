@@ -79,7 +79,7 @@ public class AccessService : IAccessService
             {
                 Claims.Company.Any.Update,
                 Claims.Company.Any.SetManagerFromNoneToSelf,
-                Access.Company.Any.SetManagerFromNoneToAny,
+                Claims.Company.Any.SetManagerFromNoneToAny,
                 Claims.Company.Any.SetManagerFromAnyToAny
             }))
         {
@@ -113,7 +113,7 @@ public class AccessService : IAccessService
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
-                Access.Company.Any.SetManagerFromNoneToAny,
+                Claims.Company.Any.SetManagerFromNoneToAny,
                 Claims.Company.Any.SetManagerFromAnyToAny,
             }))
         {
@@ -126,6 +126,14 @@ public class AccessService : IAccessService
             }))
         {
             result.Add(Access.Company.Any.SetManagerFromAnyToNone);
+        }
+
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.Any.SetManagerFromSelfToAny
+            }))
+        {
+            result.Add(Access.Company.Any.SetManagerFromSelfToAny);
         }
 
         return result.ToArray();

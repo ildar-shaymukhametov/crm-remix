@@ -18,6 +18,7 @@ public static class Constants
                 public const string SetManagerFromNoneToAny = "Company.Any.SetManagerFromNoneToAny";
                 public const string SetManagerFromNoneToSelf = "Company.Any.SetManagerFromNoneToSelf";
                 public const string SetManagerFromAnyToNone = "Company.Any.SetManagerFromAnyToNone";
+                public const string SetManagerFromSelfToAny = "Company.Any.SetManagerFromSelfToAny";
             }
             public static class WhereUserIsManager
             {
@@ -60,6 +61,7 @@ public static class Constants
                 public const string SetManagerFromNoneToAny = "Company.Any.SetManagerFromNoneToAny";
                 public const string SetManagerFromNoneToSelf = "Company.Any.SetManagerFromNoneToSelf";
                 public const string SetManagerFromAnyToNone = "Company.Any.SetManagerFromAnyToNone";
+                public const string SetManagerFromSelfToAny = "Company.Any.SetManagerFromSelfToAny";
             }
             public static class WhereUserIsManager
             {

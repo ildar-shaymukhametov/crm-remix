@@ -635,7 +635,9 @@ test.describe("edit company", () => {
   }
 
   for (const claim of [
-    { value: claims.company.any.setManagerFromAnyToAny, count: 3 }
+    { value: claims.company.any.setManagerFromAnyToAny, count: 3 },
+    { value: claims.company.any.setManagerFromNoneToAny, count: 3 },
+    { value: claims.company.any.setManagerFromSelfToAny, count: 3 },
   ]) {
     test.only(`should be able to set manager from any to any with claim ${claim.value}`, async ({
       page,

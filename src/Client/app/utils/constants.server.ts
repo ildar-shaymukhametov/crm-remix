@@ -9,7 +9,8 @@ export const claims = {
       setManagerFromAnyToNone: "Company.Any.SetManagerFromAnyToNone",
       setManagerFromNoneToAny: "Company.Any.SetManagerFromNoneToAny",
       setManagerFromAnyToAny: "Company.Any.SetManagerFromAnyToAny",
-      setManagerFromAnyToSelf: "Company.Any.SetManagerFromAnyToSelf"
+      setManagerFromAnyToSelf: "Company.Any.SetManagerFromAnyToSelf",
+      setManagerFromSelfToAny: "Company.Any.SetManagerFromSelfToAny"
     }
   }
 };

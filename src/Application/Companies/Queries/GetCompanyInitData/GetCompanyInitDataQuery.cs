@@ -39,7 +39,11 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         }
 
         var query = _dbContext.ApplicationUsers.AsNoTracking();
-        if (accessRights.Contains(Access.Company.Any.SetManagerFromNoneToAny))
+        if (new[]
+        {
+            Access.Company.Any.SetManagerFromNoneToAny,
+            Access.Company.Any.SetManagerFromSelfToAny
+        }.Any(accessRights.Contains))
         {
             return await BuildResponseAsync(query, true, cancellationToken);
         }
