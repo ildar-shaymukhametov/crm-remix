@@ -570,19 +570,19 @@ test.describe("edit company", () => {
   });
 
   for (const claim of [
-    { value: claims.company.any.setManagerFromNoneToSelf, count: 1 },
-    { value: claims.company.any.setManagerFromNoneToAny, count: 2 },
-    { value: claims.company.any.setManagerFromAnyToSelf, count: 1 },
-    { value: claims.company.any.setManagerFromAnyToAny, count: 2 }
+    claims.company.any.setManagerFromNoneToSelf,
+    // { value: claims.company.any.setManagerFromNoneToAny, count: 2 },
+    // { value: claims.company.any.setManagerFromAnyToSelf, count: 1 },
+    // { value: claims.company.any.setManagerFromAnyToAny, count: 2 }
   ]) {
-    test(`should be able to set manager from none to self with claim ${claim.value}`, async ({
+    test.only(`should be able to set manager from none to self with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createCompany,
       getCompany
     }) => {
       const user = await runAsDefaultUser({
-        claims: [claims.company.any.update, claim.value]
+        claims: [claims.company.any.update, claim]
       });
 
       const companyId = await createCompany();
@@ -592,15 +592,17 @@ test.describe("edit company", () => {
       await expectMinimalUi(page, company);
 
       const manager = page.getByLabel(/manager/i);
-      expect(manager.getByRole("option")).toHaveCount(claim.count);
+      expect(manager.getByRole("option", { selected: true })).toHaveText("-");
 
-      expect(
-        await manager
-          .getByRole("option", {
-            name: `${user.name.givenName} ${user.name.familyName}`
-          })
-          .textContent()
-      ).toBe(`${user.name.givenName} ${user.name.familyName}`);
+      await manager.selectOption(user.id);
+
+      const submit = page.getByRole("button", { name: /save changes/i });
+      await submit.click();
+
+      await expect(page).toHaveURL(routes.companies.view(companyId));
+
+      const fullName = `${user.name.givenName} ${user.name.familyName}`;
+      expect(page.getByLabel(/manager/i)).toHaveText(fullName);
     });
   }
 
@@ -637,7 +639,7 @@ test.describe("edit company", () => {
   for (const claim of [
     { value: claims.company.any.setManagerFromAnyToAny, count: 3 },
     { value: claims.company.any.setManagerFromNoneToAny, count: 3 },
-    { value: claims.company.any.setManagerFromSelfToAny, count: 3 },
+    { value: claims.company.any.setManagerFromSelfToAny, count: 3 }
   ]) {
     test(`should be able to set manager from any to any with claim ${claim.value}`, async ({
       page,

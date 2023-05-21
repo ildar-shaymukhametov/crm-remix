@@ -152,7 +152,7 @@ export default function EditCompanyRoute() {
       <div>
         <label>
           Manager:
-          <select name="manager">
+          <select name="managerId">
             {managers
               ? managers.map((x, i) => (
                   <option key={i} value={x.id}>

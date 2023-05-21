@@ -40,9 +40,10 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
 
         var includeNullManager = new[]
         {
-            Access.Company.Any.SetManagerFromAnyToNone,
-            Access.Company.Any.SetManagerFromNoneToAny,
-            Access.Company.Any.SetManagerFromSelfToAny
+            // Access.Company.Any.SetManagerFromAnyToNone,
+            // Access.Company.Any.SetManagerFromNoneToAny,
+            // Access.Company.Any.SetManagerFromSelfToAny,
+            Access.Company.Any.SetManagerFromNoneToSelf
         }.Any(accessRights.Contains);
 
         var expressions = GetExpressions(accessRights, _currentUserService.UserId!);
@@ -97,7 +98,10 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         var managers = new List<ManagerDto>();
         if (includeNullManager)
         {
-            managers.Add(new ManagerDto());
+            managers.Add(new ManagerDto
+            {
+                Id = string.Empty
+            });
         }
 
         var users = await query
