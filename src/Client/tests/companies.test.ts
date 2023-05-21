@@ -152,7 +152,10 @@ test.describe("new company", () => {
     runAsDefaultUser
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.create, claims.company.new.setManagerToSelf]
+      claims: [
+        claims.company.create,
+        claims.company.any.setManagerFromNoneToSelf
+      ]
     });
 
     await page.goto(routes.companies.new);
@@ -174,7 +177,10 @@ test.describe("new company", () => {
     runAsDefaultUser
   }) => {
     await runAsDefaultUser({
-      claims: [claims.company.create, claims.company.new.setManagerToNone]
+      claims: [
+        claims.company.create,
+        claims.company.any.setManagerFromAnyToNone
+      ]
     });
 
     await page.goto(routes.companies.new);
@@ -193,7 +199,10 @@ test.describe("new company", () => {
     createUser
   }) => {
     const currentUser = await runAsDefaultUser({
-      claims: [claims.company.create, claims.company.new.setManagerToAny]
+      claims: [
+        claims.company.create,
+        claims.company.any.setManagerFromNoneToAny
+      ]
     });
     const someUser = await createUser();
 
