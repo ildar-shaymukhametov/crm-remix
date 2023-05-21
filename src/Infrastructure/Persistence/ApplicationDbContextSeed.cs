@@ -21,9 +21,7 @@ public static class ApplicationDbContextSeed
             new UserClaimType { Id = 10, Value = Claims.Company.Any.SetManagerFromNoneToSelf, Name = Claims.Company.Any.SetManagerFromNoneToSelf },
             new UserClaimType { Id = 11, Value = Claims.Company.Any.SetManagerFromNoneToAny, Name = Claims.Company.Any.SetManagerFromNoneToAny },
             new UserClaimType { Id = 12, Value = Claims.Company.WhereUserIsManager.SetManagerFromSelfToAny, Name = Claims.Company.WhereUserIsManager.SetManagerFromSelfToAny },
-            new UserClaimType { Id = 13, Value = Claims.Company.New.SetManagerToSelf, Name = Claims.Company.New.SetManagerToSelf },
-            new UserClaimType { Id = 14, Value = Claims.Company.New.SetManagerToNone, Name = Claims.Company.New.SetManagerToNone },
-            new UserClaimType { Id = 15, Value = Claims.Company.New.SetManagerToAny, Name = Claims.Company.New.SetManagerToAny }
+            new UserClaimType { Id = 13, Value = Claims.Company.Any.SetManagerFromAnyToNone, Name = Claims.Company.Any.SetManagerFromAnyToNone }
         );
     }
 }

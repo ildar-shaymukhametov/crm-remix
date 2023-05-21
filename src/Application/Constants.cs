@@ -8,12 +8,6 @@ public static class Constants
         public static class Company
         {
             public const string Create = "Company.Create";
-            public static class New
-            {
-                public const string SetManagerToAny = "Company.New.SetManagerToAny";
-                public const string SetManagerToSelf = "Company.New.SetManagerToSelf";
-                public const string SetManagerToNone = "Company.New.SetManagerToNone";
-            }
             public static class Any
             {
                 public const string View = "Company.Any.View";
@@ -56,12 +50,6 @@ public static class Constants
         public static class Company
         {
             public const string Create = "Company.Create";
-            public static class New
-            {
-                public const string SetManagerToAny = "Company.New.SetManagerToAny";
-                public const string SetManagerToSelf = "Company.New.SetManagerToSelf";
-                public const string SetManagerToNone = "Company.New.SetManagerToNone";
-            }
             public static class Any
             {
                 public const string View = "Company.Any.View";
