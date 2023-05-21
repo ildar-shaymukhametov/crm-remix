@@ -187,7 +187,7 @@ test.describe("new company", () => {
     expect(text).toBe("-");
   });
 
-  test.only("should be able to set manager to any", async ({
+  test("should be able to set manager to any", async ({
     page,
     runAsDefaultUser,
     createUser
