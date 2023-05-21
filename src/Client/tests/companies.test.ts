@@ -147,51 +147,58 @@ test.describe("new company", () => {
     await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
   });
 
-  test("should be able to set manager to self", async ({
-    page,
-    runAsDefaultUser
-  }) => {
-    const user = await runAsDefaultUser({
-      claims: [
-        claims.company.create,
-        claims.company.any.setManagerFromNoneToSelf
-      ]
+  for (const claim of [
+    { value: claims.company.any.setManagerFromNoneToSelf, count: 1 },
+    { value: claims.company.any.setManagerFromNoneToAny, count: 2 }
+  ]) {
+    test(`should be able to set manager to self with claim ${claim.value}`, async ({
+      page,
+      runAsDefaultUser
+    }) => {
+      const user = await runAsDefaultUser({
+        claims: [claims.company.create, claim.value]
+      });
+
+      await page.goto(routes.companies.new);
+      await expectMinimalUi(page);
+
+      const manager = page.getByLabel(/manager/i);
+      expect(manager.getByRole("option")).toHaveCount(claim.count);
+
+      expect(
+        await manager
+          .getByRole("option", {
+            name: `${user.name.givenName} ${user.name.familyName}`
+          })
+          .textContent()
+      ).toBe(`${user.name.givenName} ${user.name.familyName}`);
     });
+  }
 
-    await page.goto(routes.companies.new);
-    await expectMinimalUi(page);
+  for (const claim of [
+    { value: claims.company.any.setManagerFromAnyToNone, count: 1 },
+    { value: claims.company.any.setManagerFromNoneToAny, count: 2 }
+  ]) {
+    test.only(`should be able to set manager to none with claim ${claim.value}`, async ({
+      page,
+      runAsDefaultUser
+    }) => {
+      await runAsDefaultUser({
+        claims: [claims.company.create, claim.value]
+      });
 
-    const manager = page.getByLabel(/manager/i);
-    expect(manager.getByRole("option")).toHaveCount(1);
-    expect(
-      await manager
-        .getByRole("option", {
-          name: `${user.name.givenName} ${user.name.familyName}`
-        })
-        .textContent()
-    ).toBe(`${user.name.givenName} ${user.name.familyName}`);
-  });
+      await page.goto(routes.companies.new);
+      await expectMinimalUi(page);
 
-  test("should be able to set manager to none", async ({
-    page,
-    runAsDefaultUser
-  }) => {
-    await runAsDefaultUser({
-      claims: [
-        claims.company.create,
-        claims.company.any.setManagerFromAnyToNone
-      ]
+      const manager = page.getByLabel(/manager/i);
+      expect(manager.getByRole("option")).toHaveCount(claim.count);
+
+      const text = await manager
+        .getByRole("option", { name: "-", exact: true })
+        .textContent();
+      expect(text).toBe("-");
     });
-
-    await page.goto(routes.companies.new);
-    await expectMinimalUi(page);
-
-    const manager = page.getByLabel(/manager/i);
-    expect(manager.getByRole("option")).toHaveCount(1);
-
-    const text = await manager.getByRole("option").textContent();
-    expect(text).toBe("-");
-  });
+  }
 
   test("should be able to set manager to any", async ({
     page,
