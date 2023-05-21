@@ -571,9 +571,9 @@ test.describe("edit company", () => {
 
   for (const claim of [
     claims.company.any.setManagerFromNoneToSelf,
-    // { value: claims.company.any.setManagerFromNoneToAny, count: 2 },
-    // { value: claims.company.any.setManagerFromAnyToSelf, count: 1 },
-    // { value: claims.company.any.setManagerFromAnyToAny, count: 2 }
+    claims.company.any.setManagerFromNoneToAny,
+    claims.company.any.setManagerFromAnyToSelf,
+    claims.company.any.setManagerFromAnyToAny
   ]) {
     test.only(`should be able to set manager from none to self with claim ${claim}`, async ({
       page,
@@ -592,7 +592,7 @@ test.describe("edit company", () => {
       await expectMinimalUi(page, company);
 
       const manager = page.getByLabel(/manager/i);
-      expect(manager.getByRole("option", { selected: true })).toHaveText("-");
+      await expect(manager.getByRole("option", { selected: true })).toHaveText("-");
 
       await manager.selectOption(user.id);
 
@@ -602,7 +602,7 @@ test.describe("edit company", () => {
       await expect(page).toHaveURL(routes.companies.view(companyId));
 
       const fullName = `${user.name.givenName} ${user.name.familyName}`;
-      expect(page.getByLabel(/manager/i)).toHaveText(fullName);
+      await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
     });
   }
 

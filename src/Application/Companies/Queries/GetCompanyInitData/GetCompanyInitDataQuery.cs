@@ -40,9 +40,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
 
         var includeNullManager = new[]
         {
-            // Access.Company.Any.SetManagerFromAnyToNone,
-            // Access.Company.Any.SetManagerFromNoneToAny,
-            // Access.Company.Any.SetManagerFromSelfToAny,
+            Access.Company.Any.SetManagerFromNoneToAny,
             Access.Company.Any.SetManagerFromNoneToSelf
         }.Any(accessRights.Contains);
 
