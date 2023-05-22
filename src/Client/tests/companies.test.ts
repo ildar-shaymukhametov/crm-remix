@@ -732,7 +732,7 @@ test.describe("edit company", () => {
   }
 
   for (const claim of [claims.company.any.setManagerFromAnyToAny]) {
-    test.only(`should be able to set manager from any to any with claim ${claim}`, async ({
+    test(`should be able to set manager from any to any with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -758,6 +758,45 @@ test.describe("edit company", () => {
       );
 
       const fullName = `${user2.firstName} ${user2.lastName}`;
+      await manager.selectOption(fullName);
+
+      const submit = page.getByRole("button", { name: /save changes/i });
+      await submit.click();
+
+      await expect(page).toHaveURL(routes.companies.view(companyId));
+      await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
+    });
+  }
+
+  for (const claim of [
+    claims.company.any.setManagerFromSelfToAny,
+    claims.company.any.setManagerFromAnyToAny
+  ]) {
+    test.only(`should be able to set manager from self to any with claim ${claim}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany,
+      createUser
+    }) => {
+      const user = await runAsDefaultUser({
+        claims: [claims.company.any.update, claims.company.any.view, claim]
+      });
+
+      const anotherUser = await createUser();
+
+      const companyId = await createCompany({ managerId: user.id });
+      await page.goto(routes.companies.edit(companyId));
+
+      const company = await getCompany(companyId);
+      await expectMinimalUi(page, company);
+
+      const manager = page.getByLabel(/manager/i);
+      await expect(manager.getByRole("option", { selected: true })).toHaveText(
+        `${user.firstName} ${user.lastName}`
+      );
+
+      const fullName = `${anotherUser.firstName} ${anotherUser.lastName}`;
       await manager.selectOption(fullName);
 
       const submit = page.getByRole("button", { name: /save changes/i });
