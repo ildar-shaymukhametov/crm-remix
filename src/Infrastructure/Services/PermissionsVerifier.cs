@@ -44,7 +44,7 @@ public class PermissionsVerifier : IPermissionsVerifier
         var result = new List<string>();
         var accessRights = _accessService.CheckAccess(principal);
 
-        if (permissions.Contains(Permissions.Company.Create) && await _identityService.AuthorizeAsync(principal, Policies.Company.Create))
+        if (permissions.Contains(Permissions.Company.Create) && accessRights.Contains(Access.Company.Create))
         {
             result.Add(Permissions.Company.Create);
 
