@@ -18,8 +18,7 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
     {
         var accessRights = _accessService.CheckAccess(context.User);
         if (accessRights.Contains(Access.Company.Old.Any.View)
-            || accessRights.Contains(Access.Company.Old.WhereUserIsManager.View)
-                && context.Resource is CompanyDto company && company.ManagerId == context.User.GetSubjectId())
+            || accessRights.Contains(Access.Company.Old.WhereUserIsManager.View) && context.Resource is CompanyDto company && company.ManagerId == context.User.GetSubjectId())
         {
             context.Succeed(requirement);
         }

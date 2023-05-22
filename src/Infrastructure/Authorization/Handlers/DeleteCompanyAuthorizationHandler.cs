@@ -18,8 +18,7 @@ public class DeleteCompanyAuthorizationHandler : BaseAuthorizationHandler<Delete
     {
         var accessRights = _accessService.CheckAccess(context.User);
         if (accessRights.Contains(Access.Company.Old.Any.Delete)
-            || accessRights.Contains(Access.Company.Old.WhereUserIsManager.Delete)
-                && context.Resource is CompanyDto company && company.ManagerId == context.User.GetSubjectId())
+            || accessRights.Contains(Access.Company.Old.WhereUserIsManager.Delete) && context.Resource is CompanyDto company && company.ManagerId == context.User.GetSubjectId())
         {
             context.Succeed(requirement);
         }
