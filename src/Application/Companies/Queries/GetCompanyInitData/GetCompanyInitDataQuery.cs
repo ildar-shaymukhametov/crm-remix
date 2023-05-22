@@ -7,6 +7,7 @@ using CRM.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using static CRM.Application.Constants;
+using CRM.Application.Utils;
 
 namespace CRM.Application.Companies.Queries.GetCompanyManagers;
 
@@ -51,33 +52,32 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         }.Any(accessRights.Contains);
 
         var expressions = await GetExpressionsAsync(accessRights, _currentUserService.UserId!, request.Id);
-        if (!expressions.Any())
-        {
-            var result = new GetCompanyInitDataResponse();
-            if (includeNullManager)
-            {
-                result.Managers = new List<ManagerDto>
-                {
-                    new ManagerDto { Id = string.Empty }
-                };
-            }
+        // if (!expressions.Any())
+        // {
+        //     var result = new GetCompanyInitDataResponse();
+        //     if (includeNullManager)
+        //     {
+        //         result.Managers = new List<ManagerDto>
+        //         {
+        //             new ManagerDto { Id = string.Empty }
+        //         };
+        //     }
 
-            return result;
-        }
+        //     return result;
+        // }
 
-        var query = _dbContext.ApplicationUsers.AsNoTracking();
-        foreach (var expression in expressions)
-        {
-            query = query.Where(expression);
-        }
+        var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expressions);
+        // var query = _dbContext.ApplicationUsers.AsNoTracking();
+        // foreach (var expression in expressions)
+        // {
+        //     query = query.Where(expression);
+        // }
 
         return await BuildResponseAsync(query, includeNullManager, cancellationToken);
     }
 
-    private async Task<List<Expression<Func<ApplicationUser, bool>>>> GetExpressionsAsync(string[] accessRights, string userId, int? companyId)
+    private async Task<Expression<Func<ApplicationUser, bool>>> GetExpressionsAsync(string[] accessRights, string userId, int? companyId)
     {
-        var result = new List<Expression<Func<ApplicationUser, bool>>>();
-
         if (new[]
         {
             Access.Company.Any.SetManagerFromNoneToAny,
@@ -85,10 +85,10 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             Access.Company.Any.SetManagerFromAnyToAny
         }.Any(accessRights.Contains))
         {
-            result.Add(x => true);
-            return result;
+            return PredicateBuilder.True<ApplicationUser>();
         }
 
+        var result = PredicateBuilder.Null<ApplicationUser>();
         if (new[]
         {
             Access.Company.Any.SetManagerFromNoneToSelf,
@@ -96,12 +96,13 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             Access.Company.Any.SetManagerFromSelfToNone
         }.Any(accessRights.Contains))
         {
-            result.Add(x => x.Id == userId);
+            result = result.Or(x => x.Id == userId);
         }
 
         if (new[]
         {
             Access.Company.Any.SetManagerFromAnyToNone,
+            Access.Company.Any.SetManagerFromAnyToSelf,
         }.Any(accessRights.Contains) && companyId is not null)
         {
             var managerId = await _dbContext.Companies
@@ -109,7 +110,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
                 .Select(x => x.ManagerId)
                 .FirstOrDefaultAsync();
 
-            result.Add(x => x.Id == managerId);
+            result = result.Or(x => x.Id == managerId);
         }
 
         return result;
