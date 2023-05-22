@@ -122,7 +122,7 @@ public class AccessService : IAccessService
                 Claims.Company.Any.SetManagerFromAnyToNone,
             }))
         {
-            result.Add(Access.Company.Old.Any.SetManager);
+            result.Add(Access.Company.Old.SetManager);
         }
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]

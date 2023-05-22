@@ -82,6 +82,7 @@ public static class Constants
 
             public static class Old
             {
+                public const string SetManager = "Company.Any.SetManager";
                 public const string SetManagerFromAny = "Company.SetManagerFromAny";
                 public const string SetManagerToSelf = "Company.SetManagerToSelf";
 
@@ -90,7 +91,6 @@ public static class Constants
                     public const string View = "Company.Any.View";
                     public const string Delete = "Company.Any.Delete";
                     public const string Update = "Company.Any.Update";
-                    public const string SetManager = "Company.Any.SetManager";
                 }
 
                 public static class WhereUserIsManager
