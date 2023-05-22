@@ -662,7 +662,7 @@ test.describe("edit company", () => {
     claims.company.any.setManagerFromSelfToNone,
     claims.company.any.setManagerFromAnyToAny
   ]) {
-    test.only(`should be able to set manager from self to none with claim ${claim}`, async ({
+    test(`should be able to set manager from self to none with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -694,50 +694,40 @@ test.describe("edit company", () => {
   }
 
   for (const claim of [
-    { value: claims.company.any.setManagerFromAnyToAny, count: 3 },
-    { value: claims.company.any.setManagerFromNoneToAny, count: 3 },
-    { value: claims.company.any.setManagerFromSelfToAny, count: 3 }
+    claims.company.any.setManagerFromAnyToNone,
+    claims.company.any.setManagerFromAnyToAny
   ]) {
-    test(`should be able to set manager from any to any with claim ${claim.value}`, async ({
+    test(`should be able to set manager from any to none with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
-      createUser,
       createCompany,
-      getCompany
+      getCompany,
+      createUser
     }) => {
-      const currentUser = await runAsDefaultUser({
-        claims: [claims.company.any.update, claim.value]
+      await runAsDefaultUser({
+        claims: [claims.company.any.update, claims.company.any.view, claim]
       });
+
       const user = await createUser();
 
-      const companyId = await createCompany();
+      const companyId = await createCompany({ managerId: user.id });
       await page.goto(routes.companies.edit(companyId));
 
       const company = await getCompany(companyId);
       await expectMinimalUi(page, company);
 
       const manager = page.getByLabel(/manager/i);
-      expect(manager.getByRole("option")).toHaveCount(claim.count);
+      await expect(manager.getByRole("option", { selected: true })).toHaveText(
+        `${user.firstName} ${user.lastName}`
+      );
 
-      expect(
-        await manager
-          .getByRole("option", { name: "-", exact: true })
-          .textContent()
-      ).toBe("-");
+      await manager.selectOption("");
 
-      const currentUserFullName = `${currentUser.firstName} ${currentUser.lastName}`;
-      expect(
-        await manager
-          .getByRole("option", { name: currentUserFullName, exact: true })
-          .textContent()
-      ).toBe(currentUserFullName);
+      const submit = page.getByRole("button", { name: /save changes/i });
+      await submit.click();
 
-      const someUserFullName = `${user.firstName} ${user.lastName}`;
-      expect(
-        await manager
-          .getByRole("option", { name: someUserFullName, exact: true })
-          .textContent()
-      ).toBe(someUserFullName);
+      await expect(page).toHaveURL(routes.companies.view(companyId));
+      await expect(page.getByLabel(/manager/i)).toHaveText("-");
     });
   }
 

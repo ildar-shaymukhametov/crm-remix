@@ -47,9 +47,9 @@ public class CompaniesController : ApiControllerBase
     }
 
     [HttpGet]
-    [Route("initData")]
-    public async Task<ActionResult<GetCompanyInitDataResponse>> InitData()
+    [Route("InitData")]
+    public async Task<ActionResult<GetCompanyInitDataResponse>> InitData(int? id)
     {
-        return await Mediator.Send(new GetCompanyInitDataQuery());
+        return await Mediator.Send(new GetCompanyInitDataQuery { Id = id });
     }
 }

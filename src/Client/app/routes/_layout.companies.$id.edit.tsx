@@ -35,7 +35,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     user.extra?.access_token
   );
 
-  const initData = await getInitData(request, user.extra?.access_token);
+  const initData = await getInitData(
+    request,
+    user.extra?.access_token,
+    company.id
+  );
 
   return json({ company, ...initData });
 };

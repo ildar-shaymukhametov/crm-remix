@@ -196,14 +196,15 @@ type CompanyInitData = {
 export type Manager = {
   id: string,
   firstName?: string,
-  lastName?: string
+  lastName?: number
 }
 
 export async function getInitData(
   request: Request,
-  accessToken: string
+  accessToken: string,
+  companyId?: number
 ): Promise<CompanyInitData> {
-  const response = await fetch(`${process.env.API_URL}/companies/initData`, {
+  const response = await fetch(`${process.env.API_URL}/companies/initData?id=${companyId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }

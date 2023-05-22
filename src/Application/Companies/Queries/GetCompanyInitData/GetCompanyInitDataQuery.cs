@@ -11,8 +11,9 @@ using static CRM.Application.Constants;
 namespace CRM.Application.Companies.Queries.GetCompanyManagers;
 
 [Authorize]
-public class GetCompanyInitDataQuery : IRequest<GetCompanyInitDataResponse>
+public record GetCompanyInitDataQuery : IRequest<GetCompanyInitDataResponse>
 {
+    public int? Id { get; set; }
 }
 
 public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDataQuery, GetCompanyInitDataResponse>
@@ -49,7 +50,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             Access.Company.Any.SetManagerFromSelfToNone,
         }.Any(accessRights.Contains);
 
-        var expressions = GetExpressions(accessRights, _currentUserService.UserId!);
+        var expressions = await GetExpressionsAsync(accessRights, _currentUserService.UserId!, request.Id);
         if (!expressions.Any())
         {
             var result = new GetCompanyInitDataResponse();
@@ -73,7 +74,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         return await BuildResponseAsync(query, includeNullManager, cancellationToken);
     }
 
-    private static List<Expression<Func<ApplicationUser, bool>>> GetExpressions(string[] accessRights, string userId)
+    private async Task<List<Expression<Func<ApplicationUser, bool>>>> GetExpressionsAsync(string[] accessRights, string userId, int? companyId)
     {
         var result = new List<Expression<Func<ApplicationUser, bool>>>();
 
@@ -96,6 +97,19 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         }.Any(accessRights.Contains))
         {
             result.Add(x => x.Id == userId);
+        }
+
+        if (new[]
+        {
+            Access.Company.Any.SetManagerFromAnyToNone,
+        }.Any(accessRights.Contains) && companyId is not null)
+        {
+            var managerId = await _dbContext.Companies
+                .Where(x => x.Id == companyId && x.ManagerId != null)
+                .Select(x => x.ManagerId)
+                .FirstOrDefaultAsync();
+
+            result.Add(x => x.Id == managerId);
         }
 
         return result;
