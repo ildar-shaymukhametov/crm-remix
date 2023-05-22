@@ -43,7 +43,7 @@ test.describe("view companies", () => {
     createCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.any.update]
+      claims: [claims.company.old.any.update]
     });
 
     const companyId = await createCompany({ managerId: user.id });
@@ -62,7 +62,7 @@ test.describe("view companies", () => {
     createCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.any.delete]
+      claims: [claims.company.old.any.delete]
     });
 
     const companyId = await createCompany({ managerId: user.id });
@@ -155,7 +155,7 @@ test.describe("new company", () => {
       runAsDefaultUser
     }) => {
       const user = await runAsDefaultUser({
-        claims: [claims.company.create, claims.company.any.view, claim]
+        claims: [claims.company.create, claims.company.old.any.view, claim]
       });
 
       await page.goto(routes.companies.new);
@@ -188,7 +188,7 @@ test.describe("new company", () => {
       createUser
     }) => {
       await runAsDefaultUser({
-        claims: [claims.company.create, claims.company.any.view, claim]
+        claims: [claims.company.create, claims.company.old.any.view, claim]
       });
       const user = await createUser();
 
@@ -216,20 +216,20 @@ test.describe("new company", () => {
   }
 
   for (const claim of [
-    claims.company.any.setManagerFromNoneToAny,
-    claims.company.any.setManagerFromNoneToSelf,
-    claims.company.any.setManagerFromAnyToSelf,
-    claims.company.any.setManagerFromAnyToAny,
-    claims.company.any.setManagerFromAnyToNone,
-    claims.company.any.setManagerFromSelfToAny,
-    claims.company.any.setManagerFromSelfToNone
+    claims.company.old.any.setManagerFromNoneToAny,
+    claims.company.old.any.setManagerFromNoneToSelf,
+    claims.company.old.any.setManagerFromAnyToSelf,
+    claims.company.old.any.setManagerFromAnyToAny,
+    claims.company.old.any.setManagerFromAnyToNone,
+    claims.company.old.any.setManagerFromSelfToAny,
+    claims.company.old.any.setManagerFromSelfToNone
   ]) {
     test(`should not see manager field with claim ${claim}`, async ({
       page,
       runAsDefaultUser
     }) => {
       await runAsDefaultUser({
-        claims: [claims.company.create, claims.company.any.view, claim]
+        claims: [claims.company.create, claims.company.old.any.view, claim]
       });
 
       await page.goto(routes.companies.new);
@@ -293,7 +293,7 @@ test.describe("view company", () => {
     createCompany,
     getCompany
   }) => {
-    const user = await runAsDefaultUser({ claims: [claims.company.any.view] });
+    const user = await runAsDefaultUser({ claims: [claims.company.old.any.view] });
     const companyId = await createCompany({
       managerId: user.id
     });
@@ -310,7 +310,7 @@ test.describe("view company", () => {
     createCompany,
     getCompany
   }) => {
-    await runAsDefaultUser({ claims: [claims.company.any.view] });
+    await runAsDefaultUser({ claims: [claims.company.old.any.view] });
     const companyId = await createCompany();
 
     await page.goto(routes.companies.view(companyId));
@@ -345,7 +345,7 @@ test.describe("view company", () => {
     getCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.any.update]
+      claims: [claims.company.old.any.update]
     });
     const companyId = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.view(companyId));
@@ -365,7 +365,7 @@ test.describe("view company", () => {
     getCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.any.delete]
+      claims: [claims.company.old.any.delete]
     });
     const companyId = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.view(companyId));
@@ -379,7 +379,7 @@ test.describe("view company", () => {
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
-    await runAsDefaultUser({ claims: [claims.company.any.view] });
+    await runAsDefaultUser({ claims: [claims.company.old.any.view] });
     await page.goto(routes.companies.view("1"));
 
     await expectMinimalUi(page, undefined, {
@@ -509,7 +509,7 @@ test.describe("edit company", () => {
     getCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.any.update]
+      claims: [claims.company.old.any.update]
     });
     const companyId = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.edit(companyId));
@@ -553,7 +553,7 @@ test.describe("edit company", () => {
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
-    await runAsDefaultUser({ claims: [claims.company.any.update] });
+    await runAsDefaultUser({ claims: [claims.company.old.any.update] });
     await page.goto(routes.companies.edit(1));
 
     await expectMinimalUi(page, undefined, {
@@ -565,10 +565,10 @@ test.describe("edit company", () => {
   });
 
   for (const claim of [
-    claims.company.any.setManagerFromNoneToSelf,
-    claims.company.any.setManagerFromNoneToAny,
-    claims.company.any.setManagerFromAnyToSelf,
-    claims.company.any.setManagerFromAnyToAny
+    claims.company.old.any.setManagerFromNoneToSelf,
+    claims.company.old.any.setManagerFromNoneToAny,
+    claims.company.old.any.setManagerFromAnyToSelf,
+    claims.company.old.any.setManagerFromAnyToAny
   ]) {
     test(`should be able to set manager from none to self with claim ${claim}`, async ({
       page,
@@ -577,7 +577,7 @@ test.describe("edit company", () => {
       getCompany
     }) => {
       const user = await runAsDefaultUser({
-        claims: [claims.company.any.update, claim]
+        claims: [claims.company.old.any.update, claim]
       });
 
       const companyId = await createCompany();
@@ -604,8 +604,8 @@ test.describe("edit company", () => {
   }
 
   for (const claim of [
-    claims.company.any.setManagerFromNoneToAny,
-    claims.company.any.setManagerFromAnyToAny
+    claims.company.old.any.setManagerFromNoneToAny,
+    claims.company.old.any.setManagerFromAnyToAny
   ]) {
     test(`should be able to set manager from none to any with claim ${claim}`, async ({
       page,
@@ -615,7 +615,7 @@ test.describe("edit company", () => {
       createUser
     }) => {
       await runAsDefaultUser({
-        claims: [claims.company.any.update, claims.company.any.view, claim]
+        claims: [claims.company.old.any.update, claims.company.old.any.view, claim]
       });
 
       const user = await createUser();
@@ -644,9 +644,9 @@ test.describe("edit company", () => {
   }
 
   for (const claim of [
-    claims.company.any.setManagerFromSelfToAny,
-    claims.company.any.setManagerFromSelfToNone,
-    claims.company.any.setManagerFromAnyToAny
+    claims.company.old.any.setManagerFromSelfToAny,
+    claims.company.old.any.setManagerFromSelfToNone,
+    claims.company.old.any.setManagerFromAnyToAny
   ]) {
     test(`should be able to set manager from self to none with claim ${claim}`, async ({
       page,
@@ -655,7 +655,7 @@ test.describe("edit company", () => {
       getCompany
     }) => {
       const user = await runAsDefaultUser({
-        claims: [claims.company.any.update, claims.company.any.view, claim]
+        claims: [claims.company.old.any.update, claims.company.old.any.view, claim]
       });
 
       const companyId = await createCompany({ managerId: user.id });
@@ -680,8 +680,8 @@ test.describe("edit company", () => {
   }
 
   for (const claim of [
-    claims.company.any.setManagerFromAnyToNone,
-    claims.company.any.setManagerFromAnyToAny
+    claims.company.old.any.setManagerFromAnyToNone,
+    claims.company.old.any.setManagerFromAnyToAny
   ]) {
     test(`should be able to set manager from any to none with claim ${claim}`, async ({
       page,
@@ -691,7 +691,7 @@ test.describe("edit company", () => {
       createUser
     }) => {
       await runAsDefaultUser({
-        claims: [claims.company.any.update, claims.company.any.view, claim]
+        claims: [claims.company.old.any.update, claims.company.old.any.view, claim]
       });
 
       const user = await createUser();
@@ -717,7 +717,7 @@ test.describe("edit company", () => {
     });
   }
 
-  for (const claim of [claims.company.any.setManagerFromAnyToAny]) {
+  for (const claim of [claims.company.old.any.setManagerFromAnyToAny]) {
     test(`should be able to set manager from any to any with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
@@ -726,7 +726,7 @@ test.describe("edit company", () => {
       createUser
     }) => {
       await runAsDefaultUser({
-        claims: [claims.company.any.update, claims.company.any.view, claim]
+        claims: [claims.company.old.any.update, claims.company.old.any.view, claim]
       });
 
       const user = await createUser();
@@ -755,8 +755,8 @@ test.describe("edit company", () => {
   }
 
   for (const claim of [
-    claims.company.any.setManagerFromSelfToAny,
-    claims.company.any.setManagerFromAnyToAny
+    claims.company.old.any.setManagerFromSelfToAny,
+    claims.company.old.any.setManagerFromAnyToAny
   ]) {
     test(`should be able to set manager from self to any with claim ${claim}`, async ({
       page,
@@ -766,7 +766,7 @@ test.describe("edit company", () => {
       createUser
     }) => {
       const user = await runAsDefaultUser({
-        claims: [claims.company.any.update, claims.company.any.view, claim]
+        claims: [claims.company.old.any.update, claims.company.old.any.view, claim]
       });
 
       const anotherUser = await createUser();
@@ -794,8 +794,8 @@ test.describe("edit company", () => {
   }
 
   for (const claim of [
-    claims.company.any.setManagerFromAnyToSelf,
-    claims.company.any.setManagerFromAnyToAny
+    claims.company.old.any.setManagerFromAnyToSelf,
+    claims.company.old.any.setManagerFromAnyToAny
   ]) {
     test(`should be able to set manager from any to self with claim ${claim}`, async ({
       page,
@@ -805,7 +805,7 @@ test.describe("edit company", () => {
       createUser
     }) => {
       const user = await runAsDefaultUser({
-        claims: [claims.company.any.update, claims.company.any.view, claim]
+        claims: [claims.company.old.any.update, claims.company.old.any.view, claim]
       });
 
       const anotherUser = await createUser();
@@ -924,7 +924,7 @@ test.describe("delete company", () => {
     getCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.any.delete]
+      claims: [claims.company.old.any.delete]
     });
     const companyId = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.delete(companyId));
@@ -947,7 +947,7 @@ test.describe("delete company", () => {
     getCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.any.delete]
+      claims: [claims.company.old.any.delete]
     });
     const companyId = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.delete(companyId));
@@ -962,7 +962,7 @@ test.describe("delete company", () => {
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
-    await runAsDefaultUser({ claims: [claims.company.any.delete] });
+    await runAsDefaultUser({ claims: [claims.company.old.any.delete] });
     await page.goto(routes.companies.delete(1));
 
     await expectMinimalUi(page, undefined, {
