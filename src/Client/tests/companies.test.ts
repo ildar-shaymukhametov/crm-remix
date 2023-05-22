@@ -155,7 +155,7 @@ test.describe("new company", () => {
     claims.company.any.setManagerFromAnyToSelf,
     claims.company.any.setManagerFromAnyToAny
   ]) {
-    test.only(`should be able to set manager to self with claim ${claim}`, async ({
+    test(`should be able to set manager to self with claim ${claim}`, async ({
       page,
       runAsDefaultUser
     }) => {
@@ -187,28 +187,35 @@ test.describe("new company", () => {
   }
 
   for (const claim of [
-    { value: claims.company.any.setManagerFromAnyToNone, count: 1 },
-    { value: claims.company.any.setManagerFromNoneToAny, count: 2 },
-    { value: claims.company.any.setManagerFromAnyToAny, count: 2 }
+    claims.company.any.setManagerFromAnyToNone,
+    claims.company.any.setManagerFromNoneToAny,
+    claims.company.any.setManagerFromAnyToAny,
   ]) {
-    test(`should be able to set manager to none with claim ${claim.value}`, async ({
+    test(`should be able to set manager to none with claim ${claim}`, async ({
       page,
       runAsDefaultUser
     }) => {
       await runAsDefaultUser({
-        claims: [claims.company.create, claim.value]
+        claims: [claims.company.create, claims.company.any.view, claim]
       });
 
       await page.goto(routes.companies.new);
       await expectMinimalUi(page);
 
-      const manager = page.getByLabel(/manager/i);
-      expect(manager.getByRole("option")).toHaveCount(claim.count);
+      const company = buildCompany();
+      await page.getByLabel(/name/i).fill(company.name);
 
-      const text = await manager
-        .getByRole("option", { name: "-", exact: true })
-        .textContent();
-      expect(text).toBe("-");
+      const manager = page.getByLabel(/manager/i);
+      await expect(manager.getByRole("option", { selected: true })).toHaveText(
+        "-"
+      );
+
+      const submit = page.getByRole("button", { name: /create new company/i });
+      await submit.click();
+
+      await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+
+      await expect(page.getByLabel(/manager/i)).toHaveText("-");
     });
   }
 

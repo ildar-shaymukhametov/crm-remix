@@ -42,6 +42,11 @@ export const action: ActionFunction = async ({ request }) => {
   const user = await auth.requireUser(request);
   const formData = await request.formData();
   const data = Object.fromEntries(formData) as unknown as NewCompany;
+
+  if (!data.managerId) {
+    delete data.managerId;
+  }
+
   const id = await createCompany(request, data, user.extra?.access_token);
 
   return redirect(routes.companies.view(id));
