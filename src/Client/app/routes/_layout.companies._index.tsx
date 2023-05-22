@@ -21,14 +21,14 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request, {
-    permissions: [permissions.createCompany]
+    permissions: [permissions.company.create]
   });
 
   const companies = await getCompanies(request, user.extra.access_token);
   return json({
     companies,
     userPermissions: {
-      canCreateCompany: user.permissions.includes(permissions.createCompany)
+      canCreateCompany: user.permissions.includes(permissions.company.create)
     }
   });
 };

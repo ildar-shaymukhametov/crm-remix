@@ -142,6 +142,32 @@ public class AccessService : IAccessService
             result.Add(Access.Company.Any.SetManagerFromSelfToNone);
         }
 
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.Any.SetManagerFromNoneToSelf,
+                Claims.Company.Any.SetManagerFromNoneToAny,
+                Claims.Company.Any.SetManagerFromAnyToSelf,
+                Claims.Company.Any.SetManagerFromAnyToAny,
+                Claims.Company.Any.SetManagerFromAnyToNone,
+            }))
+        {
+            result.Add(Access.Company.New.SetManager);
+        }
+
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.Any.SetManagerFromNoneToSelf,
+                Claims.Company.Any.SetManagerFromNoneToAny,
+                Claims.Company.Any.SetManagerFromAnyToSelf,
+                Claims.Company.Any.SetManagerFromAnyToAny,
+                Claims.Company.Any.SetManagerFromSelfToAny,
+                Claims.Company.Any.SetManagerFromSelfToNone,
+                Claims.Company.Any.SetManagerFromAnyToNone,
+            }))
+        {
+            result.Add(Access.Company.Any.SetManager);
+        }
+
         return result.ToArray();
     }
 

@@ -54,7 +54,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
             .ToArrayAsync(cancellationToken);
 
-        var permissions = await _permissionsVerifier.VerifyCompanyPermissionsAsync(_currentUserService.UserId!, result.Select(x => x.Id).ToArray(), new[] { Permissions.UpdateCompany, Permissions.DeleteCompany });
+        var permissions = await _permissionsVerifier.VerifyCompanyPermissionsAsync(_currentUserService.UserId!, result.Select(x => x.Id).ToArray(), new[] { Permissions.Company.Update, Permissions.Company.Delete });
         foreach (var item in result)
         {
             if (!permissions.ContainsKey(item.Id))
@@ -62,8 +62,8 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
                 continue;
             }
 
-            item.CanBeEdited = permissions[item.Id].Contains(Permissions.UpdateCompany);
-            item.CanBeDeleted = permissions[item.Id].Contains(Permissions.DeleteCompany);
+            item.CanBeEdited = permissions[item.Id].Contains(Permissions.Company.Update);
+            item.CanBeDeleted = permissions[item.Id].Contains(Permissions.Company.Delete);
         }
 
         return result;

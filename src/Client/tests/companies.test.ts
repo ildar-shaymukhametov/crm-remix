@@ -141,9 +141,6 @@ test.describe("new company", () => {
     company.type =
       (await type.getByRole("option", { selected: true }).textContent()) ?? "";
 
-    const manager = page.getByLabel(/manager/i);
-    expect(manager).toHaveText("");
-
     const submit = page.getByRole("button", { name: /create new company/i });
     await submit.click();
     await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
@@ -164,7 +161,7 @@ test.describe("new company", () => {
       });
 
       await page.goto(routes.companies.new);
-      await expectMinimalUi(page);
+      await expectMinimalUi(page, { manager: true });
 
       const company = buildCompany();
       await page.getByLabel(/name/i).fill(company.name);
@@ -200,7 +197,7 @@ test.describe("new company", () => {
       });
 
       await page.goto(routes.companies.new);
-      await expectMinimalUi(page);
+      await expectMinimalUi(page, { manager: true });
 
       const company = buildCompany();
       await page.getByLabel(/name/i).fill(company.name);
@@ -234,7 +231,7 @@ test.describe("new company", () => {
       const user = await createUser();
 
       await page.goto(routes.companies.new);
-      await expectMinimalUi(page);
+      await expectMinimalUi(page, { manager: true });
 
       const company = buildCompany();
       await page.getByLabel(/name/i).fill(company.name);
@@ -260,6 +257,7 @@ test.describe("new company", () => {
     forbidden?: boolean;
     companyFields?: boolean;
     submitButton?: boolean;
+    manager?: boolean;
   };
 
   async function expectMinimalUi(
@@ -267,14 +265,26 @@ test.describe("new company", () => {
     {
       forbidden = false,
       companyFields = true,
-      submitButton = true
+      submitButton = true,
+      manager = false
     }: VisibilityOptions = {}
   ) {
     await expect(page).toHaveTitle("New company");
     await expect(page.getByText(/forbidden/i)).toBeVisible({
       visible: forbidden
     });
-    await expectCompanyFieldsToBeVisible(page, companyFields);
+
+    await expectCompanyFieldsToBeVisible(page, {
+      name: companyFields,
+      address: companyFields,
+      ceo: companyFields,
+      contacts: companyFields,
+      email: companyFields,
+      inn: companyFields,
+      phone: companyFields,
+      type: companyFields,
+      manager
+    });
 
     const save = page.getByRole("button", { name: /create new company/i });
     await expect(save).toBeVisible({
@@ -282,20 +292,12 @@ test.describe("new company", () => {
     });
   }
 
-  async function expectCompanyFieldsToBeVisible(page: Page, visible: boolean) {
-    const fields = [
-      /name/i,
-      /address/i,
-      /ceo/i,
-      /contacts/i,
-      /email/i,
-      /inn/i,
-      /phone/i,
-      /type/i,
-      /manager/i
-    ];
-    for (const field of fields) {
-      await expect(page.getByLabel(field)).toBeVisible({ visible });
+  async function expectCompanyFieldsToBeVisible(
+    page: Page,
+    data: { [key: string]: boolean }
+  ) {
+    for (const key of Object.keys(data)) {
+      await expect(page.getByLabel(key)).toBeVisible({ visible: data[key] });
     }
   }
 });
@@ -598,7 +600,7 @@ test.describe("edit company", () => {
       await page.goto(routes.companies.edit(companyId));
 
       const company = await getCompany(companyId);
-      await expectMinimalUi(page, company);
+      await expectMinimalUi(page, company, { manager: true });
 
       const manager = page.getByLabel(/manager/i);
       await expect(manager.getByRole("option", { selected: true })).toHaveText(
@@ -638,7 +640,7 @@ test.describe("edit company", () => {
       await page.goto(routes.companies.edit(companyId));
 
       const company = await getCompany(companyId);
-      await expectMinimalUi(page, company);
+      await expectMinimalUi(page, company, { manager: true });
 
       const manager = page.getByLabel(/manager/i);
       await expect(manager.getByRole("option", { selected: true })).toHaveText(
@@ -676,7 +678,7 @@ test.describe("edit company", () => {
       await page.goto(routes.companies.edit(companyId));
 
       const company = await getCompany(companyId);
-      await expectMinimalUi(page, company);
+      await expectMinimalUi(page, company, { manager: true });
 
       const manager = page.getByLabel(/manager/i);
       await expect(manager.getByRole("option", { selected: true })).toHaveText(
@@ -714,7 +716,7 @@ test.describe("edit company", () => {
       await page.goto(routes.companies.edit(companyId));
 
       const company = await getCompany(companyId);
-      await expectMinimalUi(page, company);
+      await expectMinimalUi(page, company, { manager: true });
 
       const manager = page.getByLabel(/manager/i);
       await expect(manager.getByRole("option", { selected: true })).toHaveText(
@@ -750,7 +752,7 @@ test.describe("edit company", () => {
       await page.goto(routes.companies.edit(companyId));
 
       const company = await getCompany(companyId);
-      await expectMinimalUi(page, company);
+      await expectMinimalUi(page, company, { manager: true });
 
       const manager = page.getByLabel(/manager/i);
       await expect(manager.getByRole("option", { selected: true })).toHaveText(
@@ -789,7 +791,7 @@ test.describe("edit company", () => {
       await page.goto(routes.companies.edit(companyId));
 
       const company = await getCompany(companyId);
-      await expectMinimalUi(page, company);
+      await expectMinimalUi(page, company, { manager: true });
 
       const manager = page.getByLabel(/manager/i);
       await expect(manager.getByRole("option", { selected: true })).toHaveText(
@@ -828,7 +830,7 @@ test.describe("edit company", () => {
       await page.goto(routes.companies.edit(companyId));
 
       const company = await getCompany(companyId);
-      await expectMinimalUi(page, company);
+      await expectMinimalUi(page, company, { manager: true });
 
       const manager = page.getByLabel(/manager/i);
       await expect(manager.getByRole("option", { selected: true })).toHaveText(
@@ -852,6 +854,7 @@ test.describe("edit company", () => {
     submitButton?: boolean;
     title?: "minimal" | "full";
     notFound?: boolean;
+    manager?: boolean;
   };
 
   async function expectMinimalUi(
@@ -862,7 +865,8 @@ test.describe("edit company", () => {
       companyFields = true,
       submitButton = true,
       title = "full",
-      notFound = false
+      notFound = false,
+      manager = false
     }: VisibilityOptions = {}
   ) {
     if (title === "minimal") {
@@ -872,10 +876,22 @@ test.describe("edit company", () => {
         await expect(page).toHaveTitle(company.name);
       }
     }
+
     await expect(page.getByText(/forbidden/i)).toBeVisible({
       visible: forbidden
     });
-    await expectCompanyFieldsToBeVisible(page, companyFields);
+
+    await expectCompanyFieldsToBeVisible(page, {
+      name: companyFields,
+      address: companyFields,
+      ceo: companyFields,
+      contacts: companyFields,
+      email: companyFields,
+      inn: companyFields,
+      phone: companyFields,
+      type: companyFields,
+      manager
+    });
 
     const save = page.getByRole("button", { name: /save changes/i });
     await expect(save).toBeVisible({
@@ -887,20 +903,12 @@ test.describe("edit company", () => {
     });
   }
 
-  async function expectCompanyFieldsToBeVisible(page: Page, visible: boolean) {
-    const fields = [
-      /name/i,
-      /address/i,
-      /ceo/i,
-      /contacts/i,
-      /email/i,
-      /inn/i,
-      /phone/i,
-      /type/i,
-      /manager/i
-    ];
-    for (const field of fields) {
-      await expect(page.getByLabel(field)).toBeVisible({ visible });
+  async function expectCompanyFieldsToBeVisible(
+    page: Page,
+    data: { [key: string]: boolean }
+  ) {
+    for (const key of Object.keys(data)) {
+      await expect(page.getByLabel(key)).toBeVisible({ visible: data[key] });
     }
   }
 });

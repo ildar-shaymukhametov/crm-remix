@@ -16,6 +16,9 @@ import { permissions } from "~/utils/constants.server";
 type LoaderData = {
   company: Company;
   managers?: Manager[];
+  userPermissions: {
+    canSetManager: boolean;
+  };
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -23,9 +26,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
   const user = await auth.requireUser(request, {
     key: params.id,
-    permissions: [permissions.updateCompany]
+    permissions: [permissions.company.update, permissions.company.setManager]
   });
-  if (!user.permissions.includes(permissions.updateCompany)) {
+
+  if (!user.permissions.includes(permissions.company.update)) {
     throw new Response(null, { status: 403 });
   }
 
@@ -41,7 +45,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     company.id
   );
 
-  return json({ company, ...initData });
+  return json({
+    company,
+    ...initData,
+    userPermissions: {
+      canSetManager: user.permissions.includes(permissions.company.setManager)
+    }
+  });
 };
 
 type ActionData = {
@@ -68,7 +78,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export default function EditCompanyRoute() {
   const actionData = useActionData<ActionData>();
-  const { company, managers } = useLoaderData<LoaderData>();
+  const { company, managers, userPermissions } = useLoaderData<LoaderData>();
   const data: ActionData = {
     fields: {
       ...{
@@ -158,22 +168,25 @@ export default function EditCompanyRoute() {
           <input name="contacts" defaultValue={data?.fields?.contacts} />
         </label>
       </div>
-      <div>
-        <label>
-          Manager:
-          <select name="managerId" defaultValue={data?.fields?.managerId}>
-            {managers
-              ? managers.map((x, i) => (
-                  <option key={i} value={x.id}>
-                    {x.firstName && x.lastName
-                      ? `${x.firstName} ${x.lastName}`
-                      : "-"}
-                  </option>
-                ))
-              : null}
-          </select>
-        </label>
-      </div>
+      {userPermissions.canSetManager ? (
+        <div>
+          <label>
+            Manager:
+            <select name="managerId" defaultValue={data?.fields?.managerId}>
+              {managers
+                ? managers.map((x, i) => (
+                    <option key={i} value={x.id}>
+                      {x.firstName && x.lastName
+                        ? `${x.firstName} ${x.lastName}`
+                        : "-"}
+                    </option>
+                  ))
+                : null}
+            </select>
+          </label>
+        </div>
+      ) : null}
+
       <button type="submit">Save changes</button>
     </form>
   );

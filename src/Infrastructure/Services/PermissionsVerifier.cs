@@ -14,13 +14,15 @@ public class PermissionsVerifier : IPermissionsVerifier
     private readonly IUserClaimsPrincipalFactory<AspNetUser> _userClaimsPrincipalFactory;
     private readonly IIdentityService _identityService;
     private readonly IResourceProvider _resourceProvider;
+    private readonly IAccessService _accessService;
 
-    public PermissionsVerifier(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory, IIdentityService identityService, IResourceProvider resourceProvider)
+    public PermissionsVerifier(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory, IIdentityService identityService, IResourceProvider resourceProvider, IAccessService accessService)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         _identityService = identityService;
         _resourceProvider = resourceProvider;
+        _accessService = accessService;
     }
 
     /// <summary>
@@ -40,26 +42,39 @@ public class PermissionsVerifier : IPermissionsVerifier
 
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
         var result = new List<string>();
+        var accessRights = _accessService.CheckAccess(principal);
 
-        if (permissions.Contains(Permissions.CreateCompany) && await _identityService.AuthorizeAsync(principal, Policies.CreateCompany))
+        if (permissions.Contains(Permissions.Company.Create) && await _identityService.AuthorizeAsync(principal, Policies.Company.Create))
         {
-            result.Add(Permissions.CreateCompany);
+            result.Add(Permissions.Company.Create);
+
+            if (permissions.Contains(Permissions.Company.SetManager) && accessRights.Contains(Access.Company.New.SetManager))
+            {
+                result.Add(Permissions.Company.SetManager);
+            }
         }
 
-        if (permissions.ContainsAny(Permissions.UpdateCompany, Permissions.ViewCompany, Permissions.DeleteCompany) && int.TryParse(resourceKey, out var id))
+        if (permissions.ContainsAny(Permissions.Company.Update, Permissions.Company.View, Permissions.Company.Delete) && int.TryParse(resourceKey, out var id))
         {
             var resource = await _resourceProvider.GetCompanyAsync(id) ?? throw new NotFoundException("Company", id);
-            if (permissions.Contains(Permissions.UpdateCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.UpdateCompany))
+            if (permissions.Contains(Permissions.Company.Update) && await _identityService.AuthorizeAsync(principal, resource, Policies.Company.Update))
             {
-                result.Add(Permissions.UpdateCompany);
+                result.Add(Permissions.Company.Update);
+
+                if (permissions.Contains(Permissions.Company.SetManager) && accessRights.Contains(Access.Company.Any.SetManager))
+                {
+                    result.Add(Permissions.Company.SetManager);
+                }
             }
-            if (permissions.Contains(Permissions.ViewCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.GetCompany))
+
+            if (permissions.Contains(Permissions.Company.View) && await _identityService.AuthorizeAsync(principal, resource, Policies.Company.View))
             {
-                result.Add(Permissions.ViewCompany);
+                result.Add(Permissions.Company.View);
             }
-            if (permissions.Contains(Permissions.DeleteCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.DeleteCompany))
+
+            if (permissions.Contains(Permissions.Company.Delete) && await _identityService.AuthorizeAsync(principal, resource, Policies.Company.Delete))
             {
-                result.Add(Permissions.DeleteCompany);
+                result.Add(Permissions.Company.Delete);
             }
         }
 
@@ -77,7 +92,7 @@ public class PermissionsVerifier : IPermissionsVerifier
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
         var result = new Dictionary<int, string[]>();
 
-        if (!permissions.ContainsAny(Permissions.UpdateCompany, Permissions.ViewCompany, Permissions.DeleteCompany))
+        if (!permissions.ContainsAny(Permissions.Company.Update, Permissions.Company.View, Permissions.Company.Delete))
         {
             return result;
         }
@@ -93,17 +108,19 @@ public class PermissionsVerifier : IPermissionsVerifier
                 continue;
             }
 
-            if (permissions.Contains(Permissions.UpdateCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.UpdateCompany))
+            if (permissions.Contains(Permissions.Company.Update) && await _identityService.AuthorizeAsync(principal, resource, Policies.Company.Update))
             {
-                list.Add(Permissions.UpdateCompany);
+                list.Add(Permissions.Company.Update);
             }
-            if (permissions.Contains(Permissions.ViewCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.GetCompany))
+
+            if (permissions.Contains(Permissions.Company.View) && await _identityService.AuthorizeAsync(principal, resource, Policies.Company.View))
             {
-                list.Add(Permissions.ViewCompany);
+                list.Add(Permissions.Company.View);
             }
-            if (permissions.Contains(Permissions.DeleteCompany) && await _identityService.AuthorizeAsync(principal, resource, Policies.DeleteCompany))
+
+            if (permissions.Contains(Permissions.Company.Delete) && await _identityService.AuthorizeAsync(principal, resource, Policies.Company.Delete))
             {
-                list.Add(Permissions.DeleteCompany);
+                list.Add(Permissions.Company.Delete);
             }
 
             result.Add(id, list.ToArray());

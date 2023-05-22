@@ -15,9 +15,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
   const user = await auth.requireUser(request, {
     key: params.id,
-    permissions: [permissions.deleteCompany]
+    permissions: [permissions.company.delete]
   });
-  if (!user.permissions.includes(permissions.deleteCompany)) {
+  if (!user.permissions.includes(permissions.company.delete)) {
     throw new Response(null, { status: 403 });
   }
 

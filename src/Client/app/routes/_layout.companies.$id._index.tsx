@@ -24,12 +24,12 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request, {
     key: params.id,
     permissions: [
-      permissions.viewCompany,
-      permissions.updateCompany,
-      permissions.deleteCompany
+      permissions.company.view,
+      permissions.company.update,
+      permissions.company.delete
     ]
   });
-  if (!user.permissions.includes(permissions.viewCompany)) {
+  if (!user.permissions.includes(permissions.company.view)) {
     throw new Response(null, { status: 403 });
   }
 
@@ -41,8 +41,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return json({
     company,
     userPermissions: {
-      canUpdateCompany: user.permissions.includes(permissions.updateCompany),
-      canDeleteCompany: user.permissions.includes(permissions.deleteCompany)
+      canUpdateCompany: user.permissions.includes(permissions.company.update),
+      canDeleteCompany: user.permissions.includes(permissions.company.delete)
     }
   });
 };

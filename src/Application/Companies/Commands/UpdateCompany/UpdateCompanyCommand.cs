@@ -5,7 +5,7 @@ using MediatR;
 
 namespace CRM.Application.Companies.Commands.UpdateCompany;
 
-[Authorize(Constants.Policies.UpdateCompany)]
+[Authorize(Constants.Policies.Company.Update)]
 public record UpdateCompanyCommand : IRequest<Unit>
 {
     public int Id { get; set; }

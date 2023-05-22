@@ -11,15 +11,18 @@ export const claims = {
       setManagerFromAnyToAny: "Company.Any.SetManagerFromAnyToAny",
       setManagerFromAnyToSelf: "Company.Any.SetManagerFromAnyToSelf",
       setManagerFromSelfToAny: "Company.Any.SetManagerFromSelfToAny",
-      setManagerFromSelfToNone: "Company.Any.SetManagerFromSelfToNone",
+      setManagerFromSelfToNone: "Company.Any.SetManagerFromSelfToNone"
     }
   }
 };
 
 // High level authorization data
 export const permissions = {
-  createCompany: "CreateCompany",
-  deleteCompany: "DeleteCompany",
-  updateCompany: "UpdateCompany",
-  viewCompany: "ViewCompany"
+  company: {
+    create: "Company.Create",
+    delete: "Company.Delete",
+    update: "Company.Update",
+    view: "Company.View",
+    setManager: "Company.SetManager"
+  }
 };

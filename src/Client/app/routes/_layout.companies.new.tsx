@@ -15,16 +15,21 @@ import { permissions } from "~/utils/constants.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request, {
-    permissions: [permissions.createCompany]
+    permissions: [permissions.company.create, permissions.company.setManager]
   });
 
-  if (!user.permissions.includes(permissions.createCompany)) {
+  if (!user.permissions.includes(permissions.company.create)) {
     throw new Response(null, { status: 403 });
   }
 
   const initData = await getInitData(request, user.extra?.access_token);
 
-  return json(initData);
+  return json({
+    ...initData,
+    userPermissions: {
+      canSetManager: user.permissions.includes(permissions.company.setManager)
+    }
+  });
 };
 
 type ActionData = {
@@ -36,6 +41,9 @@ type ActionData = {
 
 type LoaderData = {
   managers?: Manager[];
+  userPermissions: {
+    canSetManager: boolean;
+  };
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -54,7 +62,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewCompanyRoute() {
   const data = useActionData<ActionData>();
-  const { managers } = useLoaderData<LoaderData>();
+  const { managers, userPermissions } = useLoaderData<LoaderData>();
 
   return (
     <form method="post">
@@ -121,22 +129,25 @@ export default function NewCompanyRoute() {
           <input name="contacts" />
         </label>
       </div>
-      <div>
-        <label>
-          Manager:
-          <select name="managerId">
-            {managers
-              ? managers.map((x, i) => (
-                  <option key={i} value={x.id}>
-                    {x.firstName && x.lastName
-                      ? `${x.firstName} ${x.lastName}`
-                      : "-"}
-                  </option>
-                ))
-              : null}
-          </select>
-        </label>
-      </div>
+      {userPermissions.canSetManager ? (
+        <div>
+          <label>
+            Manager:
+            <select name="managerId">
+              {managers
+                ? managers.map((x, i) => (
+                    <option key={i} value={x.id}>
+                      {x.firstName && x.lastName
+                        ? `${x.firstName} ${x.lastName}`
+                        : "-"}
+                    </option>
+                  ))
+                : null}
+            </select>
+          </label>
+        </div>
+      ) : null}
+
       <button type="submit">Create new company</button>
     </form>
   );

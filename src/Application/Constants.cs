@@ -33,18 +33,26 @@ public static class Constants
 
     public static class Policies
     {
-        public const string UpdateCompany = "UpdateCompany";
-        public const string CreateCompany = "CreateCompany";
-        public const string DeleteCompany = "DeleteCompany";
-        public const string GetCompany = "GetCompany";
+        public static class Company
+        {
+            public const string Update = "Company.Update";
+            public const string Create = "Company.Create";
+            public const string Delete = "Company.Delete";
+            public const string View = "Company.View";
+            public const string SetManager = "Company.SetManager";
+        }
     }
 
     public static class Permissions
     {
-        public const string UpdateCompany = "UpdateCompany";
-        public const string CreateCompany = "CreateCompany";
-        public const string DeleteCompany = "DeleteCompany";
-        public const string ViewCompany = "ViewCompany";
+        public static class Company
+        {
+            public const string Update = "Company.Update";
+            public const string Create = "Company.Create";
+            public const string Delete = "Company.Delete";
+            public const string View = "Company.View";
+            public const string SetManager = "Company.SetManager";
+        }
     }
 
     public static class Access
@@ -52,6 +60,10 @@ public static class Constants
         public static class Company
         {
             public const string Create = "Company.Create";
+            public static class New
+            {
+                public const string SetManager = "Company.New.SetManager";
+            }
             public static class Any
             {
                 public const string View = "Company.Any.View";
@@ -64,6 +76,7 @@ public static class Constants
                 public const string SetManagerFromAnyToNone = "Company.Any.SetManagerFromAnyToNone";
                 public const string SetManagerFromSelfToAny = "Company.Any.SetManagerFromSelfToAny";
                 public const string SetManagerFromSelfToNone = "Company.Any.SetManagerFromSelfToNone";
+                public const string SetManager = "Company.Any.SetManager";
             }
             public static class WhereUserIsManager
             {
