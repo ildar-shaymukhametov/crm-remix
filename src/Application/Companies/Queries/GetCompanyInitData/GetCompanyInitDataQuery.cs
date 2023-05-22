@@ -42,53 +42,25 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
 
         var expression = await GetExpressionsAsync(accessRights, _currentUserService.UserId!, request.Id);
         var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
-
-        var includeNullManager = new[]
-        {
-            Access.Company.Any.SetManagerFromNoneToAny,
-            Access.Company.Any.SetManagerFromNoneToSelf,
-            Access.Company.Any.SetManagerFromAnyToSelf,
-            Access.Company.Any.SetManagerFromAnyToAny,
-            Access.Company.Any.SetManagerFromAnyToNone,
-            Access.Company.Any.SetManagerFromSelfToAny,
-            Access.Company.Any.SetManagerFromSelfToNone,
-            Access.Company.New.SetManagerToAny,
-            Access.Company.New.SetManagerToSelf
-        }.Any(accessRights.Contains);
+        var includeNullManager = accessRights.Contains(Access.Company.SetManagerToOrFromNone);
 
         return await BuildResponseAsync(query, includeNullManager, cancellationToken);
     }
 
     private async Task<Expression<Func<ApplicationUser, bool>>> GetExpressionsAsync(string[] accessRights, string userId, int? companyId)
     {
-        if (new[]
-        {
-            Access.Company.Any.SetManagerFromNoneToAny,
-            Access.Company.Any.SetManagerFromSelfToAny,
-            Access.Company.Any.SetManagerFromAnyToAny,
-            Access.Company.New.SetManagerToAny
-        }.Any(accessRights.Contains))
+        if (accessRights.Contains(Access.Company.SetManagerToAny))
         {
             return PredicateBuilder.True<ApplicationUser>();
         }
 
         var result = PredicateBuilder.False<ApplicationUser>();
-        if (new[]
-        {
-            Access.Company.Any.SetManagerFromNoneToSelf,
-            Access.Company.Any.SetManagerFromAnyToSelf,
-            Access.Company.Any.SetManagerFromSelfToNone,
-            Access.Company.New.SetManagerToSelf
-        }.Any(accessRights.Contains))
+        if (accessRights.Contains(Access.Company.SetManagerToSelf))
         {
             result = result.Or(x => x.Id == userId);
         }
 
-        if (new[]
-        {
-            Access.Company.Any.SetManagerFromAnyToNone,
-            Access.Company.Any.SetManagerFromAnyToSelf,
-        }.Any(accessRights.Contains) && companyId is not null)
+        if (accessRights.Contains(Access.Company.Old.SetManagerFromAny) && companyId is not null)
         {
             var managerId = await _dbContext.Companies
                 .Where(x => x.Id == companyId && x.ManagerId != null)

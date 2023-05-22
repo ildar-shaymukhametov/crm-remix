@@ -25,8 +25,8 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
 
         var (company, request) = GetResources(context);
         var userId = context.User.GetSubjectId();
-        var canUpdateOwnCompany = company.ManagerId == userId && accessRights.Contains(Access.Company.WhereUserIsManager.Update);
-        if (!canUpdateOwnCompany && !accessRights.Contains(Access.Company.Any.Update))
+        var canUpdateOwnCompany = company.ManagerId == userId && accessRights.Contains(Access.Company.Old.WhereUserIsManager.Update);
+        if (!canUpdateOwnCompany && !accessRights.Contains(Access.Company.Old.Any.Update))
         {
             return Fail(context, "Update company");
         }
@@ -39,15 +39,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
                 {
                     if (request.ManagerId == userId)
                     {
-                        var canSetSelfAsManager = new[]
-                        {
-                            Access.Company.Any.SetManagerFromNoneToSelf,
-                            Access.Company.Any.SetManagerFromNoneToAny,
-                            Access.Company.Any.SetManagerFromAnyToSelf,
-                            Access.Company.Any.SetManagerFromAnyToAny
-                        }.Any(accessRights.Contains);
-
-                        if (!canSetSelfAsManager)
+                        if (!accessRights.Contains(Access.Company.Old.SetManagerToSelf))
                         {
                             return Fail(context, "Set manager from none to self in any company");
                         }

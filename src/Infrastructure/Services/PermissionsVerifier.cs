@@ -61,7 +61,7 @@ public class PermissionsVerifier : IPermissionsVerifier
             {
                 result.Add(Permissions.Company.Update);
 
-                if (permissions.Contains(Permissions.Company.SetManager) && accessRights.Contains(Access.Company.Any.SetManager))
+                if (permissions.Contains(Permissions.Company.SetManager) && accessRights.Contains(Access.Company.Old.Any.SetManager))
                 {
                     result.Add(Permissions.Company.SetManager);
                 }
