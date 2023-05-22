@@ -51,7 +51,6 @@ public static class Constants
             public const string Create = "Company.Create";
             public const string Delete = "Company.Delete";
             public const string View = "Company.View";
-            public const string SetManager = "Company.SetManager";
         }
     }
 
