@@ -1,6 +1,10 @@
 export const claims = {
   company: {
     create: "Company.Create",
+    new: {
+      setManagerToSelf: "Company.New.SetManagerToSelf",
+      setManagerToAny: "Company.New.SetManagerToAny"
+    },
     any: {
       view: "Company.Any.View",
       delete: "Company.Any.Delete",

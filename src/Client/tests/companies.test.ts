@@ -147,10 +147,8 @@ test.describe("new company", () => {
   });
 
   for (const claim of [
-    claims.company.any.setManagerFromNoneToSelf,
-    claims.company.any.setManagerFromNoneToAny,
-    claims.company.any.setManagerFromAnyToSelf,
-    claims.company.any.setManagerFromAnyToAny
+    claims.company.new.setManagerToAny,
+    claims.company.new.setManagerToSelf
   ]) {
     test(`should be able to set manager to self with claim ${claim}`, async ({
       page,
@@ -183,43 +181,7 @@ test.describe("new company", () => {
     });
   }
 
-  for (const claim of [
-    claims.company.any.setManagerFromAnyToNone,
-    claims.company.any.setManagerFromNoneToAny,
-    claims.company.any.setManagerFromAnyToAny
-  ]) {
-    test(`should be able to set manager to none with claim ${claim}`, async ({
-      page,
-      runAsDefaultUser
-    }) => {
-      await runAsDefaultUser({
-        claims: [claims.company.create, claims.company.any.view, claim]
-      });
-
-      await page.goto(routes.companies.new);
-      await expectMinimalUi(page, { manager: true });
-
-      const company = buildCompany();
-      await page.getByLabel(/name/i).fill(company.name);
-
-      const manager = page.getByLabel(/manager/i);
-      await expect(manager.getByRole("option", { selected: true })).toHaveText(
-        "-"
-      );
-
-      const submit = page.getByRole("button", { name: /create new company/i });
-      await submit.click();
-
-      await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
-
-      await expect(page.getByLabel(/manager/i)).toHaveText("-");
-    });
-  }
-
-  for (const claim of [
-    claims.company.any.setManagerFromNoneToAny,
-    claims.company.any.setManagerFromAnyToAny
-  ]) {
+  for (const claim of [claims.company.new.setManagerToAny]) {
     test(`should be able to set manager to any with claim ${claim}`, async ({
       page,
       runAsDefaultUser,

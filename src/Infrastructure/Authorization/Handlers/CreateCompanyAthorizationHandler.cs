@@ -30,10 +30,8 @@ public class CreateCompanyAthorizationHandler : BaseAuthorizationHandler<CreateC
                 {
                     var canSetManagerToSelf = new[]
                     {
-                        Access.Company.Any.SetManagerFromNoneToSelf,
-                        Access.Company.Any.SetManagerFromNoneToAny,
-                        Access.Company.Any.SetManagerFromAnyToSelf,
-                        Access.Company.Any.SetManagerFromAnyToAny
+                        Access.Company.New.SetManagerToAny,
+                        Access.Company.New.SetManagerToSelf
                     }.Any(accessRights.Contains);
 
                     if (!canSetManagerToSelf)

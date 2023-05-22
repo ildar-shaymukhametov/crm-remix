@@ -52,6 +52,8 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             Access.Company.Any.SetManagerFromAnyToNone,
             Access.Company.Any.SetManagerFromSelfToAny,
             Access.Company.Any.SetManagerFromSelfToNone,
+            Access.Company.New.SetManagerToAny,
+            Access.Company.New.SetManagerToSelf
         }.Any(accessRights.Contains);
 
         return await BuildResponseAsync(query, includeNullManager, cancellationToken);
@@ -63,7 +65,8 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         {
             Access.Company.Any.SetManagerFromNoneToAny,
             Access.Company.Any.SetManagerFromSelfToAny,
-            Access.Company.Any.SetManagerFromAnyToAny
+            Access.Company.Any.SetManagerFromAnyToAny,
+            Access.Company.New.SetManagerToAny
         }.Any(accessRights.Contains))
         {
             return PredicateBuilder.True<ApplicationUser>();
@@ -74,7 +77,8 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         {
             Access.Company.Any.SetManagerFromNoneToSelf,
             Access.Company.Any.SetManagerFromAnyToSelf,
-            Access.Company.Any.SetManagerFromSelfToNone
+            Access.Company.Any.SetManagerFromSelfToNone,
+            Access.Company.New.SetManagerToSelf
         }.Any(accessRights.Contains))
         {
             result = result.Or(x => x.Id == userId);
