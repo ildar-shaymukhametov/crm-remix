@@ -189,7 +189,7 @@ test.describe("new company", () => {
   for (const claim of [
     claims.company.any.setManagerFromAnyToNone,
     claims.company.any.setManagerFromNoneToAny,
-    claims.company.any.setManagerFromAnyToAny,
+    claims.company.any.setManagerFromAnyToAny
   ]) {
     test(`should be able to set manager to none with claim ${claim}`, async ({
       page,
@@ -220,44 +220,39 @@ test.describe("new company", () => {
   }
 
   for (const claim of [
-    { value: claims.company.any.setManagerFromNoneToAny, count: 3 },
-    { value: claims.company.any.setManagerFromAnyToAny, count: 3 }
+    claims.company.any.setManagerFromNoneToAny,
+    claims.company.any.setManagerFromAnyToAny
   ]) {
-    test(`should be able to set manager to any with claim ${claim.value}`, async ({
+    test(`should be able to set manager to any with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createUser
     }) => {
-      const currentUser = await runAsDefaultUser({
-        claims: [claims.company.create, claim.value]
+      await runAsDefaultUser({
+        claims: [claims.company.create, claims.company.any.view, claim]
       });
       const someUser = await createUser();
 
       await page.goto(routes.companies.new);
       await expectMinimalUi(page);
 
+      const company = buildCompany();
+      await page.getByLabel(/name/i).fill(company.name);
+
       const manager = page.getByLabel(/manager/i);
-      expect(manager.getByRole("option")).toHaveCount(claim.count);
+      await expect(manager.getByRole("option", { selected: true })).toHaveText(
+        "-"
+      );
 
-      expect(
-        await manager
-          .getByRole("option", { name: "-", exact: true })
-          .textContent()
-      ).toBe("-");
+      await manager.selectOption(someUser.id);
 
-      const currentUserFullName = `${currentUser.name.givenName} ${currentUser.name.familyName}`;
-      expect(
-        await manager
-          .getByRole("option", { name: currentUserFullName, exact: true })
-          .textContent()
-      ).toBe(currentUserFullName);
+      const submit = page.getByRole("button", { name: /create new company/i });
+      await submit.click();
 
-      const someUserFullName = `${someUser.firstName} ${someUser.lastName}`;
-      expect(
-        await manager
-          .getByRole("option", { name: someUserFullName, exact: true })
-          .textContent()
-      ).toBe(someUserFullName);
+      await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+
+      const fullName = `${someUser.firstName} ${someUser.lastName}`;
+      await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
     });
   }
 

@@ -175,7 +175,7 @@ async function requestAccessToken(
 }
 
 type User = {
-  id?: string;
+  id: string;
   userName: string;
   password: string;
   firstName?: string;
