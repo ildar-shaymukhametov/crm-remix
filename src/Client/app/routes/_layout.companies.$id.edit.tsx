@@ -6,7 +6,7 @@ import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { useActionData, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
-import type { Company, Manager } from "~/utils/companies.server";
+import type { Company, Manager, UpdateCompany } from "~/utils/companies.server";
 import { getInitData } from "~/utils/companies.server";
 import { updateCompany } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
@@ -44,7 +44,7 @@ type ActionData = {
   errors?: {
     [index: string]: string[];
   };
-  fields?: { [index: string]: string | number };
+  fields?: { [index: string]: string | number | undefined };
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -52,7 +52,11 @@ export const action: ActionFunction = async ({ request, params }) => {
   invariant(params.id, "Missing id parameter");
 
   const formData = await request.formData();
-  const data = Object.fromEntries(formData);
+  const data = Object.fromEntries(formData) as UpdateCompany;
+  if (!data.managerId) {
+    delete data.managerId;
+  }
+
   await updateCompany(request, params.id, data, user.extra?.access_token);
 
   return redirect(routes.companies.view(params.id));
@@ -72,7 +76,8 @@ export default function EditCompanyRoute() {
         inn: company.inn,
         phone: company.phone,
         type: company.type,
-        name: company.name
+        name: company.name,
+        managerId: company.manager?.id
       },
       ...actionData?.fields
     },
@@ -152,7 +157,7 @@ export default function EditCompanyRoute() {
       <div>
         <label>
           Manager:
-          <select name="managerId">
+          <select name="managerId" defaultValue={data?.fields?.managerId}>
             {managers
               ? managers.map((x, i) => (
                   <option key={i} value={x.id}>

@@ -44,7 +44,9 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             Access.Company.Any.SetManagerFromNoneToSelf,
             Access.Company.Any.SetManagerFromAnyToSelf,
             Access.Company.Any.SetManagerFromAnyToAny,
-            Access.Company.Any.SetManagerFromAnyToNone
+            Access.Company.Any.SetManagerFromAnyToNone,
+            Access.Company.Any.SetManagerFromSelfToAny,
+            Access.Company.Any.SetManagerFromSelfToNone,
         }.Any(accessRights.Contains);
 
         var expressions = GetExpressions(accessRights, _currentUserService.UserId!);
@@ -89,7 +91,8 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         if (new[]
         {
             Access.Company.Any.SetManagerFromNoneToSelf,
-            Access.Company.Any.SetManagerFromAnyToSelf
+            Access.Company.Any.SetManagerFromAnyToSelf,
+            Access.Company.Any.SetManagerFromSelfToNone
         }.Any(accessRights.Contains))
         {
             result.Add(x => x.Id == userId);

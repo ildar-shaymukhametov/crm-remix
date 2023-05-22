@@ -181,7 +181,7 @@ test.describe("new company", () => {
 
       await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
 
-      const fullName = `${user.name.givenName} ${user.name.familyName}`;
+      const fullName = `${user.firstName} ${user.lastName}`;
       await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
     });
   }
@@ -231,7 +231,7 @@ test.describe("new company", () => {
       await runAsDefaultUser({
         claims: [claims.company.create, claims.company.any.view, claim]
       });
-      const someUser = await createUser();
+      const user = await createUser();
 
       await page.goto(routes.companies.new);
       await expectMinimalUi(page);
@@ -244,14 +244,14 @@ test.describe("new company", () => {
         "-"
       );
 
-      await manager.selectOption(someUser.id);
+      await manager.selectOption(user.id);
 
       const submit = page.getByRole("button", { name: /create new company/i });
       await submit.click();
 
       await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
 
-      const fullName = `${someUser.firstName} ${someUser.lastName}`;
+      const fullName = `${user.firstName} ${user.lastName}`;
       await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
     });
   }
@@ -612,7 +612,7 @@ test.describe("edit company", () => {
 
       await expect(page).toHaveURL(routes.companies.view(companyId));
 
-      const fullName = `${user.name.givenName} ${user.name.familyName}`;
+      const fullName = `${user.firstName} ${user.lastName}`;
       await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
     });
   }
@@ -621,7 +621,7 @@ test.describe("edit company", () => {
     claims.company.any.setManagerFromNoneToAny,
     claims.company.any.setManagerFromAnyToAny
   ]) {
-    test.only(`should be able to set manager from none to any with claim ${claim}`, async ({
+    test(`should be able to set manager from none to any with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -632,7 +632,7 @@ test.describe("edit company", () => {
         claims: [claims.company.any.update, claims.company.any.view, claim]
       });
 
-      const someUser = await createUser();
+      const user = await createUser();
 
       const companyId = await createCompany();
       await page.goto(routes.companies.edit(companyId));
@@ -645,47 +645,51 @@ test.describe("edit company", () => {
         "-"
       );
 
-      await manager.selectOption(someUser.id);
+      await manager.selectOption(user.id);
 
       const submit = page.getByRole("button", { name: /save changes/i });
       await submit.click();
 
       await expect(page).toHaveURL(routes.companies.view(companyId));
 
-      const fullName = `${someUser.firstName} ${someUser.lastName}`;
+      const fullName = `${user.firstName} ${user.lastName}`;
       await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
     });
   }
 
   for (const claim of [
-    claims.company.any.setManagerFromAnyToNone,
+    claims.company.any.setManagerFromSelfToAny,
+    claims.company.any.setManagerFromSelfToNone,
     claims.company.any.setManagerFromAnyToAny
   ]) {
-    test(`should be able to set manager from any to none with claim ${claim}`, async ({
+    test.only(`should be able to set manager from self to none with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createCompany,
-      getCompany,
-      createUser
+      getCompany
     }) => {
-      await runAsDefaultUser({
-        claims: [claims.company.any.update, claim]
+      const user = await runAsDefaultUser({
+        claims: [claims.company.any.update, claims.company.any.view, claim]
       });
 
-      const someUser = await createUser();
-
-      const companyId = await createCompany();
+      const companyId = await createCompany({ managerId: user.id });
       await page.goto(routes.companies.edit(companyId));
 
       const company = await getCompany(companyId);
       await expectMinimalUi(page, company);
 
       const manager = page.getByLabel(/manager/i);
+      await expect(manager.getByRole("option", { selected: true })).toHaveText(
+        `${user.firstName} ${user.lastName}`
+      );
 
-      const text = await manager
-        .getByRole("option", { name: "-", exact: true })
-        .textContent();
-      expect(text).toBe("-");
+      await manager.selectOption("");
+
+      const submit = page.getByRole("button", { name: /save changes/i });
+      await submit.click();
+
+      await expect(page).toHaveURL(routes.companies.view(companyId));
+      await expect(page.getByLabel(/manager/i)).toHaveText("-");
     });
   }
 
@@ -704,7 +708,7 @@ test.describe("edit company", () => {
       const currentUser = await runAsDefaultUser({
         claims: [claims.company.any.update, claim.value]
       });
-      const someUser = await createUser();
+      const user = await createUser();
 
       const companyId = await createCompany();
       await page.goto(routes.companies.edit(companyId));
@@ -721,14 +725,14 @@ test.describe("edit company", () => {
           .textContent()
       ).toBe("-");
 
-      const currentUserFullName = `${currentUser.name.givenName} ${currentUser.name.familyName}`;
+      const currentUserFullName = `${currentUser.firstName} ${currentUser.lastName}`;
       expect(
         await manager
           .getByRole("option", { name: currentUserFullName, exact: true })
           .textContent()
       ).toBe(currentUserFullName);
 
-      const someUserFullName = `${someUser.firstName} ${someUser.lastName}`;
+      const someUserFullName = `${user.firstName} ${user.lastName}`;
       expect(
         await manager
           .getByRole("option", { name: someUserFullName, exact: true })

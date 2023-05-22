@@ -32,7 +32,7 @@ const defaultUser: NewUser = {
 };
 
 export const test = base.extend<{
-  runAsDefaultUser: (options?: DefaultUserOptions) => Promise<OidcProfile>;
+  runAsDefaultUser: (options?: DefaultUserOptions) => Promise<User>;
   runAsAdministrator: () => Promise<OidcProfile>;
   resetDb: () => Promise<void>;
   createUser: () => Promise<User>;
@@ -101,7 +101,10 @@ async function runAsDefaultUser(
 
   await login(page, baseURL, profile);
 
-  return profile;
+  return {
+    id: userId,
+    ...user
+  };
 }
 
 async function runAsAdministrator(page: Page, baseURL: string) {
