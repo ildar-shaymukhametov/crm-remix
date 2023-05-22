@@ -94,7 +94,7 @@ async function runAsDefaultUser(
 
   const userId = await createUser(new Request("http://foobar.com"), user);
 
-  const profile = createOidcProfile(userId, user.firstName, user.lastName);
+  const profile = createOidcProfile(userId, user.firstName, user.lastName, user.userName);
   profile.extra.access_token =
     options.accessToken ??
     (await getAccessToken(page, user.userName, user.password));
@@ -109,7 +109,7 @@ async function runAsDefaultUser(
 
 async function runAsAdministrator(page: Page, baseURL: string) {
   const adminId = await createUser(new Request("http://foobar.com"), adminUser);
-  const user = createOidcProfile(adminId);
+  const user = createOidcProfile(adminId, adminUser.firstName, adminUser.lastName, adminUser.userName);
   user.extra.access_token = await getAccessToken(
     page,
     adminUser.userName,
@@ -197,10 +197,11 @@ function createRandomUser(): NewUser {
 function createOidcProfile(
   id: string,
   givenName = "",
-  familyName = ""
+  familyName = "",
+  displayName = ""
 ): OidcProfile {
   return {
-    displayName: "test@localhost",
+    displayName,
     id: id,
     name: {
       familyName,

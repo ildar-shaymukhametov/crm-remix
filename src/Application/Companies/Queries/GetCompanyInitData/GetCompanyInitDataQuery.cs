@@ -40,6 +40,9 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             return new GetCompanyInitDataResponse();
         }
 
+        var expression = await GetExpressionsAsync(accessRights, _currentUserService.UserId!, request.Id);
+        var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
+
         var includeNullManager = new[]
         {
             Access.Company.Any.SetManagerFromNoneToAny,
@@ -50,28 +53,6 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             Access.Company.Any.SetManagerFromSelfToAny,
             Access.Company.Any.SetManagerFromSelfToNone,
         }.Any(accessRights.Contains);
-
-        var expressions = await GetExpressionsAsync(accessRights, _currentUserService.UserId!, request.Id);
-        // if (!expressions.Any())
-        // {
-        //     var result = new GetCompanyInitDataResponse();
-        //     if (includeNullManager)
-        //     {
-        //         result.Managers = new List<ManagerDto>
-        //         {
-        //             new ManagerDto { Id = string.Empty }
-        //         };
-        //     }
-
-        //     return result;
-        // }
-
-        var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expressions);
-        // var query = _dbContext.ApplicationUsers.AsNoTracking();
-        // foreach (var expression in expressions)
-        // {
-        //     query = query.Where(expression);
-        // }
 
         return await BuildResponseAsync(query, includeNullManager, cancellationToken);
     }
@@ -88,7 +69,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             return PredicateBuilder.True<ApplicationUser>();
         }
 
-        var result = PredicateBuilder.Null<ApplicationUser>();
+        var result = PredicateBuilder.False<ApplicationUser>();
         if (new[]
         {
             Access.Company.Any.SetManagerFromNoneToSelf,

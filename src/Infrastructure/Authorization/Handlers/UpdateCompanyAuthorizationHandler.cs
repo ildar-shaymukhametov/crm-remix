@@ -35,11 +35,22 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         {
             if (company.ManagerId == null)
             {
-                if (request.ManagerId != null && !accessRights.Contains(Access.Company.Any.SetManagerFromNoneToAny))
+                if (request.ManagerId != null)
                 {
-                    if (request.ManagerId == userId && !accessRights.Contains(Access.Company.Any.SetManagerFromNoneToSelf))
+                    if (request.ManagerId == userId)
                     {
-                        return Fail(context, "Set manager from none to self in any company");
+                        var canSetSelfAsManager = new[]
+                        {
+                            Access.Company.Any.SetManagerFromNoneToSelf,
+                            Access.Company.Any.SetManagerFromNoneToAny,
+                            Access.Company.Any.SetManagerFromAnyToSelf,
+                            Access.Company.Any.SetManagerFromAnyToAny
+                        }.Any(accessRights.Contains);
+
+                        if (!canSetSelfAsManager)
+                        {
+                            return Fail(context, "Set manager from none to self in any company");
+                        }
                     }
                 }
             }
