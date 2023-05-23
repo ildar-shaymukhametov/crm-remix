@@ -60,14 +60,17 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             result = result.Or(x => x.Id == userId);
         }
 
-        if (accessRights.Contains(Access.Company.Old.SetManagerFromAny) && companyId is not null)
+        if (companyId is not null)
         {
-            var managerId = await _dbContext.Companies
-                .Where(x => x.Id == companyId && x.ManagerId != null)
-                .Select(x => x.ManagerId)
-                .FirstOrDefaultAsync();
+            if (accessRights.Contains(Access.Company.Old.SetManagerFromAny))
+            {
+                var managerId = await _dbContext.Companies
+                    .Where(x => x.Id == companyId && x.ManagerId != null)
+                    .Select(x => x.ManagerId)
+                    .FirstOrDefaultAsync();
 
-            result = result.Or(x => x.Id == managerId);
+                result = result.Or(x => x.Id == managerId);
+            }
         }
 
         return result;
