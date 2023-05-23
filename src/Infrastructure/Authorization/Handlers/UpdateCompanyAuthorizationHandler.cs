@@ -35,16 +35,16 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         {
             if (company.ManagerId == null)
             {
-                if (request.ManagerId != null)
+                if (request.ManagerId != null) // from none...
                 {
-                    if (request.ManagerId == userId)
+                    if (request.ManagerId == userId) // ...to self
                     {
                         if (!accessRights.Contains(Access.Company.Old.Any.SetManagerFromNoneToSelf))
                         {
                             return Fail(context, "Set manager from none to self in any company");
                         }
                     }
-                    else
+                    else // ...to any
                     {
                         if (!accessRights.Contains(Access.Company.Old.Any.SetManagerFromNoneToAny))
                         {
@@ -53,30 +53,44 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
                     }
                 }
             }
-            else
+            else if (company.ManagerId == userId) // from self...
             {
-                if (company.ManagerId == userId)
+                if (request.ManagerId == null) // ..to none
                 {
                     if (!accessRights.Contains(Access.Company.Old.Any.SetManagerFromSelfToNone))
                     {
                         return Fail(context, "Set manager from self to none in any company");
                     }
                 }
-                else
+                else // ...to any
                 {
-                    if (request.ManagerId == userId)
+                    if (!accessRights.Contains(Access.Company.Old.Any.SetManagerFromSelfToAny))
                     {
-                        if (!accessRights.Contains(Access.Company.Old.Any.SetManagerFromAnyToSelf))
-                        {
-                            return Fail(context, "Set manager from any to self in any company");
-                        }
+                        return Fail(context, "Set manager from self to any in any company");
                     }
-                    else
+                }
+            }
+            else // from any...
+            {
+                if (request.ManagerId == userId) // ...to self
+                {
+                    if (!accessRights.Contains(Access.Company.Old.Any.SetManagerFromAnyToSelf))
                     {
-                        if (!accessRights.Contains(Access.Company.Old.Any.SetManagerFromAnyToNone))
-                        {
-                            return Fail(context, "Set manager from any to none in any company");
-                        }
+                        return Fail(context, "Set manager from any to self in any company");
+                    }
+                }
+                else if (request.ManagerId == null) // ...to none
+                {
+                    if (!accessRights.Contains(Access.Company.Old.Any.SetManagerFromAnyToNone))
+                    {
+                        return Fail(context, "Set manager from any to none in any company");
+                    }
+                }
+                else // ...to any
+                {
+                    if (!accessRights.Contains(Access.Company.Old.Any.SetManagerFromAnyToAny))
+                    {
+                        return Fail(context, "Set manager from any to any in any company");
                     }
                 }
             }

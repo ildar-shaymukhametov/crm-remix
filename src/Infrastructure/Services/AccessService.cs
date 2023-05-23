@@ -220,6 +220,23 @@ public class AccessService : IAccessService
             result.Add(Access.Company.Old.Any.SetManagerFromAnyToSelf);
         }
 
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.Old.Any.SetManagerFromSelfToAny,
+                Claims.Company.Old.Any.SetManagerFromAnyToAny
+            }))
+        {
+            result.Add(Access.Company.Old.Any.SetManagerFromSelfToAny);
+        }
+
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.Old.Any.SetManagerFromAnyToAny
+            }))
+        {
+            result.Add(Access.Company.Old.Any.SetManagerFromAnyToAny);
+        }
+
         return result.ToArray();
     }
 
