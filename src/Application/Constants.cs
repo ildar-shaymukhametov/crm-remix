@@ -86,13 +86,15 @@ public static class Constants
             {
                 public const string SetManager = "Company.Old.SetManager";
                 public const string SetManagerFromAny = "Company.Old.SetManagerFromAny";
-                public const string SetManagerToSelf = "Company.Old.SetManagerToSelf";
 
                 public static class Any
                 {
                     public const string View = "Company.Old.Any.View";
                     public const string Delete = "Company.Old.Any.Delete";
                     public const string Update = "Company.Old.Any.Update";
+                    public const string SetManagerFromNoneToSelf = "Company.Old.SetManagerFromNoneToSelf";
+                    public const string SetManagerFromNoneToAny = "Company.Old.SetManagerFromNoneToAny";
+                    public const string SetManagerFromSelfToNone = "Company.Old.SetManagerFromSelfToNone";
                 }
 
                 public static class WhereUserIsManager

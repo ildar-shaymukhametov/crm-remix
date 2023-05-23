@@ -35,21 +35,6 @@ public class UpdateCompanyTests : BaseTest
         await AssertCompanyUpdatedAsync(user, company, command);
     }
 
-    [Theory]
-    [InlineData(Constants.Claims.Company.Old.WhereUserIsManager.Update)]
-    [InlineData(Constants.Claims.Company.Old.Any.Update)]
-    public async Task User_has_claim_and_is_manager___Updates_company(string claim)
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
-
-        var company = Faker.Builders.Company(managerId: user.Id);
-        await _fixture.AddAsync(company);
-        var manager = await _fixture.CreateUserAsync();
-        var command = CreateCommand(company.Id, managerId: manager.Id);
-
-        await AssertCompanyUpdatedAsync(user, company, command);
-    }
-
     private async Task AssertCompanyUpdatedAsync(AspNetUser user, Company company, UpdateCompanyCommand command)
     {
         await _fixture.SendAsync(command);
@@ -59,39 +44,6 @@ public class UpdateCompanyTests : BaseTest
         Assert.Equal(user.Id, company.LastModifiedBy);
         command.Should().BeEquivalentTo(updatedCompany, options =>
             options.ExcludingNestedObjects().ExcludingMissingMembers());
-    }
-
-    [Fact]
-    public async Task User_has_claim_and_is_not_manager___Throws_forbidden_access()
-    {
-        await _fixture.RunAsDefaultUserAsync(new[]
-        {
-            Constants.Claims.Company.Old.WhereUserIsManager.Update
-        });
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
-
-        var manager = await _fixture.CreateUserAsync();
-        var command = CreateCommand(company.Id, managerId: manager.Id);
-
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
-
-    [Fact]
-    public async Task User_has_claim_and_is_not_manager___Updates_company()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[]
-        {
-            Constants.Claims.Company.Old.Any.Update
-        });
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
-        var manager = await _fixture.CreateUserAsync();
-        var command = CreateCommand(company.Id, managerId: manager.Id);
-
-        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Fact]
@@ -112,7 +64,7 @@ public class UpdateCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Constants.Claims.Company.Old.WhereUserIsManager.Update
+            Constants.Claims.Company.Old.Any.Update
         });
         var command = CreateCommand(1);
         await Assert.ThrowsAsync<NotFoundException>(() => _fixture.SendAsync(command));
@@ -120,10 +72,12 @@ public class UpdateCompanyTests : BaseTest
 
     [Theory]
     [InlineData(Constants.Claims.Company.Old.Any.SetManagerFromNoneToSelf)]
-    [InlineData(Constants.Claims.Company.Old.Any.Update)]
-    public async Task User_can_set_manager_from_none_to_self_in_any_company___Updates_manager(string claim)
+    [InlineData(Constants.Claims.Company.Old.Any.SetManagerFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Old.Any.SetManagerFromAnyToSelf)]
+    [InlineData(Constants.Claims.Company.Old.Any.SetManagerFromAnyToAny)]
+    public async Task User_has_claim_to_set_manager_from_none_to_self_in_any_company___Updates_manager(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Constants.Claims.Company.Old.Any.Update });
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
@@ -132,13 +86,24 @@ public class UpdateCompanyTests : BaseTest
         await AssertCompanyUpdatedAsync(user, company, command);
     }
 
+    [Fact]
+    public async Task User_has_no_claim_to_set_manager_from_none_to_self_in_any_company___Throws_forbidden_access()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Old.Any.Update });
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+        var command = CreateCommand(company.Id, managerId: user.Id);
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
     [Theory]
     [InlineData(Constants.Claims.Company.Old.Any.SetManagerFromNoneToAny)]
     [InlineData(Constants.Claims.Company.Old.Any.SetManagerFromAnyToAny)]
-    [InlineData(Constants.Claims.Company.Old.Any.Update)]
-    public async Task User_can_set_manager_from_none_to_any_in_any_company___Updates_manager(string claim)
+    public async Task User_has_claim_to_set_manager_from_none_to_any_in_any_company___Updates_manager(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Constants.Claims.Company.Old.Any.Update });
         var anotherUser = await _fixture.AddUserAsync();
 
         var company = Faker.Builders.Company();
@@ -146,6 +111,47 @@ public class UpdateCompanyTests : BaseTest
         var command = CreateCommand(company.Id, managerId: anotherUser.Id);
 
         await AssertCompanyUpdatedAsync(user, company, command);
+    }
+
+    [Fact]
+    public async Task User_has_no_claim_to_set_manager_from_none_to_any_in_any_company___Throws_forbidden_access()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Old.Any.Update });
+        var anotherUser = await _fixture.AddUserAsync();
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+        var command = CreateCommand(company.Id, managerId: anotherUser.Id);
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
+    [Theory]
+    [InlineData(Constants.Claims.Company.Old.Any.SetManagerFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.Old.Any.SetManagerFromSelfToNone)]
+    [InlineData(Constants.Claims.Company.Old.Any.SetManagerFromAnyToAny)]
+    public async Task User_has_claim_to_set_manager_from_self_to_none_in_any_company___Updates_manager(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Constants.Claims.Company.Old.Any.Update });
+
+        var company = Faker.Builders.Company(user.Id);
+        await _fixture.AddAsync(company);
+        var command = CreateCommand(company.Id);
+
+        await AssertCompanyUpdatedAsync(user, company, command);
+    }
+
+    [Fact]
+    public async Task User_has_no_claim_to_set_manager_from_self_to_none_in_any_company___Throws_forbidden_access()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Old.Any.Update });
+        var anotherUser = await _fixture.AddUserAsync();
+
+        var company = Faker.Builders.Company(user.Id);
+        await _fixture.AddAsync(company);
+        var command = CreateCommand(company.Id);
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     private static UpdateCompanyCommand CreateCommand(int id, string? managerId = null)

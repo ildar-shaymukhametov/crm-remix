@@ -180,7 +180,16 @@ public class AccessService : IAccessService
                 Claims.Company.Old.Any.SetManagerFromAnyToAny
             }))
         {
-            result.Add(Access.Company.Old.SetManagerToSelf);
+            result.Add(Access.Company.Old.Any.SetManagerFromNoneToSelf);
+        }
+
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.Old.Any.SetManagerFromNoneToAny,
+                Claims.Company.Old.Any.SetManagerFromAnyToAny
+            }))
+        {
+            result.Add(Access.Company.Old.Any.SetManagerFromNoneToAny);
         }
 
         return result.ToArray();
