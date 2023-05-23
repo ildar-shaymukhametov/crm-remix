@@ -39,6 +39,13 @@ public class CreateCompanyAthorizationHandler : BaseAuthorizationHandler<CreateC
                         return Fail(context, "Set manager to self");
                     }
                 }
+                else
+                {
+                    if (!accessRights.Contains(Access.Company.New.SetManagerToAny))
+                    {
+                        return Fail(context, "Set manager to any");
+                    }
+                }
             }
         }
 

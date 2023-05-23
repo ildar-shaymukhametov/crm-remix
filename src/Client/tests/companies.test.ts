@@ -215,28 +215,6 @@ test.describe("new company", () => {
     });
   }
 
-  for (const claim of [
-    claims.company.old.any.setManagerFromNoneToAny,
-    claims.company.old.any.setManagerFromNoneToSelf,
-    claims.company.old.any.setManagerFromAnyToSelf,
-    claims.company.old.any.setManagerFromAnyToAny,
-    claims.company.old.any.setManagerFromAnyToNone,
-    claims.company.old.any.setManagerFromSelfToAny,
-    claims.company.old.any.setManagerFromSelfToNone
-  ]) {
-    test(`should not see manager field with claim ${claim}`, async ({
-      page,
-      runAsDefaultUser
-    }) => {
-      await runAsDefaultUser({
-        claims: [claims.company.create, claims.company.old.any.view, claim]
-      });
-
-      await page.goto(routes.companies.new);
-      await expectMinimalUi(page, { manager: false });
-    });
-  }
-
   type VisibilityOptions = {
     forbidden?: boolean;
     companyFields?: boolean;

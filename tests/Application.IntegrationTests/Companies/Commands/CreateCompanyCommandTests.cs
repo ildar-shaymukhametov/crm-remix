@@ -37,16 +37,16 @@ public class CreateCompanyTests : BaseTest
         await AssertCompanyCreatedAsync(user, command);
     }
 
-    private async Task AssertCompanyCreatedAsync(AspNetUser user, CreateCompanyCommand command)
+    private async Task AssertCompanyCreatedAsync(AspNetUser user, CreateCompanyCommand expected)
     {
-        var companyId = await _fixture.SendAsync(command);
-        var company = await _fixture.FindAsync<Company>(companyId);
+        var companyId = await _fixture.SendAsync(expected);
+        var actual = await _fixture.FindAsync<Company>(companyId);
 
-        Assert.NotNull(company);
-        Assert.Equal(companyId, company!.Id);
-        Assert.Equal(BaseTestFixture.UtcNow, company.CreatedAtUtc);
-        Assert.Equal(user.Id, company.CreatedBy);
-        Assert.Equal(command.ManagerId, company.ManagerId);
+        Assert.NotNull(actual);
+        Assert.Equal(companyId, actual!.Id);
+        Assert.Equal(BaseTestFixture.UtcNow, actual.CreatedAtUtc);
+        Assert.Equal(user.Id, actual.CreatedBy);
+        Assert.Equal(expected.ManagerId, actual.ManagerId);
     }
 
     [Fact]
@@ -59,8 +59,8 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Any.SetManagerFromNoneToSelf)]
-    [InlineData(Constants.Claims.Company.Any.SetManagerFromAnyToAny)]
+    [InlineData(Constants.Claims.Company.New.SetManagerToAny)]
+    [InlineData(Constants.Claims.Company.New.SetManagerToSelf)]
     public async Task User_can_set_self_as_manager___Creates_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[]
@@ -91,7 +91,7 @@ public class CreateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[]
         {
             Constants.Claims.Company.Create,
-            Constants.Claims.Company.Any.SetManagerFromAnyToAny
+            Constants.Claims.Company.New.SetManagerToAny
         });
         var anotherUser = await _fixture.CreateUserAsync();
 

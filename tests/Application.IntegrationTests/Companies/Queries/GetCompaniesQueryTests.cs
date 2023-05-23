@@ -23,12 +23,12 @@ public class GetCompaniesQueryTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Update)]
-    [InlineData(Constants.Claims.Company.Any.View)]
-    [InlineData(Constants.Claims.Company.Any.Delete)]
-    [InlineData(Constants.Claims.Company.Any.Update)]
+    [InlineData(Constants.Claims.Company.Old.WhereUserIsManager.View)]
+    [InlineData(Constants.Claims.Company.Old.WhereUserIsManager.Delete)]
+    [InlineData(Constants.Claims.Company.Old.WhereUserIsManager.Update)]
+    [InlineData(Constants.Claims.Company.Old.Any.View)]
+    [InlineData(Constants.Claims.Company.Old.Any.Delete)]
+    [InlineData(Constants.Claims.Company.Old.Any.Update)]
     public async Task User_has_claim_and_is_manager___Returns_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -40,14 +40,14 @@ public class GetCompaniesQueryTests : BaseTest
         var actual = await _fixture.SendAsync(request);
 
         Assert.Collection(actual, x => Assert.True(x.Id == company.Id
-            && x.CanBeEdited == (claim == Constants.Claims.Company.WhereUserIsManager.Update || claim == Constants.Claims.Company.Any.Update)
-            && x.CanBeDeleted == (claim == Constants.Claims.Company.WhereUserIsManager.Delete || claim == Constants.Claims.Company.Any.Delete)));
+            && x.CanBeEdited == (claim == Constants.Claims.Company.Old.WhereUserIsManager.Update || claim == Constants.Claims.Company.Old.Any.Update)
+            && x.CanBeDeleted == (claim == Constants.Claims.Company.Old.WhereUserIsManager.Delete || claim == Constants.Claims.Company.Old.Any.Delete)));
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Update)]
+    [InlineData(Constants.Claims.Company.Old.WhereUserIsManager.View)]
+    [InlineData(Constants.Claims.Company.Old.WhereUserIsManager.Delete)]
+    [InlineData(Constants.Claims.Company.Old.WhereUserIsManager.Update)]
     public async Task User_has_claim_and_is_not_manager___Returns_empty_list(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
