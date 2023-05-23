@@ -64,9 +64,19 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
                 }
                 else
                 {
-                    if (!accessRights.Contains(Access.Company.Old.Any.SetManagerFromAnyToNone))
+                    if (request.ManagerId == userId)
                     {
-                        return Fail(context, "Set manager from any to none in any company");
+                        if (!accessRights.Contains(Access.Company.Old.Any.SetManagerFromAnyToSelf))
+                        {
+                            return Fail(context, "Set manager from any to self in any company");
+                        }
+                    }
+                    else
+                    {
+                        if (!accessRights.Contains(Access.Company.Old.Any.SetManagerFromAnyToNone))
+                        {
+                            return Fail(context, "Set manager from any to none in any company");
+                        }
                     }
                 }
             }

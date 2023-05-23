@@ -96,6 +96,7 @@ public static class Constants
                     public const string SetManagerFromNoneToAny = "Company.Old.SetManagerFromNoneToAny";
                     public const string SetManagerFromSelfToNone = "Company.Old.SetManagerFromSelfToNone";
                     public const string SetManagerFromAnyToNone = "Company.Old.SetManagerFromAnyToNone";
+                    public const string SetManagerFromAnyToSelf = "Company.Old.SetManagerFromAnyToSelf";
                 }
 
                 public static class WhereUserIsManager
