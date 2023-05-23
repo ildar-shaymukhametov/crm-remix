@@ -486,10 +486,10 @@ test.describe("edit company", () => {
     createCompany,
     getCompany
   }) => {
-    const user = await runAsDefaultUser({
+    await runAsDefaultUser({
       claims: [claims.company.old.any.update]
     });
-    const companyId = await createCompany({ managerId: user.id });
+    const companyId = await createCompany();
     await page.goto(routes.companies.edit(companyId));
 
     const company = await getCompany(companyId);
