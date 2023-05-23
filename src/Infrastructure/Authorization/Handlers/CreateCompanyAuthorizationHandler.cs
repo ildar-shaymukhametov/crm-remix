@@ -8,9 +8,9 @@ namespace CRM.Infrastructure.Authorization.Handlers;
 
 public class CreateCompanyRequirement : IAuthorizationRequirement { }
 
-public class CreateCompanyAthorizationHandler : BaseAuthorizationHandler<CreateCompanyRequirement>
+public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<CreateCompanyRequirement>
 {
-    public CreateCompanyAthorizationHandler(IAccessService accessService) : base(accessService)
+    public CreateCompanyAuthorizationHandler(IAccessService accessService) : base(accessService)
     {
     }
 
