@@ -40,40 +40,42 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             return new GetCompanyInitDataResponse();
         }
 
-        var expression = await GetExpressionsAsync(accessRights, _currentUserService.UserId!, request.Id);
-        var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
         var includeNullManager = accessRights.Contains(Access.Company.SetManagerToOrFromNone);
 
-        return await BuildResponseAsync(query, includeNullManager, cancellationToken);
-    }
-
-    private async Task<Expression<Func<ApplicationUser, bool>>> GetExpressionsAsync(string[] accessRights, string userId, int? companyId)
-    {
+        var expression = PredicateBuilder.False<ApplicationUser>();
         if (accessRights.Contains(Access.Company.SetManagerToAny))
         {
-            return PredicateBuilder.True<ApplicationUser>();
+            expression = PredicateBuilder.True<ApplicationUser>();
         }
-
-        var result = PredicateBuilder.False<ApplicationUser>();
-        if (accessRights.Contains(Access.Company.SetManagerToSelf))
+        else
         {
-            result = result.Or(x => x.Id == userId);
-        }
-
-        if (companyId is not null)
-        {
-            if (accessRights.Contains(Access.Company.Old.SetManagerFromAny))
+            if (accessRights.Contains(Access.Company.SetManagerToSelf))
             {
-                var managerId = await _dbContext.Companies
-                    .Where(x => x.Id == companyId && x.ManagerId != null)
-                    .Select(x => x.ManagerId)
-                    .FirstOrDefaultAsync();
+                expression = expression.Or(x => x.Id == _currentUserService.UserId!);
+            }
 
-                result = result.Or(x => x.Id == managerId);
+            if (request.Id is not null)
+            {
+                if (accessRights.Contains(Access.Company.Old.SetManagerFromAny))
+                {
+                    var managerId = await _dbContext.Companies
+                        .Where(x => x.Id == request.Id && x.ManagerId != null)
+                        .Select(x => x.ManagerId)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    if (managerId == null)
+                    {
+                        includeNullManager = true;
+                    }
+
+                    expression = expression.Or(x => x.Id == managerId);
+                }
             }
         }
 
-        return result;
+        var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
+
+        return await BuildResponseAsync(query, includeNullManager, cancellationToken);
     }
 
     private async Task<GetCompanyInitDataResponse> BuildResponseAsync(IQueryable<ApplicationUser> query, bool includeNullManager, CancellationToken cancellationToken)

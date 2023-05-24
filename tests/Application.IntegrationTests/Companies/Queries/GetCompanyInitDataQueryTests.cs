@@ -13,12 +13,12 @@ public class GetCompanyManagersQueryTests : BaseTest
     public async Task User_is_admin___Returns_all_users()
     {
         var currentUser = await _fixture.RunAsAdministratorAsync();
-        var someUser = await _fixture.AddUserAsync();
+        var anyUser = await _fixture.AddUserAsync();
 
         var request = new GetCompanyInitDataQuery();
         var result = await _fixture.SendAsync(request);
 
-        var expected = new[] { string.Empty, currentUser.Id, someUser.Id };
+        var expected = new[] { string.Empty, currentUser.Id, anyUser.Id };
         result.Managers.Select(x => x.Id).Should().BeEquivalentTo(expected);
     }
 
@@ -38,27 +38,30 @@ public class GetCompanyManagersQueryTests : BaseTest
     [InlineData(Claims.Company.Old.Any.SetManagerFromAnyToAny)]
     [InlineData(Claims.Company.Old.Any.SetManagerFromNoneToAny)]
     [InlineData(Claims.Company.Old.Any.SetManagerFromSelfToAny)]
-    public async Task User_can_set_manager_to_any_in_any_company___Returns_all_users(string claim)
+    public async Task User_has_claim_to_set_manager_to_any_in_any_company___Returns_all_users(string claim)
     {
         var currentUser = await _fixture.RunAsDefaultUserAsync(claim);
-        var someUser = await _fixture.AddUserAsync();
+        var anyUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(anyUser.Id);
 
-        var query = new GetCompanyInitDataQuery();
+        var query = new GetCompanyInitDataQuery { Id = company.Id };
         var result = await _fixture.SendAsync(query);
 
-        var expected = new[] { string.Empty, currentUser.Id, someUser.Id };
+        var expected = new[] { string.Empty, currentUser.Id, anyUser.Id };
         result.Managers.Select(x => x.Id).Should().BeEquivalentTo(expected);
     }
 
     [Theory]
     [InlineData(Claims.Company.Old.Any.SetManagerFromNoneToSelf)]
     [InlineData(Claims.Company.Old.Any.SetManagerFromSelfToNone)]
-    public async Task User_can_set_manager_from_none_to_self_or_vice_versa_in_any_company___Returns_self_and_empty_manager(string claim)
+    [InlineData(Claims.Company.Old.Any.SetManagerFromAnyToSelf)]
+    public async Task User_has_claim_to_set_manager_from_none_to_self_or_vice_versa_in_any_company___Returns_self_and_empty_manager(string claim)
     {
         var currentUser = await _fixture.RunAsDefaultUserAsync(claim);
-        var someUser = await _fixture.AddUserAsync();
+        var anyUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync();
 
-        var query = new GetCompanyInitDataQuery();
+        var query = new GetCompanyInitDataQuery { Id = company.Id };
         var result = await _fixture.SendAsync(query);
 
         var expected = new[] { string.Empty, currentUser.Id };
@@ -66,16 +69,16 @@ public class GetCompanyManagersQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_set_manager_from_any_to_none_in_any_company___Returns_current_manager_and_empty_manager()
+    public async Task User_has_claim_to_set_manager_from_any_to_none_in_any_company___Returns_current_manager_and_empty_manager()
     {
         var currentUser = await _fixture.RunAsDefaultUserAsync(Claims.Company.Old.Any.SetManagerFromAnyToNone);
-        var someUser = await _fixture.AddUserAsync();
-        var company = await _fixture.AddCompanyAsync(someUser.Id);
+        var anyUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(anyUser.Id);
 
         var query = new GetCompanyInitDataQuery { Id = company.Id };
         var result = await _fixture.SendAsync(query);
 
-        var expected = new[] { string.Empty, someUser.Id };
+        var expected = new[] { string.Empty, anyUser.Id };
         result.Managers.Select(x => x.Id).Should().BeEquivalentTo(expected);
     }
 
@@ -83,13 +86,13 @@ public class GetCompanyManagersQueryTests : BaseTest
     public async Task User_can_set_manager_from_any_to_self_in_any_company___Returns_current_manager_and_self()
     {
         var currentUser = await _fixture.RunAsDefaultUserAsync(Claims.Company.Old.Any.SetManagerFromAnyToSelf);
-        var someUser = await _fixture.AddUserAsync();
-        var company = await _fixture.AddCompanyAsync(someUser.Id);
+        var anyUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(anyUser.Id);
 
         var query = new GetCompanyInitDataQuery { Id = company.Id };
         var result = await _fixture.SendAsync(query);
 
-        var expected = new[] { string.Empty, currentUser.Id, someUser.Id };
+        var expected = new[] { currentUser.Id, anyUser.Id };
         result.Managers.Select(x => x.Id).Should().BeEquivalentTo(expected);
     }
 }
