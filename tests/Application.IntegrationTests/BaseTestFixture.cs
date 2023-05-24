@@ -80,6 +80,11 @@ public class BaseTestFixture
         return await RunAsAdministratorAsync(string.Empty, string.Empty);
     }
 
+    public async Task<AspNetUser> RunAsAdministratorAsync(string lastName)
+    {
+        return await RunAsAdministratorAsync(Faker.Internet.UserName(), lastName);
+    }
+
     public async Task<AspNetUser> RunAsAdministratorAsync(string firstName, string lastName)
     {
         return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Constants.Roles.Administrator }, Array.Empty<string>(), firstName, lastName);
@@ -131,6 +136,11 @@ public class BaseTestFixture
     public async Task<AspNetUser> AddUserAsync()
     {
         return await AddUserAsync(string.Empty, string.Empty);
+    }
+
+    public async Task<AspNetUser> AddUserAsync(string lastName)
+    {
+        return await AddUserAsync(Faker.Internet.UserName(), lastName);
     }
 
     public async Task<AspNetUser> AddUserAsync(string firstName, string lastName)
@@ -225,6 +235,13 @@ public class BaseTestFixture
         context.Add(entity);
 
         await context.SaveChangesAsync();
+    }
+
+    public async Task<Company> AddCompanyAsync(string? managerId = null)
+    {
+        var company = Faker.Builders.Company(managerId);
+        await AddAsync(company);
+        return company;
     }
 
     public async Task<int> CountAsync<TEntity>() where TEntity : class
