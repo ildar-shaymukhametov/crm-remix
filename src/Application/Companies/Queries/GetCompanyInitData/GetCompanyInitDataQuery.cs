@@ -40,7 +40,12 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             return new GetCompanyInitDataResponse();
         }
 
-        if (request.Id is null)
+        if (accessRights.Contains(Access.Company.SetManagerToAny))
+        {
+            var query = _dbContext.ApplicationUsers.AsNoTracking();
+            return await BuildResponseAsync(query, true, cancellationToken);
+        }
+        else if (request.Id is null)
         {
             var expression = GetExpression(accessRights, _currentUserService.UserId!);
             var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
@@ -48,38 +53,32 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         }
         else
         {
-            if (accessRights.Contains(Access.Company.SetManagerToAny))
+            // to
+            var expression = PredicateBuilder.False<ApplicationUser>();
+            if (accessRights.Contains(Access.Company.SetManagerToSelf))
             {
-                var query = _dbContext.ApplicationUsers.AsNoTracking();
-                return await BuildResponseAsync(query, true, cancellationToken);
+                expression = expression.Or(x => x.Id == _currentUserService.UserId);
             }
-            else
+
+            // from
+            var includeNullManager = accessRights.Contains(Access.Company.SetManagerToOrFromNone);
+            if (accessRights.Contains(Access.Company.Old.SetManagerFromAny))
             {
-                var expression = PredicateBuilder.False<ApplicationUser>();
-                if (accessRights.Contains(Access.Company.SetManagerToSelf))
+                var managerId = await _dbContext.Companies
+                    .Where(x => x.Id == request.Id)
+                    .Select(x => x.ManagerId)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (managerId == null)
                 {
-                    expression = expression.Or(x => x.Id == _currentUserService.UserId);
+                    includeNullManager = true;
                 }
 
-                var includeNullManager = accessRights.Contains(Access.Company.SetManagerToOrFromNone);
-                if (accessRights.Contains(Access.Company.Old.SetManagerFromAny))
-                {
-                    var managerId = await _dbContext.Companies
-                        .Where(x => x.Id == request.Id)
-                        .Select(x => x.ManagerId)
-                        .FirstOrDefaultAsync(cancellationToken);
-
-                    if (managerId == null)
-                    {
-                        includeNullManager = true;
-                    }
-
-                    expression = expression.Or(x => x.Id == managerId);
-                }
-
-                var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
-                return await BuildResponseAsync(query, includeNullManager, cancellationToken);
+                expression = expression.Or(x => x.Id == managerId);
             }
+
+            var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
+            return await BuildResponseAsync(query, includeNullManager, cancellationToken);
         }
     }
 
