@@ -67,11 +67,6 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
                 .Select(x => x.ManagerId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (accessRights.Contains(Access.Company.Old.SetManagerFromSelf) && managerId == _currentUserService.UserId)
-            {
-                expression = expression.Or(x => x.Id == _currentUserService.UserId);
-            }
-
             if (accessRights.Contains(Access.Company.Old.SetManagerFromAny))
             {
                 if (managerId == null)
@@ -80,6 +75,10 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
                 }
 
                 expression = expression.Or(x => x.Id == managerId);
+            }
+            else if (accessRights.Contains(Access.Company.Old.SetManagerFromSelf) && managerId == _currentUserService.UserId)
+            {
+                expression = expression.Or(x => x.Id == _currentUserService.UserId);
             }
 
             var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
