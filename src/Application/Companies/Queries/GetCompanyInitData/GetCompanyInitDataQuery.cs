@@ -61,7 +61,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             }
 
             // from
-            var includeNullManager = accessRights.Contains(Access.Company.SetManagerToOrFromNone);
+            var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToOrFromNone);
             var managerId = await _dbContext.Companies
                 .Where(x => x.Id == request.Id)
                 .Select(x => x.ManagerId)
@@ -71,7 +71,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             {
                 if (managerId == null)
                 {
-                    includeNullManager = true;
+                    includeEmptyManager = true;
                 }
 
                 expression = expression.Or(x => x.Id == managerId);
@@ -82,7 +82,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             }
 
             var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
-            return await BuildResponseAsync(query, includeNullManager, cancellationToken);
+            return await BuildResponseAsync(query, includeEmptyManager, cancellationToken);
         }
     }
 
@@ -102,10 +102,10 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         return expression;
     }
 
-    private async Task<GetCompanyInitDataResponse> BuildResponseAsync(IQueryable<ApplicationUser> query, bool includeNullManager, CancellationToken cancellationToken)
+    private async Task<GetCompanyInitDataResponse> BuildResponseAsync(IQueryable<ApplicationUser> query, bool includeEmptyManager, CancellationToken cancellationToken)
     {
         var managers = new List<ManagerDto>();
-        if (includeNullManager)
+        if (includeEmptyManager)
         {
             managers.Add(new ManagerDto
             {
