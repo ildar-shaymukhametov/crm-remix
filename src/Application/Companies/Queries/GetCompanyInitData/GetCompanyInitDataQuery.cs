@@ -70,12 +70,12 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
     private Expression<Func<ApplicationUser, bool>> GetExpression(string[] accessRights, string? managerId)
     {
         var result = PredicateBuilder.False<ApplicationUser>();
-        if (accessRights.Contains(Access.Company.Old.SetManagerFromAny))
+        if (accessRights.Contains(Access.Company.SetManagerFromAny))
         {
             result = result.Or(x => x.Id == managerId);
         }
 
-        if (accessRights.Contains(Access.Company.SetManagerToSelf) || accessRights.Contains(Access.Company.Old.SetManagerFromSelf) && managerId == _currentUserService.UserId)
+        if (accessRights.Contains(Access.Company.SetManagerToSelf) || accessRights.Contains(Access.Company.SetManagerFromSelf) && managerId == _currentUserService.UserId)
         {
             result = result.Or(x => x.Id == _currentUserService.UserId);
         }
