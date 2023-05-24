@@ -71,9 +71,10 @@ public static class Constants
         public static class Company
         {
             public const string Create = "Company.Create";
-            public const string SetManagerToOrFromNone = "Company.SetManagerToOrFromNone";
+            public const string SetManagerFromNone = "Company.SetManagerToOrFromNone";
             public const string SetManagerToAny = "Company.SetManagerToAny";
             public const string SetManagerToSelf = "Company.SetManagerToSelf";
+            public const string SetManagerToNone = "Company.SetManagerToNone";
 
             public static class New
             {

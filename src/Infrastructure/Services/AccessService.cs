@@ -131,13 +131,22 @@ public class AccessService : IAccessService
                 Claims.Company.Old.Any.SetManagerFromNoneToSelf,
                 Claims.Company.Old.Any.SetManagerFromAnyToAny,
                 Claims.Company.Old.Any.SetManagerFromAnyToNone,
+            }))
+        {
+            result.Add(Access.Company.SetManagerFromNone);
+        }
+
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.Old.Any.SetManagerFromNoneToAny,
+                Claims.Company.Old.Any.SetManagerFromAnyToAny,
+                Claims.Company.Old.Any.SetManagerFromAnyToNone,
                 Claims.Company.Old.Any.SetManagerFromSelfToAny,
                 Claims.Company.Old.Any.SetManagerFromSelfToNone,
                 Claims.Company.New.SetManagerToAny,
-                Claims.Company.New.SetManagerToSelf
             }))
         {
-            result.Add(Access.Company.SetManagerToOrFromNone);
+            result.Add(Access.Company.SetManagerToNone);
         }
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]

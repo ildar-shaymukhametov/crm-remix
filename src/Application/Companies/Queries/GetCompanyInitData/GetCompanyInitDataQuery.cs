@@ -55,13 +55,19 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         {
             // to
             var expression = PredicateBuilder.False<ApplicationUser>();
+            var includeEmptyManager = false;
+
             if (accessRights.Contains(Access.Company.SetManagerToSelf))
             {
                 expression = expression.Or(x => x.Id == _currentUserService.UserId);
             }
 
+            if (accessRights.Contains(Access.Company.SetManagerToNone))
+            {
+                includeEmptyManager = true;
+            }
+
             // from
-            var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToOrFromNone);
             var managerId = await _dbContext.Companies
                 .Where(x => x.Id == request.Id)
                 .Select(x => x.ManagerId)
@@ -76,9 +82,17 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
 
                 expression = expression.Or(x => x.Id == managerId);
             }
-            else if (accessRights.Contains(Access.Company.Old.SetManagerFromSelf) && managerId == _currentUserService.UserId)
+            else
             {
-                expression = expression.Or(x => x.Id == _currentUserService.UserId);
+                if (accessRights.Contains(Access.Company.Old.SetManagerFromSelf) && managerId == _currentUserService.UserId)
+                {
+                    expression = expression.Or(x => x.Id == _currentUserService.UserId);
+                }
+                
+                if (accessRights.Contains(Access.Company.SetManagerFromNone) && managerId == null)
+                {
+                    includeEmptyManager = true;
+                }
             }
 
             var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
