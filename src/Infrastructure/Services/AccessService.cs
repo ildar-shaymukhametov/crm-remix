@@ -155,7 +155,6 @@ public class AccessService : IAccessService
             {
                 Claims.Company.Old.Any.SetManagerFromNoneToSelf,
                 Claims.Company.Old.Any.SetManagerFromAnyToSelf,
-                Claims.Company.Old.Any.SetManagerFromSelfToNone,
                 Claims.Company.New.SetManagerToSelf
             }))
         {
@@ -234,6 +233,18 @@ public class AccessService : IAccessService
             }))
         {
             result.Add(Access.Company.Old.Any.SetManagerFromAnyToAny);
+        }
+
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                // Claims.Company.Old.Any.SetManagerFromSelfToAny,
+                Claims.Company.Old.Any.SetManagerFromSelfToNone,
+                // Claims.Company.Old.Any.SetManagerFromAnyToAny,
+                // Claims.Company.Old.Any.SetManagerFromAnyToNone,
+                // Claims.Company.Old.Any.SetManagerFromAnyToSelf
+            }))
+        {
+            result.Add(Access.Company.Old.SetManagerFromSelf);
         }
 
         return result.ToArray();

@@ -86,6 +86,7 @@ public static class Constants
             {
                 public const string SetManager = "Company.Old.SetManager";
                 public const string SetManagerFromAny = "Company.Old.SetManagerFromAny";
+                public const string SetManagerFromSelf = "Company.Old.SetManagerFromSelf";
 
                 public static class Any
                 {

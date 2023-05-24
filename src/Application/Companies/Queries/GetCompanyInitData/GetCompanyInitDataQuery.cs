@@ -62,13 +62,18 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
 
             // from
             var includeNullManager = accessRights.Contains(Access.Company.SetManagerToOrFromNone);
+            var managerId = await _dbContext.Companies
+                .Where(x => x.Id == request.Id)
+                .Select(x => x.ManagerId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (accessRights.Contains(Access.Company.Old.SetManagerFromSelf) && managerId == _currentUserService.UserId)
+            {
+                expression = expression.Or(x => x.Id == _currentUserService.UserId);
+            }
+
             if (accessRights.Contains(Access.Company.Old.SetManagerFromAny))
             {
-                var managerId = await _dbContext.Companies
-                    .Where(x => x.Id == request.Id)
-                    .Select(x => x.ManagerId)
-                    .FirstOrDefaultAsync(cancellationToken);
-
                 if (managerId == null)
                 {
                     includeNullManager = true;
