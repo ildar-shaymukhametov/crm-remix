@@ -48,7 +48,7 @@ public class PermissionsVerifier : IPermissionsVerifier
         {
             result.Add(Permissions.Company.Create);
 
-            if (permissions.Contains(Permissions.Company.SetManager) && accessRights.Contains(Access.Company.New.SetManager))
+            if (permissions.Contains(Permissions.Company.SetManager) && accessRights.Contains(Access.Company.SetNewCompanyManager))
             {
                 result.Add(Permissions.Company.SetManager);
             }
@@ -61,7 +61,7 @@ public class PermissionsVerifier : IPermissionsVerifier
             {
                 result.Add(Permissions.Company.Update);
 
-                if (permissions.Contains(Permissions.Company.SetManager) && accessRights.Contains(Access.Company.Old.SetManager))
+                if (permissions.Contains(Permissions.Company.SetManager) && accessRights.Contains(Access.Company.SetExistingCompanyManager))
                 {
                     result.Add(Permissions.Company.SetManager);
                 }

@@ -59,8 +59,10 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.New.SetManagerToAny)]
-    [InlineData(Constants.Claims.Company.New.SetManagerToSelf)]
+    [InlineData(Constants.Claims.Company.Any.SetManagerFromAnyToAny)]
+    [InlineData(Constants.Claims.Company.Any.SetManagerFromAnyToSelf)]
+    [InlineData(Constants.Claims.Company.Any.SetManagerFromNoneToSelf)]
+    [InlineData(Constants.Claims.Company.Any.SetManagerFromNoneToAny)]
     public async Task User_can_set_self_as_manager___Creates_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[]
@@ -85,13 +87,15 @@ public class CreateCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    [Fact]
-    public async Task User_can_set_anyone_as_manager___Creates_company()
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.SetManagerFromAnyToAny)]
+    [InlineData(Constants.Claims.Company.Any.SetManagerFromNoneToAny)]
+    public async Task User_can_set_anyone_as_manager___Creates_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[]
         {
             Constants.Claims.Company.Create,
-            Constants.Claims.Company.New.SetManagerToAny
+            claim
         });
         var anotherUser = await _fixture.CreateUserAsync();
 

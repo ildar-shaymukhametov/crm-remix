@@ -17,10 +17,10 @@ public class GetUserPermissionsQueryTests : BaseTest
 
         var expected = new[]
         {
-            "CreateCompany",
-            "UpdateCompany",
-            "ViewCompany",
-            "DeleteCompany",
+            "Company.Create",
+            "Company.Update",
+            "Company.View",
+            "Company.Delete",
         };
 
         var request = new GetUserPermissionsQuery
@@ -41,10 +41,10 @@ public class GetUserPermissionsQueryTests : BaseTest
 
         var expected = new[]
         {
-            "CreateCompany",
-            "UpdateCompany",
-            "ViewCompany",
-            "DeleteCompany",
+            "Company.Create",
+            "Company.Update",
+            "Company.View",
+            "Company.Delete",
         };
 
         var request = new GetUserPermissionsQuery
@@ -65,10 +65,10 @@ public class GetUserPermissionsQueryTests : BaseTest
 
         var expected = new[]
         {
-            "CreateCompany",
-            "UpdateCompany",
-            "ViewCompany",
-            "DeleteCompany",
+            "Company.Create",
+            "Company.Update",
+            "Company.View",
+            "Company.Delete",
         };
 
         var request = new GetUserPermissionsQuery

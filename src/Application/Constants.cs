@@ -9,36 +9,26 @@ public static class Constants
         public static class Company
         {
             public const string Create = "Company.Create";
-
-            public static class New
+            public static class Any
             {
-                public const string SetManagerToAny = "Company.New.SetManagerToAny";
-                public const string SetManagerToSelf = "Company.New.SetManagerToSelf";
+                public const string View = "Company.Any.View";
+                public const string Delete = "Company.Any.Delete";
+                public const string Update = "Company.Any.Update";
+                public const string SetManagerFromAnyToAny = "Company.Any.SetManagerFromAnyToAny";
+                public const string SetManagerFromAnyToSelf = "Company.Any.SetManagerFromAnyToSelf";
+                public const string SetManagerFromNoneToAny = "Company.Any.SetManagerFromNoneToAny";
+                public const string SetManagerFromNoneToSelf = "Company.Any.SetManagerFromNoneToSelf";
+                public const string SetManagerFromAnyToNone = "Company.Any.SetManagerFromAnyToNone";
+                public const string SetManagerFromSelfToAny = "Company.Any.SetManagerFromSelfToAny";
+                public const string SetManagerFromSelfToNone = "Company.Any.SetManagerFromSelfToNone";
             }
 
-            public static class Old
+            public static class WhereUserIsManager
             {
-                public static class Any
-                {
-                    public const string View = "Company.Old.Any.View";
-                    public const string Delete = "Company.Old.Any.Delete";
-                    public const string Update = "Company.Old.Any.Update";
-                    public const string SetManagerFromAnyToAny = "Company.Old.Any.SetManagerFromAnyToAny";
-                    public const string SetManagerFromAnyToSelf = "Company.Old.Any.SetManagerFromAnyToSelf";
-                    public const string SetManagerFromNoneToAny = "Company.Old.Any.SetManagerFromNoneToAny";
-                    public const string SetManagerFromNoneToSelf = "Company.Old.Any.SetManagerFromNoneToSelf";
-                    public const string SetManagerFromAnyToNone = "Company.Old.Any.SetManagerFromAnyToNone";
-                    public const string SetManagerFromSelfToAny = "Company.Old.Any.SetManagerFromSelfToAny";
-                    public const string SetManagerFromSelfToNone = "Company.Old.Any.SetManagerFromSelfToNone";
-                }
-
-                public static class WhereUserIsManager
-                {
-                    public const string View = "Company.Old.WhereUserIsManager.View";
-                    public const string Delete = "Company.Old.WhereUserIsManager.Delete";
-                    public const string Update = "Company.Old.WhereUserIsManager.Update";
-                    public const string SetManagerFromSelfToAny = "Company.Old.WhereUserIsManager.SetManagerFromSelfToAny";
-                }
+                public const string View = "Company.WhereUserIsManager.View";
+                public const string Delete = "Company.WhereUserIsManager.Delete";
+                public const string Update = "Company.WhereUserIsManager.Update";
+                public const string SetManagerFromSelfToAny = "Company.WhereUserIsManager.SetManagerFromSelfToAny";
             }
         }
     }
@@ -75,39 +65,35 @@ public static class Constants
             public const string SetManagerToAny = "Company.SetManagerToAny";
             public const string SetManagerToSelf = "Company.SetManagerToSelf";
             public const string SetManagerToNone = "Company.SetManagerToNone";
-
-            public static class New
-            {
-                public const string SetManager = "Company.New.SetManager";
-                public const string SetManagerToAny = "Company.New.SetManagerToAny";
-                public const string SetManagerToSelf = "Company.New.SetManagerToSelf";
-            }
+            public const string SetNewCompanyManager = "Company.SetNewCompanyManager";
+            public const string SetExistingCompanyManager = "Company.SetExistingCompanyManager";
 
             public static class Old
             {
-                public const string SetManager = "Company.Old.SetManager";
-                public const string SetManagerFromAny = "Company.Old.SetManagerFromAny";
-                public const string SetManagerFromSelf = "Company.Old.SetManagerFromSelf";
+                public const string SetManagerFromAny = "Company.SetManagerFromAny";
+                public const string SetManagerFromSelf = "Company.SetManagerFromSelf";
+                public const string SetManagerToSelf = "Company.SetManagerToSelf";
+                public const string SetManagerToAny = "Company.SetManagerToAny";
 
                 public static class Any
                 {
-                    public const string View = "Company.Old.Any.View";
-                    public const string Delete = "Company.Old.Any.Delete";
-                    public const string Update = "Company.Old.Any.Update";
-                    public const string SetManagerFromNoneToSelf = "Company.Old.SetManagerFromNoneToSelf";
-                    public const string SetManagerFromNoneToAny = "Company.Old.SetManagerFromNoneToAny";
-                    public const string SetManagerFromSelfToNone = "Company.Old.SetManagerFromSelfToNone";
-                    public const string SetManagerFromAnyToNone = "Company.Old.SetManagerFromAnyToNone";
-                    public const string SetManagerFromAnyToSelf = "Company.Old.SetManagerFromAnyToSelf";
-                    public const string SetManagerFromSelfToAny = "Company.Old.SetManagerFromSelfToAny";
-                    public const string SetManagerFromAnyToAny = "Company.Old.SetManagerFromAnyToAny";
+                    public const string View = "Company.Any.View";
+                    public const string Delete = "Company.Any.Delete";
+                    public const string Update = "Company.Any.Update";
+                    public const string SetManagerFromNoneToSelf = "Company.SetManagerFromNoneToSelf";
+                    public const string SetManagerFromNoneToAny = "Company.SetManagerFromNoneToAny";
+                    public const string SetManagerFromSelfToNone = "Company.SetManagerFromSelfToNone";
+                    public const string SetManagerFromAnyToNone = "Company.SetManagerFromAnyToNone";
+                    public const string SetManagerFromAnyToSelf = "Company.SetManagerFromAnyToSelf";
+                    public const string SetManagerFromSelfToAny = "Company.SetManagerFromSelfToAny";
+                    public const string SetManagerFromAnyToAny = "Company.SetManagerFromAnyToAny";
                 }
 
                 public static class WhereUserIsManager
                 {
-                    public const string View = "Company.Old.WhereUserIsManager.View";
-                    public const string Delete = "Company.Old.WhereUserIsManager.Delete";
-                    public const string Update = "Company.Old.WhereUserIsManager.Update";
+                    public const string View = "Company.WhereUserIsManager.View";
+                    public const string Delete = "Company.WhereUserIsManager.Delete";
+                    public const string Update = "Company.WhereUserIsManager.Update";
                 }
             }
         }
