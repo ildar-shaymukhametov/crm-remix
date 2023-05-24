@@ -110,6 +110,20 @@ public class GetCompanyManagersQueryTests : BaseTest
         result.Managers.Select(x => x.Id).Should().BeEquivalentTo(expected);
     }
 
+    [Fact]
+    public async Task User_can_set_manager_from_any_to_self_in_any_company___Contains_current_manager_and_self()
+    {
+        var currentUser = await _fixture.RunAsDefaultUserAsync(Claims.Company.Old.Any.SetManagerFromAnyToAny);
+        var currentManager = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(currentManager.Id);
+
+        var query = new GetCompanyInitDataQuery { Id = company.Id };
+        var result = await _fixture.SendAsync(query);
+
+        var expected = new[] { string.Empty, currentUser.Id, currentManager.Id };
+        result.Managers.Select(x => x.Id).Should().BeEquivalentTo(expected);
+    }
+
     [Theory]
     [InlineData(Claims.Company.Old.Any.SetManagerFromSelfToNone)]
     [InlineData(Claims.Company.Old.Any.SetManagerFromAnyToNone)]
