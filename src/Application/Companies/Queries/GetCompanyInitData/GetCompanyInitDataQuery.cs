@@ -53,25 +53,18 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         }
         else
         {
-            // to
-            var expression = PredicateBuilder.False<ApplicationUser>();
-
-            if (accessRights.Contains(Access.Company.SetManagerToSelf))
-            {
-                expression = expression.Or(x => x.Id == _currentUserService.UserId);
-            }
-
-            // from
             var managerId = await _dbContext.Companies
                 .Where(x => x.Id == request.Id)
                 .Select(x => x.ManagerId)
                 .FirstOrDefaultAsync(cancellationToken);
 
+            var expression = PredicateBuilder.False<ApplicationUser>();
             if (accessRights.Contains(Access.Company.Old.SetManagerFromAny))
             {
                 expression = expression.Or(x => x.Id == managerId);
             }
-            else if (accessRights.Contains(Access.Company.Old.SetManagerFromSelf) && managerId == _currentUserService.UserId)
+
+            if (accessRights.Contains(Access.Company.SetManagerToSelf) || accessRights.Contains(Access.Company.Old.SetManagerFromSelf) && managerId == _currentUserService.UserId)
             {
                 expression = expression.Or(x => x.Id == _currentUserService.UserId);
             }
