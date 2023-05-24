@@ -131,6 +131,7 @@ public class AccessService : IAccessService
                 Claims.Company.Old.Any.SetManagerFromNoneToSelf,
                 Claims.Company.Old.Any.SetManagerFromAnyToAny,
                 Claims.Company.Old.Any.SetManagerFromAnyToNone,
+                Claims.Company.Old.Any.SetManagerFromAnyToSelf
             }))
         {
             result.Add(Access.Company.SetManagerFromNone);
