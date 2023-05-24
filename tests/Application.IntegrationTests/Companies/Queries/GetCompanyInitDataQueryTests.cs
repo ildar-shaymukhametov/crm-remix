@@ -97,6 +97,7 @@ public class GetCompanyManagersQueryTests : BaseTest
 
     [Theory]
     [InlineData(Claims.Company.Old.Any.SetManagerFromSelfToNone)]
+    [InlineData(Claims.Company.Old.Any.SetManagerFromAnyToNone)]
     public async Task User_can_set_manager_from_self_to_none_in_any_company___Returns_empty_manager_and_self(string claim)
     {
         var currentUser = await _fixture.RunAsDefaultUserAsync(claim);
