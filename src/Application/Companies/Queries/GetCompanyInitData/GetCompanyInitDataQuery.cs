@@ -40,41 +40,62 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             return new GetCompanyInitDataResponse();
         }
 
-        if (accessRights.Contains(Access.Company.SetManagerToAny))
+        if (request.Id is null)
         {
             var query = _dbContext.ApplicationUsers.AsNoTracking();
-            return await BuildResponseAsync(query, true, cancellationToken);
-        }
-        else if (request.Id is null)
-        {
-            var expression = GetExpression(accessRights);
-            var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
+            if (accessRights.Contains(Access.Company.SetManagerToAny))
+            {
+                return await BuildResponseAsync(query, true, cancellationToken);
+            }
 
-            return await BuildResponseAsync(query, true, cancellationToken);
+            var expression = GetExpression(accessRights);
+
+            return await BuildResponseAsync(query.Where(expression), true, cancellationToken);
         }
         else
         {
-            var managerId = await _dbContext.Companies
-                .Where(x => x.Id == request.Id)
-                .Select(x => x.ManagerId)
-                .FirstOrDefaultAsync(cancellationToken);
+            if (accessRights.Contains(Access.Company.SetManagerFromAny))
+            {
+                var expression = PredicateBuilder.False<ApplicationUser>();
+                if (accessRights.Contains(Access.Company.SetManagerToAny))
+                {
+                    expression = PredicateBuilder.True<ApplicationUser>();
+                }
 
-            var expression = GetExpression(accessRights, managerId);
-            var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
-            var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToNone) || accessRights.Contains(Access.Company.SetManagerFromNone) && managerId == null;
+                var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToNone);
+                var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
+                return await BuildResponseAsync(query, includeEmptyManager, cancellationToken);
+            }
+            else
+            {
+                var managerId = await _dbContext.Companies
+                    .Where(x => x.Id == request.Id)
+                    .Select(x => x.ManagerId)
+                    .FirstOrDefaultAsync(cancellationToken);
 
-            return await BuildResponseAsync(query, includeEmptyManager, cancellationToken);
+                var canSetManagerFromSelf = accessRights.Contains(Access.Company.SetManagerFromSelf) && managerId == _currentUserService.UserId;
+                if (!canSetManagerFromSelf)
+                {
+                    return new GetCompanyInitDataResponse();
+                }
+
+                var expression = GetExpression(accessRights, managerId);
+                var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
+                var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToNone) || accessRights.Contains(Access.Company.SetManagerFromNone) && managerId == null;
+
+                return await BuildResponseAsync(query, includeEmptyManager, cancellationToken);
+            }
         }
     }
 
     private Expression<Func<ApplicationUser, bool>> GetExpression(string[] accessRights, string? managerId)
     {
-        var result = PredicateBuilder.False<ApplicationUser>();
-        if (accessRights.Contains(Access.Company.SetManagerFromAny))
+        if (accessRights.Contains(Access.Company.SetManagerToAny))
         {
-            result = result.Or(x => x.Id == managerId);
+            return PredicateBuilder.True<ApplicationUser>();
         }
 
+        var result = PredicateBuilder.False<ApplicationUser>();
         if (accessRights.Contains(Access.Company.SetManagerToSelf) || accessRights.Contains(Access.Company.SetManagerFromSelf) && managerId == _currentUserService.UserId)
         {
             result = result.Or(x => x.Id == _currentUserService.UserId);

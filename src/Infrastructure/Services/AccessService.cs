@@ -149,6 +149,7 @@ public class AccessService : IAccessService
             {
                 Claims.Company.Any.SetManagerFromAnyToNone,
                 Claims.Company.Any.SetManagerFromAnyToSelf,
+                Claims.Company.Any.SetManagerFromAnyToAny,
             }))
         {
             result.Add(Access.Company.SetManagerFromAny);
@@ -221,7 +222,8 @@ public class AccessService : IAccessService
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
-                Claims.Company.Any.SetManagerFromSelfToNone,
+                Claims.Company.Any.SetManagerFromSelfToAny,
+                Claims.Company.Any.SetManagerFromAnyToAny,
             }))
         {
             result.Add(Access.Company.SetManagerFromSelf);
