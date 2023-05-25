@@ -67,6 +67,14 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
 
             var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToNone);
 
+            if (accessRights.Contains(Access.Company.SetManagerFromSelf))
+            {
+                if (managerId != _currentUserService.UserId)
+                {
+                    return new GetCompanyInitDataResponse();
+                }
+            }
+
             if (accessRights.Contains(Access.Company.SetManagerFromAny))
             {
                 var expression = PredicateBuilder.False<ApplicationUser>();
@@ -94,14 +102,6 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
                     if (managerId == null)
                     {
                         includeEmptyManager = true;
-                    }
-                }
-
-                if (accessRights.Contains(Access.Company.SetManagerFromSelf))
-                {
-                    if (managerId != _currentUserService.UserId)
-                    {
-                        return new GetCompanyInitDataResponse();
                     }
                 }
 
