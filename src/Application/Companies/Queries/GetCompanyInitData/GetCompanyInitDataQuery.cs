@@ -56,8 +56,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         {
             if (accessRights.Contains(Access.Company.SetManagerFromAny) && accessRights.Contains(Access.Company.SetManagerToAny))
             {
-                var query = _dbContext.ApplicationUsers.AsNoTracking();
-                return await BuildResponseAsync(query, true, cancellationToken);
+                return await BuildResponseAsync(_dbContext.ApplicationUsers.AsNoTracking(), true, cancellationToken);
             }
 
             var managerId = await _dbContext.Companies
@@ -83,9 +82,9 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
                 }
             }
 
+            var expression = PredicateBuilder.False<ApplicationUser>();
             if (accessRights.Contains(Access.Company.SetManagerFromAny))
             {
-                var expression = PredicateBuilder.False<ApplicationUser>();
                 if (managerId != null)
                 {
                     expression = expression.Or(x => x.Id == managerId);
@@ -95,9 +94,6 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
                 {
                     expression = expression.Or(x => x.Id == _currentUserService.UserId);
                 }
-
-                var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
-                return await BuildResponseAsync(query, includeEmptyManager, cancellationToken);
             }
             else
             {
@@ -109,11 +105,11 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
                     }
                 }
 
-                var expression = GetExpression(accessRights, managerId);
-                var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
-
-                return await BuildResponseAsync(query, includeEmptyManager, cancellationToken);
+                expression = GetExpression(accessRights, managerId);
             }
+
+            var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
+            return await BuildResponseAsync(query, includeEmptyManager, cancellationToken);
         }
     }
 
