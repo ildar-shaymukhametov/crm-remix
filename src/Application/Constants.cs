@@ -62,7 +62,6 @@ public static class Constants
         {
             public const string Create = "Company.Create";
             public const string SetManagerToAny = "Company.SetManagerToAny";
-            public const string SetManagerToNone = "Company.SetManagerToNone";
             public const string SetManagerToSelf = "Company.SetManagerToSelf";
             public const string SetManagerFromAny = "Company.SetManagerFromAny";
             public const string SetManagerFromNone = "Company.SetManagerFromNone";

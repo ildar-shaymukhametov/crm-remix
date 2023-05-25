@@ -23,6 +23,8 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
     private readonly ICurrentUserService _currentUserService;
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly Expression<Func<ApplicationUser, bool>> _emptyManager = x => x.Id == null;
+    private readonly Expression<Func<ApplicationUser, bool>> _allManagers = x => true;
 
     public GetCompanyManagersRequestHandler(IAccessService accessService, ICurrentUserService currentUserService, IApplicationDbContext dbContext, IMapper mapper)
     {
@@ -40,113 +42,81 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             return new GetCompanyInitDataResponse();
         }
 
-        if (request.Id is null)
+        var expressions = await GetExpressionsAsync(request, accessRights);
+        if (!expressions.Any())
         {
-            var query = _dbContext.ApplicationUsers.AsNoTracking();
-            if (accessRights.Contains(Access.Company.SetManagerToAny))
-            {
-                return await BuildResponseAsync(query, true, cancellationToken);
-            }
-
-            var expression = GetExpression(accessRights);
-
-            return await BuildResponseAsync(query.Where(expression), true, cancellationToken);
+            return new GetCompanyInitDataResponse();
         }
-        else
-        {
-            if (accessRights.Contains(Access.Company.Any.SetManagerFromAnyToAny))
-            {
-                return await BuildResponseAsync(_dbContext.ApplicationUsers.AsNoTracking(), true, cancellationToken);
-            }
 
-            var managerId = await _dbContext.Companies
+        return await BuildResponseAsync(expressions, cancellationToken);
+    }
+
+    private async Task<string?> GetManagerIdAsync(GetCompanyInitDataQuery request)
+    {
+        return request.Id is not null
+            ? await _dbContext.Companies
                 .Where(x => x.Id == request.Id)
                 .Select(x => x.ManagerId)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (accessRights.Contains(Access.Company.SetManagerFromSelf))
-            {
-                if (managerId != _currentUserService.UserId)
-                {
-                    return new GetCompanyInitDataResponse();
-                }
-            }
-
-            if (!accessRights.Contains(Access.Company.SetManagerFromAny))
-            {
-                if (accessRights.Contains(Access.Company.SetManagerFromNone))
-                {
-                    if (managerId != null)
-                    {
-                        return new GetCompanyInitDataResponse();
-                    }
-                }
-            }
-
-            var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToNone);
-            if (accessRights.Contains(Access.Company.SetManagerFromNone))
-            {
-                if (managerId == null)
-                {
-                    includeEmptyManager = true;
-                }
-            }
-
-            var expression = GetExpression(accessRights, managerId);
-            var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
-            return await BuildResponseAsync(query, includeEmptyManager, cancellationToken);
-        }
+                .FirstOrDefaultAsync()
+            : null;
     }
 
-    private Expression<Func<ApplicationUser, bool>> GetExpression(string[] accessRights, string? managerId)
+    private async Task<List<Expression<Func<ApplicationUser, bool>>>> GetExpressionsAsync(GetCompanyInitDataQuery request, string[] accessRights)
     {
-        if (accessRights.Contains(Access.Company.SetManagerToAny))
+        var result = new List<Expression<Func<ApplicationUser, bool>>>();
+        if (accessRights.Contains(Access.Company.Any.SetManagerFromAnyToAny))
         {
-            return PredicateBuilder.True<ApplicationUser>();
+            result.Add(_allManagers);
+            return result;
         }
 
-        var result = PredicateBuilder.False<ApplicationUser>();
-        if (accessRights.Contains(Access.Company.SetManagerToSelf) || accessRights.Contains(Access.Company.SetManagerFromSelf) && managerId == _currentUserService.UserId)
+        var managerId = await GetManagerIdAsync(request);
+
+        if (accessRights.Contains(Access.Company.Any.SetManagerFromNoneToAny) && managerId == null
+            || accessRights.Contains(Access.Company.Any.SetManagerFromSelfToAny) && managerId == _currentUserService.UserId)
         {
-            result = result.Or(x => x.Id == _currentUserService.UserId);
+            result.Add(_allManagers);
+            return result;
         }
 
-        if (accessRights.Contains(Access.Company.SetManagerFromAny))
+        if (accessRights.Contains(Access.Company.Any.SetManagerFromAnyToSelf) && managerId != null
+            || accessRights.Contains(Access.Company.Any.SetManagerFromNoneToSelf) && managerId == null
+            || accessRights.Contains(Access.Company.SetManagerFromSelf) && managerId == _currentUserService.UserId)
         {
-            result = result.Or(x => x.Id == managerId);
+            result.Add(x => x.Id == _currentUserService.UserId);
+        }
+
+        if (accessRights.Contains(Access.Company.SetManagerFromAny) && managerId != null)
+        {
+            result.Add(x => x.Id == managerId);
+        }
+
+        if (accessRights.Contains(Access.Company.Any.SetManagerFromSelfToNone) && managerId == _currentUserService.UserId
+            || accessRights.Contains(Access.Company.SetManagerFromNone) && managerId == null
+            || accessRights.Contains(Access.Company.Any.SetManagerFromAnyToNone) && managerId != null)
+        {
+            result.Add(_emptyManager);
         }
 
         return result;
     }
 
-    private Expression<Func<ApplicationUser, bool>> GetExpression(string[] accessRights)
-    {
-        if (accessRights.Contains(Access.Company.SetManagerToAny))
-        {
-            return PredicateBuilder.True<ApplicationUser>();
-        }
-
-        var result = PredicateBuilder.False<ApplicationUser>();
-        if (accessRights.Contains(Access.Company.SetManagerToSelf))
-        {
-            result = result.Or(x => x.Id == _currentUserService.UserId);
-        }
-
-        return result;
-    }
-
-    private async Task<GetCompanyInitDataResponse> BuildResponseAsync(IQueryable<ApplicationUser> query, bool includeEmptyManager, CancellationToken cancellationToken)
+    private async Task<GetCompanyInitDataResponse> BuildResponseAsync(List<Expression<Func<ApplicationUser, bool>>> expressions, CancellationToken cancellationToken)
     {
         var managers = new List<ManagerDto>();
-        if (includeEmptyManager)
+        if (expressions.Contains(_emptyManager) || expressions.Contains(_allManagers))
         {
+            expressions.Remove(_emptyManager);
             managers.Add(new ManagerDto
             {
                 Id = string.Empty
             });
         }
 
-        var users = await query
+        var expression = expressions.Aggregate(PredicateBuilder.False<ApplicationUser>(), (acc, v) => acc.Or(v));
+        var users = await _dbContext.ApplicationUsers
+            .AsNoTracking()
+            .Where(expression)
             .OrderBy(x => x.LastName)
             .ProjectTo<ManagerDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
