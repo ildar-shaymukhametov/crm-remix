@@ -54,29 +54,29 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         }
         else
         {
+            if (accessRights.Contains(Access.Company.SetManagerFromAny) && accessRights.Contains(Access.Company.SetManagerToAny))
+            {
+                var query = _dbContext.ApplicationUsers.AsNoTracking();
+                return await BuildResponseAsync(query, true, cancellationToken);
+            }
+
+            var managerId = await _dbContext.Companies
+                .Where(x => x.Id == request.Id)
+                .Select(x => x.ManagerId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToNone);
+
             if (accessRights.Contains(Access.Company.SetManagerFromAny))
             {
-                var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToNone);
                 var expression = PredicateBuilder.False<ApplicationUser>();
-                if (accessRights.Contains(Access.Company.SetManagerToAny))
+                if (managerId == null)
                 {
-                    expression = PredicateBuilder.True<ApplicationUser>();
+                    includeEmptyManager = true;
                 }
                 else
                 {
-                    var managerId = await _dbContext.Companies
-                        .Where(x => x.Id == request.Id)
-                        .Select(x => x.ManagerId)
-                        .FirstOrDefaultAsync(cancellationToken);
-
-                    if (managerId == null)
-                    {
-                        includeEmptyManager = true;
-                    }
-                    else
-                    {
-                        expression = expression.Or(x => x.Id == managerId);
-                    }
+                    expression = expression.Or(x => x.Id == managerId);
                 }
 
                 if (accessRights.Contains(Access.Company.SetManagerToSelf))
@@ -89,10 +89,13 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             }
             else
             {
-                var managerId = await _dbContext.Companies
-                    .Where(x => x.Id == request.Id)
-                    .Select(x => x.ManagerId)
-                    .FirstOrDefaultAsync(cancellationToken);
+                if (accessRights.Contains(Access.Company.SetManagerFromNone))
+                {
+                    if (managerId == null)
+                    {
+                        includeEmptyManager = true;
+                    }
+                }
 
                 if (accessRights.Contains(Access.Company.SetManagerFromSelf))
                 {
@@ -112,7 +115,6 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
 
                 var expression = GetExpression(accessRights, managerId);
                 var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
-                var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToNone) || accessRights.Contains(Access.Company.SetManagerFromNone) && managerId == null;
 
                 return await BuildResponseAsync(query, includeEmptyManager, cancellationToken);
             }
