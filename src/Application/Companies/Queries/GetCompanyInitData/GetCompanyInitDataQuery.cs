@@ -111,7 +111,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             result = result.Or(x => x.Id == _currentUserService.UserId);
         }
 
-        if (accessRights.Contains(Access.Company.SetManagerFromAny) && managerId != null)
+        if (accessRights.Contains(Access.Company.SetManagerFromAny))
         {
             result = result.Or(x => x.Id == managerId);
         }
