@@ -56,13 +56,34 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         {
             if (accessRights.Contains(Access.Company.SetManagerFromAny))
             {
+                var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToNone);
                 var expression = PredicateBuilder.False<ApplicationUser>();
                 if (accessRights.Contains(Access.Company.SetManagerToAny))
                 {
                     expression = PredicateBuilder.True<ApplicationUser>();
                 }
+                else
+                {
+                    var managerId = await _dbContext.Companies
+                        .Where(x => x.Id == request.Id)
+                        .Select(x => x.ManagerId)
+                        .FirstOrDefaultAsync(cancellationToken);
 
-                var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToNone);
+                    if (managerId == null)
+                    {
+                        includeEmptyManager = true;
+                    }
+                    else
+                    {
+                        expression = expression.Or(x => x.Id == managerId);
+                    }
+                }
+
+                if (accessRights.Contains(Access.Company.SetManagerToSelf))
+                {
+                    expression = expression.Or(x => x.Id == _currentUserService.UserId);
+                }
+
                 var query = _dbContext.ApplicationUsers.AsNoTracking().Where(expression);
                 return await BuildResponseAsync(query, includeEmptyManager, cancellationToken);
             }
@@ -73,10 +94,20 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
                     .Select(x => x.ManagerId)
                     .FirstOrDefaultAsync(cancellationToken);
 
-                var canSetManagerFromSelf = accessRights.Contains(Access.Company.SetManagerFromSelf) && managerId == _currentUserService.UserId;
-                if (!canSetManagerFromSelf)
+                if (accessRights.Contains(Access.Company.SetManagerFromSelf))
                 {
-                    return new GetCompanyInitDataResponse();
+                    if (managerId != _currentUserService.UserId)
+                    {
+                        return new GetCompanyInitDataResponse();
+                    }
+                }
+
+                if (accessRights.Contains(Access.Company.SetManagerFromNone))
+                {
+                    if (managerId != null)
+                    {
+                        return new GetCompanyInitDataResponse();
+                    }
                 }
 
                 var expression = GetExpression(accessRights, managerId);

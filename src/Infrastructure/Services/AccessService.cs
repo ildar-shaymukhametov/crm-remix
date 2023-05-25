@@ -224,6 +224,7 @@ public class AccessService : IAccessService
             {
                 Claims.Company.Any.SetManagerFromSelfToAny,
                 Claims.Company.Any.SetManagerFromAnyToAny,
+                Claims.Company.Any.SetManagerFromSelfToNone,
             }))
         {
             result.Add(Access.Company.SetManagerFromSelf);
