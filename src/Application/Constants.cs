@@ -65,7 +65,7 @@ public static class Constants
             public const string SetManagerToNone = "Company.SetManagerToNone";
             public const string SetManagerToSelf = "Company.SetManagerToSelf";
             public const string SetManagerFromAny = "Company.SetManagerFromAny";
-            public const string SetManagerFromNone = "Company.SetManagerToOrFromNone";
+            public const string SetManagerFromNone = "Company.SetManagerFromNone";
             public const string SetManagerFromSelf = "Company.SetManagerFromSelf";
             public const string SetNewCompanyManager = "Company.SetNewCompanyManager";
             public const string SetExistingCompanyManager = "Company.SetExistingCompanyManager";
