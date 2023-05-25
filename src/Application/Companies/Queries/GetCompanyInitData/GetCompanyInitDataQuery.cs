@@ -54,7 +54,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         }
         else
         {
-            if (accessRights.Contains(Access.Company.SetManagerFromAny) && accessRights.Contains(Access.Company.SetManagerToAny))
+            if (accessRights.Contains(Access.Company.Any.SetManagerFromAnyToAny))
             {
                 return await BuildResponseAsync(_dbContext.ApplicationUsers.AsNoTracking(), true, cancellationToken);
             }
