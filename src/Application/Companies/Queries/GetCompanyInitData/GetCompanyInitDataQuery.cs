@@ -64,21 +64,11 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
                 .Select(x => x.ManagerId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToNone);
-
             if (accessRights.Contains(Access.Company.SetManagerFromSelf))
             {
                 if (managerId != _currentUserService.UserId)
                 {
                     return new GetCompanyInitDataResponse();
-                }
-            }
-
-            if (accessRights.Contains(Access.Company.SetManagerFromNone))
-            {
-                if (managerId == null)
-                {
-                    includeEmptyManager = true;
                 }
             }
 
@@ -90,6 +80,15 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
                     {
                         return new GetCompanyInitDataResponse();
                     }
+                }
+            }
+
+            var includeEmptyManager = accessRights.Contains(Access.Company.SetManagerToNone);
+            if (accessRights.Contains(Access.Company.SetManagerFromNone))
+            {
+                if (managerId == null)
+                {
+                    includeEmptyManager = true;
                 }
             }
 
@@ -111,7 +110,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         {
             result = result.Or(x => x.Id == _currentUserService.UserId);
         }
-        
+
         if (accessRights.Contains(Access.Company.SetManagerFromAny) && managerId != null)
         {
             result = result.Or(x => x.Id == managerId);
