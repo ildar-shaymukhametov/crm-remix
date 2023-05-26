@@ -21,4 +21,6 @@ public class Result
     {
         return new Result(false, errors);
     }
+
+    public static implicit operator bool(Result result) => result.Succeeded;
 }

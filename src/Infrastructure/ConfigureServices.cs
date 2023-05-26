@@ -25,12 +25,12 @@ public static class ConfigureServices
         services.AddScoped<ApplicationDbContextInitialiser>();
 
         services.AddAuthorizationHandlers();
-        services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
-        services.AddScoped<IPermissionsService, PermissionsService>();
+        services.AddScoped<IAccessService, AccessService>();
+        services.AddScoped<IPermissionsVerifier, PermissionsVerifier>();
 
         services.AddSingleton<ITestService, TestService>();
 
-        services.AddDefaultIdentity<ApplicationUser>()
+        services.AddDefaultIdentity<AspNetUser>()
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -41,7 +41,7 @@ public static class ConfigureServices
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
             })
-            .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
+            .AddApiAuthorization<AspNetUser, ApplicationDbContext>(options =>
             {
                 options.Clients.AddRange(Config.Clients.ToArray());
             });

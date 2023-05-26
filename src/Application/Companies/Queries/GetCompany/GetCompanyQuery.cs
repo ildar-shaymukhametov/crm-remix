@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Application.Companies.Queries.GetCompany;
 
-[Authorize(Constants.Policies.GetCompany)]
+[Authorize(Constants.Policies.Company.View)]
 public record GetCompanyQuery : IRequest<CompanyVm>
 {
     public int Id { get; set; }
@@ -29,6 +29,7 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
     {
         var item = await _dbContext.Companies
             .AsNoTracking()
+            .Include(x => x.Manager)
             .Where(x => x.Id == request.Id)
             .ProjectTo<CompanyVm>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);

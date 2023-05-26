@@ -8,23 +8,24 @@ import {
 } from "~/utils/session.server";
 import { auth } from "~/utils/auth.server";
 import type { OidcProfile } from "./oidc-strategy";
+import type { ResourcePermissions } from "./user.server";
 import { getUserPermissions } from "./user.server";
 import { handle401Response } from "./utils";
 
 export class OidcAuthenticator extends Authenticator<OidcProfile> {
   async requireUser(
     request: Request,
-    { permissions }: { permissions: string[] } = { permissions: [] }
+    resource?: ResourcePermissions
   ): Promise<OidcProfile> {
     const user = await auth.isAuthenticated(request);
     if (user) {
-      if (permissions.length === 0) {
+      if (!resource || resource.permissions?.length === 0) {
         return user;
       }
 
       user.permissions = await getUserPermissions(
         request,
-        permissions,
+        resource,
         user.extra?.access_token
       );
 

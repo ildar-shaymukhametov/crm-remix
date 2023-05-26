@@ -6,30 +6,32 @@ test.beforeEach(async ({ resetDb }) => {
   await resetDb();
 });
 
-test("should login", async ({ page }) => {
+test("should login", async ({ page, createUser }) => {
+  const user = await createUser();
+
   await page.goto("/");
   await page.waitForURL(`${process.env.AUTHORITY}/Identity/Account/Login**`);
-  await page.getByLabel("Email").fill("tester@localhost");
-  await page.getByLabel("Password").fill("Tester1!");
+  await page.getByLabel("Email").fill(user.userName);
+  await page.getByLabel("Password").fill(user.password);
   await page.getByRole("button", { name: /log in/i }).click();
-  await expect(page).toHaveURL("/");
-  await expect(
-    page.getByRole("link", { name: "tester@localhost" })
-  ).toBeVisible();
+  await expect(page).toHaveURL(routes.companies.index);
+  await expect(page.getByRole("link", { name: user.userName })).toBeVisible();
 
   await page.goto("/login");
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL(routes.companies.index);
 
   await page.context().clearCookies();
   await page.reload();
   await page.waitForURL(`${process.env.AUTHORITY}/Identity/Account/Login**`);
 });
 
-test("should return to correct url", async ({ page }) => {
+test("should return to correct url", async ({ page, createUser }) => {
+  const user = await createUser();
+
   await page.goto(routes.companies.index);
   await page.waitForURL(`${process.env.AUTHORITY}/Identity/Account/Login**`);
-  await page.getByLabel("Email").fill("tester@localhost");
-  await page.getByLabel("Password").fill("Tester1!");
+  await page.getByLabel("Email").fill(user.userName);
+  await page.getByLabel("Password").fill(user.password);
   await page.getByRole("button", { name: /log in/i }).click();
   await page.waitForURL(routes.companies.index);
 });

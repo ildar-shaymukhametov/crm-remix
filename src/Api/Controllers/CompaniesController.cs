@@ -3,6 +3,7 @@ using CRM.Application.Companies.Commands.DeleteCompany;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Application.Companies.Queries.GetCompanies;
 using CRM.Application.Companies.Queries.GetCompany;
+using CRM.Application.Companies.Queries.GetCompanyManagers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM.Api.Controllers;
@@ -43,5 +44,12 @@ public class CompaniesController : ApiControllerBase
     {
         command.Id = id;
         return Ok(await Mediator.Send(command));
+    }
+
+    [HttpGet]
+    [Route("InitData")]
+    public async Task<ActionResult<GetCompanyInitDataResponse>> InitData(int? id)
+    {
+        return await Mediator.Send(new GetCompanyInitDataQuery { Id = id });
     }
 }

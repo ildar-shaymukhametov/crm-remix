@@ -1,10 +1,8 @@
 using CRM.Application.Common.Interfaces;
-using CRM.Application.Common.Security;
 using MediatR;
 
 namespace CRM.Application.Tests;
 
-[Authorize(Roles = Constants.Roles.Tester)]
 public record ResetDbCommand : IRequest<Unit> { }
 
 public class ResetDbCommandHandler : IRequestHandler<ResetDbCommand>

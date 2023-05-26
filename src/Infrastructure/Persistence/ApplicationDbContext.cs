@@ -11,13 +11,14 @@ using CRM.Infrastructure.Persistence.Interceptors;
 
 namespace CRM.Infrastructure.Persistence;
 
-public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, IApplicationDbContext
+public class ApplicationDbContext : ApiAuthorizationDbContext<AspNetUser>, IApplicationDbContext
 {
     private readonly IMediator _mediator;
     private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
 
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<UserClaimType> UserClaimTypes => Set<UserClaimType>();
+    public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
 
     public ApplicationDbContext(DbContextOptions options, IOptions<OperationalStoreOptions> operationalStoreOptions, IMediator mediator, AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor) : base(options, operationalStoreOptions)
     {

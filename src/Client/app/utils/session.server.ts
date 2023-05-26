@@ -23,6 +23,7 @@ export const sessionStorage = createDatabaseSessionStorage({
 export const returnUrlSession = createCookieSessionStorage({
   cookie: createCookie("_session.returnUrl", {
     secure: process.env.NODE_ENV === "production",
+    secrets: [process.env.SESSION_SECRET],
     sameSite: "lax",
     path: "/",
     maxAge: 60,

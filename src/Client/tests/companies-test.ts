@@ -1,40 +1,51 @@
-import { getAdminAccessToken, test as base } from "./test";
+import { test as base } from "./test";
 import { faker } from "@faker-js/faker";
-import type { Company } from "~/utils/companies.server";
-import { createCompany } from "~/utils/companies.server";
+import type { Company, NewCompany } from "~/utils/companies.server";
+import { createTestCompany, getTestCompany } from "~/utils/companies.server";
+
+type CreateCompanyOptions = {
+  managerId?: string
+};
 
 export const test = base.extend<{
-  createCompany: () => Promise<Company>;
+  createCompany: (options?: CreateCompanyOptions) => Promise<number>;
+  getCompany: (id: number) => Promise<Company>;
 }>({
   createCompany: [
     async ({ page }, use) => {
-      use(async () => {
-        const accessToken = await getAdminAccessToken(page);
-        const company = buildCompany();
-        const id = await createCompany(
+      use(async (options = {}) => {
+        return await createTestCompany(
           new Request("http://foobar.com"),
-          company,
-          accessToken
+          buildCompany(options)
         );
-        company.id = id;
-
-        return company;
+      });
+    },
+    { auto: true }
+  ],
+  getCompany: [
+    async ({ page }, use) => {
+      use(async (id) => {
+        return await getTestCompany(
+          new Request("http://foobar.com"),
+          id.toString()
+        );
       });
     },
     { auto: true }
   ]
 });
 
-export function buildCompany(): Company {
+export function buildCompany(options: CreateCompanyOptions = {}): NewCompany {
   return {
-    address: faker.address.streetAddress(),
-    ceo: faker.name.fullName(),
+    address: faker.location.streetAddress(),
+    ceo: faker.person.fullName(),
     contacts: faker.internet.email(),
     email: faker.internet.email(),
-    id: faker.datatype.number(),
-    inn: faker.random.numeric(10),
+    id: faker.number.int(),
+    inn: faker.string.numeric(10),
     name: faker.company.name(),
     phone: faker.phone.number(),
-    type: faker.helpers.arrayElement(["ООО", "АО", "ПАО", "ИП"])
+    type: faker.helpers.arrayElement(["ООО", "АО", "ПАО", "ИП"]),
+    managerId: options.managerId
   };
 }

@@ -24,13 +24,15 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
     {
         var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
         await initialiser.InitialiseAsync();
-        await initialiser.SeedAsync();
 
         if (app.Environment.IsEnvironment("Testing"))
         {
-            await initialiser.SeedTestUsersAsync();
             var testService = app.Services.GetRequiredService<ITestService>();
             await testService.CreateCheckpointAsync();
+        }
+        else
+        {
+            await initialiser.SeedAsync();
         }
     }
 }

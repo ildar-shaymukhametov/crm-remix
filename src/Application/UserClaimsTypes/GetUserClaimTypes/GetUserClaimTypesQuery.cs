@@ -28,7 +28,7 @@ public class GetUserClaimsRequestHandler : IRequestHandler<GetUserClaimTypesQuer
         return await _dbContext.UserClaimTypes
             .AsNoTracking()
             .ProjectTo<UserClaimTypeVm>(_mapper.ConfigurationProvider)
-            .ToArrayAsync();
+            .ToArrayAsync(cancellationToken);
     }
 }
 

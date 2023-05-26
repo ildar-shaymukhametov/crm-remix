@@ -1,9 +1,12 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
+using CRM.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using static CRM.Application.Constants;
 
 namespace CRM.Application.Companies.Queries.GetCompanies;
 
@@ -14,29 +17,67 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
-    private readonly IPermissionsService _permissionsService;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IAccessService _accessService;
+    private readonly IPermissionsVerifier _permissionsVerifier;
 
-    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, IPermissionsService permissionsService, ICurrentUserService currentUserService)
+    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IAccessService accessService, IPermissionsVerifier permissionsVerifier)
     {
-        _permissionsService = permissionsService;
         _currentUserService = currentUserService;
+        _accessService = accessService;
+        _permissionsVerifier = permissionsVerifier;
         _dbContext = dbContext;
         _mapper = mapper;
     }
 
     public async Task<CompanyDto[]> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
     {
-        var permissions = await _permissionsService.CheckUserPermissionsAsync(_currentUserService.UserId!, new[] { "ViewCompany" });
-
-        if (permissions.Contains("ViewCompany"))
+        var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
+        if (!accessRights.Any())
         {
-            return await _dbContext.Companies
-                .AsNoTracking()
-                .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
-                .ToArrayAsync(cancellationToken);
+            return Array.Empty<CompanyDto>();
         }
 
-        return Array.Empty<CompanyDto>();
+        var expressions = GetExpressions(accessRights);
+        if (!expressions.Any())
+        {
+            return Array.Empty<CompanyDto>();
+        }
+
+        var query = _dbContext.Companies.AsNoTracking();
+        foreach (var expression in expressions)
+        {
+            query = query.Where(expression);
+        }
+
+        var result = await query
+            .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
+            .ToArrayAsync(cancellationToken);
+
+        var permissions = await _permissionsVerifier.VerifyCompanyPermissionsAsync(_currentUserService.UserId!, result.Select(x => x.Id).ToArray(), new[] { Permissions.Company.Update, Permissions.Company.Delete });
+        foreach (var item in result)
+        {
+            if (!permissions.ContainsKey(item.Id))
+            {
+                continue;
+            }
+
+            item.CanBeEdited = permissions[item.Id].Contains(Permissions.Company.Update);
+            item.CanBeDeleted = permissions[item.Id].Contains(Permissions.Company.Delete);
+        }
+
+        return result;
+    }
+
+    private static List<Expression<Func<Company, bool>>> GetExpressions(string[] accessRights)
+    {
+        var result = new List<Expression<Func<Company, bool>>>();
+        if (accessRights.Contains(Access.Company.Any.View))
+        {
+            result.Add(x => true);
+            return result;
+        }
+
+        return result;
     }
 }

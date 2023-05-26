@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import { routes } from "~/utils/constants";
-import { test } from "./test";
+import { test } from "./account-test";
 
 test.beforeEach(async ({ resetDb }) => {
   await resetDb();
@@ -10,18 +10,15 @@ test.describe("account", () => {
   test.describe("access", () => {
     test("should be able to save changes", async ({
       page,
-      runAsDefaultUser
+      runAsDefaultUser,
+      getClaimTypes
     }) => {
       await runAsDefaultUser();
       page.goto(routes.account.access);
       await expect(page.getByText(/forbidden/i)).not.toBeVisible();
 
-      const elements = [
-        "Company. Create",
-        "Company. Update",
-        "Company. Delete",
-        "Company. View"
-      ].map(x => page.getByLabel(x));
+      const claimTypes = await getClaimTypes();
+      const elements = claimTypes.map(x => page.getByLabel(x.value));
 
       for (const item of elements) {
         await expect(item).toBeVisible();

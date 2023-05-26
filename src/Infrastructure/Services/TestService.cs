@@ -22,16 +22,12 @@ public class TestService : ITestService
             TablesToIgnore = new Table[]
             {
                 "__EFMigrationsHistory",
-                "AspNetRoleClaims",
                 "AspNetRoles",
                 "AspNetUserLogins",
-                "AspNetUserRoles",
-                "AspNetUsers",
                 "AspNetUserTokens",
                 "DeviceCodes",
                 "Keys",
                 "PersistedGrants",
-                "ApplicationUsers",
                 "UserClaimTypes"
             }
         });
