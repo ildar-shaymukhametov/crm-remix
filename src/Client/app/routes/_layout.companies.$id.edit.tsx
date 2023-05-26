@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
   const user = await auth.requireUser(request, {
     key: params.id,
-    permissions: [permissions.company.update, permissions.company.setManager]
+    permissions: [permissions.company.update]
   });
 
   if (!user.permissions.includes(permissions.company.update)) {
@@ -47,10 +47,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
   return json({
     company,
-    ...initData,
-    userPermissions: {
-      canSetManager: user.permissions.includes(permissions.company.setManager)
-    }
+    ...initData
   });
 };
 
@@ -78,7 +75,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export default function EditCompanyRoute() {
   const actionData = useActionData<ActionData>();
-  const { company, managers, userPermissions } = useLoaderData<LoaderData>();
+  const { company, managers } = useLoaderData<LoaderData>();
   const data: ActionData = {
     fields: {
       ...{
@@ -168,7 +165,7 @@ export default function EditCompanyRoute() {
           <input name="contacts" defaultValue={data?.fields?.contacts} />
         </label>
       </div>
-      {userPermissions.canSetManager ? (
+      {managers && managers?.length > 0 ? (
         <div>
           <label>
             Manager:

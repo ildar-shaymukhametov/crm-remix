@@ -23,6 +23,5 @@ export const permissions = {
     delete: "Company.Delete",
     update: "Company.Update",
     view: "Company.View",
-    setManager: "Company.SetManager"
   }
 };

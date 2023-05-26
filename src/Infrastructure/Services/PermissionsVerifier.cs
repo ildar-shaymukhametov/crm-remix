@@ -47,11 +47,6 @@ public class PermissionsVerifier : IPermissionsVerifier
         if (permissions.Contains(Permissions.Company.Create) && accessRights.Contains(Access.Company.Create))
         {
             result.Add(Permissions.Company.Create);
-
-            if (permissions.Contains(Permissions.Company.SetManager) && accessRights.Contains(Access.Company.SetNewCompanyManager))
-            {
-                result.Add(Permissions.Company.SetManager);
-            }
         }
 
         if (permissions.ContainsAny(Permissions.Company.Update, Permissions.Company.View, Permissions.Company.Delete) && int.TryParse(resourceKey, out var id))
@@ -60,11 +55,6 @@ public class PermissionsVerifier : IPermissionsVerifier
             if (permissions.Contains(Permissions.Company.Update) && await _identityService.AuthorizeAsync(principal, resource, Policies.Company.Update))
             {
                 result.Add(Permissions.Company.Update);
-
-                if (permissions.Contains(Permissions.Company.SetManager) && accessRights.Contains(Access.Company.SetExistingCompanyManager))
-                {
-                    result.Add(Permissions.Company.SetManager);
-                }
             }
 
             if (permissions.Contains(Permissions.Company.View) && await _identityService.AuthorizeAsync(principal, resource, Policies.Company.View))

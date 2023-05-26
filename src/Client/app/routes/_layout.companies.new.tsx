@@ -15,7 +15,7 @@ import { permissions } from "~/utils/constants.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await auth.requireUser(request, {
-    permissions: [permissions.company.create, permissions.company.setManager]
+    permissions: [permissions.company.create]
   });
 
   if (!user.permissions.includes(permissions.company.create)) {
@@ -25,10 +25,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const initData = await getInitData(request, user.extra?.access_token);
 
   return json({
-    ...initData,
-    userPermissions: {
-      canSetManager: user.permissions.includes(permissions.company.setManager)
-    }
+    ...initData
   });
 };
 
@@ -62,7 +59,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewCompanyRoute() {
   const data = useActionData<ActionData>();
-  const { managers, userPermissions } = useLoaderData<LoaderData>();
+  const { managers } = useLoaderData<LoaderData>();
 
   return (
     <form method="post">
@@ -129,7 +126,7 @@ export default function NewCompanyRoute() {
           <input name="contacts" />
         </label>
       </div>
-      {userPermissions.canSetManager ? (
+      {managers && managers.length > 0 ? (
         <div>
           <label>
             Manager:
