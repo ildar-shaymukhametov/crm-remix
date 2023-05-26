@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CRM.Application.Common.Behaviours;
 
-public class PostRequestLoggingBehaviour<TRequest, TResponse> : IRequestPostProcessor<TRequest, TResponse> where TRequest : IRequest<TResponse>
+public class PostRequestLoggingBehaviour<TRequest, TResponse> : IRequestPostProcessor<TRequest, TResponse> where TRequest : notnull
 {
     private readonly ILogger _logger;
     private readonly ICurrentUserService _currentUserService;

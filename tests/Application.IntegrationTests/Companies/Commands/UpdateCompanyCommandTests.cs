@@ -163,7 +163,6 @@ public class UpdateCompanyTests : BaseTest
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Set manager from any to none in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
-
     }
 
     [Theory]

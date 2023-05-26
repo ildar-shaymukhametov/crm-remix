@@ -1,4 +1,3 @@
-using AutoMapper;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
 using CRM.Domain.Entities;
@@ -24,17 +23,27 @@ public record CreateCompanyCommand : IRequest<int>
 public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand, int>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
 
-    public CreateCompanyCommandHandler(IApplicationDbContext context, IMapper mapper)
+    public CreateCompanyCommandHandler(IApplicationDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<int> Handle(CreateCompanyCommand request, CancellationToken cancellationToken)
     {
-        var entity = _mapper.Map<Company>(request);
+        var entity = new Company
+        {
+            Address = request.Address,
+            Ceo = request.Ceo,
+            Contacts = request.Contacts,
+            Email = request.Email,
+            Inn = request.Inn,
+            ManagerId = request.ManagerId,
+            Name = request.Name,
+            Phone = request.Phone,
+            Type = request.Type
+        };
+
         entity.AddDomainEvent(new CompanyCreatedEvent(entity));
 
         _context.Companies.Add(entity);
