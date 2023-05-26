@@ -43,7 +43,8 @@ public class CompaniesController : ApiControllerBase
     public async Task<ActionResult> Update(int id, UpdateCompanyCommand command)
     {
         command.Id = id;
-        return Ok(await Mediator.Send(command));
+        await Mediator.Send(command);
+        return Ok();
     }
 
     [HttpGet]

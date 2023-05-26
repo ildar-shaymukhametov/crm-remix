@@ -20,7 +20,7 @@ public class DeleteCompanyCommandHandler : IRequestHandler<DeleteCompanyCommand>
         _context = context;
     }
 
-    public async Task<Unit> Handle(DeleteCompanyCommand request, CancellationToken cancellationToken)
+    public async Task Handle(DeleteCompanyCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.Companies.FindAsync(new object?[] { request.Id }, cancellationToken);
         if (entity == null)
@@ -31,6 +31,6 @@ public class DeleteCompanyCommandHandler : IRequestHandler<DeleteCompanyCommand>
         _context.Companies.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Unit.Value;
+        return;
     }
 }

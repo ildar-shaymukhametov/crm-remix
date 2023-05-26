@@ -3,7 +3,7 @@ using MediatR;
 
 namespace CRM.Application.Tests;
 
-public record ResetDbCommand : IRequest<Unit> { }
+public record ResetDbCommand : IRequest { }
 
 public class ResetDbCommandHandler : IRequestHandler<ResetDbCommand>
 {
@@ -14,9 +14,9 @@ public class ResetDbCommandHandler : IRequestHandler<ResetDbCommand>
         _testService = testService;
     }
 
-    public async Task<Unit> Handle(ResetDbCommand request, CancellationToken cancellationToken)
+    public async Task Handle(ResetDbCommand request, CancellationToken cancellationToken)
     {
         await _testService.ResetDbAsync();
-        return Unit.Value;
+        return;
     }
 }

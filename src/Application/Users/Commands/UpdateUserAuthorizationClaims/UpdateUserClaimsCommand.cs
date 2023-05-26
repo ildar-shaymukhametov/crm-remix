@@ -7,7 +7,7 @@ using MediatR;
 namespace CRM.Application.Users.Commands.UpdateUserAuthorizationClaims;
 
 [Authorize]
-public record UpdateUserAuthorizationClaimsCommand : IRequest<Unit>
+public record UpdateUserAuthorizationClaimsCommand : IRequest
 {
     public string[] Claims { get; set; } = Array.Empty<string>();
 
@@ -29,7 +29,7 @@ public class UpdateUserAuthorizationClaimsCommandHandler : IRequestHandler<Updat
         _identityService = identityService;
     }
 
-    public async Task<Unit> Handle(UpdateUserAuthorizationClaimsCommand request, CancellationToken cancellationToken)
+    public async Task Handle(UpdateUserAuthorizationClaimsCommand request, CancellationToken cancellationToken)
     {
         var result = await _identityService.UpdateAuthorizationClaimsAsync(_currentUserService.UserId!, request.Claims);
         if (result.Errors.Any())
@@ -37,6 +37,6 @@ public class UpdateUserAuthorizationClaimsCommandHandler : IRequestHandler<Updat
             throw new InternalServerErrorException($"Failed to update claims for user {_currentUserService.UserId}");
         }
 
-        return Unit.Value;
+        return;
     }
 }

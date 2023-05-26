@@ -12,7 +12,8 @@ public class UserController : ApiControllerBase
     [Route("AuthorizationClaims")]
     public async Task<ActionResult> UpdateAuthorizationClaims(UpdateUserAuthorizationClaimsCommand request)
     {
-        return Ok(await Mediator.Send(request));
+        await Mediator.Send(request);
+        return Ok();
     }
 
     [HttpGet]

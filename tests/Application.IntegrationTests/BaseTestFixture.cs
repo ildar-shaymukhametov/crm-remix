@@ -44,10 +44,15 @@ public class BaseTestFixture
     public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
     {
         using var scope = _scopeFactory.CreateScope();
-
         var mediator = scope.ServiceProvider.GetRequiredService<ISender>();
-
         return await mediator.Send(request);
+    }
+
+    public async Task SendAsync(IRequest request)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<ISender>();
+        await mediator.Send(request);
     }
 
     public static string? GetCurrentUserId()

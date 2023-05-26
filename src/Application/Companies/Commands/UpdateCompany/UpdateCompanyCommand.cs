@@ -6,7 +6,7 @@ using MediatR;
 namespace CRM.Application.Companies.Commands.UpdateCompany;
 
 [Authorize(Constants.Policies.Company.Update)]
-public record UpdateCompanyCommand : IRequest<Unit>
+public record UpdateCompanyCommand : IRequest
 {
     public int Id { get; set; }
     public string? Type { get; set; }
@@ -20,7 +20,7 @@ public record UpdateCompanyCommand : IRequest<Unit>
     public string? ManagerId { get; set; }
 }
 
-public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand, Unit>
+public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
 {
     private readonly IApplicationDbContext _context;
 
@@ -29,7 +29,7 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand,
         _context = context;
     }
 
-    public async Task<Unit> Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
+    public async Task Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.Companies.FindAsync(new object?[] { request.Id }, cancellationToken);
         if (entity == null)
@@ -40,6 +40,6 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand,
         _context.SetValues(entity, request);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Unit.Value;
+        return;
     }
 }
