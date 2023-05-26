@@ -39,32 +39,6 @@ public class AccessService : IAccessService
             result.Add(Access.Company.Create);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user,
-                Claims.Company.WhereUserIsManager.View,
-                Claims.Company.WhereUserIsManager.Update,
-                Claims.Company.WhereUserIsManager.Delete,
-                Claims.Company.Any.View,
-                Claims.Company.Any.Update,
-                Claims.Company.Any.Delete)
-            )
-        {
-            result.Add(Access.Company.WhereUserIsManager.View);
-        }
-
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.WhereUserIsManager.Update,
-                Claims.Company.Any.Update
-            }))
-        {
-            result.Add(Access.Company.WhereUserIsManager.Update);
-        }
-
-        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Delete, Claims.Company.Any.Delete))
-        {
-            result.Add(Access.Company.WhereUserIsManager.Delete);
-        }
-
         if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Delete))
         {
             result.Add(Access.Company.Any.Delete);

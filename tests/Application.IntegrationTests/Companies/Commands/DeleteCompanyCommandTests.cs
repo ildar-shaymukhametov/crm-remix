@@ -24,7 +24,6 @@ public class DeleteCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
     [InlineData(Constants.Claims.Company.Any.Delete)]
     public async Task User_has_claim_and_is_manager___Deletes_company(string claim)
     {
@@ -38,21 +37,6 @@ public class DeleteCompanyTests : BaseTest
         var foundCompany = await _fixture.FindAsync<Company>(company.Id);
 
         Assert.Null(foundCompany);
-    }
-
-    [Fact]
-    public async Task User_has_claim_and_is_not_manager___Throws_fobidden_access()
-    {
-        await _fixture.RunAsDefaultUserAsync(new[]
-        {
-            Constants.Claims.Company.WhereUserIsManager.Delete
-        });
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
-
-        var command = new DeleteCompanyCommand { Id = company.Id };
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]

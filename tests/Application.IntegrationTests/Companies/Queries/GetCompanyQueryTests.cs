@@ -21,40 +21,6 @@ public class GetCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Update)]
-    [InlineData(Constants.Claims.Company.Any.View)]
-    [InlineData(Constants.Claims.Company.Any.Delete)]
-    [InlineData(Constants.Claims.Company.Any.Update)]
-    public async Task User_has_claim_and_is_manager___Returns_company(string claim)
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
-        var company = Faker.Builders.Company(managerId: user.Id);
-        await _fixture.AddAsync(company);
-
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
-
-        Assert.Equal(company.Id, result.Id);
-    }
-
-    [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Update)]
-    public async Task User_has_claim_and_is_not_manager___Throws_forbidden_access(string claim)
-    {
-        await _fixture.RunAsDefaultUserAsync(new[] { claim });
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
-
-        var request = new GetCompanyQuery { Id = company.Id };
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
-    }
-
-    [Theory]
     [InlineData(Constants.Claims.Company.Any.View)]
     [InlineData(Constants.Claims.Company.Any.Delete)]
     [InlineData(Constants.Claims.Company.Any.Update)]
@@ -81,16 +47,5 @@ public class GetCompanyTests : BaseTest
 
         var request = new GetCompanyQuery { Id = company.Id };
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
-    }
-
-    [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Update)]
-    public async Task Not_found(string claim)
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
-        var request = new GetCompanyQuery { Id = 1 };
-        await Assert.ThrowsAsync<NotFoundException>(() => _fixture.SendAsync(request));
     }
 }

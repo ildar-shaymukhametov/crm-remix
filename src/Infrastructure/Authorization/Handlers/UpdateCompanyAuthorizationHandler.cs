@@ -23,13 +23,13 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             return Fail(context, "Update company");
         }
 
-        var (company, request) = GetResources(context);
-        var userId = context.User.GetSubjectId();
-        var canUpdateOwnCompany = company.ManagerId == userId && accessRights.Contains(Access.Company.WhereUserIsManager.Update);
-        if (!canUpdateOwnCompany && !accessRights.Contains(Access.Company.Any.Update))
+        if (!accessRights.Contains(Access.Company.Any.Update))
         {
             return Fail(context, "Update company");
         }
+
+        var (company, request) = GetResources(context);
+        var userId = context.User.GetSubjectId();
 
         if (request != null)
         {

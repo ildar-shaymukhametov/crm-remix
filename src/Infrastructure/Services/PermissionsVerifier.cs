@@ -14,7 +14,6 @@ public class PermissionsVerifier : IPermissionsVerifier
     private readonly IUserClaimsPrincipalFactory<AspNetUser> _userClaimsPrincipalFactory;
     private readonly IIdentityService _identityService;
     private readonly IResourceProvider _resourceProvider;
-    private readonly IAccessService _accessService;
 
     public PermissionsVerifier(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory, IIdentityService identityService, IResourceProvider resourceProvider, IAccessService accessService)
     {
@@ -22,7 +21,6 @@ public class PermissionsVerifier : IPermissionsVerifier
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         _identityService = identityService;
         _resourceProvider = resourceProvider;
-        _accessService = accessService;
     }
 
     /// <summary>
@@ -42,9 +40,8 @@ public class PermissionsVerifier : IPermissionsVerifier
 
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
         var result = new List<string>();
-        var accessRights = _accessService.CheckAccess(principal);
 
-        if (permissions.Contains(Permissions.Company.Create) && accessRights.Contains(Access.Company.Create))
+        if (permissions.Contains(Permissions.Company.Create) && await _identityService.AuthorizeAsync(principal, Policies.Company.Create))
         {
             result.Add(Permissions.Company.Create);
         }

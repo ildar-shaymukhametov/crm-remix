@@ -1,4 +1,5 @@
 using CRM.Application.Companies.Queries.GetCompanies;
+using FluentAssertions;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
 
@@ -22,43 +23,50 @@ public class GetCompaniesQueryTests : BaseTest
             && x.CanBeDeleted));
     }
 
-    [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Update)]
-    [InlineData(Constants.Claims.Company.Any.View)]
-    [InlineData(Constants.Claims.Company.Any.Delete)]
-    [InlineData(Constants.Claims.Company.Any.Update)]
-    public async Task User_has_claim_and_is_manager___Returns_company(string claim)
+    [Fact]
+    public async Task User_can_view_any_company___Returns_companies()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.Any.View);
 
-        var company = Faker.Builders.Company(managerId: user.Id);
-        await _fixture.AddAsync(company);
+        var companyA = await _fixture.AddCompanyAsync();
+        var companyB = await _fixture.AddCompanyAsync();
 
         var request = new GetCompaniesQuery();
         var actual = await _fixture.SendAsync(request);
 
-        Assert.Collection(actual, x => Assert.True(x.Id == company.Id
-            && x.CanBeEdited == (claim == Constants.Claims.Company.WhereUserIsManager.Update || claim == Constants.Claims.Company.Any.Update)
-            && x.CanBeDeleted == (claim == Constants.Claims.Company.WhereUserIsManager.Delete || claim == Constants.Claims.Company.Any.Delete)));
+        actual.Select(x => x.Id).Should().BeEquivalentTo(new [] { companyA.Id, companyB.Id });
     }
 
-    [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Update)]
-    public async Task User_has_claim_and_is_not_manager___Returns_empty_list(string claim)
+    [Fact]
+    public async Task User_can_update_any_company___Returns_companies()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.Any.Update);
 
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
+        var companyA = await _fixture.AddCompanyAsync();
+        var companyB = await _fixture.AddCompanyAsync();
 
         var request = new GetCompaniesQuery();
         var actual = await _fixture.SendAsync(request);
 
-        Assert.Empty(actual);
+        Assert.Equal(2, actual.Length);
+        Assert.Contains(actual, x => x.Id == companyA.Id && x.CanBeEdited == true && x.CanBeDeleted == false);
+        Assert.Contains(actual, x => x.Id == companyB.Id && x.CanBeEdited == true && x.CanBeDeleted == false);
+    }
+
+    [Fact]
+    public async Task User_can_delete_any_company___Returns_companies()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.Any.Delete);
+
+        var companyA = await _fixture.AddCompanyAsync();
+        var companyB = await _fixture.AddCompanyAsync();
+
+        var request = new GetCompaniesQuery();
+        var actual = await _fixture.SendAsync(request);
+
+        Assert.Equal(2, actual.Length);
+        Assert.Contains(actual, x => x.Id == companyB.Id && x.CanBeEdited == false && x.CanBeDeleted == true);
+        Assert.Contains(actual, x => x.Id == companyA.Id && x.CanBeEdited == false && x.CanBeDeleted == true);
     }
 
     [Fact]

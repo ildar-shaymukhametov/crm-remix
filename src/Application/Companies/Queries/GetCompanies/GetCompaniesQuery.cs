@@ -78,11 +78,6 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             return result;
         }
 
-        if (accessRights.Contains(Access.Company.WhereUserIsManager.View))
-        {
-            result.Add(x => x.ManagerId == _currentUserService.UserId);
-        }
-
         return result;
     }
 }
