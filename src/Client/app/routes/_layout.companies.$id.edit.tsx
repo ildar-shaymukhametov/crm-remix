@@ -6,7 +6,12 @@ import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { useActionData, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
-import type { Company, Manager, UpdateCompany } from "~/utils/companies.server";
+import type {
+  Company,
+  CompanyType,
+  Manager,
+  UpdateCompany
+} from "~/utils/companies.server";
 import { getInitData } from "~/utils/companies.server";
 import { updateCompany } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
@@ -19,6 +24,7 @@ type LoaderData = {
   userPermissions: {
     canSetManager: boolean;
   };
+  companyTypes: CompanyType[];
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -68,6 +74,10 @@ export const action: ActionFunction = async ({ request, params }) => {
     delete data.managerId;
   }
 
+  if (!data.typeId) {
+    delete data.typeId;
+  }
+
   await updateCompany(request, params.id, data, user.extra?.access_token);
 
   return redirect(routes.companies.view(params.id));
@@ -75,7 +85,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export default function EditCompanyRoute() {
   const actionData = useActionData<ActionData>();
-  const { company, managers } = useLoaderData<LoaderData>();
+  const { company, managers, companyTypes } = useLoaderData<LoaderData>();
   const data: ActionData = {
     fields: {
       ...{
@@ -86,7 +96,7 @@ export default function EditCompanyRoute() {
         id: company.id,
         inn: company.inn,
         phone: company.phone,
-        type: company.type,
+        typeId: company.type?.id,
         name: company.name,
         managerId: company.manager?.id
       },
@@ -111,12 +121,13 @@ export default function EditCompanyRoute() {
       <div>
         <label>
           Type:
-          <select name="type" defaultValue={data?.fields?.type}>
-            <option value=""></option>
-            <option value="ООО">ООО</option>
-            <option value="АО">АО</option>
-            <option value="ПАО">ПАО</option>
-            <option value="ИП">ИП</option>
+          <select name="typeId" defaultValue={data?.fields?.typeId}>
+            <option value="">-</option>
+            {companyTypes.map(x => (
+              <option key={x.id} value={x.id}>
+                {x.name}
+              </option>
+            ))}
           </select>
         </label>
       </div>

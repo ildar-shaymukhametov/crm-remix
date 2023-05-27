@@ -38,6 +38,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     params.id,
     user.extra?.access_token
   );
+
   return json({
     company,
     userPermissions: {
@@ -64,7 +65,7 @@ export default function CompanyRoute() {
           <span>name</span>: <span aria-label="name">{company.name}</span>
         </p>
         <p>
-          <span>type</span>: <span aria-label="type">{company.type}</span>
+          <span>type</span>: <span aria-label="type">{company.type?.name}</span>
         </p>
         <p>
           <span>inn</span>: <span aria-label="inn">{company.inn}</span>

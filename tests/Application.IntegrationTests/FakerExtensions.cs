@@ -26,7 +26,7 @@ public static class Builders
     {
         var result = new CRM.Domain.Entities.Company
         {
-            Type = Faker.Company.Suffix(),
+            TypeId = Faker.RandomNumber.Next(1, 4),
             Name = Faker.Company.Name(),
             Inn = Faker.RandomNumber.Next(1_000_000_000, 9_999_999_999).ToString(),
             Address = $"{Faker.Address.City()}, {Faker.Address.StreetAddress()}",

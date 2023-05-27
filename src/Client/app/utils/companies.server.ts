@@ -2,7 +2,7 @@ import { handleErrorResponse } from "./utils";
 
 export type NewCompany = {
   id: number;
-  type: string;
+  typeId?: string;
   name: string;
   inn: string;
   address: string;
@@ -58,7 +58,7 @@ export async function createTestCompany(
 
 export type Company = {
   id: number;
-  type: string;
+  type: CompanyType;
   name: string;
   inn: string;
   address: string;
@@ -124,7 +124,7 @@ export async function deleteCompany(
 }
 
 export type UpdateCompany = {
-  type: string;
+  typeId?: string;
   name: string;
   inn: string;
   address: string;
@@ -190,7 +190,8 @@ export async function getCompanies(
 }
 
 type CompanyInitData = {
-  managers: Manager[]
+  managers: Manager[],
+  companyTypes: CompanyType[],
 };
 
 export type Manager = {
@@ -198,6 +199,11 @@ export type Manager = {
   firstName?: string,
   lastName?: number
 }
+
+export type CompanyType = {
+  id: number;
+  name: string;
+};
 
 export async function getInitData(
   request: Request,

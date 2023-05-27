@@ -128,7 +128,7 @@ public class CreateCompanyTests : BaseTest
             Inn = data.Inn,
             Name = data.Name,
             Phone = data.Phone,
-            Type = data.Type,
+            TypeId = data.TypeId,
             ManagerId = managerId
         };
 

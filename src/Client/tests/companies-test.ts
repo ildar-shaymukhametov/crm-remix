@@ -45,7 +45,7 @@ export function buildCompany(options: CreateCompanyOptions = {}): NewCompany {
     inn: faker.string.numeric(10),
     name: faker.company.name(),
     phone: faker.phone.number(),
-    type: faker.helpers.arrayElement(["ООО", "АО", "ПАО", "ИП"]),
+    typeId: faker.helpers.arrayElement([1, 2, 3, 4]).toString(),
     managerId: options.managerId
   };
 }

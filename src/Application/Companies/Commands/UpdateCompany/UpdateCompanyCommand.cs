@@ -9,7 +9,7 @@ namespace CRM.Application.Companies.Commands.UpdateCompany;
 public record UpdateCompanyCommand : IRequest
 {
     public int Id { get; set; }
-    public string? Type { get; set; }
+    public int? TypeId { get; set; }
     public string? Name { get; set; }
     public string? Inn { get; set; }
     public string? Address { get; set; }

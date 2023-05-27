@@ -8,7 +8,11 @@ import {
   useRouteError
 } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
-import type { Manager, NewCompany } from "~/utils/companies.server";
+import type {
+  CompanyType,
+  Manager,
+  NewCompany
+} from "~/utils/companies.server";
 import { createCompany, getInitData } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 import { permissions } from "~/utils/constants.server";
@@ -41,6 +45,7 @@ type LoaderData = {
   userPermissions: {
     canSetManager: boolean;
   };
+  companyTypes: CompanyType[];
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -52,6 +57,10 @@ export const action: ActionFunction = async ({ request }) => {
     delete data.managerId;
   }
 
+  if (!data.typeId) {
+    delete data.typeId;
+  }
+
   const id = await createCompany(request, data, user.extra?.access_token);
 
   return redirect(routes.companies.view(id));
@@ -59,7 +68,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewCompanyRoute() {
   const data = useActionData<ActionData>();
-  const { managers } = useLoaderData<LoaderData>();
+  const { managers, companyTypes } = useLoaderData<LoaderData>();
 
   return (
     <form method="post">
@@ -72,12 +81,13 @@ export default function NewCompanyRoute() {
       <div>
         <label>
           Type:
-          <select name="type">
-            <option value=""></option>
-            <option value="ООО">ООО</option>
-            <option value="АО">АО</option>
-            <option value="ПАО">ПАО</option>
-            <option value="ИП">ИП</option>
+          <select name="typeId">
+            <option value="">-</option>
+            {companyTypes.map(x => (
+              <option key={x.id} value={x.id}>
+                {x.name}
+              </option>
+            ))}
           </select>
         </label>
       </div>

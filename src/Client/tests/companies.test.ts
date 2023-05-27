@@ -123,7 +123,9 @@ test.describe("new company", () => {
     page,
     runAsDefaultUser
   }) => {
-    await runAsDefaultUser({ claims: [claims.company.create] });
+    await runAsDefaultUser({
+      claims: [claims.company.create, claims.company.any.view]
+    });
     await page.goto(routes.companies.new);
     await expectMinimalUi(page);
 
@@ -138,12 +140,14 @@ test.describe("new company", () => {
 
     const type = page.getByLabel(/type/i);
     await type.selectOption({ index: 1 });
-    company.type =
+    const typeName =
       (await type.getByRole("option", { selected: true }).textContent()) ?? "";
 
     const submit = page.getByRole("button", { name: /create new company/i });
     await submit.click();
     await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+
+    await expect(page.getByLabel(/type/i)).toHaveText(typeName);
   });
 
   for (const claim of [
@@ -449,7 +453,7 @@ test.describe("view company", () => {
       { key: "email", value: company.email },
       { key: "inn", value: company.inn },
       { key: "phone", value: company.phone },
-      { key: "type", value: company.type },
+      { key: "type", value: company.type?.name },
       {
         key: "manager",
         value: company.manager
@@ -517,7 +521,7 @@ test.describe("edit company", () => {
     await expect(inn).toHaveValue(company.inn);
     await expect(phone).toHaveValue(company.phone);
     const selectedOption = type.getByRole("option", { selected: true });
-    await expect(selectedOption).toHaveText(company.type);
+    await expect(selectedOption).toHaveText(company.type?.name);
 
     const newCompany = buildCompany();
     await name.fill(newCompany.name);
@@ -527,12 +531,16 @@ test.describe("edit company", () => {
     await email.fill(newCompany.email);
     await inn.fill(newCompany.inn);
     await phone.fill(newCompany.phone);
-    await type.selectOption(newCompany.type);
+    await type.selectOption(newCompany.typeId ?? null);
+    const typeName =
+      (await type.getByRole("option", { selected: true }).textContent()) ?? "";
 
     const submit = page.getByRole("button", { name: /save changes/i });
     await submit.click();
 
     await expect(page).toHaveURL(routes.companies.view(companyId));
+
+    await expect(page.getByLabel(/type/i)).toHaveText(typeName);
   });
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
