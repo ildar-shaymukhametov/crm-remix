@@ -74,6 +74,10 @@ export const action: ActionFunction = async ({ request, params }) => {
     delete data.managerId;
   }
 
+  if (!data.typeId) {
+    delete data.typeId;
+  }
+
   await updateCompany(request, params.id, data, user.extra?.access_token);
 
   return redirect(routes.companies.view(params.id));
@@ -117,7 +121,7 @@ export default function EditCompanyRoute() {
       <div>
         <label>
           Type:
-          <select name="type" defaultValue={data?.fields?.typeId}>
+          <select name="typeId" defaultValue={data?.fields?.typeId}>
             <option value="">-</option>
             {companyTypes.map(x => (
               <option key={x.id} value={x.id}>

@@ -2,7 +2,7 @@ import { handleErrorResponse } from "./utils";
 
 export type NewCompany = {
   id: number;
-  typeId: string;
+  typeId?: string;
   name: string;
   inn: string;
   address: string;
@@ -124,7 +124,7 @@ export async function deleteCompany(
 }
 
 export type UpdateCompany = {
-  type: string;
+  typeId?: string;
   name: string;
   inn: string;
   address: string;

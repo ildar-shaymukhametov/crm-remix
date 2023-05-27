@@ -38,6 +38,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     params.id,
     user.extra?.access_token
   );
+
   return json({
     company,
     userPermissions: {
