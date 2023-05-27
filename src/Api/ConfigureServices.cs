@@ -18,8 +18,9 @@ public static class ConfigureServices
         services.AddHttpContextAccessor();
 
         services.AddControllersWithViews(options =>
-            options.Filters.Add<ApiExceptionFilterAttribute>())
-                .AddFluentValidation(x => x.AutomaticValidationEnabled = false);
+            options.Filters.Add<ApiExceptionFilterAttribute>());
+
+        services.AddFluentValidationAutoValidation();
 
         services.AddSwaggerGen();
         services.ConfigureSwaggerGen(c =>

@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using static CRM.Application.Constants;
 using CRM.Application.Utils;
+using CRM.Application.Common.Mappings;
 
 namespace CRM.Application.Companies.Queries.GetCompanyManagers;
 
@@ -42,13 +43,16 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             return new GetCompanyInitDataResponse();
         }
 
-        var expressions = await GetExpressionsAsync(request, accessRights);
-        if (!expressions.Any())
+        return new GetCompanyInitDataResponse
         {
-            return new GetCompanyInitDataResponse();
-        }
+            Managers = await GetManagersAsync(request, accessRights),
+            CompanyTypes = await GetCompanyTypesAsync()
+        };
+    }
 
-        return await BuildResponseAsync(expressions, cancellationToken);
+    private async Task<List<CompanyTypeDto>> GetCompanyTypesAsync()
+    {
+        return await _dbContext.CompanyTypes.ProjectToListAsync<CompanyTypeDto>(_mapper.ConfigurationProvider);
     }
 
     private async Task<string?> GetManagerIdAsync(GetCompanyInitDataQuery request)
@@ -61,7 +65,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             : null;
     }
 
-    private async Task<List<Expression<Func<ApplicationUser, bool>>>> GetExpressionsAsync(GetCompanyInitDataQuery request, string[] accessRights)
+    private async Task<List<Expression<Func<ApplicationUser, bool>>>> GetManagerExpressionsAsync(GetCompanyInitDataQuery request, string[] accessRights)
     {
         var result = new List<Expression<Func<ApplicationUser, bool>>>();
         if (accessRights.Contains(Access.Company.Any.SetManagerFromAnyToAny))
@@ -101,13 +105,20 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         return result;
     }
 
-    private async Task<GetCompanyInitDataResponse> BuildResponseAsync(List<Expression<Func<ApplicationUser, bool>>> expressions, CancellationToken cancellationToken)
+    private async Task<List<ManagerDto>> GetManagersAsync(GetCompanyInitDataQuery request, string[] accessRights)
     {
-        var managers = new List<ManagerDto>();
+        var result = new List<ManagerDto>();
+
+        var expressions = await GetManagerExpressionsAsync(request, accessRights);
+        if (!expressions.Any())
+        {
+            return result;
+        }
+
         if (expressions.Contains(_emptyManager) || expressions.Contains(_allManagers))
         {
             expressions.Remove(_emptyManager);
-            managers.Add(new ManagerDto
+            result.Add(new ManagerDto
             {
                 Id = string.Empty
             });
@@ -119,13 +130,10 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             .Where(expression)
             .OrderBy(x => x.LastName)
             .ProjectTo<ManagerDto>(_mapper.ConfigurationProvider)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
-        managers.AddRange(users);
+        result.AddRange(users);
 
-        return new GetCompanyInitDataResponse
-        {
-            Managers = managers
-        };
+        return result;
     }
 }

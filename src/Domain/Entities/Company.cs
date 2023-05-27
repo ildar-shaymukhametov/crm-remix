@@ -2,8 +2,9 @@
 
 public class Company : BaseAuditableEntity
 {
-    public string? Type { get; set; }
-    public string? Name { get; set; }
+    public int? TypeId { get; set; }
+    public virtual CompanyType? Type { get; set; }
+    public string Name { get; set; } = default!;
     public string? Inn { get; set; }
     public string? Address { get; set; }
     public string? Ceo { get; set; }

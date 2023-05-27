@@ -182,7 +182,12 @@ public class BaseTestFixture
 
         _respawner = await Respawner.CreateAsync(_connectionString, new RespawnerOptions
         {
-            TablesToIgnore = new Table[] { "__EFMigrationsHistory" }
+            TablesToIgnore = new Table[]
+            {
+                "__EFMigrationsHistory",
+                "UserClaimTypes",
+                "CompanyTypes",
+            }
         });
 
         await ResetStateAsync();

@@ -6,7 +6,7 @@ public abstract class BaseEntity : BaseEntity<int> { }
 
 public abstract class BaseEntity<T>
 {
-    public T Id { get; set; }
+    public T Id { get; set; } = default!;
 
     private readonly List<BaseEvent> _domainEvents = new();
 

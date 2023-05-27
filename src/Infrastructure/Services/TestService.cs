@@ -28,7 +28,8 @@ public class TestService : ITestService
                 "DeviceCodes",
                 "Keys",
                 "PersistedGrants",
-                "UserClaimTypes"
+                "UserClaimTypes",
+                "CompanyTypes"
             }
         });
     }

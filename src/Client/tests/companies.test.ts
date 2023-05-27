@@ -138,8 +138,6 @@ test.describe("new company", () => {
 
     const type = page.getByLabel(/type/i);
     await type.selectOption({ index: 1 });
-    company.type =
-      (await type.getByRole("option", { selected: true }).textContent()) ?? "";
 
     const submit = page.getByRole("button", { name: /create new company/i });
     await submit.click();
@@ -449,7 +447,7 @@ test.describe("view company", () => {
       { key: "email", value: company.email },
       { key: "inn", value: company.inn },
       { key: "phone", value: company.phone },
-      { key: "type", value: company.type },
+      { key: "type", value: company.type?.name },
       {
         key: "manager",
         value: company.manager
@@ -517,7 +515,7 @@ test.describe("edit company", () => {
     await expect(inn).toHaveValue(company.inn);
     await expect(phone).toHaveValue(company.phone);
     const selectedOption = type.getByRole("option", { selected: true });
-    await expect(selectedOption).toHaveText(company.type);
+    await expect(selectedOption).toHaveText(company.type?.name);
 
     const newCompany = buildCompany();
     await name.fill(newCompany.name);
@@ -527,7 +525,7 @@ test.describe("edit company", () => {
     await email.fill(newCompany.email);
     await inn.fill(newCompany.inn);
     await phone.fill(newCompany.phone);
-    await type.selectOption(newCompany.type);
+    await type.selectOption(newCompany.typeId);
 
     const submit = page.getByRole("button", { name: /save changes/i });
     await submit.click();

@@ -1,5 +1,6 @@
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Queries.GetCompany;
+using CRM.Domain.Entities;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
 
@@ -11,13 +12,15 @@ public class GetCompanyTests : BaseTest
     public async Task User_is_admin___Returns_company()
     {
         await _fixture.RunAsAdministratorAsync();
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
+        var newCompany = Faker.Builders.Company();
+        await _fixture.AddAsync(newCompany);
 
-        var request = new GetCompanyQuery { Id = company.Id };
+        var request = new GetCompanyQuery { Id = newCompany.Id };
         var result = await _fixture.SendAsync(request);
+        var company = await _fixture.FindAsync<Company>(result.Id, nameof(Company.Type));
 
-        Assert.Equal(company.Id, result.Id);
+        Assert.Equal(company?.Id, result?.Id);
+        Assert.Equal(company?.Type?.Name, result?.Type?.Name);
     }
 
     [Theory]

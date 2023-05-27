@@ -26,5 +26,12 @@ public static class ApplicationDbContextSeed
             new UserClaimType { Id = id++, Value = Claims.Company.Any.SetManagerFromSelfToAny, Name = Claims.Company.Any.SetManagerFromSelfToAny },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.SetManagerFromSelfToNone, Name = Claims.Company.Any.SetManagerFromSelfToNone }
         );
+
+        builder.Entity<CompanyType>().HasData(
+            new CompanyType { Id = 1, Name = "ООО" },
+            new CompanyType { Id = 2, Name = "АО" },
+            new CompanyType { Id = 3, Name = "ПАО" },
+            new CompanyType { Id = 4, Name = "ИП" }
+        );
     }
 }
