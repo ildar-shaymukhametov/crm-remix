@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using CRM.Domain.Entities;
 using CRM.Infrastructure.Identity;
@@ -38,7 +39,7 @@ public class BaseTestFixture
         _factory = new CustomWebApplicationFactory();
         _scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
         _configuration = _factory.Services.GetRequiredService<IConfiguration>();
-        _connectionString = _configuration.GetConnectionString("DefaultConnection");
+        _connectionString = _configuration.GetConnectionString("DefaultConnection") ?? throw new NullReferenceException("Connection string");
     }
 
     public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
@@ -107,7 +108,7 @@ public class BaseTestFixture
         var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
         var (result, userId) = await identityService.CreateUserAsync(userName, password, firstName, lastName);
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
-        var user = await userManager.FindByIdAsync(userId);
+        var user = await userManager.FindByIdAsync(userId) ?? throw new NotFoundException(userId);
 
         if (roles.Any())
         {
@@ -155,7 +156,7 @@ public class BaseTestFixture
         var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
         var (result, userId) = await identityService.CreateUserAsync(Faker.Internet.UserName(), $"{Faker.Internet.UserName()}Z1!", firstName, lastName);
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
-        var user = await userManager.FindByIdAsync(userId);
+        var user = await userManager.FindByIdAsync(userId) ?? throw new NotFoundException(userId);
 
         if (!result.Succeeded)
         {
