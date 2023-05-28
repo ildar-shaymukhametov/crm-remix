@@ -203,6 +203,14 @@ public class AccessService : IAccessService
             result.Add(Access.Company.SetManagerToSelf);
         }
 
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.WhereUserIsManager.View
+            }))
+        {
+            result.Add(Access.Company.WhereUserIsManager.View);
+        }
+
         return result.ToArray();
     }
 
