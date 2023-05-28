@@ -49,8 +49,8 @@ public class GetCompaniesQueryTests : BaseTest
         var actual = await _fixture.SendAsync(request);
 
         Assert.Equal(2, actual.Length);
-        Assert.Contains(actual, x => x.Id == companyA.Id && x.CanBeEdited == true && x.CanBeDeleted == false);
-        Assert.Contains(actual, x => x.Id == companyB.Id && x.CanBeEdited == true && x.CanBeDeleted == false);
+        Assert.Contains(actual, x => x.Id == companyA.Id && x.CanBeEdited && !x.CanBeDeleted);
+        Assert.Contains(actual, x => x.Id == companyB.Id && x.CanBeEdited && !x.CanBeDeleted);
     }
 
     [Fact]
@@ -65,8 +65,8 @@ public class GetCompaniesQueryTests : BaseTest
         var actual = await _fixture.SendAsync(request);
 
         Assert.Equal(2, actual.Length);
-        Assert.Contains(actual, x => x.Id == companyB.Id && x.CanBeEdited == false && x.CanBeDeleted == true);
-        Assert.Contains(actual, x => x.Id == companyA.Id && x.CanBeEdited == false && x.CanBeDeleted == true);
+        Assert.Contains(actual, x => x.Id == companyB.Id && !x.CanBeEdited && x.CanBeDeleted);
+        Assert.Contains(actual, x => x.Id == companyA.Id && !x.CanBeEdited && x.CanBeDeleted);
     }
 
     [Fact]
