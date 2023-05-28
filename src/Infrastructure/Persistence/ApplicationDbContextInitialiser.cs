@@ -1,4 +1,5 @@
-﻿using CRM.Application.Common.Interfaces;
+﻿using CRM.Application.Common.Exceptions;
+using CRM.Application.Common.Interfaces;
 using CRM.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -80,7 +81,7 @@ public class ApplicationDbContextInitialiser
         if (_userManager.Users.All(u => u.UserName != userName))
         {
             var (result, userId) = await _identityService.CreateUserAsync(userName, "Administrator1!", "admin", "localhost");
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId) ?? throw new NotFoundException(userId);
             await _userManager.AddToRolesAsync(user, new[] { administratorRole.Name! });
         }
 
@@ -107,7 +108,7 @@ public class ApplicationDbContextInitialiser
         if (_userManager.Users.All(u => u.UserName != userName))
         {
             var (result, userId) = await _identityService.CreateUserAsync(userName, "Tester1!", "tester", "localhost");
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId) ?? throw new NotFoundException(userId);
             await _userManager.AddToRolesAsync(user, new[] { testerRole.Name! });
         }
     }

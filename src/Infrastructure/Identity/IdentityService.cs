@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using CRM.Application;
+using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Models;
 using CRM.Domain.Entities;
@@ -79,7 +80,7 @@ public class IdentityService : IIdentityService
             foreach (var roleName in roles)
             {
                 var role = new IdentityRole(roleName);
-                if (!await _roleManager.RoleExistsAsync(role.Name))
+                if (!await _roleManager.RoleExistsAsync(role.Name!))
                 {
                     await _roleManager.CreateAsync(role);
                 }
@@ -176,7 +177,7 @@ public class IdentityService : IIdentityService
 
     public async Task<Result> UpdateAuthorizationClaimsAsync(string userId, string[] claims)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId) ?? throw new NotFoundException(userId);
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
         var authorizationClaims = principal.Claims.Where(x => x.Type == Constants.Claims.ClaimType);
         var removeClaimsResult = await _userManager.RemoveClaimsAsync(user, authorizationClaims);
@@ -190,9 +191,9 @@ public class IdentityService : IIdentityService
         return result.ToApplicationResult();
     }
 
-    public async Task<string[]> GetUserAuthorizationClaimsAsync(string? userId)
+    public async Task<string[]> GetUserAuthorizationClaimsAsync(string userId)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId) ?? throw new NotFoundException(userId);
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
         return principal.Claims.Where(x => x.Type == Constants.Claims.ClaimType).Select(x => x.Value).ToArray();
     }
