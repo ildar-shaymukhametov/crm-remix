@@ -385,6 +385,34 @@ test.describe.only("view company", () => {
     });
   });
 
+  for (const claim of [
+    claims.company.whereUserIsManager.view,
+    claims.company.whereUserIsManager.delete,
+    claims.company.whereUserIsManager.update
+  ]) {
+    test(`should not be able to view non-owned company with claim ${claim}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      await runAsDefaultUser({
+        claims: [claim]
+      });
+      const companyId = await createCompany();
+
+      await page.goto(routes.companies.view(companyId));
+
+      const company = await getCompany(companyId);
+      await expectMinimalUi(page, company, {
+        title: "minimal",
+        companyFields: false,
+        forbidden: true,
+        notFound: false
+      });
+    });
+  }
+
   type VisibilityOptions = {
     forbidden?: boolean;
     companyFields?: boolean;
