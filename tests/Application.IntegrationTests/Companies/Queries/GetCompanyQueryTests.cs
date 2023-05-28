@@ -54,6 +54,7 @@ public class GetCompanyTests : BaseTest
 
     [Theory]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
     public async Task User_has_claim_and_is_manager___Returns_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });

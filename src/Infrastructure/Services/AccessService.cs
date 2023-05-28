@@ -205,7 +205,8 @@ public class AccessService : IAccessService
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
-                Claims.Company.WhereUserIsManager.View
+                Claims.Company.WhereUserIsManager.View,
+                Claims.Company.WhereUserIsManager.Delete
             }))
         {
             result.Add(Access.Company.WhereUserIsManager.View);
