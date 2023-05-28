@@ -14,7 +14,9 @@ export const claims = {
       setManagerFromSelfToNone: "Company.Any.SetManagerFromSelfToNone"
     },
     whereUserIsManager: {
-      view: "Company.WhereUserIsManager.View"
+      view: "Company.WhereUserIsManager.View",
+      delete: "Company.WhereUserIsManager.Delete",
+      update: "Company.WhereUserIsManager.Update",
     }
   }
 };

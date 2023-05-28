@@ -274,7 +274,7 @@ test.describe("new company", () => {
 });
 
 test.describe.only("view company", () => {
-  test("user can view any company", async ({
+  test("should be able to view any company", async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -289,24 +289,32 @@ test.describe.only("view company", () => {
     await expectMinimalUi(page, company);
   });
 
-  test("user can view own company", async ({
-    page,
-    runAsDefaultUser,
-    createCompany,
-    getCompany
-  }) => {
-    const user = await runAsDefaultUser({ claims: [claims.company.whereUserIsManager.view] });
-    const companyId = await createCompany({
-      managerId: user.id
+  for (const claim of [
+    claims.company.whereUserIsManager.view,
+    claims.company.whereUserIsManager.delete,
+    claims.company.whereUserIsManager.update
+  ]) {
+    test(`should be able to view own company with claim ${claim}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      const user = await runAsDefaultUser({
+        claims: [claim]
+      });
+      const companyId = await createCompany({
+        managerId: user.id
+      });
+
+      await page.goto(routes.companies.view(companyId));
+
+      const company = await getCompany(companyId);
+      await expectMinimalUi(page, company);
     });
+  }
 
-    await page.goto(routes.companies.view(companyId));
-
-    const company = await getCompany(companyId);
-    await expectMinimalUi(page, company);
-  });
-
-  test("should be forbidden", async ({
+  test("should be forbidden if no claims", async ({
     page,
     runAsDefaultUser,
     createCompany,
