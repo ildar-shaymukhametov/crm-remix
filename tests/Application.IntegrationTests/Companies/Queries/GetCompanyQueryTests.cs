@@ -66,4 +66,17 @@ public class GetCompanyTests : BaseTest
 
         Assert.Equal(company.Id, result.Id);
     }
+
+    [Theory]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
+    public async Task User_has_claim_and_is_not_manager___Throws_forbidden_access(string claim)
+    {
+        await _fixture.RunAsDefaultUserAsync(claim);
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var request = new GetCompanyQuery { Id = company.Id };
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
+    }
 }
