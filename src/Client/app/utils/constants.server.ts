@@ -12,6 +12,9 @@ export const claims = {
       setManagerFromAnyToSelf: "Company.Any.SetManagerFromAnyToSelf",
       setManagerFromSelfToAny: "Company.Any.SetManagerFromSelfToAny",
       setManagerFromSelfToNone: "Company.Any.SetManagerFromSelfToNone"
+    },
+    whereUserIsManager: {
+      view: "Company.WhereUserIsManager.View"
     }
   }
 };

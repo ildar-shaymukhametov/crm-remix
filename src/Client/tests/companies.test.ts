@@ -273,25 +273,8 @@ test.describe("new company", () => {
   }
 });
 
-test.describe("view company", () => {
-  test("minimal ui, with manager", async ({
-    page,
-    runAsDefaultUser,
-    createCompany,
-    getCompany
-  }) => {
-    const user = await runAsDefaultUser({ claims: [claims.company.any.view] });
-    const companyId = await createCompany({
-      managerId: user.id
-    });
-
-    await page.goto(routes.companies.view(companyId));
-
-    const company = await getCompany(companyId);
-    await expectMinimalUi(page, company);
-  });
-
-  test("minimal ui, no manager", async ({
+test.describe.only("view company", () => {
+  test("user can view any company", async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -299,6 +282,23 @@ test.describe("view company", () => {
   }) => {
     await runAsDefaultUser({ claims: [claims.company.any.view] });
     const companyId = await createCompany();
+
+    await page.goto(routes.companies.view(companyId));
+
+    const company = await getCompany(companyId);
+    await expectMinimalUi(page, company);
+  });
+
+  test("user can view own company", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    const user = await runAsDefaultUser({ claims: [claims.company.whereUserIsManager.view] });
+    const companyId = await createCompany({
+      managerId: user.id
+    });
 
     await page.goto(routes.companies.view(companyId));
 
