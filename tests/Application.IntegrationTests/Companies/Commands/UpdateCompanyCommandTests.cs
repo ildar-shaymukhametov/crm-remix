@@ -49,7 +49,8 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCommand(company.Id);
 
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        Assert.Contains("Update company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
     }
 
     [Fact]
@@ -268,7 +269,8 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCommand(company.Id);
 
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        Assert.Contains("Update any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
     }
 
     [Fact]
@@ -281,7 +283,8 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync(user.Id);
         var command = CreateCommand(company.Id);
 
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        Assert.Contains("Update own company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
     }
 
     [Fact]
@@ -294,7 +297,8 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCommand(company.Id);
 
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        Assert.Contains("Update any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
     }
 
     private static UpdateCompanyCommand CreateCommand(int id, string? managerId = null)
