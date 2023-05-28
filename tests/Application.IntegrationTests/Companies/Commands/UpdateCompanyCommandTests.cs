@@ -271,6 +271,32 @@ public class UpdateCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
+    [Fact]
+    public async Task User_has_no_claim_to_update_own_company_and_he_is_manager___Throws_forbidden_access()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Constants.Claims.Company.Any.SetManagerFromAnyToAny
+        });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+        var command = CreateCommand(company.Id);
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
+    [Fact]
+    public async Task User_has_no_claim_to_update_own_company_and_he_is_not_manager___Throws_forbidden_access()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Constants.Claims.Company.Any.SetManagerFromAnyToAny
+        });
+        var company = await _fixture.AddCompanyAsync();
+        var command = CreateCommand(company.Id);
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
     private static UpdateCompanyCommand CreateCommand(int id, string? managerId = null)
     {
         var data = Faker.Builders.Company();
