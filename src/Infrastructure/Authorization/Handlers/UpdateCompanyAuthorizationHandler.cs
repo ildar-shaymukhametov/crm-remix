@@ -23,13 +23,17 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             return Fail(context, "Update company");
         }
 
-        if (!accessRights.Contains(Access.Company.Any.Update))
-        {
-            return Fail(context, "Update company");
-        }
-
         var (company, request) = GetResources(context);
         var userId = context.User.GetSubjectId();
+
+        if (company.ManagerId == userId && !accessRights.Contains(Access.Company.WhereUserIsManager.Update))
+        {
+            return Fail(context, "Update own company");
+        }
+        else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Update))
+        {
+            return Fail(context, "Update any company");
+        }
 
         if (request != null)
         {
@@ -69,6 +73,11 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
                         return Fail(context, "Set manager from self to any in any company");
                     }
                 }
+                
+                // if (!accessRights.Contains(Access.Company.WhereUserIsManager.Update))
+                // {
+                    
+                // }
             }
             else // from any...
             {

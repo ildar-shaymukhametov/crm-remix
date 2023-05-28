@@ -241,7 +241,34 @@ public class UpdateCompanyTests : BaseTest
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Set manager from any to any in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+    }
 
+    [Fact]
+    public async Task User_has_claim_to_update_own_company_and_he_is_manager___Updates_company()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new []
+        {
+            Constants.Claims.Company.WhereUserIsManager.Update,
+            Constants.Claims.Company.Any.SetManagerFromAnyToAny
+        });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+        var command = CreateCommand(company.Id);
+
+        await AssertCompanyUpdatedAsync(user, company, command);
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_update_own_company_and_he_is_not_manager___Throws_forbidden_access()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Constants.Claims.Company.WhereUserIsManager.Update,
+            Constants.Claims.Company.Any.SetManagerFromAnyToAny
+        });
+        var company = await _fixture.AddCompanyAsync();
+        var command = CreateCommand(company.Id);
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     private static UpdateCompanyCommand CreateCommand(int id, string? managerId = null)
