@@ -23,29 +23,10 @@ public class DeleteCompanyTests : BaseTest
         Assert.Null(foundCompany);
     }
 
-    [Theory]
-    [InlineData(Constants.Claims.Company.Any.Delete)]
-    public async Task User_has_claim_and_is_manager___Deletes_company(string claim)
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
-
-        var company = Faker.Builders.Company(managerId: user.Id);
-        await _fixture.AddAsync(company);
-
-        var command = new DeleteCompanyCommand { Id = company.Id };
-        await _fixture.SendAsync(command);
-        var foundCompany = await _fixture.FindAsync<Company>(company.Id);
-
-        Assert.Null(foundCompany);
-    }
-
     [Fact]
-    public async Task User_has_claim_and_is_not_manager___Deletes_company()
+    public async Task User_has_claim_to_delete_any_company___Deletes_company()
     {
-        await _fixture.RunAsDefaultUserAsync(new[]
-        {
-            Constants.Claims.Company.Any.Delete
-        });
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Delete });
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
@@ -56,13 +37,11 @@ public class DeleteCompanyTests : BaseTest
 
         Assert.Null(foundCompany);
     }
+
     [Fact]
     public async Task Not_found()
     {
-        await _fixture.RunAsDefaultUserAsync(new[]
-        {
-            Constants.Claims.Company.WhereUserIsManager.Delete
-        });
+        await _fixture.RunAsDefaultUserAsync();
         var command = new DeleteCompanyCommand { Id = 1 };
         await Assert.ThrowsAsync<NotFoundException>(() => _fixture.SendAsync(command));
     }
@@ -76,6 +55,45 @@ public class DeleteCompanyTests : BaseTest
         await _fixture.AddAsync(company);
 
         var command = new DeleteCompanyCommand { Id = company.Id };
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_delete_own_company_and_is_manager___Deletes_company()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Delete });
+
+        var company = Faker.Builders.Company(user.Id);
+        await _fixture.AddAsync(company);
+
+        var command = new DeleteCompanyCommand { Id = company.Id };
+        await _fixture.SendAsync(command);
+        var foundCompany = await _fixture.FindAsync<Company>(company.Id);
+
+        Assert.Null(foundCompany);
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_delete_own_company_and_is_not_manager___Throws_fobidden_access()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Delete });
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+        var command = new DeleteCompanyCommand { Id = company.Id };
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
+    [Fact]
+    public async Task User_has_no_claim_to_delete_own_company_and_is_manager___Throws_fobidden_access()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync();
+
+        var company = Faker.Builders.Company(user.Id);
+        await _fixture.AddAsync(company);
+        var command = new DeleteCompanyCommand { Id = company.Id };
+
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 }
