@@ -71,6 +71,8 @@ public class GetCompanyTests : BaseTest
 
     [Theory]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Update)]
     public async Task User_has_claim_and_is_not_manager___Throws_forbidden_access(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(claim);
