@@ -329,17 +329,17 @@ test.describe.only("view company", () => {
     await expect(page).toHaveURL(routes.companies.edit(companyId));
   });
 
-  test("should be able to click delete company button", async ({
+  test("should be able to click delete company button in any company", async ({
     page,
     runAsDefaultUser,
     createCompany,
     getCompany
   }) => {
-    const user = await runAsDefaultUser({
+    await runAsDefaultUser({
       claims: [claims.company.any.delete]
     });
 
-    const companyId = await createCompany({ managerId: user.id });
+    const companyId = await createCompany();
     await page.goto(routes.companies.view(companyId));
 
     const company = await getCompany(companyId);
@@ -362,10 +362,7 @@ test.describe.only("view company", () => {
     });
   });
 
-  for (const claim of [
-    claims.company.whereUserIsManager.view,
-    claims.company.whereUserIsManager.delete
-  ]) {
+  for (const claim of [claims.company.whereUserIsManager.view]) {
     test(`should be able to view own company with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
@@ -458,6 +455,69 @@ test.describe.only("view company", () => {
     const button = page.getByRole("link", { name: /edit/i });
     await button.click();
     await expect(page).toHaveURL(routes.companies.edit(companyId));
+  });
+
+  test("should be able to click delete company button in own company", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    const user = await runAsDefaultUser({
+      claims: [claims.company.whereUserIsManager.delete]
+    });
+
+    const companyId = await createCompany({ managerId: user.id });
+    await page.goto(routes.companies.view(companyId));
+
+    const company = await getCompany(companyId);
+    await expectMinimalUi(page, company, { deleteButton: true });
+
+    const button = page.getByRole("link", { name: /delete/i });
+    await button.click();
+    await expect(page).toHaveURL(routes.companies.delete(companyId));
+  });
+
+  test("should not be able to click delete company button in own company without claim", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    const user = await runAsDefaultUser();
+
+    const companyId = await createCompany({ managerId: user.id });
+    await page.goto(routes.companies.view(companyId));
+
+    const company = await getCompany(companyId);
+
+    await expectMinimalUi(page, company, {
+      title: "minimal",
+      companyFields: false,
+      forbidden: true,
+      notFound: false
+    });
+  });
+
+  test("should not be able to click delete company button in non-owned company", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser();
+
+    const companyId = await createCompany();
+    await page.goto(routes.companies.view(companyId));
+
+    const company = await getCompany(companyId);
+
+    await expectMinimalUi(page, company, {
+      title: "minimal",
+      companyFields: false,
+      forbidden: true,
+      notFound: false
+    });
   });
 
   type VisibilityOptions = {
