@@ -69,13 +69,18 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         return result;
     }
 
-    private static List<Expression<Func<Company, bool>>> GetExpressions(string[] accessRights)
+    private List<Expression<Func<Company, bool>>> GetExpressions(string[] accessRights)
     {
         var result = new List<Expression<Func<Company, bool>>>();
         if (accessRights.Contains(Access.Company.Any.View))
         {
             result.Add(x => true);
             return result;
+        }
+
+        if (accessRights.Contains(Access.Company.WhereUserIsManager.View))
+        {
+            result.Add(x => x.ManagerId == _currentUserService.UserId);
         }
 
         return result;

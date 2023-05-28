@@ -82,4 +82,18 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Empty(actual);
     }
+
+    [Fact]
+    public async Task User_can_view_own_company___Returns_companies()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.WhereUserIsManager.View);
+
+        var companyA = await _fixture.AddCompanyAsync(user.Id);
+        var companyB = await _fixture.AddCompanyAsync();
+
+        var request = new GetCompaniesQuery();
+        var actual = await _fixture.SendAsync(request);
+
+        Assert.Collection(actual, x => Assert.True(x.Id == companyA.Id && !x.CanBeEdited && !x.CanBeDeleted));
+    }
 }
