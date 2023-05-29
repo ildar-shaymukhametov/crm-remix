@@ -9,7 +9,7 @@ test.beforeEach(async ({ resetDb }) => {
   await resetDb();
 });
 
-test.describe.only("view companies", () => {
+test.describe("view companies", () => {
   test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
     await runAsDefaultUser();
     await createCompany();
@@ -663,8 +663,8 @@ test.describe("view company", () => {
   }
 });
 
-test.describe("edit company", () => {
-  test("should be forbidden", async ({
+test.describe.only("edit company", () => {
+  test("should be forbidden if no claims", async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -683,7 +683,47 @@ test.describe("edit company", () => {
     });
   });
 
-  test("should be able to edit company", async ({
+  test("should be forbidden if own company but no claims", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    const user = await runAsDefaultUser();
+    const companyId = await createCompany({ managerId: user.id });
+    await page.goto(routes.companies.edit(companyId));
+
+    const company = await getCompany(companyId);
+    await expectMinimalUi(page, company, {
+      forbidden: true,
+      companyFields: false,
+      submitButton: false,
+      title: "minimal"
+    });
+  });
+
+  test("should be forbidden if non-owned company but has claim to edit own company", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.whereUserIsManager.update]
+    });
+    const companyId = await createCompany();
+    await page.goto(routes.companies.edit(companyId));
+
+    const company = await getCompany(companyId);
+    await expectMinimalUi(page, company, {
+      forbidden: true,
+      companyFields: false,
+      submitButton: false,
+      title: "minimal"
+    });
+  });
+
+  test("should be able to edit any company", async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -697,7 +737,46 @@ test.describe("edit company", () => {
 
     const company = await getCompany(companyId);
     await expectMinimalUi(page, company);
+    const typeName = await expectCompanyEdited(page, company);
 
+    const submit = page.getByRole("button", { name: /save changes/i });
+    await submit.click();
+
+    await expect(page).toHaveURL(routes.companies.view(companyId));
+
+    await expect(page.getByLabel(/type/i)).toHaveText(typeName);
+  });
+
+  test("should be able to edit own company", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    const user = await runAsDefaultUser({
+      claims: [
+        claims.company.any.view,
+        claims.company.any.setManagerFromAnyToAny,
+        claims.company.whereUserIsManager.update
+      ]
+    });
+
+    const companyId = await createCompany({ managerId: user.id });
+    await page.goto(routes.companies.edit(companyId));
+
+    const company = await getCompany(companyId);
+    await expectMinimalUi(page, company, { manager: true });
+    const typeName = await expectCompanyEdited(page, company);
+
+    const submit = page.getByRole("button", { name: /save changes/i });
+    await submit.click();
+
+    await expect(page).toHaveURL(routes.companies.view(companyId));
+
+    await expect(page.getByLabel(/type/i)).toHaveText(typeName);
+  });
+
+  async function expectCompanyEdited(page: Page, company: Company) {
     const name = page.getByLabel(/name/i);
     const address = page.getByLabel(/address/i);
     const ceo = page.getByLabel(/ceo/i);
@@ -728,14 +807,8 @@ test.describe("edit company", () => {
     await type.selectOption(newCompany.typeId ?? null);
     const typeName =
       (await type.getByRole("option", { selected: true }).textContent()) ?? "";
-
-    const submit = page.getByRole("button", { name: /save changes/i });
-    await submit.click();
-
-    await expect(page).toHaveURL(routes.companies.view(companyId));
-
-    await expect(page.getByLabel(/type/i)).toHaveText(typeName);
-  });
+    return typeName;
+  }
 
   test("should see not found", async ({ page, runAsDefaultUser }) => {
     await runAsDefaultUser({ claims: [claims.company.any.update] });
