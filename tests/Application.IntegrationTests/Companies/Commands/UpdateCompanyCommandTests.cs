@@ -301,6 +301,26 @@ public class UpdateCompanyTests : BaseTest
         Assert.Contains("Update any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
     }
 
+    [Fact]
+    public async Task From_none_to_none_without_claims___Updates_company()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Update });
+        var company = await _fixture.AddCompanyAsync();
+        var command = CreateCommand(company.Id);
+
+        await AssertCompanyUpdatedAsync(user, company, command);
+    }
+
+    [Fact]
+    public async Task From_manager_to_manager_without_claims___Updates_company()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Update });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+        var command = CreateCommand(company.Id, user.Id);
+
+        await AssertCompanyUpdatedAsync(user, company, command);
+    }
+
     private static UpdateCompanyCommand CreateCommand(int id, string? managerId = null)
     {
         var data = Faker.Builders.Company();
