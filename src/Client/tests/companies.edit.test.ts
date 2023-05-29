@@ -82,14 +82,14 @@ test("should be able to edit any company", async ({
 
   const company = await getCompany(companyId);
   await expectMinimalUi(page, company);
-  const typeName = await checkAndFillFields(page, company);
+  const newData = await checkAndFillFields(page, company);
 
   const submit = page.getByRole("button", { name: /save changes/i });
   await submit.click();
 
   await expect(page).toHaveURL(routes.companies.view(companyId));
 
-  await expect(page.getByLabel(/type/i)).toHaveText(typeName);
+  await expect(page.getByLabel(/type/i)).toHaveText(newData.type.name);
 });
 
 test("should be able to edit own company", async ({
@@ -111,17 +111,17 @@ test("should be able to edit own company", async ({
 
   const company = await getCompany(companyId);
   await expectMinimalUi(page, company, { manager: true });
-  const typeName = await checkAndFillFields(page, company);
+  const newData = await checkAndFillFields(page, company);
 
   const submit = page.getByRole("button", { name: /save changes/i });
   await submit.click();
 
   await expect(page).toHaveURL(routes.companies.view(companyId));
 
-  await expect(page.getByLabel(/type/i)).toHaveText(typeName);
+  await expect(page.getByLabel(/type/i)).toHaveText(newData.type.name);
 });
 
-async function checkAndFillFields(page: Page, company: Company) {
+async function checkAndFillFields(page: Page, company: Company) : Promise<Company> {
   const name = page.getByLabel(/name/i);
   const address = page.getByLabel(/address/i);
   const ceo = page.getByLabel(/ceo/i);
@@ -149,10 +149,23 @@ async function checkAndFillFields(page: Page, company: Company) {
   await email.fill(newCompany.email);
   await inn.fill(newCompany.inn);
   await phone.fill(newCompany.phone);
-  await type.selectOption(newCompany.typeId ?? null);
+  await type.selectOption(newCompany.typeId?.toString() ?? null);
   const typeName =
     (await type.getByRole("option", { selected: true }).textContent()) ?? "";
-  return typeName;
+  return {
+    address: newCompany.address,
+    ceo: newCompany.ceo,
+    contacts: newCompany.contacts,
+    email: newCompany.email,
+    id: newCompany.id,
+    inn: newCompany.inn,
+    name: newCompany.name,
+    phone: newCompany.phone,
+    type: {
+      id: newCompany.typeId ?? 0,
+      name: typeName
+    },
+  }
 }
 
 test("should see not found", async ({ page, runAsDefaultUser }) => {
@@ -450,14 +463,14 @@ test("should be able to edit a company with manager if no manager claims", async
 
   const company = await getCompany(companyId);
   await expectMinimalUi(page, company);
-  const typeName = await checkAndFillFields(page, company);
+  const newData = await checkAndFillFields(page, company);
 
   const submit = page.getByRole("button", { name: /save changes/i });
   await submit.click();
 
   await expect(page).toHaveURL(routes.companies.view(companyId));
 
-  await expect(page.getByLabel(/type/i)).toHaveText(typeName);
+  await expect(page.getByLabel(/type/i)).toHaveText(newData.type.name);
 });
 
 type VisibilityOptions = {

@@ -2,7 +2,7 @@ import { handleErrorResponse } from "./utils";
 
 export type NewCompany = {
   id: number;
-  typeId?: string;
+  typeId?: number;
   name: string;
   inn: string;
   address: string;
