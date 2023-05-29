@@ -16,10 +16,10 @@ public class DeleteCompanyAuthorizationHandler : BaseAuthorizationHandler<Delete
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
     {
-        var accessRights = _accessService.CheckAccess(context.User);
+        var accessRights = _accessService.CheckAccess(context.User); // todo: if no rights, return early
         if (accessRights.Contains(Access.Company.Any.Delete))
         {
-            context.Succeed(requirement);
+            return Ok(context, requirement);
         }
 
         var company = GetResources(context);

@@ -110,10 +110,12 @@ public class GetCompaniesQueryTests : BaseTest
         Assert.Collection(actual, x => Assert.True(x.Id == company.Id && x.CanBeEdited && !x.CanBeDeleted));
     }
 
-    [Fact]
-    public async Task User_can_delete_own_company___Returns_companies()
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Delete)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
+    public async Task User_can_delete_own_company___Returns_companies(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.WhereUserIsManager.Delete);
+        var user = await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var request = new GetCompaniesQuery();
