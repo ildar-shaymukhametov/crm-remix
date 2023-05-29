@@ -9,7 +9,7 @@ test.beforeEach(async ({ resetDb }) => {
   await resetDb();
 });
 
-test.describe("view companies", () => {
+test.describe.only("view companies", () => {
   test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
     await runAsDefaultUser();
     await createCompany();
@@ -37,13 +37,51 @@ test.describe("view companies", () => {
     await expect(page).toHaveURL(routes.companies.new);
   });
 
-  test("should be able to click edit company button", async ({
+  test("should be able to click edit company button in any company", async ({
+    page,
+    runAsDefaultUser,
+    createCompany
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.any.update]
+    });
+
+    const companyId = await createCompany();
+    await page.goto(routes.companies.index);
+
+    await expectMinimalUi(page, { editCompanyButton: true });
+
+    const link = page.getByRole("link", { name: /edit company/i });
+    await link.click();
+    await expect(page).toHaveURL(routes.companies.edit(companyId));
+  });
+
+  test("should be able to click delete company button in any company", async ({
+    page,
+    runAsDefaultUser,
+    createCompany
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.any.delete]
+    });
+
+    const companyId = await createCompany();
+    await page.goto(routes.companies.index);
+
+    await expectMinimalUi(page, { deleteCompanyButton: true });
+
+    const link = page.getByRole("link", { name: /delete company/i });
+    await link.click();
+    await expect(page).toHaveURL(routes.companies.delete(companyId));
+  });
+
+  test("should be able to click edit company button in own company", async ({
     page,
     runAsDefaultUser,
     createCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.any.update]
+      claims: [claims.company.whereUserIsManager.update]
     });
 
     const companyId = await createCompany({ managerId: user.id });
@@ -56,13 +94,13 @@ test.describe("view companies", () => {
     await expect(page).toHaveURL(routes.companies.edit(companyId));
   });
 
-  test("should be able to click delete company button", async ({
+  test("should be able to click delete company button in own company", async ({
     page,
     runAsDefaultUser,
     createCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.any.delete]
+      claims: [claims.company.whereUserIsManager.delete]
     });
 
     const companyId = await createCompany({ managerId: user.id });
@@ -73,6 +111,19 @@ test.describe("view companies", () => {
     const link = page.getByRole("link", { name: /delete company/i });
     await link.click();
     await expect(page).toHaveURL(routes.companies.delete(companyId));
+  });
+
+  test("should not be able to view own company without claim", async ({
+    page,
+    runAsDefaultUser,
+    createCompany
+  }) => {
+    const user = await runAsDefaultUser();
+
+    await createCompany({ managerId: user.id });
+    await page.goto(routes.companies.index);
+
+    await expectMinimalUi(page, { noCompaniesFound: true });
   });
 
   type VisibilityOptions = {
@@ -273,7 +324,7 @@ test.describe("new company", () => {
   }
 });
 
-test.describe.only("view company", () => {
+test.describe("view company", () => {
   test("should be able to view any company", async ({
     page,
     runAsDefaultUser,
