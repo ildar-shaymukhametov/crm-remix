@@ -82,7 +82,7 @@ test("should be able to edit any company", async ({
 
   const company = await getCompany(companyId);
   await expectMinimalUi(page, company);
-  const typeName = await expectCompanyEdited(page, company);
+  const typeName = await checkAndFillFields(page, company);
 
   const submit = page.getByRole("button", { name: /save changes/i });
   await submit.click();
@@ -111,7 +111,7 @@ test("should be able to edit own company", async ({
 
   const company = await getCompany(companyId);
   await expectMinimalUi(page, company, { manager: true });
-  const typeName = await expectCompanyEdited(page, company);
+  const typeName = await checkAndFillFields(page, company);
 
   const submit = page.getByRole("button", { name: /save changes/i });
   await submit.click();
@@ -121,7 +121,7 @@ test("should be able to edit own company", async ({
   await expect(page.getByLabel(/type/i)).toHaveText(typeName);
 });
 
-async function expectCompanyEdited(page: Page, company: Company) {
+async function checkAndFillFields(page: Page, company: Company) {
   const name = page.getByLabel(/name/i);
   const address = page.getByLabel(/address/i);
   const ceo = page.getByLabel(/ceo/i);
@@ -434,6 +434,31 @@ for (const claim of [
     await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
   });
 }
+
+test("should be able to edit a company with manager if no manager claims", async ({
+  page,
+  runAsDefaultUser,
+  createCompany,
+  getCompany
+}) => {
+  const user = await runAsDefaultUser({
+    claims: [claims.company.any.update]
+  });
+
+  const companyId = await createCompany({ managerId: user.id });
+  await page.goto(routes.companies.edit(companyId));
+
+  const company = await getCompany(companyId);
+  await expectMinimalUi(page, company);
+  const typeName = await checkAndFillFields(page, company);
+
+  const submit = page.getByRole("button", { name: /save changes/i });
+  await submit.click();
+
+  await expect(page).toHaveURL(routes.companies.view(companyId));
+
+  await expect(page.getByLabel(/type/i)).toHaveText(typeName);
+});
 
 type VisibilityOptions = {
   forbidden?: boolean;

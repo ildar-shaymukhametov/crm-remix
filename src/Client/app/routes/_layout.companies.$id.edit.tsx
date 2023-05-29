@@ -181,19 +181,19 @@ export default function EditCompanyRoute() {
           <label>
             Manager:
             <select name="managerId" defaultValue={data?.fields?.managerId}>
-              {managers
-                ? managers.map((x, i) => (
-                    <option key={i} value={x.id}>
-                      {x.firstName && x.lastName
-                        ? `${x.firstName} ${x.lastName}`
-                        : "-"}
-                    </option>
-                  ))
-                : null}
+              {managers.map((x, i) => (
+                <option key={i} value={x.id}>
+                  {x.firstName && x.lastName
+                    ? `${x.firstName} ${x.lastName}`
+                    : "-"}
+                </option>
+              ))}
             </select>
           </label>
         </div>
-      ) : null}
+      ) : (
+        <input name="managerId" type="hidden" value={data?.fields?.managerId} />
+      )}
 
       <button type="submit">Save changes</button>
     </form>
