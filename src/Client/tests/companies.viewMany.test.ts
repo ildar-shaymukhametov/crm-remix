@@ -68,7 +68,7 @@ test.describe("edit company button", () => {
     await expect(page).toHaveURL(routes.companies.edit(companyId));
   });
 
-  test("should be able to click button in own company", async ({
+  test("should be able to click in own company", async ({
     page,
     runAsDefaultUser,
     createCompany
@@ -85,6 +85,21 @@ test.describe("edit company button", () => {
     const link = page.getByRole("link", { name: /edit company/i });
     await link.click();
     await expect(page).toHaveURL(routes.companies.edit(companyId));
+  });
+
+  test("should not be able to see in own company if no update claims", async ({
+    page,
+    runAsDefaultUser,
+    createCompany
+  }) => {
+    const user = await runAsDefaultUser({
+      claims: [claims.company.whereUserIsManager.view]
+    });
+
+    await createCompany({ managerId: user.id });
+    await page.goto(routes.companies.index);
+
+    await expectMinimalUi(page);
   });
 });
 
