@@ -24,9 +24,9 @@ public class GetCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Any.View)]
+    [InlineData(Constants.Claims.Company.Any.Other.View)]
     [InlineData(Constants.Claims.Company.Any.Delete)]
-    [InlineData(Constants.Claims.Company.Any.Update)]
+    [InlineData(Constants.Claims.Company.Any.Other.Update)]
     public async Task User_has_claim_and_is_not_manager___Returns_company(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -53,9 +53,9 @@ public class GetCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.View)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Update)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.Update)]
     public async Task User_has_claim_and_is_manager___Returns_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -70,9 +70,9 @@ public class GetCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.View)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Update)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.Update)]
     public async Task User_has_claim_and_is_not_manager___Throws_forbidden_access(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(claim);

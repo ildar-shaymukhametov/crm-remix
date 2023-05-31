@@ -2,21 +2,27 @@ export const claims = {
   company: {
     create: "Company.Create",
     any: {
-      view: "Company.Any.View",
       delete: "Company.Any.Delete",
-      update: "Company.Any.Update",
-      setManagerFromNoneToSelf: "Company.Any.SetManagerFromNoneToSelf",
-      setManagerFromAnyToNone: "Company.Any.SetManagerFromAnyToNone",
-      setManagerFromNoneToAny: "Company.Any.SetManagerFromNoneToAny",
-      setManagerFromAnyToAny: "Company.Any.SetManagerFromAnyToAny",
-      setManagerFromAnyToSelf: "Company.Any.SetManagerFromAnyToSelf",
-      setManagerFromSelfToAny: "Company.Any.SetManagerFromSelfToAny",
-      setManagerFromSelfToNone: "Company.Any.SetManagerFromSelfToNone"
+      manager: {
+        setFromNoneToSelf: "Company.Any.Manager.SetFromNoneToSelf",
+        setFromAnyToNone: "Company.Any.Manager.SetFromAnyToNone",
+        setFromNoneToAny: "Company.Any.Manager.SetFromNoneToAny",
+        setFromAnyToAny: "Company.Any.Manager.SetFromAnyToAny",
+        setFromAnyToSelf: "Company.Any.Manager.SetFromAnyToSelf",
+        setFromSelfToAny: "Company.Any.Manager.SetFromSelfToAny",
+        setFromSelfToNone: "Company.Any.Manager.SetFromSelfToNone"
+      },
+      other: {
+        view: "Company.Any.Other.View",
+        update: "Company.Any.Other.Update"
+      }
     },
     whereUserIsManager: {
-      view: "Company.WhereUserIsManager.View",
       delete: "Company.WhereUserIsManager.Delete",
-      update: "Company.WhereUserIsManager.Update",
+      other: {
+        view: "Company.WhereUserIsManager.Other.View",
+        update: "Company.WhereUserIsManager.Other.Update"
+      }
     }
   }
 };
@@ -27,6 +33,6 @@ export const permissions = {
     create: "Company.Create",
     delete: "Company.Delete",
     update: "Company.Update",
-    view: "Company.View",
+    view: "Company.View"
   }
 };

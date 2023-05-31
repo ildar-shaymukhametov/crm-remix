@@ -15,7 +15,7 @@ test("should be able to view any company", async ({
   createCompany,
   getCompany
 }) => {
-  await runAsDefaultUser({ claims: [claims.company.any.view] });
+  await runAsDefaultUser({ claims: [claims.company.any.other.view] });
   const companyId = await createCompany();
 
   await page.goto(routes.companies.view(companyId));
@@ -50,7 +50,7 @@ test("should be able to click edit button in any company", async ({
   getCompany
 }) => {
   await runAsDefaultUser({
-    claims: [claims.company.any.update]
+    claims: [claims.company.any.other.update]
   });
 
   const companyId = await createCompany();
@@ -86,7 +86,7 @@ test("should be able to click delete company button in any company", async ({
 });
 
 test("should see not found", async ({ page, runAsDefaultUser }) => {
-  await runAsDefaultUser({ claims: [claims.company.any.view] });
+  await runAsDefaultUser({ claims: [claims.company.any.other.view] });
   await page.goto(routes.companies.view("1"));
 
   await expectMinimalUi(page, undefined, {
@@ -97,7 +97,7 @@ test("should see not found", async ({ page, runAsDefaultUser }) => {
   });
 });
 
-for (const claim of [claims.company.whereUserIsManager.view]) {
+for (const claim of [claims.company.whereUserIsManager.other.view]) {
   test(`should be able to view own company with claim ${claim}`, async ({
     page,
     runAsDefaultUser,
@@ -119,9 +119,9 @@ for (const claim of [claims.company.whereUserIsManager.view]) {
 }
 
 for (const claim of [
-  claims.company.whereUserIsManager.view,
+  claims.company.whereUserIsManager.other.view,
   claims.company.whereUserIsManager.delete,
-  claims.company.whereUserIsManager.update
+  claims.company.whereUserIsManager.other.update
 ]) {
   test(`should not be able to view non-owned company with claim ${claim}`, async ({
     page,
@@ -175,7 +175,7 @@ test(`should be able to click edit button in own company`, async ({
   getCompany
 }) => {
   const user = await runAsDefaultUser({
-    claims: [claims.company.whereUserIsManager.update]
+    claims: [claims.company.whereUserIsManager.other.update]
   });
 
   const companyId = await createCompany({

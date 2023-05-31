@@ -59,10 +59,10 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Any.SetManagerFromAnyToAny)]
-    [InlineData(Constants.Claims.Company.Any.SetManagerFromAnyToSelf)]
-    [InlineData(Constants.Claims.Company.Any.SetManagerFromNoneToSelf)]
-    [InlineData(Constants.Claims.Company.Any.SetManagerFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
     public async Task User_can_set_self_as_manager___Creates_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[]
@@ -88,8 +88,8 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Any.SetManagerFromAnyToAny)]
-    [InlineData(Constants.Claims.Company.Any.SetManagerFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
     public async Task User_can_set_anyone_as_manager___Creates_company(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[]

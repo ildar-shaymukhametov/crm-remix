@@ -24,7 +24,7 @@ public class GetCompaniesQueryTests : BaseTest
     [Fact]
     public async Task User_can_view_any_company___Returns_companies()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.Any.View);
+        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.Any.Other.View);
         var company = await _fixture.AddCompanyAsync();
 
         var request = new GetCompaniesQuery();
@@ -36,7 +36,7 @@ public class GetCompaniesQueryTests : BaseTest
     [Fact]
     public async Task User_can_update_any_company___Returns_companies()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.Any.Update);
+        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.Any.Other.Update);
         var company = await _fixture.AddCompanyAsync();
 
         var request = new GetCompaniesQuery();
@@ -74,7 +74,7 @@ public class GetCompaniesQueryTests : BaseTest
     [Fact]
     public async Task User_can_view_own_company_and_is_manager___Returns_companies()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.WhereUserIsManager.View);
+        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.WhereUserIsManager.Other.View);
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var request = new GetCompaniesQuery();
@@ -84,8 +84,8 @@ public class GetCompaniesQueryTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.View)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Update)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.View)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.Update)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
     public async Task User_can_view_update_delete_own_company_and_is_not_manager___Returns_empty_list(string claim)
     {
@@ -101,7 +101,7 @@ public class GetCompaniesQueryTests : BaseTest
     [Fact]
     public async Task User_can_update_own_company___Returns_companies()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.WhereUserIsManager.Update);
+        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.WhereUserIsManager.Other.Update);
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var request = new GetCompaniesQuery();

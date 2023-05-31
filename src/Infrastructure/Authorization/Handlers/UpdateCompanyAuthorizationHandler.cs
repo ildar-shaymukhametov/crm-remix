@@ -27,11 +27,11 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         var (company, request) = GetResources(context);
         var userId = context.User.GetSubjectId();
 
-        if (company.ManagerId == userId && !accessRights.Contains(Access.Company.WhereUserIsManager.Update))
+        if (company.ManagerId == userId && !accessRights.Contains(Access.Company.WhereUserIsManager.Other.Update))
         {
             return Fail(context, "Update own company");
         }
-        else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Update))
+        else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Other.Update))
         {
             return Fail(context, "Update any company");
         }
@@ -77,14 +77,14 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             {
                 if (request.ManagerId == userId) // ...to self
                 {
-                    if (!accessRights.Contains(Access.Company.Any.SetManagerFromNoneToSelf))
+                    if (!accessRights.Contains(Access.Company.Any.Manager.SetFromNoneToSelf))
                     {
                         return Result.Failure(new[] { "Set manager from none to self in any company" });
                     }
                 }
                 else // ...to any
                 {
-                    if (!accessRights.Contains(Access.Company.Any.SetManagerFromNoneToAny))
+                    if (!accessRights.Contains(Access.Company.Any.Manager.SetFromNoneToAny))
                     {
                         return Result.Failure(new[] { "Set manager from none to any in any company" });
                     }
@@ -95,14 +95,14 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         {
             if (request.ManagerId == null) // ..to none
             {
-                if (!accessRights.Contains(Access.Company.Any.SetManagerFromSelfToNone))
+                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToNone))
                 {
                     return Result.Failure(new[] { "Set manager from self to none in any company" });
                 }
             }
             else // ...to any
             {
-                if (!accessRights.Contains(Access.Company.Any.SetManagerFromSelfToAny))
+                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToAny))
                 {
                     return Result.Failure(new[] { "Set manager from self to any in any company" });
                 }
@@ -112,21 +112,21 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         {
             if (request.ManagerId == userId) // ...to self
             {
-                if (!accessRights.Contains(Access.Company.Any.SetManagerFromAnyToSelf))
+                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromAnyToSelf))
                 {
                     return Result.Failure(new[] { "Set manager from any to self in any company" });
                 }
             }
             else if (request.ManagerId == null) // ...to none
             {
-                if (!accessRights.Contains(Access.Company.Any.SetManagerFromAnyToNone))
+                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromAnyToNone))
                 {
                     return Result.Failure(new[] { "Set manager from any to none in any company" });
                 }
             }
             else // ...to any
             {
-                if (!accessRights.Contains(Access.Company.Any.SetManagerFromAnyToAny))
+                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromAnyToAny))
                 {
                     return Result.Failure(new[] { "Set manager from any to any in any company" });
                 }

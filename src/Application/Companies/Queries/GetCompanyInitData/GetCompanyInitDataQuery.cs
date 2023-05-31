@@ -68,7 +68,7 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
     private async Task<List<Expression<Func<ApplicationUser, bool>>>> GetManagerExpressionsAsync(GetCompanyInitDataQuery request, string[] accessRights)
     {
         var result = new List<Expression<Func<ApplicationUser, bool>>>();
-        if (accessRights.Contains(Access.Company.Any.SetManagerFromAnyToAny))
+        if (accessRights.Contains(Access.Company.Any.Manager.SetFromAnyToAny))
         {
             result.Add(_allManagers);
             return result;
@@ -76,15 +76,15 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
 
         var managerId = await GetManagerIdAsync(request);
 
-        if (accessRights.Contains(Access.Company.Any.SetManagerFromNoneToAny) && managerId == null
-            || accessRights.Contains(Access.Company.Any.SetManagerFromSelfToAny) && managerId == _currentUserService.UserId)
+        if (accessRights.Contains(Access.Company.Any.Manager.SetFromNoneToAny) && managerId == null
+            || accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToAny) && managerId == _currentUserService.UserId)
         {
             result.Add(_allManagers);
             return result;
         }
 
-        if (accessRights.Contains(Access.Company.Any.SetManagerFromAnyToSelf) && managerId != null
-            || accessRights.Contains(Access.Company.Any.SetManagerFromNoneToSelf) && managerId == null
+        if (accessRights.Contains(Access.Company.Any.Manager.SetFromAnyToSelf) && managerId != null
+            || accessRights.Contains(Access.Company.Any.Manager.SetFromNoneToSelf) && managerId == null
             || accessRights.Contains(Access.Company.SetManagerFromSelf) && managerId == _currentUserService.UserId)
         {
             result.Add(x => x.Id == _currentUserService.UserId);
@@ -95,9 +95,9 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             result.Add(x => x.Id == managerId);
         }
 
-        if (accessRights.Contains(Access.Company.Any.SetManagerFromSelfToNone) && managerId == _currentUserService.UserId
+        if (accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToNone) && managerId == _currentUserService.UserId
             || accessRights.Contains(Access.Company.SetManagerFromNone) && managerId == null
-            || accessRights.Contains(Access.Company.Any.SetManagerFromAnyToNone) && managerId != null)
+            || accessRights.Contains(Access.Company.Any.Manager.SetFromAnyToNone) && managerId != null)
         {
             result.Add(_emptyManager);
         }

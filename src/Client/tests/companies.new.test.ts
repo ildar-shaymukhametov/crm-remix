@@ -24,7 +24,7 @@ test("should be able to create new company", async ({
   runAsDefaultUser
 }) => {
   await runAsDefaultUser({
-    claims: [claims.company.create, claims.company.any.view]
+    claims: [claims.company.create, claims.company.any.other.view]
   });
   await page.goto(routes.companies.new);
   await expectMinimalUi(page);
@@ -51,17 +51,17 @@ test("should be able to create new company", async ({
 });
 
 for (const claim of [
-  claims.company.any.setManagerFromAnyToAny,
-  claims.company.any.setManagerFromAnyToSelf,
-  claims.company.any.setManagerFromNoneToSelf,
-  claims.company.any.setManagerFromNoneToAny
+  claims.company.any.manager.setFromAnyToAny,
+  claims.company.any.manager.setFromAnyToSelf,
+  claims.company.any.manager.setFromNoneToSelf,
+  claims.company.any.manager.setFromNoneToAny
 ]) {
   test(`should be able to set manager to self with claim ${claim}`, async ({
     page,
     runAsDefaultUser
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.create, claims.company.any.view, claim]
+      claims: [claims.company.create, claims.company.any.other.view, claim]
     });
 
     await page.goto(routes.companies.new);
@@ -88,8 +88,8 @@ for (const claim of [
 }
 
 for (const claim of [
-  claims.company.any.setManagerFromAnyToAny,
-  claims.company.any.setManagerFromNoneToAny
+  claims.company.any.manager.setFromAnyToAny,
+  claims.company.any.manager.setFromNoneToAny
 ]) {
   test(`should be able to set manager to any with claim ${claim}`, async ({
     page,
@@ -97,7 +97,7 @@ for (const claim of [
     createUser
   }) => {
     await runAsDefaultUser({
-      claims: [claims.company.create, claims.company.any.view, claim]
+      claims: [claims.company.create, claims.company.any.other.view, claim]
     });
     const user = await createUser();
 

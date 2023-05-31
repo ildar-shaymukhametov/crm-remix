@@ -17,12 +17,12 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        if (accessRights.Contains(Access.Company.Any.View))
+        if (accessRights.Contains(Access.Company.Any.Other.View))
         {
             context.Succeed(requirement);
         }
 
-        if (accessRights.Contains(Access.Company.WhereUserIsManager.View) && context.Resource is CompanyDto company && company.ManagerId == context.User.GetSubjectId())
+        if (accessRights.Contains(Access.Company.WhereUserIsManager.Other.View) && context.Resource is CompanyDto company && company.ManagerId == context.User.GetSubjectId())
         {
             context.Succeed(requirement);
         }

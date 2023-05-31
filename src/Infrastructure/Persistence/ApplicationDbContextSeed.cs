@@ -11,20 +11,19 @@ public static class ApplicationDbContextSeed
         var id = 1;
         builder.Entity<UserClaimType>().HasData(
             new UserClaimType { Id = id++, Value = Claims.Company.Create, Name = Claims.Company.Create, },
-            new UserClaimType { Id = id++, Value = Claims.Company.Any.Update, Name = Claims.Company.Any.Update },
+            new UserClaimType { Id = id++, Value = Claims.Company.Any.Other.Update, Name = Claims.Company.Any.Other.Update },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Delete, Name = Claims.Company.Any.Delete },
-            new UserClaimType { Id = id++, Value = Claims.Company.Any.View, Name = Claims.Company.Any.View },
-            new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Update, Name = Claims.Company.WhereUserIsManager.Update },
+            new UserClaimType { Id = id++, Value = Claims.Company.Any.Other.View, Name = Claims.Company.Any.Other.View },
+            new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Other.Update, Name = Claims.Company.WhereUserIsManager.Other.Update },
             new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Delete, Name = Claims.Company.WhereUserIsManager.Delete },
-            new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.View, Name = Claims.Company.WhereUserIsManager.View },
-            new UserClaimType { Id = id++, Value = Claims.Company.Any.SetManagerFromAnyToAny, Name = Claims.Company.Any.SetManagerFromAnyToAny },
-            new UserClaimType { Id = id++, Value = Claims.Company.Any.SetManagerFromAnyToSelf, Name = Claims.Company.Any.SetManagerFromAnyToSelf },
-            new UserClaimType { Id = id++, Value = Claims.Company.Any.SetManagerFromNoneToSelf, Name = Claims.Company.Any.SetManagerFromNoneToSelf },
-            new UserClaimType { Id = id++, Value = Claims.Company.Any.SetManagerFromNoneToAny, Name = Claims.Company.Any.SetManagerFromNoneToAny },
-            new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.SetManagerFromSelfToAny, Name = Claims.Company.WhereUserIsManager.SetManagerFromSelfToAny },
-            new UserClaimType { Id = id++, Value = Claims.Company.Any.SetManagerFromAnyToNone, Name = Claims.Company.Any.SetManagerFromAnyToNone },
-            new UserClaimType { Id = id++, Value = Claims.Company.Any.SetManagerFromSelfToAny, Name = Claims.Company.Any.SetManagerFromSelfToAny },
-            new UserClaimType { Id = id++, Value = Claims.Company.Any.SetManagerFromSelfToNone, Name = Claims.Company.Any.SetManagerFromSelfToNone }
+            new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Other.View, Name = Claims.Company.WhereUserIsManager.Other.View },
+            new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromAnyToAny, Name = Claims.Company.Any.Manager.SetFromAnyToAny },
+            new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromAnyToSelf, Name = Claims.Company.Any.Manager.SetFromAnyToSelf },
+            new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromNoneToSelf, Name = Claims.Company.Any.Manager.SetFromNoneToSelf },
+            new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromNoneToAny, Name = Claims.Company.Any.Manager.SetFromNoneToAny },
+            new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromAnyToNone, Name = Claims.Company.Any.Manager.SetFromAnyToNone },
+            new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromSelfToAny, Name = Claims.Company.Any.Manager.SetFromSelfToAny },
+            new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromSelfToNone, Name = Claims.Company.Any.Manager.SetFromSelfToNone }
         );
 
         builder.Entity<CompanyType>().HasData(
