@@ -147,7 +147,8 @@ public class AccessService : IAccessService
             {
                 Claims.Company.Any.Manager.SetFromSelfToAny,
                 Claims.Company.Any.Manager.SetFromSelfToNone,
-                Claims.Company.Any.Manager.SetFromAnyToAny
+                Claims.Company.Any.Manager.SetFromAnyToAny,
+                Claims.Company.Any.Manager.SetFromAnyToNone
             }))
         {
             result.Add(Access.Company.Any.Manager.SetFromSelfToNone);

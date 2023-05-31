@@ -197,7 +197,7 @@ public class UpdateCompanyTests : BaseTest
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
     public async Task User_has_claim_to_set_manager_from_none_to_self_in_any_company___Updates_manager(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Constants.Claims.Company.Any.Other.Update });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCommand(company, managerId: user.Id);
 
@@ -218,133 +218,155 @@ public class UpdateCompanyTests : BaseTest
         Assert.Contains("Set manager from none to self in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
     }
 
-    // [Theory]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
-    // public async Task User_has_claim_to_set_manager_from_none_to_any_in_any_company___Updates_manager(string claim)
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Constants.Claims.Company.Any.Other.Update });
-    //     var anotherUser = await _fixture.AddUserAsync();
-    //     var company = await _fixture.AddCompanyAsync();
-    //     var command = CreateCommand(company.Id, managerId: anotherUser.Id);
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    public async Task User_has_claim_to_set_manager_from_none_to_any_in_any_company___Updates_manager(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var anotherUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync();
+        var command = CreateCommand(company, managerId: anotherUser.Id);
 
-    //     await AssertCompanyUpdatedAsync(user, company.Id, command);
-    // }
+        await AssertManagerUpdatedAsync(user, company.Id, command);
+    }
 
-    // [Fact]
-    // public async Task User_has_no_claim_to_set_manager_from_none_to_any_in_any_company___Throws_forbidden_access()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Update });
-    //     var anotherUser = await _fixture.AddUserAsync();
-    //     var company = await _fixture.AddCompanyAsync();
-    //     var command = CreateCommand(company.Id, managerId: anotherUser.Id);
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    public async Task User_has_no_claim_to_set_manager_from_none_to_any_in_any_company___Throws_forbidden_access(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var anotherUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync();
+        var command = CreateCommand(company, managerId: anotherUser.Id);
 
-    //     var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    //     Assert.Contains("Set manager from none to any in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        Assert.Contains("Set manager from none to any in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+    }
 
-    // }
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
+    public async Task User_has_claim_to_set_manager_from_self_to_none_in_any_company___Updates_manager(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Constants.Claims.Company.Any.Other.Update });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+        var command = CreateCommand(company);
 
-    // [Theory]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
-    // public async Task User_has_claim_to_set_manager_from_self_to_none_in_any_company___Updates_manager(string claim)
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Constants.Claims.Company.Any.Other.Update });
-    //     var company = await _fixture.AddCompanyAsync(user.Id);
-    //     var command = CreateCommand(company.Id);
+        await AssertManagerUpdatedAsync(user, company.Id, command);
+    }
 
-    //     await AssertCompanyUpdatedAsync(user, company.Id, command);
-    // }
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
+    public async Task User_has_no_claim_to_set_manager_from_self_to_none_in_any_company___Throws_forbidden_access(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var someUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(user.Id);
+        var command = CreateCommand(company);
 
-    // [Fact]
-    // public async Task User_has_no_claim_to_set_manager_from_self_to_none_in_any_company___Throws_forbidden_access()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Update });
-    //     var someUser = await _fixture.AddUserAsync();
-    //     var company = await _fixture.AddCompanyAsync(user.Id);
-    //     var command = CreateCommand(company.Id);
+        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        Assert.Contains("Set manager from self to none in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+    }
 
-    //     var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    //     Assert.Contains("Set manager from self to none in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
-    // }
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    public async Task User_has_claim_to_set_manager_from_any_to_none_in_any_company___Updates_manager(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var someUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(someUser.Id);
+        var command = CreateCommand(company);
 
-    // [Theory]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
-    // public async Task User_has_claim_to_set_manager_from_any_to_none_in_any_company___Updates_manager(string claim)
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Constants.Claims.Company.Any.Other.Update });
-    //     var someUser = await _fixture.AddUserAsync();
-    //     var company = await _fixture.AddCompanyAsync(someUser.Id);
-    //     var command = CreateCommand(company.Id);
+        await AssertManagerUpdatedAsync(user, company.Id, command);
+    }
 
-    //     await AssertCompanyUpdatedAsync(user, company.Id, command);
-    // }
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
+    public async Task User_has_no_claim_to_set_manager_from_any_to_none_in_any_company___Throws_forbidden_access(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var someUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(someUser.Id);
+        var command = CreateCommand(company);
 
-    // [Fact]
-    // public async Task User_has_no_claim_to_set_manager_from_any_to_none_in_any_company___Throws_forbidden_access()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Update });
-    //     var someUser = await _fixture.AddUserAsync();
-    //     var company = await _fixture.AddCompanyAsync(someUser.Id);
-    //     var command = CreateCommand(company.Id);
+        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        Assert.Contains("Set manager from any to none in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+    }
 
-    //     var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    //     Assert.Contains("Set manager from any to none in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
-    // }
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    public async Task User_has_claim_to_set_manager_from_any_to_self_in_any_company___Updates_manager(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var someUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(someUser.Id);
+        var command = CreateCommand(company, managerId: user.Id);
 
-    // [Theory]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
-    // public async Task User_has_claim_to_set_manager_from_any_to_self_in_any_company___Updates_manager(string claim)
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Constants.Claims.Company.Any.Other.Update });
-    //     var someUser = await _fixture.AddUserAsync();
-    //     var company = await _fixture.AddCompanyAsync(someUser.Id);
-    //     var command = CreateCommand(company.Id, managerId: user.Id);
+        await AssertManagerUpdatedAsync(user, company.Id, command);
+    }
 
-    //     await AssertCompanyUpdatedAsync(user, company.Id, command);
-    // }
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
+    public async Task User_has_no_claim_to_set_manager_from_any_to_self_in_any_company___Throws_forbidden_access(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var someUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(someUser.Id);
+        var command = CreateCommand(company, managerId: user.Id);
 
-    // [Fact]
-    // public async Task User_has_no_claim_to_set_manager_from_any_to_self_in_any_company___Throws_forbidden_access()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Update });
-    //     var someUser = await _fixture.AddUserAsync();
-    //     var company = await _fixture.AddCompanyAsync(someUser.Id);
-    //     var command = CreateCommand(company.Id, managerId: user.Id);
+        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        Assert.Contains("Set manager from any to self in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
 
-    //     var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    //     Assert.Contains("Set manager from any to self in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+    }
 
-    // }
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    public async Task User_has_claim_to_set_manager_from_self_to_any_in_any_company___Updates_manager(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var someUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(user.Id);
+        var command = CreateCommand(company, managerId: someUser.Id);
 
-    // [Theory]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
-    // public async Task User_has_claim_to_set_manager_from_self_to_any_in_any_company___Updates_manager(string claim)
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Constants.Claims.Company.Any.Other.Update });
-    //     var someUser = await _fixture.AddUserAsync();
-    //     var company = await _fixture.AddCompanyAsync(user.Id);
-    //     var command = CreateCommand(company.Id, managerId: someUser.Id);
+        await AssertManagerUpdatedAsync(user, company.Id, command);
+    }
 
-    //     await AssertCompanyUpdatedAsync(user, company.Id, command);
-    // }
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
+    public async Task User_has_no_claim_to_set_manager_from_self_to_any_in_any_company___Throws_forbidden_access(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var someUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(user.Id);
+        var command = CreateCommand(company, managerId: someUser.Id);
 
-    // [Fact]
-    // public async Task User_has_no_claim_to_set_manager_from_self_to_any_in_any_company___Throws_forbidden_access()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Update });
-    //     var someUser = await _fixture.AddUserAsync();
-    //     var company = await _fixture.AddCompanyAsync(user.Id);
-    //     var command = CreateCommand(company.Id, managerId: someUser.Id);
-
-    //     var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    //     Assert.Contains("Set manager from self to any in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
-
-    // }
+        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        Assert.Contains("Set manager from self to any in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+    }
 
     // [Theory]
     // [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
