@@ -12,6 +12,7 @@ public static class Constants
             public static class Any
             {
                 public const string Delete = "Company.Any.Delete";
+                public const string Update = "Company.Any.Update";
                 public static class Manager
                 {
                     public const string SetFromAnyToAny = "Company.Any.Manager.SetFromAnyToAny";
@@ -32,6 +33,7 @@ public static class Constants
             public static class WhereUserIsManager
             {
                 public const string Delete = "Company.WhereUserIsManager.Delete";
+                public const string Update = "Company.WhereUserIsManager.Update";
                 public static class Other
                 {
                     public const string View = "Company.WhereUserIsManager.Other.View";
@@ -79,6 +81,8 @@ public static class Constants
             public static class Any
             {
                 public const string Delete = "Company.Any.Delete";
+                public const string Update = "Company.Any.Update";
+
                 public static class Manager
                 {
                     public const string SetFromAnyToAny = "Company.Any.Manager.SetFromAnyToAny";

@@ -176,8 +176,8 @@ namespace CRM.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "Company.Any.Other.Update",
-                            Value = "Company.Any.Other.Update"
+                            Name = "Company.Any.Update",
+                            Value = "Company.Any.Update"
                         },
                         new
                         {
@@ -194,62 +194,74 @@ namespace CRM.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 5,
-                            Name = "Company.WhereUserIsManager.Other.Update",
-                            Value = "Company.WhereUserIsManager.Other.Update"
+                            Name = "Company.Any.Other.Update",
+                            Value = "Company.Any.Other.Update"
                         },
                         new
                         {
                             Id = 6,
-                            Name = "Company.WhereUserIsManager.Delete",
-                            Value = "Company.WhereUserIsManager.Delete"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Company.WhereUserIsManager.Other.View",
-                            Value = "Company.WhereUserIsManager.Other.View"
-                        },
-                        new
-                        {
-                            Id = 8,
                             Name = "Company.Any.Manager.SetFromAnyToAny",
                             Value = "Company.Any.Manager.SetFromAnyToAny"
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 7,
                             Name = "Company.Any.Manager.SetFromAnyToSelf",
                             Value = "Company.Any.Manager.SetFromAnyToSelf"
                         },
                         new
                         {
-                            Id = 10,
+                            Id = 8,
                             Name = "Company.Any.Manager.SetFromNoneToSelf",
                             Value = "Company.Any.Manager.SetFromNoneToSelf"
                         },
                         new
                         {
-                            Id = 11,
+                            Id = 9,
                             Name = "Company.Any.Manager.SetFromNoneToAny",
                             Value = "Company.Any.Manager.SetFromNoneToAny"
                         },
                         new
                         {
-                            Id = 12,
+                            Id = 10,
                             Name = "Company.Any.Manager.SetFromAnyToNone",
                             Value = "Company.Any.Manager.SetFromAnyToNone"
                         },
                         new
                         {
-                            Id = 13,
+                            Id = 11,
                             Name = "Company.Any.Manager.SetFromSelfToAny",
                             Value = "Company.Any.Manager.SetFromSelfToAny"
                         },
                         new
                         {
-                            Id = 14,
+                            Id = 12,
                             Name = "Company.Any.Manager.SetFromSelfToNone",
                             Value = "Company.Any.Manager.SetFromSelfToNone"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "Company.WhereUserIsManager.Update",
+                            Value = "Company.WhereUserIsManager.Update"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "Company.WhereUserIsManager.Delete",
+                            Value = "Company.WhereUserIsManager.Delete"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "Company.WhereUserIsManager.Other.View",
+                            Value = "Company.WhereUserIsManager.Other.View"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name = "Company.WhereUserIsManager.Other.Update",
+                            Value = "Company.WhereUserIsManager.Other.Update"
                         });
                 });
 

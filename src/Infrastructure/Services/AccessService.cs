@@ -227,6 +227,14 @@ public class AccessService : IAccessService
             result.Add(Access.Company.WhereUserIsManager.Delete);
         }
 
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.Any.Update
+            }))
+        {
+            result.Add(Access.Company.Any.Update);
+        }
+
         return result.ToArray();
     }
 

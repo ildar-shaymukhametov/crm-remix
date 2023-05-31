@@ -10,18 +10,6 @@ namespace CRM.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                table: "UserClaimTypes",
-                keyColumn: "Id",
-                keyValue: 15);
-
-            migrationBuilder.UpdateData(
-                table: "UserClaimTypes",
-                keyColumn: "Id",
-                keyValue: 2,
-                columns: new[] { "Name", "Value" },
-                values: new object[] { "Company.Any.Other.Update", "Company.Any.Other.Update" });
-
             migrationBuilder.UpdateData(
                 table: "UserClaimTypes",
                 keyColumn: "Id",
@@ -34,74 +22,91 @@ namespace CRM.Infrastructure.Persistence.Migrations
                 keyColumn: "Id",
                 keyValue: 5,
                 columns: new[] { "Name", "Value" },
-                values: new object[] { "Company.WhereUserIsManager.Other.Update", "Company.WhereUserIsManager.Other.Update" });
+                values: new object[] { "Company.Any.Other.Update", "Company.Any.Other.Update" });
 
             migrationBuilder.UpdateData(
                 table: "UserClaimTypes",
                 keyColumn: "Id",
-                keyValue: 7,
-                columns: new[] { "Name", "Value" },
-                values: new object[] { "Company.WhereUserIsManager.Other.View", "Company.WhereUserIsManager.Other.View" });
-
-            migrationBuilder.UpdateData(
-                table: "UserClaimTypes",
-                keyColumn: "Id",
-                keyValue: 8,
+                keyValue: 6,
                 columns: new[] { "Name", "Value" },
                 values: new object[] { "Company.Any.Manager.SetFromAnyToAny", "Company.Any.Manager.SetFromAnyToAny" });
 
             migrationBuilder.UpdateData(
                 table: "UserClaimTypes",
                 keyColumn: "Id",
-                keyValue: 9,
+                keyValue: 7,
                 columns: new[] { "Name", "Value" },
                 values: new object[] { "Company.Any.Manager.SetFromAnyToSelf", "Company.Any.Manager.SetFromAnyToSelf" });
 
             migrationBuilder.UpdateData(
                 table: "UserClaimTypes",
                 keyColumn: "Id",
-                keyValue: 10,
+                keyValue: 8,
                 columns: new[] { "Name", "Value" },
                 values: new object[] { "Company.Any.Manager.SetFromNoneToSelf", "Company.Any.Manager.SetFromNoneToSelf" });
 
             migrationBuilder.UpdateData(
                 table: "UserClaimTypes",
                 keyColumn: "Id",
-                keyValue: 11,
+                keyValue: 9,
                 columns: new[] { "Name", "Value" },
                 values: new object[] { "Company.Any.Manager.SetFromNoneToAny", "Company.Any.Manager.SetFromNoneToAny" });
 
             migrationBuilder.UpdateData(
                 table: "UserClaimTypes",
                 keyColumn: "Id",
-                keyValue: 12,
+                keyValue: 10,
                 columns: new[] { "Name", "Value" },
                 values: new object[] { "Company.Any.Manager.SetFromAnyToNone", "Company.Any.Manager.SetFromAnyToNone" });
 
             migrationBuilder.UpdateData(
                 table: "UserClaimTypes",
                 keyColumn: "Id",
-                keyValue: 13,
+                keyValue: 11,
                 columns: new[] { "Name", "Value" },
                 values: new object[] { "Company.Any.Manager.SetFromSelfToAny", "Company.Any.Manager.SetFromSelfToAny" });
 
             migrationBuilder.UpdateData(
                 table: "UserClaimTypes",
                 keyColumn: "Id",
-                keyValue: 14,
+                keyValue: 12,
                 columns: new[] { "Name", "Value" },
                 values: new object[] { "Company.Any.Manager.SetFromSelfToNone", "Company.Any.Manager.SetFromSelfToNone" });
+
+            migrationBuilder.UpdateData(
+                table: "UserClaimTypes",
+                keyColumn: "Id",
+                keyValue: 13,
+                columns: new[] { "Name", "Value" },
+                values: new object[] { "Company.WhereUserIsManager.Update", "Company.WhereUserIsManager.Update" });
+
+            migrationBuilder.UpdateData(
+                table: "UserClaimTypes",
+                keyColumn: "Id",
+                keyValue: 14,
+                columns: new[] { "Name", "Value" },
+                values: new object[] { "Company.WhereUserIsManager.Delete", "Company.WhereUserIsManager.Delete" });
+
+            migrationBuilder.UpdateData(
+                table: "UserClaimTypes",
+                keyColumn: "Id",
+                keyValue: 15,
+                columns: new[] { "Name", "Value" },
+                values: new object[] { "Company.WhereUserIsManager.Other.View", "Company.WhereUserIsManager.Other.View" });
+
+            migrationBuilder.InsertData(
+                table: "UserClaimTypes",
+                columns: new[] { "Id", "Name", "Value" },
+                values: new object[] { 16, "Company.WhereUserIsManager.Other.Update", "Company.WhereUserIsManager.Other.Update" });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.UpdateData(
+            migrationBuilder.DeleteData(
                 table: "UserClaimTypes",
                 keyColumn: "Id",
-                keyValue: 2,
-                columns: new[] { "Name", "Value" },
-                values: new object[] { "Company.Any.Update", "Company.Any.Update" });
+                keyValue: 16);
 
             migrationBuilder.UpdateData(
                 table: "UserClaimTypes",
@@ -116,6 +121,13 @@ namespace CRM.Infrastructure.Persistence.Migrations
                 keyValue: 5,
                 columns: new[] { "Name", "Value" },
                 values: new object[] { "Company.WhereUserIsManager.Update", "Company.WhereUserIsManager.Update" });
+
+            migrationBuilder.UpdateData(
+                table: "UserClaimTypes",
+                keyColumn: "Id",
+                keyValue: 6,
+                columns: new[] { "Name", "Value" },
+                values: new object[] { "Company.WhereUserIsManager.Delete", "Company.WhereUserIsManager.Delete" });
 
             migrationBuilder.UpdateData(
                 table: "UserClaimTypes",
@@ -173,10 +185,12 @@ namespace CRM.Infrastructure.Persistence.Migrations
                 columns: new[] { "Name", "Value" },
                 values: new object[] { "Company.Any.SetManagerFromSelfToAny", "Company.Any.SetManagerFromSelfToAny" });
 
-            migrationBuilder.InsertData(
+            migrationBuilder.UpdateData(
                 table: "UserClaimTypes",
-                columns: new[] { "Id", "Name", "Value" },
-                values: new object[] { 15, "Company.Any.SetManagerFromSelfToNone", "Company.Any.SetManagerFromSelfToNone" });
+                keyColumn: "Id",
+                keyValue: 15,
+                columns: new[] { "Name", "Value" },
+                values: new object[] { "Company.Any.SetManagerFromSelfToNone", "Company.Any.SetManagerFromSelfToNone" });
         }
     }
 }

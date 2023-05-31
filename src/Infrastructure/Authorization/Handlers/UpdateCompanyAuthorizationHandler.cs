@@ -1,4 +1,5 @@
 using CRM.Application.Common.Behaviours.Authorization.Resources;
+using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Models;
 using CRM.Application.Companies.Commands.UpdateCompany;
@@ -24,26 +25,53 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             return Fail(context, "Update company");
         }
 
+        if (accessRights.Contains(Access.Company.Any.Update))
+        {
+            return Ok(context, requirement);
+        }
+
         var (company, request) = GetResources(context);
         var userId = context.User.GetSubjectId();
 
-        if (company.ManagerId == userId && !accessRights.Contains(Access.Company.WhereUserIsManager.Other.Update))
+        if (request == null)
         {
-            return Fail(context, "Update own company");
-        }
-        else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Other.Update))
-        {
-            return Fail(context, "Update any company");
+            return Ok(context, requirement);
         }
 
-        if (request != null)
+        var otherFieldChanged = company.Address != request.Address || company.Ceo != request.Ceo || company.Contacts != request.Contacts || company.Email != request.Email || company.Inn != request.Inn || company.Name != request.Name || company.Phone != request.Phone || company.TypeId != request.TypeId;
+        if (otherFieldChanged && !accessRights.Contains(Access.Company.Any.Other.Update))
         {
-            var managerResult = CheckManager(company, request, userId, accessRights);
-            if (!managerResult.Succeeded)
-            {
-                return Fail(context, managerResult.Errors.First());
-            }
+            return Fail(context, "Update other fields");
         }
+
+        if (company.ManagerId != request.ManagerId && !accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToAny, Access.Company.Any.Manager.SetFromAnyToNone, Access.Company.Any.Manager.SetFromAnyToSelf, Access.Company.Any.Manager.SetFromNoneToAny, Access.Company.Any.Manager.SetFromNoneToSelf, Access.Company.Any.Manager.SetFromSelfToAny, Access.Company.Any.Manager.SetFromSelfToNone))
+        {
+            return Fail(context, "Update manager");
+        }
+
+        var managerResult = CheckManager(company, request, userId, accessRights);
+        if (!managerResult.Succeeded)
+        {
+            return Fail(context, managerResult.Errors.First());
+        }
+
+        // if (company.ManagerId == userId && !accessRights.Contains(Access.Company.WhereUserIsManager.Other.Update))
+        // {
+        //     return Fail(context, "Update own company");
+        // }
+        // else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Other.Update))
+        // {
+        //     return Fail(context, "Update any company");
+        // }
+
+        // if (request != null)
+        // {
+        //     var managerResult = CheckManager(company, request, userId, accessRights);
+        //     if (!managerResult.Succeeded)
+        //     {
+        //         return Fail(context, managerResult.Errors.First());
+        //     }
+        // }
 
         return Ok(context, requirement);
     }
