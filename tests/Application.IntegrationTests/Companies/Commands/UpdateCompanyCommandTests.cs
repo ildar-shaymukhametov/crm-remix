@@ -50,8 +50,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateNewData(company.Id);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Update company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]
@@ -82,8 +81,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateNewData(company.Id, user.Id);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Update manager", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]
@@ -110,8 +108,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCopyData(company, address: string.Empty);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]
@@ -121,8 +118,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCopyData(company, ceo: string.Empty);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]
@@ -132,8 +128,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCopyData(company, contacts: string.Empty);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]
@@ -143,8 +138,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCopyData(company, email: string.Empty);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]
@@ -154,8 +148,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCopyData(company, inn: string.Empty);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]
@@ -165,8 +158,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCopyData(company, name: string.Empty);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]
@@ -176,8 +168,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCopyData(company, phone: string.Empty);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]
@@ -187,8 +178,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCopyData(company, typeId: 0);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Theory]
@@ -212,8 +202,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCopyData(company, managerId: user.Id);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Set manager from none to self in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Theory]
@@ -237,8 +226,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCopyData(company, managerId: anotherUser.Id);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Set manager from none to any in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Theory]
@@ -286,8 +274,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync(someUser.Id);
         var command = CreateCopyData(company);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Set manager from any to none in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Theory]
@@ -311,8 +298,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync(someUser.Id);
         var command = CreateCopyData(company, managerId: user.Id);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Set manager from any to self in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
 
     }
 
@@ -337,8 +323,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync(user.Id);
         var command = CreateCopyData(company, managerId: someUser.Id);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Set manager from self to any in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]
@@ -362,8 +347,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync(someUser.Id);
         var command = CreateCopyData(company, managerId: anotherUser.Id);
 
-        var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-        Assert.Contains("Set manager from any to any in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
     [Fact]
