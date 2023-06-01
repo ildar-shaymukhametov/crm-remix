@@ -117,7 +117,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             {
                 if (!accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToAny) && !accessRights.Contains(Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny))
                 {
-                    return Result.Failure(new[] { "Set manager from self to any in any company" });
+                    return Result.Failure(new[] { "Set manager from self to any" });
                 }
             }
         }
