@@ -374,7 +374,7 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_update_any_field_in_own_company_and_he_is_manager___Updates_company()
+    public async Task User_has_claim_to_update_any_field_in_own_company_and_is_manager___Updates_company()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Update });
         var company = await _fixture.AddCompanyAsync(user.Id);
@@ -394,7 +394,7 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_update_other_fields_in_own_company_and_he_is_manager___Updates_other_fields()
+    public async Task User_has_claim_to_update_other_fields_in_own_company_and_is_manager___Updates_other_fields()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Update });
         var company = await _fixture.AddCompanyAsync(user.Id);
@@ -404,7 +404,7 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_update_other_fields_in_own_company_and_he_is_manager___Forbidden_to_update_manager()
+    public async Task User_has_claim_to_update_other_fields_in_own_company_and_is_manager___Forbidden_to_update_manager()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Update });
         var company = await _fixture.AddCompanyAsync(user.Id);
@@ -416,7 +416,7 @@ public class UpdateCompanyTests : BaseTest
     [Theory]
     [InlineData(Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
     [InlineData(Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
-    public async Task User_has_claim_to_update_manager_in_own_company_and_he_is_manager___Updates_manager(string claim)
+    public async Task User_has_claim_to_update_manager_in_own_company_and_is_manager___Updates_manager(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync(user.Id);
@@ -429,7 +429,7 @@ public class UpdateCompanyTests : BaseTest
     [Theory]
     [InlineData(Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
     [InlineData(Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
-    public async Task User_has_claim_to_update_manager_in_own_company_and_he_is_manager___Forbiden_to_update_other_fields(string claim)
+    public async Task User_has_claim_to_update_manager_in_own_company_and_is_manager___Forbiden_to_update_other_fields(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync(user.Id);
