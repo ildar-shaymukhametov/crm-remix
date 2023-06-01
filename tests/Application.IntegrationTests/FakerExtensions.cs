@@ -41,3 +41,8 @@ public static class Builders
         return result;
     }
 }
+
+public static class RandomString
+{
+    public static string Next() => Path.GetFileNameWithoutExtension(Path.GetTempFileName());
+}
