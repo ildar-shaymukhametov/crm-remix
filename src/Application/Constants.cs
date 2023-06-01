@@ -119,9 +119,6 @@ public static class Constants
                 }
                 public static class Manager
                 {
-                    public const string SetFromAnyToAny = "Company.Any.Manager.SetFromAnyToAny";
-                    public const string SetFromAnyToSelf = "Company.Any.Manager.SetFromAnyToSelf";
-                    public const string SetFromAnyToNone = "Company.Any.Manager.SetFromAnyToNone";
                     public const string SetFromSelfToAny = "Company.Any.Manager.SetFromSelfToAny";
                     public const string SetFromSelfToNone = "Company.Any.Manager.SetFromSelfToNone";
                 }

@@ -52,7 +52,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
 
         if (company.ManagerId != request.ManagerId)
         {
-            if (company.ManagerId == userId && !accessRights.ContainsAny(Access.Company.WhereUserIsManager.Manager.SetFromAnyToAny, Access.Company.WhereUserIsManager.Manager.SetFromAnyToNone, Access.Company.WhereUserIsManager.Manager.SetFromAnyToSelf, Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny, Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
+            if (company.ManagerId == userId && !accessRights.ContainsAny(Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny, Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
             {
                 return Fail(context, "Update manager");
             }
