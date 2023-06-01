@@ -503,7 +503,7 @@ public class UpdateCompanyTests : BaseTest
 
     private static UpdateCompanyCommand CreateCopyData(Company data)
     {
-         return new UpdateCompanyCommand
+        return new UpdateCompanyCommand
         {
             Id = data.Id,
             Address = data.Address,
