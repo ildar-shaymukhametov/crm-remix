@@ -103,10 +103,20 @@ public static class Constants
             public static class WhereUserIsManager
             {
                 public const string Delete = "Company.WhereUserIsManager.Delete";
+                public const string Update = "Company.WhereUserIsManager.Update";
+
                 public static class Other
                 {
                     public const string View = "Company.WhereUserIsManager.Other.View";
                     public const string Update = "Company.WhereUserIsManager.Other.Update";
+                }
+                public static class Manager
+                {
+                    public const string SetFromAnyToAny = "Company.Any.Manager.SetFromAnyToAny";
+                    public const string SetFromAnyToSelf = "Company.Any.Manager.SetFromAnyToSelf";
+                    public const string SetFromAnyToNone = "Company.Any.Manager.SetFromAnyToNone";
+                    public const string SetFromSelfToAny = "Company.Any.Manager.SetFromSelfToAny";
+                    public const string SetFromSelfToNone = "Company.Any.Manager.SetFromSelfToNone";
                 }
             }
         }

@@ -25,34 +25,47 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             return Fail(context, "Update company");
         }
 
-        if (accessRights.Contains(Access.Company.Any.Update))
-        {
-            return Ok(context, requirement);
-        }
-
         var (company, request) = GetResources(context);
-        var userId = context.User.GetSubjectId();
-
         if (request == null)
         {
             return Ok(context, requirement);
         }
 
+        var userId = context.User.GetSubjectId();
+        if (accessRights.Contains(Access.Company.Any.Update) || company.ManagerId == userId && accessRights.Contains(Access.Company.WhereUserIsManager.Update))
+        {
+            return Ok(context, requirement);
+        }
+
         var otherFieldChanged = company.Address != request.Address || company.Ceo != request.Ceo || company.Contacts != request.Contacts || company.Email != request.Email || company.Inn != request.Inn || company.Name != request.Name || company.Phone != request.Phone || company.TypeId != request.TypeId;
-        if (otherFieldChanged && !accessRights.Contains(Access.Company.Any.Other.Update))
+        if (otherFieldChanged)
         {
-            return Fail(context, "Update other fields");
+            if (company.ManagerId == userId && !accessRights.Contains(Access.Company.WhereUserIsManager.Other.Update))
+            {
+                return Fail(context, "Update other fields");
+            }
+            else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Other.Update))
+            {
+                return Fail(context, "Update other fields");
+            }
         }
 
-        if (company.ManagerId != request.ManagerId && !accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToAny, Access.Company.Any.Manager.SetFromAnyToNone, Access.Company.Any.Manager.SetFromAnyToSelf, Access.Company.Any.Manager.SetFromNoneToAny, Access.Company.Any.Manager.SetFromNoneToSelf, Access.Company.Any.Manager.SetFromSelfToAny, Access.Company.Any.Manager.SetFromSelfToNone))
+        if (company.ManagerId != request.ManagerId)
         {
-            return Fail(context, "Update manager");
-        }
+            if (company.ManagerId == userId && !accessRights.ContainsAny(Access.Company.WhereUserIsManager.Manager.SetFromAnyToAny, Access.Company.WhereUserIsManager.Manager.SetFromAnyToNone, Access.Company.WhereUserIsManager.Manager.SetFromAnyToSelf, Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny, Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
+            {
+                return Fail(context, "Update manager in own company");
+            }
+            else if (company.ManagerId != userId && !accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToAny, Access.Company.Any.Manager.SetFromAnyToNone, Access.Company.Any.Manager.SetFromAnyToSelf, Access.Company.Any.Manager.SetFromNoneToAny, Access.Company.Any.Manager.SetFromNoneToSelf, Access.Company.Any.Manager.SetFromSelfToAny, Access.Company.Any.Manager.SetFromSelfToNone))
+            {
+                return Fail(context, "Update manager");
+            }
 
-        var managerResult = CheckManager(company, request, userId, accessRights);
-        if (!managerResult.Succeeded)
-        {
-            return Fail(context, managerResult.Errors.First());
+            var managerResult = CheckManager(company, request, userId, accessRights);
+            if (!managerResult.Succeeded)
+            {
+                return Fail(context, managerResult.Errors.First());
+            }
         }
 
         // if (company.ManagerId == userId && !accessRights.Contains(Access.Company.WhereUserIsManager.Other.Update))
@@ -123,9 +136,9 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         {
             if (request.ManagerId == null) // ..to none
             {
-                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToNone))
+                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToNone) && !accessRights.Contains(Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
                 {
-                    return Result.Failure(new[] { "Set manager from self to none in any company" });
+                    return Result.Failure(new[] { "Set manager from self to none" });
                 }
             }
             else // ...to any
