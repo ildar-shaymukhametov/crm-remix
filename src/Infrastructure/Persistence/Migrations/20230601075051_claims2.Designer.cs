@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230531121155_refactor_claims2")]
-    partial class refactor_claims2
+    [Migration("20230601075051_claims2")]
+    partial class claims2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -265,6 +265,18 @@ namespace CRM.Infrastructure.Persistence.Migrations
                             Id = 16,
                             Name = "Company.WhereUserIsManager.Other.Update",
                             Value = "Company.WhereUserIsManager.Other.Update"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Name = "Company.WhereUserIsManager.Manager.SetFromSelfToAny",
+                            Value = "Company.WhereUserIsManager.Manager.SetFromSelfToAny"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Name = "Company.WhereUserIsManager.Manager.SetFromSelfToNone",
+                            Value = "Company.WhereUserIsManager.Manager.SetFromSelfToNone"
                         });
                 });
 

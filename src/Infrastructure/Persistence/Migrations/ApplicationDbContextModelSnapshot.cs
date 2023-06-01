@@ -262,6 +262,18 @@ namespace CRM.Infrastructure.Persistence.Migrations
                             Id = 16,
                             Name = "Company.WhereUserIsManager.Other.Update",
                             Value = "Company.WhereUserIsManager.Other.Update"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Name = "Company.WhereUserIsManager.Manager.SetFromSelfToAny",
+                            Value = "Company.WhereUserIsManager.Manager.SetFromSelfToAny"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Name = "Company.WhereUserIsManager.Manager.SetFromSelfToNone",
+                            Value = "Company.WhereUserIsManager.Manager.SetFromSelfToNone"
                         });
                 });
 

@@ -19,18 +19,13 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
     {
-        var accessRights = _accessService.CheckAccess(context.User);
-        if (!accessRights.Any())
-        {
-            return Fail(context, "Update company");
-        }
-
         var (company, request) = GetResources(context);
         if (request == null)
         {
             return Ok(context, requirement);
         }
 
+        var accessRights = _accessService.CheckAccess(context.User);
         var userId = context.User.GetSubjectId();
         if (accessRights.Contains(Access.Company.Any.Update) || company.ManagerId == userId && accessRights.Contains(Access.Company.WhereUserIsManager.Update))
         {
@@ -89,11 +84,6 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
 
     private static Result CheckManager(CompanyDto company, UpdateCompanyCommand request, string userId, string[] accessRights)
     {
-        if (company.ManagerId == request.ManagerId)
-        {
-            return Result.Success();
-        }
-
         if (company.ManagerId == null)
         {
             if (request.ManagerId != null) // from none...
@@ -125,7 +115,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             }
             else // ...to any
             {
-                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToAny))
+                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToAny) && !accessRights.Contains(Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny))
                 {
                     return Result.Failure(new[] { "Set manager from self to any in any company" });
                 }

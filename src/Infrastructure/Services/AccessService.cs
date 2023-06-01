@@ -152,6 +152,7 @@ public class AccessService : IAccessService
             }))
         {
             result.Add(Access.Company.Any.Manager.SetFromSelfToNone);
+            result.Add(Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone);
         }
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
@@ -170,6 +171,7 @@ public class AccessService : IAccessService
             }))
         {
             result.Add(Access.Company.Any.Manager.SetFromSelfToAny);
+            result.Add(Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny);
         }
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
@@ -242,6 +244,22 @@ public class AccessService : IAccessService
             }))
         {
             result.Add(Access.Company.WhereUserIsManager.Update);
+        }
+
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone
+            }))
+        {
+            result.Add(Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone);
+        }
+
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny
+            }))
+        {
+            result.Add(Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone);
         }
 
         return result.ToArray();

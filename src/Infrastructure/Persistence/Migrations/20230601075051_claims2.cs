@@ -2,10 +2,12 @@
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace CRM.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class refactor_claims2 : Migration
+    public partial class claims2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -97,7 +99,12 @@ namespace CRM.Infrastructure.Persistence.Migrations
             migrationBuilder.InsertData(
                 table: "UserClaimTypes",
                 columns: new[] { "Id", "Name", "Value" },
-                values: new object[] { 16, "Company.WhereUserIsManager.Other.Update", "Company.WhereUserIsManager.Other.Update" });
+                values: new object[,]
+                {
+                    { 16, "Company.WhereUserIsManager.Other.Update", "Company.WhereUserIsManager.Other.Update" },
+                    { 17, "Company.WhereUserIsManager.Manager.SetFromSelfToAny", "Company.WhereUserIsManager.Manager.SetFromSelfToAny" },
+                    { 18, "Company.WhereUserIsManager.Manager.SetFromSelfToNone", "Company.WhereUserIsManager.Manager.SetFromSelfToNone" }
+                });
         }
 
         /// <inheritdoc />
@@ -107,6 +114,16 @@ namespace CRM.Infrastructure.Persistence.Migrations
                 table: "UserClaimTypes",
                 keyColumn: "Id",
                 keyValue: 16);
+
+            migrationBuilder.DeleteData(
+                table: "UserClaimTypes",
+                keyColumn: "Id",
+                keyValue: 17);
+
+            migrationBuilder.DeleteData(
+                table: "UserClaimTypes",
+                keyColumn: "Id",
+                keyValue: 18);
 
             migrationBuilder.UpdateData(
                 table: "UserClaimTypes",

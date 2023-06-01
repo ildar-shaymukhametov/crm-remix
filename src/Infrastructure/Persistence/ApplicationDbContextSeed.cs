@@ -25,7 +25,9 @@ public static class ApplicationDbContextSeed
             new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Update, Name = Claims.Company.WhereUserIsManager.Update },
             new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Delete, Name = Claims.Company.WhereUserIsManager.Delete },
             new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Other.View, Name = Claims.Company.WhereUserIsManager.Other.View },
-            new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Other.Update, Name = Claims.Company.WhereUserIsManager.Other.Update }
+            new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Other.Update, Name = Claims.Company.WhereUserIsManager.Other.Update },
+            new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny, Name = Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny },
+            new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone, Name = Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone }
         );
 
         builder.Entity<CompanyType>().HasData(
