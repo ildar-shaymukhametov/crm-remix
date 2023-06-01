@@ -365,7 +365,7 @@ for (const claim of [claims.company.any.manager.setFromAnyToAny]) {
     });
 
     const user = await createUser();
-    const user2 = await createUser();
+    const anotherUser = await createUser();
 
     const companyId = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.edit(companyId));
@@ -378,7 +378,7 @@ for (const claim of [claims.company.any.manager.setFromAnyToAny]) {
       `${user.firstName} ${user.lastName}`
     );
 
-    const fullName = `${user2.firstName} ${user2.lastName}`;
+    const fullName = `${anotherUser.firstName} ${anotherUser.lastName}`;
     await manager.selectOption(fullName);
 
     const submit = page.getByRole("button", { name: /save changes/i });
