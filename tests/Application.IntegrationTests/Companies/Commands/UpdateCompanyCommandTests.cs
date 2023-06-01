@@ -27,7 +27,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsAdministratorAsync();
         var company = await _fixture.AddCompanyAsync();
         var manager = await _fixture.CreateUserAsync();
-        var command = CreateCommand(company.Id, managerId: manager.Id);
+        var command = CreateCommandNewData(company.Id, managerId: manager.Id);
 
         await AssertOtherFieldsUpdatedAsync(user, company.Id, command);
     }
@@ -38,7 +38,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Update });
         var company = await _fixture.AddCompanyAsync();
         var manager = await _fixture.CreateUserAsync();
-        var command = CreateCommand(company.Id, managerId: manager.Id);
+        var command = CreateCommandNewData(company.Id, managerId: manager.Id);
 
         await AssertOtherFieldsUpdatedAsync(user, company.Id, command);
     }
@@ -48,7 +48,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company.Id);
+        var command = CreateCommandNewData(company.Id);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Update company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -61,7 +61,7 @@ public class UpdateCompanyTests : BaseTest
         {
             Claims.Company.Any.Other.Update
         });
-        var command = CreateCommand(1);
+        var command = CreateCommandNewData(1);
         await Assert.ThrowsAsync<NotFoundException>(() => _fixture.SendAsync(command));
     }
 
@@ -70,7 +70,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Update });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company.Id);
+        var command = CreateCommandNewData(company.Id);
 
         await AssertOtherFieldsUpdatedAsync(user, company.Id, command);
     }
@@ -80,7 +80,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Update });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company.Id, user.Id);
+        var command = CreateCommandNewData(company.Id, user.Id);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Update manager", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -91,7 +91,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, managerId: user.Id);
+        var command = CreateCommandCopyData(company, managerId: user.Id);
 
         await AssertManagerUpdatedAsync(user, company.Id, command);
     }
@@ -108,7 +108,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, address: string.Empty);
+        var command = CreateCommandCopyData(company, address: string.Empty);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -119,7 +119,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, ceo: string.Empty);
+        var command = CreateCommandCopyData(company, ceo: string.Empty);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -130,7 +130,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, contacts: string.Empty);
+        var command = CreateCommandCopyData(company, contacts: string.Empty);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -141,7 +141,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, email: string.Empty);
+        var command = CreateCommandCopyData(company, email: string.Empty);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -152,7 +152,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, inn: string.Empty);
+        var command = CreateCommandCopyData(company, inn: string.Empty);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -163,7 +163,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, name: string.Empty);
+        var command = CreateCommandCopyData(company, name: string.Empty);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -174,7 +174,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, phone: string.Empty);
+        var command = CreateCommandCopyData(company, phone: string.Empty);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -185,7 +185,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, typeId: 0);
+        var command = CreateCommandCopyData(company, typeId: 0);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Update other fields", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -200,7 +200,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, managerId: user.Id);
+        var command = CreateCommandCopyData(company, managerId: user.Id);
 
         await AssertManagerUpdatedAsync(user, company.Id, command);
     }
@@ -210,7 +210,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToNone, Claims.Company.Any.Manager.SetFromSelfToAny, Claims.Company.Any.Manager.SetFromSelfToNone });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, managerId: user.Id);
+        var command = CreateCommandCopyData(company, managerId: user.Id);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Set manager from none to self in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -224,7 +224,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, managerId: anotherUser.Id);
+        var command = CreateCommandCopyData(company, managerId: anotherUser.Id);
 
         await AssertManagerUpdatedAsync(user, company.Id, command);
     }
@@ -235,7 +235,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToNone, Claims.Company.Any.Manager.SetFromSelfToNone, Claims.Company.Any.Manager.SetFromSelfToAny, Claims.Company.Any.Manager.SetFromAnyToSelf, Claims.Company.Any.Manager.SetFromNoneToSelf });
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCommand(company, managerId: anotherUser.Id);
+        var command = CreateCommandCopyData(company, managerId: anotherUser.Id);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Set manager from none to any in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -250,7 +250,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Claims.Company.Any.Other.Update });
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCommand(company);
+        var command = CreateCommandCopyData(company);
 
         await AssertManagerUpdatedAsync(user, company.Id, command);
     }
@@ -260,7 +260,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromNoneToAny, Claims.Company.Any.Manager.SetFromNoneToSelf, Claims.Company.Any.Manager.SetFromAnyToSelf });
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCommand(company);
+        var command = CreateCommandCopyData(company);
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -273,7 +273,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var someUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(someUser.Id);
-        var command = CreateCommand(company);
+        var command = CreateCommandCopyData(company);
 
         await AssertManagerUpdatedAsync(user, company.Id, command);
     }
@@ -284,7 +284,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToSelf, Claims.Company.Any.Manager.SetFromNoneToAny, Claims.Company.Any.Manager.SetFromNoneToSelf, Claims.Company.Any.Manager.SetFromSelfToAny, Claims.Company.Any.Manager.SetFromSelfToNone });
         var someUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(someUser.Id);
-        var command = CreateCommand(company);
+        var command = CreateCommandCopyData(company);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Set manager from any to none in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -298,7 +298,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var someUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(someUser.Id);
-        var command = CreateCommand(company, managerId: user.Id);
+        var command = CreateCommandCopyData(company, managerId: user.Id);
 
         await AssertManagerUpdatedAsync(user, company.Id, command);
     }
@@ -309,7 +309,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToNone, Claims.Company.Any.Manager.SetFromNoneToAny, Claims.Company.Any.Manager.SetFromNoneToSelf, Claims.Company.Any.Manager.SetFromSelfToAny, Claims.Company.Any.Manager.SetFromSelfToNone });
         var someUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(someUser.Id);
-        var command = CreateCommand(company, managerId: user.Id);
+        var command = CreateCommandCopyData(company, managerId: user.Id);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Set manager from any to self in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -324,7 +324,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var someUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCommand(company, managerId: someUser.Id);
+        var command = CreateCommandCopyData(company, managerId: someUser.Id);
 
         await AssertManagerUpdatedAsync(user, company.Id, command);
     }
@@ -335,7 +335,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToNone, Claims.Company.Any.Manager.SetFromAnyToSelf, Claims.Company.Any.Manager.SetFromNoneToAny, Claims.Company.Any.Manager.SetFromNoneToSelf, Claims.Company.Any.Manager.SetFromSelfToNone });
         var someUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCommand(company, managerId: someUser.Id);
+        var command = CreateCommandCopyData(company, managerId: someUser.Id);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Set manager from self to any in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -348,7 +348,7 @@ public class UpdateCompanyTests : BaseTest
         var someUser = await _fixture.AddUserAsync();
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(someUser.Id);
-        var command = CreateCommand(company, managerId: anotherUser.Id);
+        var command = CreateCommandCopyData(company, managerId: anotherUser.Id);
 
         await AssertManagerUpdatedAsync(user, company.Id, command);
     }
@@ -360,7 +360,7 @@ public class UpdateCompanyTests : BaseTest
         var someUser = await _fixture.AddUserAsync();
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(someUser.Id);
-        var command = CreateCommand(company, managerId: anotherUser.Id);
+        var command = CreateCommandCopyData(company, managerId: anotherUser.Id);
 
         var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
         Assert.Contains("Set manager from any to any in any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
@@ -369,70 +369,54 @@ public class UpdateCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_update_any_field_in_own_company_and_he_is_manager___Updates_company()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new [] { Claims.Company.WhereUserIsManager.Update });
-
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Update });
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCommand(company.Id);
+        var command = CreateCommandNewData(company.Id, managerId: null);
 
         await AssertOtherFieldsUpdatedAsync(user, company.Id, command);
     }
 
-    // [Fact]
-    // public async Task User_has_claim_to_update_own_company_and_he_is_manager___Updates_company()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[]
-    //     {
-    //         Claims.Company.WhereUserIsManager.Other.Update,
-    //         Claims.Company.Any.Manager.SetFromAnyToAny
-    //     });
-    //     var company = await _fixture.AddCompanyAsync(user.Id);
-    //     var command = CreateCommand(company.Id);
+    [Fact]
+    public async Task User_has_claim_to_update_any_field_in_own_company_and_he_is_not_manager___Throws_forbidden_access()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Update });
+        var company = await _fixture.AddCompanyAsync();
+        var command = CreateCommandNewData(company.Id, user.Id);
 
-    //     await AssertCompanyUpdatedAsync(user, company.Id, command);
-    // }
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
 
-    // [Fact]
-    // public async Task User_has_claim_to_update_own_company_and_he_is_not_manager___Throws_forbidden_access()
-    // {
-    //     await _fixture.RunAsDefaultUserAsync(new[]
-    //     {
-    //         Claims.Company.WhereUserIsManager.Other.Update,
-    //         Claims.Company.Any.Manager.SetFromAnyToAny
-    //     });
-    //     var company = await _fixture.AddCompanyAsync();
-    //     var command = CreateCommand(company.Id);
+    [Fact]
+    public async Task User_has_claim_to_update_other_fields_in_own_company_and_he_is_manager___Updates_other_fields()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Update });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+        var command = CreateCommandNewData(company.Id, user.Id);
 
-    //     var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    //     Assert.Contains("Update any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
-    // }
+        await AssertOtherFieldsUpdatedAsync(user, company.Id, command);
+    }
 
-    // [Fact]
-    // public async Task User_has_no_claim_to_update_own_company_and_he_is_manager___Throws_forbidden_access()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[]
-    //     {
-    //         Claims.Company.Any.Manager.SetFromAnyToAny
-    //     });
-    //     var company = await _fixture.AddCompanyAsync(user.Id);
-    //     var command = CreateCommand(company.Id);
+    [Fact]
+    public async Task User_has_claim_to_update_other_fields_in_own_company_and_he_is_manager___Forbidden_to_update_manager()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Update });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+        var command = CreateCommandNewData(company.Id);
 
-    //     var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    //     Assert.Contains("Update own company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
-    // }
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
 
-    // [Fact]
-    // public async Task User_has_no_claim_to_update_own_company_and_he_is_not_manager___Throws_forbidden_access()
-    // {
-    //     await _fixture.RunAsDefaultUserAsync(new[]
-    //     {
-    //         Claims.Company.Any.Manager.SetFromAnyToAny
-    //     });
-    //     var company = await _fixture.AddCompanyAsync();
-    //     var command = CreateCommand(company.Id);
+    [Theory]
+    [InlineData(Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
+    [InlineData(Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
+    public async Task User_has_claim_to_update_manager_in_own_company_and_he_is_manager___Updates_manager(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+        var command = CreateCommandNewData(company.Id);
 
-    //     var ex = await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    //     Assert.Contains("Update any company", ex.Message, StringComparison.CurrentCultureIgnoreCase);
-    // }
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
 
     // [Fact]
     // public async Task From_none_to_none_without_claims___Updates_company()
@@ -454,7 +438,7 @@ public class UpdateCompanyTests : BaseTest
     //     await AssertCompanyUpdatedAsync(user, company.Id, command);
     // }
 
-    private static UpdateCompanyCommand CreateCommand(int id, string? managerId = null)
+    private static UpdateCompanyCommand CreateCommandNewData(int id, string? managerId = null)
     {
         var data = Faker.Builders.Company();
         var command = new UpdateCompanyCommand
@@ -474,7 +458,7 @@ public class UpdateCompanyTests : BaseTest
         return command;
     }
 
-    private static UpdateCompanyCommand CreateCommand(Company data, string? address = null, string? ceo = null, string? contacts = null, string? email = null, string? inn = null, string? name = null, string? phone = null, int? typeId = null, string? managerId = null)
+    private static UpdateCompanyCommand CreateCommandCopyData(Company data, string? address = null, string? ceo = null, string? contacts = null, string? email = null, string? inn = null, string? name = null, string? phone = null, int? typeId = null, string? managerId = null)
     {
         var command = new UpdateCompanyCommand
         {

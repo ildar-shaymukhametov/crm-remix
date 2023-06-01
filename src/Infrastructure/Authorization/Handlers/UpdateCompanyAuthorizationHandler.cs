@@ -54,7 +54,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         {
             if (company.ManagerId == userId && !accessRights.ContainsAny(Access.Company.WhereUserIsManager.Manager.SetFromAnyToAny, Access.Company.WhereUserIsManager.Manager.SetFromAnyToNone, Access.Company.WhereUserIsManager.Manager.SetFromAnyToSelf, Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny, Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
             {
-                return Fail(context, "Update manager in own company");
+                return Fail(context, "Update manager");
             }
             else if (company.ManagerId != userId && !accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToAny, Access.Company.Any.Manager.SetFromAnyToNone, Access.Company.Any.Manager.SetFromAnyToSelf, Access.Company.Any.Manager.SetFromNoneToAny, Access.Company.Any.Manager.SetFromNoneToSelf, Access.Company.Any.Manager.SetFromSelfToAny, Access.Company.Any.Manager.SetFromSelfToNone))
             {
@@ -67,24 +67,6 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
                 return Fail(context, managerResult.Errors.First());
             }
         }
-
-        // if (company.ManagerId == userId && !accessRights.Contains(Access.Company.WhereUserIsManager.Other.Update))
-        // {
-        //     return Fail(context, "Update own company");
-        // }
-        // else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Other.Update))
-        // {
-        //     return Fail(context, "Update any company");
-        // }
-
-        // if (request != null)
-        // {
-        //     var managerResult = CheckManager(company, request, userId, accessRights);
-        //     if (!managerResult.Succeeded)
-        //     {
-        //         return Fail(context, managerResult.Errors.First());
-        //     }
-        // }
 
         return Ok(context, requirement);
     }
