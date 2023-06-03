@@ -20,6 +20,7 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
         if (accessRights.Contains(Access.Company.Any.View)
             || accessRights.Contains(Access.Company.Any.Other.View)
             || accessRights.Contains(Access.Company.Any.Manager.View)
+            || accessRights.Contains(Access.Company.WhereUserIsManager.Manager.View)
         )
         {
             context.Succeed(requirement);

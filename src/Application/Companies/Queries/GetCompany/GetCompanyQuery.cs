@@ -50,7 +50,8 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
         };
 
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
-        if (accessRights.Contains(Constants.Access.Company.Any.Manager.View))
+        if (accessRights.Contains(Constants.Access.Company.Any.Manager.View)
+            || accessRights.Contains(Constants.Access.Company.WhereUserIsManager.Manager.View))
         {
             result.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
         }
