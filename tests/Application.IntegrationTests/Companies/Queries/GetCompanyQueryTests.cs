@@ -19,6 +19,7 @@ public class GetCompanyTests : BaseTest
         var result = await _fixture.SendAsync(request);
         var company = await _fixture.FindAsync<Company>(result.Id, nameof(Company.Type));
 
+        Assert.Equal(company?.Id, result?.Id);
         AssertOtherFieldsEqual(company, result);
         AssertManagerEqual(company, result);
     }
@@ -34,6 +35,7 @@ public class GetCompanyTests : BaseTest
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
 
+        Assert.Equal(company?.Id, result?.Id);
         AssertOtherFieldsEqual(company, result);
         AssertManagerEqual(company, result);
     }
@@ -61,6 +63,7 @@ public class GetCompanyTests : BaseTest
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
 
+        Assert.Equal(company?.Id, result?.Id);
         AssertOtherFieldsEqual(company, result);
     }
 
@@ -75,7 +78,7 @@ public class GetCompanyTests : BaseTest
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
 
-        Assert.False(result.Fields.ContainsKey(nameof(Company.Manager)));
+        AssertNoManager(result);
     }
 
     [Fact]
@@ -89,6 +92,7 @@ public class GetCompanyTests : BaseTest
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
 
+        Assert.Equal(company?.Id, result?.Id);
         AssertManagerEqual(company, result);
     }
 
@@ -103,19 +107,44 @@ public class GetCompanyTests : BaseTest
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
 
-        Assert.False(result.Fields.ContainsKey(nameof(Company.Address)));
-        Assert.False(result.Fields.ContainsKey(nameof(Company.Ceo)));
-        Assert.False(result.Fields.ContainsKey(nameof(Company.Contacts)));
-        Assert.False(result.Fields.ContainsKey(nameof(Company.Email)));
-        Assert.False(result.Fields.ContainsKey(nameof(Company.Inn)));
-        Assert.False(result.Fields.ContainsKey(nameof(Company.Name)));
-        Assert.False(result.Fields.ContainsKey(nameof(Company.Phone)));
-        Assert.False(result.Fields.ContainsKey(nameof(Company.Type)));
+        AssertNoOtherFields(result);
     }
 
-    private static void AssertOtherFieldsEqual(Company? company, CompanyVm result)
+    [Fact]
+    public async Task User_has_claim_to_delete_any_company___Returns_only_id()
     {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Delete });
+
+        var company = Faker.Builders.Company(managerId: user.Id);
+        await _fixture.AddAsync(company);
+
+        var request = new GetCompanyQuery { Id = company.Id };
+        var result = await _fixture.SendAsync(request);
+
         Assert.Equal(company?.Id, result?.Id);
+        AssertNoOtherFields(result);
+        AssertNoManager(result);
+    }
+
+    private static void AssertNoManager(CompanyVm? result)
+    {
+        Assert.False(result?.Fields.ContainsKey(nameof(Company.Manager)));
+    }
+
+    private static void AssertNoOtherFields(CompanyVm? result)
+    {
+        Assert.False(result?.Fields.ContainsKey(nameof(Company.Address)));
+        Assert.False(result?.Fields.ContainsKey(nameof(Company.Ceo)));
+        Assert.False(result?.Fields.ContainsKey(nameof(Company.Contacts)));
+        Assert.False(result?.Fields.ContainsKey(nameof(Company.Email)));
+        Assert.False(result?.Fields.ContainsKey(nameof(Company.Inn)));
+        Assert.False(result?.Fields.ContainsKey(nameof(Company.Name)));
+        Assert.False(result?.Fields.ContainsKey(nameof(Company.Phone)));
+        Assert.False(result?.Fields.ContainsKey(nameof(Company.Type)));
+    }
+
+    private static void AssertOtherFieldsEqual(Company? company, CompanyVm? result)
+    {
         Assert.Equal(company?.TypeId, (result?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
         Assert.Equal(company?.Address, result?.Fields[nameof(Company.Address)]);
         Assert.Equal(company?.Ceo, result?.Fields[nameof(Company.Ceo)]);
@@ -126,9 +155,8 @@ public class GetCompanyTests : BaseTest
         Assert.Equal(company?.Phone, result?.Fields[nameof(Company.Phone)]);
     }
 
-    private static void AssertManagerEqual(Company? company, CompanyVm result)
+    private static void AssertManagerEqual(Company? company, CompanyVm? result)
     {
-        Assert.Equal(company?.Id, result?.Id);
         Assert.Equal(company?.ManagerId, (result?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
     }
 }
