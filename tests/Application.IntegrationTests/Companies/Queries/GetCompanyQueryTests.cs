@@ -23,11 +23,10 @@ public class GetCompanyTests : BaseTest
         AssertManagerEqual(result, company);
     }
 
-    [Theory]
-    [InlineData(Constants.Claims.Company.Any.View)]
-    public async Task User_has_claim_to_view_any_company___Returns_all_fields(string claim)
+    [Fact]
+    public async Task User_has_claim_to_view_any_company___Returns_all_fields()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.View });
 
         var company = Faker.Builders.Company(managerId: user.Id);
         await _fixture.AddAsync(company);
@@ -51,11 +50,10 @@ public class GetCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
     }
 
-    [Theory]
-    [InlineData(Constants.Claims.Company.Any.Other.View)]
-    public async Task User_has_claim_to_view_other_fields_in_any_company___Returns_other_fields(string claim)
+    [Fact]
+    public async Task User_has_claim_to_view_other_fields_in_any_company___Returns_other_fields()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.View });
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
