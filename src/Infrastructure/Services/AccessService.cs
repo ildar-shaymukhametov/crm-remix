@@ -206,9 +206,7 @@ public class AccessService : IAccessService
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
-                Claims.Company.WhereUserIsManager.Other.View,
-                Claims.Company.WhereUserIsManager.Delete,
-                Claims.Company.WhereUserIsManager.Other.Update
+                Claims.Company.WhereUserIsManager.View
             }))
         {
             result.Add(Access.Company.WhereUserIsManager.Other.View);
@@ -280,6 +278,14 @@ public class AccessService : IAccessService
             }))
         {
             result.Add(Access.Company.Any.Manager.View);
+        }
+
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.WhereUserIsManager.View
+            }))
+        {
+            result.Add(Access.Company.WhereUserIsManager.View);
         }
 
         return result.ToArray();

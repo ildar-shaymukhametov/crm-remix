@@ -128,6 +128,22 @@ public class GetCompanyTests : BaseTest
         AssertNoManager(result);
     }
 
+    [Fact]
+    public async Task User_has_claim_to_view_own_company___Returns_all_fields()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.View });
+
+        var company = Faker.Builders.Company(managerId: user.Id);
+        await _fixture.AddAsync(company);
+
+        var request = new GetCompanyQuery { Id = company.Id };
+        var result = await _fixture.SendAsync(request);
+
+        Assert.Equal(company?.Id, result?.Id);
+        AssertOtherFieldsEqual(company, result);
+        AssertManagerEqual(company, result);
+    }
+
     private static void AssertNoManager(CompanyVm? result)
     {
         Assert.False(result?.Fields.ContainsKey(nameof(Company.Manager)));

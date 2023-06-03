@@ -19,12 +19,13 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
         var accessRights = _accessService.CheckAccess(context.User);
         if (accessRights.Contains(Access.Company.Any.View)
             || accessRights.Contains(Access.Company.Any.Other.View)
-            || accessRights.Contains(Access.Company.Any.Manager.View))
+            || accessRights.Contains(Access.Company.Any.Manager.View)
+        )
         {
             context.Succeed(requirement);
         }
 
-        if (accessRights.Contains(Access.Company.WhereUserIsManager.Other.View) && context.Resource is CompanyDto company && company.ManagerId == context.User.GetSubjectId())
+        if (accessRights.Contains(Access.Company.WhereUserIsManager.View))
         {
             context.Succeed(requirement);
         }
