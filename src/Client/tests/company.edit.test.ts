@@ -47,7 +47,7 @@ test("should be forbidden if own company but no claims", async ({
   });
 });
 
-test("should be forbidden if non-owned company but has claim to edit own company", async ({
+test("should be forbidden if non-owned company but has claim to edit other fields in own company", async ({
   page,
   runAsDefaultUser,
   createCompany,
@@ -56,6 +56,7 @@ test("should be forbidden if non-owned company but has claim to edit own company
   await runAsDefaultUser({
     claims: [claims.company.whereUserIsManager.other.update]
   });
+
   const companyId = await createCompany();
   await page.goto(routes.companies.edit(companyId));
 
@@ -68,15 +69,16 @@ test("should be forbidden if non-owned company but has claim to edit own company
   });
 });
 
-test("should be able to edit any company", async ({
+test.only("should be able to edit any field in any company", async ({
   page,
   runAsDefaultUser,
   createCompany,
   getCompany
 }) => {
   await runAsDefaultUser({
-    claims: [claims.company.any.other.update]
+    claims: [claims.company.any.update]
   });
+
   const companyId = await createCompany();
   await page.goto(routes.companies.edit(companyId));
 
@@ -88,22 +90,17 @@ test("should be able to edit any company", async ({
   await submit.click();
 
   await expect(page).toHaveURL(routes.companies.view(companyId));
-
   await expect(page.getByLabel(/type/i)).toHaveText(newData.type.name);
 });
 
-test("should be able to edit own company", async ({
+test("should be able to edit any field in own company", async ({
   page,
   runAsDefaultUser,
   createCompany,
   getCompany
 }) => {
   const user = await runAsDefaultUser({
-    claims: [
-      claims.company.any.other.view,
-      claims.company.any.manager.setFromAnyToAny,
-      claims.company.whereUserIsManager.other.update
-    ]
+    claims: [claims.company.whereUserIsManager.other.update]
   });
 
   const companyId = await createCompany({ managerId: user.id });
@@ -117,59 +114,8 @@ test("should be able to edit own company", async ({
   await submit.click();
 
   await expect(page).toHaveURL(routes.companies.view(companyId));
-
   await expect(page.getByLabel(/type/i)).toHaveText(newData.type.name);
 });
-
-async function checkAndFillFields(
-  page: Page,
-  company: Company
-): Promise<Company> {
-  const name = page.getByLabel(/name/i);
-  const address = page.getByLabel(/address/i);
-  const ceo = page.getByLabel(/ceo/i);
-  const contacts = page.getByLabel(/contacts/i);
-  const email = page.getByLabel(/email/i);
-  const inn = page.getByLabel(/inn/i);
-  const phone = page.getByLabel(/phone/i);
-  const type = page.getByLabel(/type/i);
-
-  await expect(name).toHaveValue(company.name);
-  await expect(address).toHaveValue(company.address);
-  await expect(ceo).toHaveValue(company.ceo);
-  await expect(contacts).toHaveValue(company.contacts);
-  await expect(email).toHaveValue(company.email);
-  await expect(inn).toHaveValue(company.inn);
-  await expect(phone).toHaveValue(company.phone);
-  const selectedOption = type.getByRole("option", { selected: true });
-  await expect(selectedOption).toHaveText(company.type?.name);
-
-  const newCompany = buildCompany();
-  await name.fill(newCompany.name);
-  await address.fill(newCompany.address);
-  await ceo.fill(newCompany.ceo);
-  await contacts.fill(newCompany.contacts);
-  await email.fill(newCompany.email);
-  await inn.fill(newCompany.inn);
-  await phone.fill(newCompany.phone);
-  await type.selectOption(newCompany.typeId?.toString() ?? null);
-  const typeName =
-    (await type.getByRole("option", { selected: true }).textContent()) ?? "";
-  return {
-    address: newCompany.address,
-    ceo: newCompany.ceo,
-    contacts: newCompany.contacts,
-    email: newCompany.email,
-    id: newCompany.id,
-    inn: newCompany.inn,
-    name: newCompany.name,
-    phone: newCompany.phone,
-    type: {
-      id: newCompany.typeId ?? 0,
-      name: typeName
-    }
-  };
-}
 
 test("should see not found", async ({ page, runAsDefaultUser }) => {
   await runAsDefaultUser({ claims: [claims.company.any.other.update] });
@@ -189,14 +135,14 @@ for (const claim of [
   claims.company.any.manager.setFromAnyToSelf,
   claims.company.any.manager.setFromAnyToAny
 ]) {
-  test(`should be able to set manager from none to self with claim ${claim}`, async ({
+  test(`should be able to set manager from none to self in any company with claim ${claim}`, async ({
     page,
     runAsDefaultUser,
     createCompany,
     getCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.any.other.update, claim]
+      claims: [claim]
     });
 
     const companyId = await createCompany();
@@ -226,7 +172,7 @@ for (const claim of [
   claims.company.any.manager.setFromNoneToAny,
   claims.company.any.manager.setFromAnyToAny
 ]) {
-  test(`should be able to set manager from none to any with claim ${claim}`, async ({
+  test(`should be able to set manager from none to any in any company with claim ${claim}`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -234,11 +180,7 @@ for (const claim of [
     createUser
   }) => {
     await runAsDefaultUser({
-      claims: [
-        claims.company.any.other.update,
-        claims.company.any.other.view,
-        claim
-      ]
+      claims: [claim]
     });
 
     const user = await createUser();
@@ -271,18 +213,14 @@ for (const claim of [
   claims.company.any.manager.setFromSelfToNone,
   claims.company.any.manager.setFromAnyToAny
 ]) {
-  test(`should be able to set manager from self to none with claim ${claim}`, async ({
+  test(`should be able to set manager from self to none in any company with claim ${claim}`, async ({
     page,
     runAsDefaultUser,
     createCompany,
     getCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [
-        claims.company.any.other.update,
-        claims.company.any.other.view,
-        claim
-      ]
+      claims: [claim]
     });
 
     const companyId = await createCompany({ managerId: user.id });
@@ -310,7 +248,7 @@ for (const claim of [
   claims.company.any.manager.setFromAnyToNone,
   claims.company.any.manager.setFromAnyToAny
 ]) {
-  test(`should be able to set manager from any to none with claim ${claim}`, async ({
+  test(`should be able to set manager from any to none in any company with claim ${claim}`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -318,11 +256,7 @@ for (const claim of [
     createUser
   }) => {
     await runAsDefaultUser({
-      claims: [
-        claims.company.any.other.update,
-        claims.company.any.other.view,
-        claim
-      ]
+      claims: [claim]
     });
 
     const user = await createUser();
@@ -349,7 +283,7 @@ for (const claim of [
 }
 
 for (const claim of [claims.company.any.manager.setFromAnyToAny]) {
-  test(`should be able to set manager from any to any with claim ${claim}`, async ({
+  test(`should be able to set manager from any to any in any company with claim ${claim}`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -357,11 +291,7 @@ for (const claim of [claims.company.any.manager.setFromAnyToAny]) {
     createUser
   }) => {
     await runAsDefaultUser({
-      claims: [
-        claims.company.any.other.update,
-        claims.company.any.other.view,
-        claim
-      ]
+      claims: [claim]
     });
 
     const user = await createUser();
@@ -393,7 +323,7 @@ for (const claim of [
   claims.company.any.manager.setFromSelfToAny,
   claims.company.any.manager.setFromAnyToAny
 ]) {
-  test(`should be able to set manager from self to any with claim ${claim}`, async ({
+  test(`should be able to set manager from self to any in any company with claim ${claim}`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -401,11 +331,7 @@ for (const claim of [
     createUser
   }) => {
     const user = await runAsDefaultUser({
-      claims: [
-        claims.company.any.other.update,
-        claims.company.any.other.view,
-        claim
-      ]
+      claims: [claim]
     });
 
     const anotherUser = await createUser();
@@ -436,7 +362,7 @@ for (const claim of [
   claims.company.any.manager.setFromAnyToSelf,
   claims.company.any.manager.setFromAnyToAny
 ]) {
-  test(`should be able to set manager from any to self with claim ${claim}`, async ({
+  test(`should be able to set manager from any to self in any company with claim ${claim}`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -444,11 +370,7 @@ for (const claim of [
     createUser
   }) => {
     const user = await runAsDefaultUser({
-      claims: [
-        claims.company.any.other.update,
-        claims.company.any.other.view,
-        claim
-      ]
+      claims: [claim]
     });
 
     const anotherUser = await createUser();
@@ -474,31 +396,6 @@ for (const claim of [
     await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
   });
 }
-
-test("should be able to edit a company with manager if no manager claims", async ({
-  page,
-  runAsDefaultUser,
-  createCompany,
-  getCompany
-}) => {
-  const user = await runAsDefaultUser({
-    claims: [claims.company.any.other.update]
-  });
-
-  const companyId = await createCompany({ managerId: user.id });
-  await page.goto(routes.companies.edit(companyId));
-
-  const company = await getCompany(companyId);
-  await expectMinimalUi(page, company);
-  const newData = await checkAndFillFields(page, company);
-
-  const submit = page.getByRole("button", { name: /save changes/i });
-  await submit.click();
-
-  await expect(page).toHaveURL(routes.companies.view(companyId));
-
-  await expect(page.getByLabel(/type/i)).toHaveText(newData.type.name);
-});
 
 type VisibilityOptions = {
   forbidden?: boolean;
@@ -562,4 +459,54 @@ async function expectCompanyFieldsToBeVisible(
   for (const key of Object.keys(data)) {
     await expect(page.getByLabel(key)).toBeVisible({ visible: data[key] });
   }
+}
+
+async function checkAndFillFields(
+  page: Page,
+  company: Company
+): Promise<Company> {
+  const name = page.getByLabel(/name/i);
+  const address = page.getByLabel(/address/i);
+  const ceo = page.getByLabel(/ceo/i);
+  const contacts = page.getByLabel(/contacts/i);
+  const email = page.getByLabel(/email/i);
+  const inn = page.getByLabel(/inn/i);
+  const phone = page.getByLabel(/phone/i);
+  const type = page.getByLabel(/type/i);
+
+  await expect(name).toHaveValue(company.name);
+  await expect(address).toHaveValue(company.address);
+  await expect(ceo).toHaveValue(company.ceo);
+  await expect(contacts).toHaveValue(company.contacts);
+  await expect(email).toHaveValue(company.email);
+  await expect(inn).toHaveValue(company.inn);
+  await expect(phone).toHaveValue(company.phone);
+  const selectedOption = type.getByRole("option", { selected: true });
+  await expect(selectedOption).toHaveText(company.type?.name);
+
+  const newCompany = buildCompany();
+  await name.fill(newCompany.name);
+  await address.fill(newCompany.address);
+  await ceo.fill(newCompany.ceo);
+  await contacts.fill(newCompany.contacts);
+  await email.fill(newCompany.email);
+  await inn.fill(newCompany.inn);
+  await phone.fill(newCompany.phone);
+  await type.selectOption(newCompany.typeId?.toString() ?? null);
+  const typeName =
+    (await type.getByRole("option", { selected: true }).textContent()) ?? "";
+  return {
+    address: newCompany.address,
+    ceo: newCompany.ceo,
+    contacts: newCompany.contacts,
+    email: newCompany.email,
+    id: newCompany.id,
+    inn: newCompany.inn,
+    name: newCompany.name,
+    phone: newCompany.phone,
+    type: {
+      id: newCompany.typeId ?? 0,
+      name: typeName
+    }
+  };
 }

@@ -20,14 +20,15 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
     {
         var (company, request) = GetResources(context);
-        if (request == null)
+        var accessRights = _accessService.CheckAccess(context.User);
+        var userId = context.User.GetSubjectId();
+
+        if (accessRights.Contains(Access.Company.Any.Update) || company.ManagerId == userId && accessRights.Contains(Access.Company.WhereUserIsManager.Update))
         {
             return Ok(context, requirement);
         }
 
-        var accessRights = _accessService.CheckAccess(context.User);
-        var userId = context.User.GetSubjectId();
-        if (accessRights.Contains(Access.Company.Any.Update) || company.ManagerId == userId && accessRights.Contains(Access.Company.WhereUserIsManager.Update))
+        if (request == null)
         {
             return Ok(context, requirement);
         }

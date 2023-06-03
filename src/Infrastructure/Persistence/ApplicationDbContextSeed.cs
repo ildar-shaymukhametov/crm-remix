@@ -11,6 +11,7 @@ public static class ApplicationDbContextSeed
         var id = 1;
         builder.Entity<UserClaimType>().HasData(
             new UserClaimType { Id = id++, Value = Claims.Company.Create, Name = Claims.Company.Create, },
+            new UserClaimType { Id = id++, Value = Claims.Company.Any.View, Name = Claims.Company.Any.View },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Update, Name = Claims.Company.Any.Update },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Delete, Name = Claims.Company.Any.Delete },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Other.View, Name = Claims.Company.Any.Other.View },

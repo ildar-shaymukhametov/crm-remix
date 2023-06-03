@@ -13,6 +13,7 @@ public static class Constants
             {
                 public const string Delete = $"{nameof(Company)}.{nameof(Any)}.{nameof(Delete)}";
                 public const string Update = $"{nameof(Company)}.{nameof(Any)}.{nameof(Update)}";
+                public const string View = $"{nameof(Company)}.{nameof(Any)}.{nameof(View)}";
 
                 public static class Manager
                 {
@@ -89,6 +90,7 @@ public static class Constants
             {
                 public const string Delete = $"{nameof(Company)}.{nameof(Any)}.{nameof(Delete)}";
                 public const string Update = $"{nameof(Company)}.{nameof(Any)}.{nameof(Update)}";
+                public const string View = $"{nameof(Company)}.{nameof(Any)}.{nameof(View)}";
 
                 public static class Manager
                 {

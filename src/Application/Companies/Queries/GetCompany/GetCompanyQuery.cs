@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
+using CRM.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,14 +28,33 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
 
     public async Task<CompanyVm> Handle(GetCompanyQuery request, CancellationToken cancellationToken)
     {
-        var item = await _dbContext.Companies
+        var entity = await _dbContext.Companies
             .AsNoTracking()
             .Include(x => x.Manager)
             .Include(x => x.Type)
             .Where(x => x.Id == request.Id)
-            .ProjectTo<CompanyVm>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);
 
-        return item ?? throw new NotFoundException("Company", request.Id);
+        if (entity == null)
+        {
+            throw new NotFoundException("Company", request.Id);
+        }
+
+        var result = new CompanyVm
+        {
+            Id = entity.Id
+        };
+
+        result.Fields.Add(nameof(Company.Address), entity.Address);
+        result.Fields.Add(nameof(Company.Ceo), entity.Ceo);
+        result.Fields.Add(nameof(Company.Contacts), entity.Contacts);
+        result.Fields.Add(nameof(Company.Email), entity.Email);
+        result.Fields.Add(nameof(Company.Inn), entity.Inn);
+        result.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
+        result.Fields.Add(nameof(Company.Name), entity.Name);
+        result.Fields.Add(nameof(Company.Phone), entity.Phone);
+        result.Fields.Add(nameof(Company.Type), _mapper.Map<CompanyTypeDto>(entity.Type));
+
+        return result;
     }
 }
