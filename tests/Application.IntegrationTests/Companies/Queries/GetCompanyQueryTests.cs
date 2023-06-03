@@ -25,22 +25,6 @@ public class GetCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_view_any_field_in_any_company___Returns_all_fields()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.View });
-
-        var company = Faker.Builders.Company(managerId: user.Id);
-        await _fixture.AddAsync(company);
-
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
-
-        Assert.Equal(company?.Id, result?.Id);
-        AssertOtherFieldsEqual(company, result);
-        AssertManagerEqual(company, result);
-    }
-
-    [Fact]
     public async Task User_has_no_claim___Forbidden()
     {
         var user = await _fixture.RunAsDefaultUserAsync();
@@ -126,34 +110,6 @@ public class GetCompanyTests : BaseTest
         Assert.Equal(company?.Id, result?.Id);
         AssertNoOtherFields(result);
         AssertNoManager(result);
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_view_any_field_in_own_company___Returns_all_fields()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.View });
-
-        var company = Faker.Builders.Company(managerId: user.Id);
-        await _fixture.AddAsync(company);
-
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
-
-        Assert.Equal(company?.Id, result?.Id);
-        AssertOtherFieldsEqual(company, result);
-        AssertManagerEqual(company, result);
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_view_any_field_in_own_company_and_is_not_manager___Forbidden()
-    {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.View });
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
-
-        var request = new GetCompanyQuery { Id = company.Id };
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
     }
 
     private static void AssertNoManager(CompanyVm? result)
