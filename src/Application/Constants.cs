@@ -94,6 +94,7 @@ public static class Constants
 
                 public static class Manager
                 {
+                    public const string View = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(View)}";
                     public const string SetFromAnyToAny = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(SetFromAnyToAny)}";
                     public const string SetFromAnyToSelf = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(SetFromAnyToSelf)}";
                     public const string SetFromNoneToAny = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(SetFromNoneToAny)}";

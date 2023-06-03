@@ -267,7 +267,8 @@ public class AccessService : IAccessService
                 Claims.Company.Any.View
             }))
         {
-            result.Add(Claims.Company.Any.View);
+            result.Add(Access.Company.Any.View);
+            result.Add(Access.Company.Any.Manager.View);
         }
 
         return result.ToArray();

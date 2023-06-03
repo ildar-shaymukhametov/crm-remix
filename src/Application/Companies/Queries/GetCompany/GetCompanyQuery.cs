@@ -19,11 +19,15 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IAccessService _accessService;
+    private readonly ICurrentUserService _currentUserService;
 
-    public GetCompanyRequestHandler(IApplicationDbContext dbContext, IMapper mapper)
+    public GetCompanyRequestHandler(IApplicationDbContext dbContext, IMapper mapper, IAccessService accessService, ICurrentUserService currentUserService)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _accessService = accessService;
+        _currentUserService = currentUserService;
     }
 
     public async Task<CompanyVm> Handle(GetCompanyQuery request, CancellationToken cancellationToken)
@@ -50,10 +54,15 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
         result.Fields.Add(nameof(Company.Contacts), entity.Contacts);
         result.Fields.Add(nameof(Company.Email), entity.Email);
         result.Fields.Add(nameof(Company.Inn), entity.Inn);
-        result.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
         result.Fields.Add(nameof(Company.Name), entity.Name);
         result.Fields.Add(nameof(Company.Phone), entity.Phone);
         result.Fields.Add(nameof(Company.Type), _mapper.Map<CompanyTypeDto>(entity.Type));
+
+        var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
+        if (accessRights.Contains(Constants.Access.Company.Any.Manager.View))
+        {
+            result.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
+        }
 
         return result;
     }

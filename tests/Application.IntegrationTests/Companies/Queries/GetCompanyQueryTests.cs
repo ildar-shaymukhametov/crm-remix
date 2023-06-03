@@ -20,15 +20,15 @@ public class GetCompanyTests : BaseTest
         var company = await _fixture.FindAsync<Company>(result.Id, nameof(Company.Type));
 
         Assert.Equal(company?.Id, result?.Id);
-        Assert.Equal(company?.TypeId, (result?.Fields["Type"] as CompanyTypeDto)?.Id);
-        Assert.Equal(company?.Address, result?.Fields["Address"]);
-        Assert.Equal(company?.Ceo, result?.Fields["Ceo"]);
-        Assert.Equal(company?.Contacts, result?.Fields["Contacts"]);
-        Assert.Equal(company?.Email, result?.Fields["Email"]);
-        Assert.Equal(company?.Inn, result?.Fields["Inn"]);
-        Assert.Equal(company?.ManagerId, (result?.Fields["Manager"] as ManagerDto)?.Id);
-        Assert.Equal(company?.Name, result?.Fields["Name"]);
-        Assert.Equal(company?.Phone, result?.Fields["Phone"]);
+        Assert.Equal(company?.TypeId, (result?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
+        Assert.Equal(company?.Address, result?.Fields[nameof(Company.Address)]);
+        Assert.Equal(company?.Ceo, result?.Fields[nameof(Company.Ceo)]);
+        Assert.Equal(company?.Contacts, result?.Fields[nameof(Company.Contacts)]);
+        Assert.Equal(company?.Email, result?.Fields[nameof(Company.Email)]);
+        Assert.Equal(company?.Inn, result?.Fields[nameof(Company.Inn)]);
+        Assert.Equal(company?.Name, result?.Fields[nameof(Company.Name)]);
+        Assert.Equal(company?.Phone, result?.Fields[nameof(Company.Phone)]);
+        Assert.Equal(company?.ManagerId, (result?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
     }
 
     [Theory]
@@ -44,58 +44,63 @@ public class GetCompanyTests : BaseTest
         var result = await _fixture.SendAsync(request);
 
         Assert.Equal(company?.Id, result?.Id);
-        Assert.Equal(company?.TypeId, (result?.Fields["Type"] as CompanyTypeDto)?.Id);
-        Assert.Equal(company?.Address, result?.Fields["Address"]);
-        Assert.Equal(company?.Ceo, result?.Fields["Ceo"]);
-        Assert.Equal(company?.Contacts, result?.Fields["Contacts"]);
-        Assert.Equal(company?.Email, result?.Fields["Email"]);
-        Assert.Equal(company?.Inn, result?.Fields["Inn"]);
-        Assert.Equal(company?.ManagerId, (result?.Fields["Manager"] as ManagerDto)?.Id);
-        Assert.Equal(company?.Name, result?.Fields["Name"]);
-        Assert.Equal(company?.Phone, result?.Fields["Phone"]);
+        Assert.Equal(company?.TypeId, (result?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
+        Assert.Equal(company?.Address, result?.Fields[nameof(Company.Address)]);
+        Assert.Equal(company?.Ceo, result?.Fields[nameof(Company.Ceo)]);
+        Assert.Equal(company?.Contacts, result?.Fields[nameof(Company.Contacts)]);
+        Assert.Equal(company?.Email, result?.Fields[nameof(Company.Email)]);
+        Assert.Equal(company?.Inn, result?.Fields[nameof(Company.Inn)]);
+        Assert.Equal(company?.Name, result?.Fields[nameof(Company.Name)]);
+        Assert.Equal(company?.Phone, result?.Fields[nameof(Company.Phone)]);
+        Assert.Equal(company?.ManagerId, (result?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
     }
 
-    // [Fact]
-    // public async Task User_has_no_claim___Throws_forbidden_access()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync();
+    [Fact]
+    public async Task User_has_no_claim___Throws_forbidden_access()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync();
 
-    //     var company = Faker.Builders.Company();
-    //     await _fixture.AddAsync(company);
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
 
-    //     var request = new GetCompanyQuery { Id = company.Id };
-    //     await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
-    // }
+        var request = new GetCompanyQuery { Id = company.Id };
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
+    }
 
-    // [Theory]
-    // [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.View)]
-    // [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    // [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.Update)]
-    // public async Task User_has_claim_and_is_manager___Returns_company(string claim)
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Other.View)]
+    public async Task User_has_claim_to_view_other_fields_in_any_company___Returns_other_fields(string claim)
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { claim });
 
-    //     var company = Faker.Builders.Company(user.Id);
-    //     await _fixture.AddAsync(company);
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
 
-    //     var request = new GetCompanyQuery { Id = company.Id };
-    //     var result = await _fixture.SendAsync(request);
+        var request = new GetCompanyQuery { Id = company.Id };
+        var result = await _fixture.SendAsync(request);
 
-    //     Assert.Equal(company.Id, result.Id);
-    // }
+        Assert.Equal(company?.Id, result?.Id);
+        Assert.Equal(company?.TypeId, (result?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
+        Assert.Equal(company?.Address, result?.Fields[nameof(Company.Address)]);
+        Assert.Equal(company?.Ceo, result?.Fields[nameof(Company.Ceo)]);
+        Assert.Equal(company?.Contacts, result?.Fields[nameof(Company.Contacts)]);
+        Assert.Equal(company?.Email, result?.Fields[nameof(Company.Email)]);
+        Assert.Equal(company?.Inn, result?.Fields[nameof(Company.Inn)]);
+        Assert.Equal(company?.Name, result?.Fields[nameof(Company.Name)]);
+        Assert.Equal(company?.Phone, result?.Fields[nameof(Company.Phone)]);
+    }
 
-    // [Theory]
-    // [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.View)]
-    // [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    // [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.Update)]
-    // public async Task User_has_claim_and_is_not_manager___Throws_forbidden_access(string claim)
-    // {
-    //     await _fixture.RunAsDefaultUserAsync(claim);
+    [Fact]
+    public async Task User_has_claim_to_view_other_fields_in_any_company___Does_not_return_manager()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.View });
 
-    //     var company = Faker.Builders.Company();
-    //     await _fixture.AddAsync(company);
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
 
-    //     var request = new GetCompanyQuery { Id = company.Id };
-    //     await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
-    // }
+        var request = new GetCompanyQuery { Id = company.Id };
+        var result = await _fixture.SendAsync(request);
+
+        Assert.False(result.Fields.ContainsKey(nameof(Company.Manager)));
+    }
 }
