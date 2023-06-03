@@ -1,4 +1,5 @@
 using CRM.Application.Common.Behaviours.Authorization.Resources;
+using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -17,18 +18,17 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        if (accessRights.Contains(Access.Company.Any.View)
-            || accessRights.Contains(Access.Company.Any.Other.View)
-            || accessRights.Contains(Access.Company.Any.Manager.View)
-            || accessRights.Contains(Access.Company.WhereUserIsManager.Manager.View)
-        )
+        if (accessRights.ContainsAny(Access.Company.Any.View, Access.Company.Any.Other.View, Access.Company.Any.Manager.View))
         {
             context.Succeed(requirement);
         }
 
-        if (accessRights.Contains(Access.Company.WhereUserIsManager.Other.View) && (context.Resource as CompanyDto)?.ManagerId == context.User.GetSubjectId())
+        if (context.Resource is CompanyDto company)
         {
-            context.Succeed(requirement);
+            if (company.ManagerId == context.User.GetSubjectId() && accessRights.ContainsAny(Access.Company.WhereUserIsManager.Other.View, Access.Company.WhereUserIsManager.Manager.View))
+            {
+                context.Succeed(requirement);
+            }
         }
 
         return Task.CompletedTask;

@@ -102,10 +102,12 @@ public class GetCompanyTests : BaseTest
         AssertNoManager(result);
     }
 
-    [Fact]
-    public async Task User_has_claim_to_view_other_fields_in_own_company_and_is_not_manager___Forbidden()
+    [Theory]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.View)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.View)]
+    public async Task User_has_claim_to_view_certain_fields_in_own_company_and_is_not_manager___Forbidden(string claim)
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.View });
+        await _fixture.RunAsDefaultUserAsync(new[] { claim });
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
