@@ -31,20 +31,29 @@ public class GetCompanyTests : BaseTest
         Assert.Equal(company?.Phone, result?.Fields["Phone"]);
     }
 
-    // [Theory]
-    // [InlineData(Constants.Claims.Company.Any.View)]
-    // public async Task User_has_claim_to_view_any_company___Returns_all_fields(string claim)
-    // {
-    //     await _fixture.RunAsDefaultUserAsync(new[] { claim });
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.View)]
+    public async Task User_has_claim_to_view_any_company___Returns_all_fields(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
 
-    //     var company = Faker.Builders.Company();
-    //     await _fixture.AddAsync(company);
+        var company = Faker.Builders.Company(managerId: user.Id);
+        await _fixture.AddAsync(company);
 
-    //     var request = new GetCompanyQuery { Id = company.Id };
-    //     var result = await _fixture.SendAsync(request);
+        var request = new GetCompanyQuery { Id = company.Id };
+        var result = await _fixture.SendAsync(request);
 
-    //     Assert.Equal(company.Id, result.Id);
-    // }
+        Assert.Equal(company?.Id, result?.Id);
+        Assert.Equal(company?.TypeId, (result?.Fields["Type"] as CompanyTypeDto)?.Id);
+        Assert.Equal(company?.Address, result?.Fields["Address"]);
+        Assert.Equal(company?.Ceo, result?.Fields["Ceo"]);
+        Assert.Equal(company?.Contacts, result?.Fields["Contacts"]);
+        Assert.Equal(company?.Email, result?.Fields["Email"]);
+        Assert.Equal(company?.Inn, result?.Fields["Inn"]);
+        Assert.Equal(company?.ManagerId, (result?.Fields["Manager"] as ManagerDto)?.Id);
+        Assert.Equal(company?.Name, result?.Fields["Name"]);
+        Assert.Equal(company?.Phone, result?.Fields["Phone"]);
+    }
 
     // [Fact]
     // public async Task User_has_no_claim___Throws_forbidden_access()
