@@ -37,7 +37,7 @@ public class GetCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_view_other_fields_in_any_company___Returns_other_fields()
+    public async Task User_has_claim_to_view_other_fields_in_any_company___Returns_other_fields_only()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.View });
 
@@ -49,24 +49,11 @@ public class GetCompanyTests : BaseTest
 
         Assert.Equal(company?.Id, result?.Id);
         AssertOtherFieldsEqual(company, result);
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_view_other_fields_in_any_company___Does_not_return_manager()
-    {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.View });
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
-
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
-
         AssertNoManager(result);
     }
 
     [Fact]
-    public async Task User_has_claim_to_view_manager_in_any_company___Returns_manager()
+    public async Task User_has_claim_to_view_manager_in_any_company___Returns_manager_only()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Manager.View });
 
@@ -78,19 +65,6 @@ public class GetCompanyTests : BaseTest
 
         Assert.Equal(company?.Id, result?.Id);
         AssertManagerEqual(company, result);
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_view_manager_in_any_company___Does_not_return_other_fields()
-    {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Manager.View });
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
-
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
-
         AssertNoOtherFields(result);
     }
 
@@ -113,7 +87,7 @@ public class GetCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_view_other_fields_in_own_company___Returns_other_fields()
+    public async Task User_has_claim_to_view_other_fields_in_own_company___Returns_other_fields_only()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.View });
 
@@ -125,6 +99,7 @@ public class GetCompanyTests : BaseTest
 
         Assert.Equal(company?.Id, result?.Id);
         AssertOtherFieldsEqual(company, result);
+        AssertNoManager(result);
     }
 
     [Fact]
