@@ -71,7 +71,7 @@ public class GetCompanyTests : BaseTest
     [Theory]
     [InlineData(Constants.Claims.Company.Any.Delete)]
     [InlineData(Constants.Claims.Company.Any.Update)]
-    public async Task User_has_certain_claim___Returns_only_id(string claim)
+    public async Task User_has_certain_claim___Returns_id_only(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
 
