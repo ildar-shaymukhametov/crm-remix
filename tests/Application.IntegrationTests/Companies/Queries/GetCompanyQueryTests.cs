@@ -20,7 +20,7 @@ public class GetCompanyTests : BaseTest
         var company = await _fixture.FindAsync<Company>(result.Id, nameof(Company.Type));
 
         AssertOtherFieldsEqual(company, result);
-        AssertManagerEqual(result, company);
+        AssertManagerEqual(company, result);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class GetCompanyTests : BaseTest
         var result = await _fixture.SendAsync(request);
 
         AssertOtherFieldsEqual(company, result);
-        AssertManagerEqual(result, company);
+        AssertManagerEqual(company, result);
     }
 
     [Fact]
@@ -78,6 +78,41 @@ public class GetCompanyTests : BaseTest
         Assert.False(result.Fields.ContainsKey(nameof(Company.Manager)));
     }
 
+    [Fact]
+    public async Task User_has_claim_to_view_manager_in_any_company___Returns_manager()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Manager.View });
+
+        var company = Faker.Builders.Company(user.Id);
+        await _fixture.AddAsync(company);
+
+        var request = new GetCompanyQuery { Id = company.Id };
+        var result = await _fixture.SendAsync(request);
+
+        AssertManagerEqual(company, result);
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_view_manager_in_any_company___Does_not_return_other_fields()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Manager.View });
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var request = new GetCompanyQuery { Id = company.Id };
+        var result = await _fixture.SendAsync(request);
+
+        Assert.False(result.Fields.ContainsKey(nameof(Company.Address)));
+        Assert.False(result.Fields.ContainsKey(nameof(Company.Ceo)));
+        Assert.False(result.Fields.ContainsKey(nameof(Company.Contacts)));
+        Assert.False(result.Fields.ContainsKey(nameof(Company.Email)));
+        Assert.False(result.Fields.ContainsKey(nameof(Company.Inn)));
+        Assert.False(result.Fields.ContainsKey(nameof(Company.Name)));
+        Assert.False(result.Fields.ContainsKey(nameof(Company.Phone)));
+        Assert.False(result.Fields.ContainsKey(nameof(Company.Type)));
+    }
+
     private static void AssertOtherFieldsEqual(Company? company, CompanyVm result)
     {
         Assert.Equal(company?.Id, result?.Id);
@@ -91,8 +126,9 @@ public class GetCompanyTests : BaseTest
         Assert.Equal(company?.Phone, result?.Fields[nameof(Company.Phone)]);
     }
 
-    private static void AssertManagerEqual(CompanyVm result, Company? company)
+    private static void AssertManagerEqual(Company? company, CompanyVm result)
     {
+        Assert.Equal(company?.Id, result?.Id);
         Assert.Equal(company?.ManagerId, (result?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
     }
 }
