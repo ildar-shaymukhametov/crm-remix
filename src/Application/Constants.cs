@@ -112,7 +112,6 @@ public static class Constants
 
             public static class WhereUserIsManager
             {
-                public const string View = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(View)}";
                 public const string Delete = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Delete)}";
                 public const string Update = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Update)}";
 
