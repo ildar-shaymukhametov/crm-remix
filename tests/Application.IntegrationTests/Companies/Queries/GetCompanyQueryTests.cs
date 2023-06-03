@@ -110,10 +110,12 @@ public class GetCompanyTests : BaseTest
         AssertNoOtherFields(result);
     }
 
-    [Fact]
-    public async Task User_has_claim_to_delete_any_company___Returns_only_id()
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Delete)]
+    [InlineData(Constants.Claims.Company.Any.Update)]
+    public async Task User_has_certain_claim___Returns_only_id(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Delete });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
 
         var company = Faker.Builders.Company(managerId: user.Id);
         await _fixture.AddAsync(company);

@@ -237,6 +237,7 @@ public class AccessService : IAccessService
             }))
         {
             result.Add(Access.Company.Any.Update);
+            result.Add(Access.Company.Any.View);
         }
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
