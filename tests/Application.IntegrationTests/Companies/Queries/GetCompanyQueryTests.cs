@@ -19,16 +19,8 @@ public class GetCompanyTests : BaseTest
         var result = await _fixture.SendAsync(request);
         var company = await _fixture.FindAsync<Company>(result.Id, nameof(Company.Type));
 
-        Assert.Equal(company?.Id, result?.Id);
-        Assert.Equal(company?.TypeId, (result?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
-        Assert.Equal(company?.Address, result?.Fields[nameof(Company.Address)]);
-        Assert.Equal(company?.Ceo, result?.Fields[nameof(Company.Ceo)]);
-        Assert.Equal(company?.Contacts, result?.Fields[nameof(Company.Contacts)]);
-        Assert.Equal(company?.Email, result?.Fields[nameof(Company.Email)]);
-        Assert.Equal(company?.Inn, result?.Fields[nameof(Company.Inn)]);
-        Assert.Equal(company?.Name, result?.Fields[nameof(Company.Name)]);
-        Assert.Equal(company?.Phone, result?.Fields[nameof(Company.Phone)]);
-        Assert.Equal(company?.ManagerId, (result?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
+        AssertOtherFieldsEqual(company, result);
+        AssertManagerEqual(result, company);
     }
 
     [Theory]
@@ -43,16 +35,8 @@ public class GetCompanyTests : BaseTest
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
 
-        Assert.Equal(company?.Id, result?.Id);
-        Assert.Equal(company?.TypeId, (result?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
-        Assert.Equal(company?.Address, result?.Fields[nameof(Company.Address)]);
-        Assert.Equal(company?.Ceo, result?.Fields[nameof(Company.Ceo)]);
-        Assert.Equal(company?.Contacts, result?.Fields[nameof(Company.Contacts)]);
-        Assert.Equal(company?.Email, result?.Fields[nameof(Company.Email)]);
-        Assert.Equal(company?.Inn, result?.Fields[nameof(Company.Inn)]);
-        Assert.Equal(company?.Name, result?.Fields[nameof(Company.Name)]);
-        Assert.Equal(company?.Phone, result?.Fields[nameof(Company.Phone)]);
-        Assert.Equal(company?.ManagerId, (result?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
+        AssertOtherFieldsEqual(company, result);
+        AssertManagerEqual(result, company);
     }
 
     [Fact]
@@ -79,15 +63,7 @@ public class GetCompanyTests : BaseTest
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
 
-        Assert.Equal(company?.Id, result?.Id);
-        Assert.Equal(company?.TypeId, (result?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
-        Assert.Equal(company?.Address, result?.Fields[nameof(Company.Address)]);
-        Assert.Equal(company?.Ceo, result?.Fields[nameof(Company.Ceo)]);
-        Assert.Equal(company?.Contacts, result?.Fields[nameof(Company.Contacts)]);
-        Assert.Equal(company?.Email, result?.Fields[nameof(Company.Email)]);
-        Assert.Equal(company?.Inn, result?.Fields[nameof(Company.Inn)]);
-        Assert.Equal(company?.Name, result?.Fields[nameof(Company.Name)]);
-        Assert.Equal(company?.Phone, result?.Fields[nameof(Company.Phone)]);
+        AssertOtherFieldsEqual(company, result);
     }
 
     [Fact]
@@ -102,5 +78,23 @@ public class GetCompanyTests : BaseTest
         var result = await _fixture.SendAsync(request);
 
         Assert.False(result.Fields.ContainsKey(nameof(Company.Manager)));
+    }
+
+    private static void AssertOtherFieldsEqual(Company? company, CompanyVm result)
+    {
+        Assert.Equal(company?.Id, result?.Id);
+        Assert.Equal(company?.TypeId, (result?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
+        Assert.Equal(company?.Address, result?.Fields[nameof(Company.Address)]);
+        Assert.Equal(company?.Ceo, result?.Fields[nameof(Company.Ceo)]);
+        Assert.Equal(company?.Contacts, result?.Fields[nameof(Company.Contacts)]);
+        Assert.Equal(company?.Email, result?.Fields[nameof(Company.Email)]);
+        Assert.Equal(company?.Inn, result?.Fields[nameof(Company.Inn)]);
+        Assert.Equal(company?.Name, result?.Fields[nameof(Company.Name)]);
+        Assert.Equal(company?.Phone, result?.Fields[nameof(Company.Phone)]);
+    }
+
+    private static void AssertManagerEqual(CompanyVm result, Company? company)
+    {
+        Assert.Equal(company?.ManagerId, (result?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
     }
 }
