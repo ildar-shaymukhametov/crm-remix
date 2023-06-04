@@ -84,20 +84,6 @@ public class GetCompanyTests : BaseTest
         AssertNoManager(result);
     }
 
-    [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.View)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.View)]
-    public async Task User_has_claim_to_view_certain_fields_in_own_company_and_is_not_manager___Forbidden(string claim)
-    {
-        await _fixture.RunAsDefaultUserAsync(new[] { claim });
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
-
-        var request = new GetCompanyQuery { Id = company.Id };
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
-    }
-
     [Fact]
     public async Task User_has_claim_to_view_manager_in_own_company___Returns_manager_only()
     {
@@ -112,6 +98,20 @@ public class GetCompanyTests : BaseTest
         Assert.Equal(company?.Id, result?.Id);
         AssertManagerEqual(company, result);
         AssertNoOtherFields(result);
+    }
+
+    [Theory]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.View)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.View)]
+    public async Task User_has_claim_to_view_certain_fields_in_own_company_and_is_not_manager___Forbidden(string claim)
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { claim });
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var request = new GetCompanyQuery { Id = company.Id };
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
     }
 
     private static void AssertNoManager(CompanyVm? result)
