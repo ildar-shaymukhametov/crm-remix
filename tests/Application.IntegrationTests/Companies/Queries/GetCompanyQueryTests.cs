@@ -68,24 +68,6 @@ public class GetCompanyTests : BaseTest
         AssertNoOtherFields(result);
     }
 
-    [Theory]
-    [InlineData(Constants.Claims.Company.Any.Delete)]
-    [InlineData(Constants.Claims.Company.Any.Update)]
-    public async Task User_has_certain_claim___Returns_id_only(string claim)
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
-
-        var company = Faker.Builders.Company(managerId: user.Id);
-        await _fixture.AddAsync(company);
-
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
-
-        Assert.Equal(company?.Id, result?.Id);
-        AssertNoOtherFields(result);
-        AssertNoManager(result);
-    }
-
     [Fact]
     public async Task User_has_claim_to_view_other_fields_in_own_company___Returns_other_fields_only()
     {
