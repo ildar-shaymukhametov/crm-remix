@@ -2,7 +2,6 @@ using CRM.Application.Common.Behaviours.Authorization.Resources;
 using CRM.Application.Common.Interfaces;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Authorization.Handlers;
 
@@ -10,46 +9,27 @@ public class DeleteCompanyRequirement : IAuthorizationRequirement { }
 
 public class DeleteCompanyAuthorizationHandler : BaseAuthorizationHandler<DeleteCompanyRequirement>
 {
-    public DeleteCompanyAuthorizationHandler(IAccessService accessService) : base(accessService)
+    private readonly IUserAuthorizationService _userAuthorizationService;
+
+    public DeleteCompanyAuthorizationHandler(IAccessService accessService, IUserAuthorizationService userAuthorizationService) : base(accessService)
     {
+        _userAuthorizationService = userAuthorizationService;
     }
 
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
     {
-        var accessRights = _accessService.CheckAccess(context.User);
-        if (!accessRights.Any())
-        {
-            return Fail(context, "Delete company");
-        }
-
-        if (accessRights.Contains(Access.Company.Any.Delete))
-        {
-            return Ok(context, requirement);
-        }
-
-        var company = GetResources(context);
-        var userId = context.User.GetSubjectId();
-
-        if (company.ManagerId == userId && !accessRights.Contains(Access.Company.WhereUserIsManager.Delete))
-        {
-            return Fail(context, "Delete own company");
-        }
-        else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Delete))
-        {
-            return Fail(context, "Delete any company");
-        }
-
-        return Ok(context, requirement);
-    }
-
-    private static CompanyDto GetResources(AuthorizationHandlerContext context)
-    {
-        if (context.Resource == null)
+        if (context.Resource is not CompanyDto)
         {
             throw new InvalidOperationException("Resource is missing");
         }
 
-        return (CompanyDto)context.Resource;
+        var result = await _userAuthorizationService.AuthorizeDeleteCompanyAsync(context.User.GetSubjectId(), (CompanyDto)context.Resource);
+        if (!result.Succeeded)
+        {
+            _ = Fail(context, "Delete company");
+        }
+
+        _ = Ok(context, requirement);
     }
 }
 

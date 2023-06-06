@@ -3,7 +3,6 @@ using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
 using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Authorization.Handlers;
@@ -12,11 +11,14 @@ public class GetCompanyRequirement : IAuthorizationRequirement { }
 
 public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompanyRequirement>
 {
-    public GetCompanyAuthorizationHandler(IAccessService accessService) : base(accessService)
+    private readonly IUserAuthorizationService _userAuthorizationService;
+
+    public GetCompanyAuthorizationHandler(IAccessService accessService, IUserAuthorizationService userAuthorizationService) : base(accessService)
     {
+        _userAuthorizationService = userAuthorizationService;
     }
 
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
         if (accessRights.ContainsAny(Access.Company.Any.Other.View, Access.Company.Any.Manager.View))
@@ -29,32 +31,10 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
             {
                 context.Succeed(requirement);
             }
+            else if (await _userAuthorizationService.AuthorizeDeleteCompanyAsync(context.User.GetSubjectId(), company))
+            {
+                context.Succeed(requirement);
+            }
         }
-
-        return Task.CompletedTask;
-    }
-}
-
-public class GetCompanyByDeleteAuthorizationHandler : AuthorizationHandler<GetCompanyRequirement>
-{
-    private readonly IServiceProvider _serviceProvider;
-
-    public GetCompanyByDeleteAuthorizationHandler(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
-    {
-        using var scope = _serviceProvider.CreateScope();
-        var handler = scope.ServiceProvider.GetServices<IAuthorizationHandler>().Single(x => x.GetType().IsAssignableTo(typeof(AuthorizationHandler<DeleteCompanyRequirement>)));
-        var newContext = new AuthorizationHandlerContext(new[] { new DeleteCompanyRequirement() }, context.User, context.Resource);
-        handler.HandleAsync(newContext);
-        if (newContext.HasSucceeded)
-        {
-            context.Succeed(requirement);
-        }
-
-        return Task.CompletedTask;
     }
 }
