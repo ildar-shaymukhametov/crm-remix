@@ -123,14 +123,12 @@ public class GetCompanyTests : BaseTest
     [Fact]
     public async Task User_can_delete_company___Returns_id_only()
     {
-        var user = await _fixture.RunAsDefaultUserAsync();
+        await _fixture.RunAsDefaultUserAsync();
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
 
-        var userAuthServiceMock = Substitute.For<IUserAuthorizationService>();
-        userAuthServiceMock.AuthorizeDeleteCompanyAsync(user.Id, Arg.Any<CompanyDto>()).Returns(Result.Success());
-        _fixture.ReplaceService<IUserAuthorizationService>(userAuthServiceMock);
+        _fixture.ReplaceService<IAuthorizationHandler, DeleteCompanyAuthorizationHandler>(new DeleteCompanyAuthorizationHandlerMock());
 
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
