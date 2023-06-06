@@ -11,27 +11,30 @@ public class GetCompanyRequirement : IAuthorizationRequirement { }
 
 public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompanyRequirement>
 {
-    public GetCompanyAuthorizationHandler(IAccessService accessService) : base(accessService)
+    private readonly IUserAuthorizationService _userAuthorizationService;
+
+    public GetCompanyAuthorizationHandler(IAccessService accessService, IUserAuthorizationService userAuthorizationService) : base(accessService)
     {
+        _userAuthorizationService = userAuthorizationService;
     }
 
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
         if (accessRights.ContainsAny(Access.Company.Any.Other.View, Access.Company.Any.Manager.View))
         {
             context.Succeed(requirement);
         }
-
-        if (context.Resource is CompanyDto company)
+        else if (context.Resource is CompanyDto company)
         {
             if (company.ManagerId == context.User.GetSubjectId() && accessRights.ContainsAny(Access.Company.WhereUserIsManager.Other.View, Access.Company.WhereUserIsManager.Manager.View))
             {
                 context.Succeed(requirement);
             }
+            else if (await _userAuthorizationService.AuthorizeDeleteCompanyAsync(context.User.GetSubjectId(), company))
+            {
+                context.Succeed(requirement);
+            }
         }
-
-        return Task.CompletedTask;
     }
 }
-

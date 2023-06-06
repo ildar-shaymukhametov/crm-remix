@@ -1,6 +1,5 @@
-using AutoMapper;
-using CRM.Application.Common.Interfaces;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CRM.Application.Companies.Queries.GetCompany;
 
@@ -10,22 +9,16 @@ public record GetTestCompanyQuery : GetCompanyQuery
 
 public class GetTestCompanyRequestHandler : IRequestHandler<GetTestCompanyQuery, CompanyVm>
 {
-    private readonly IApplicationDbContext _dbContext;
-    private readonly IMapper _mapper;
-    private readonly IAccessService _accessService;
-    private readonly ICurrentUserService _currentUserService;
+    private readonly IServiceProvider _serviceProvider;
 
-    public GetTestCompanyRequestHandler(IApplicationDbContext dbContext, IMapper mapper, IAccessService accessService, ICurrentUserService currentUserService)
+    public GetTestCompanyRequestHandler(IServiceProvider serviceProvider)
     {
-        _dbContext = dbContext;
-        _mapper = mapper;
-        _accessService = accessService;
-        _currentUserService = currentUserService;
+        _serviceProvider = serviceProvider;
     }
 
     public async Task<CompanyVm> Handle(GetTestCompanyQuery request, CancellationToken cancellationToken)
     {
-        var handler = new GetCompanyRequestHandler(_dbContext, _mapper, _accessService, _currentUserService);
+        var handler = _serviceProvider.GetRequiredService<GetCompanyRequestHandler>();
         return await handler.Handle(request, cancellationToken);
     }
 }

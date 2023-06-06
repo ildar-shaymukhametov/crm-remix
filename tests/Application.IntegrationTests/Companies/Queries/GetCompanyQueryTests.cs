@@ -1,6 +1,12 @@
+using CRM.Application.Common.Behaviours.Authorization.Resources;
 using CRM.Application.Common.Exceptions;
+using CRM.Application.Common.Interfaces;
+using CRM.Application.Common.Models;
 using CRM.Application.Companies.Queries.GetCompany;
 using CRM.Domain.Entities;
+using CRM.Infrastructure.Authorization.Handlers;
+using Microsoft.AspNetCore.Authorization;
+using NSubstitute;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
 
@@ -114,6 +120,27 @@ public class GetCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
     }
 
+    [Fact]
+    public async Task User_can_delete_company___Returns_id_only()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync();
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var userAuthServiceMock = Substitute.For<IUserAuthorizationService>();
+        userAuthServiceMock.AuthorizeDeleteCompanyAsync(user.Id, Arg.Any<CompanyDto>()).Returns(Result.Success());
+        _fixture.ReplaceService<IUserAuthorizationService>(userAuthServiceMock);
+
+        var request = new GetCompanyQuery { Id = company.Id };
+        var result = await _fixture.SendAsync(request);
+
+        Assert.Equal(company?.Id, result?.Id);
+        AssertNoManager(result);
+        AssertNoOtherFields(result);
+        Assert.True(result?.CanBeDeleted);
+    }
+
     private static void AssertNoManager(CompanyVm? result)
     {
         Assert.False(result?.Fields.ContainsKey(nameof(Company.Manager)));
@@ -146,5 +173,14 @@ public class GetCompanyTests : BaseTest
     private static void AssertManagerEqual(Company? company, CompanyVm? result)
     {
         Assert.Equal(company?.ManagerId, (result?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
+    }
+
+    public class DeleteCompanyAuthorizationHandlerMock : AuthorizationHandler<DeleteCompanyRequirement>
+    {
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
+        {
+            context.Succeed(requirement);
+            return Task.CompletedTask;
+        }
     }
 }
