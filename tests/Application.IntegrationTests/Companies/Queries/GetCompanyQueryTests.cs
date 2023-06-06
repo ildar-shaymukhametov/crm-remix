@@ -136,9 +136,9 @@ public class GetCompanyTests : BaseTest
         var result = await _fixture.SendAsync(request);
 
         Assert.Equal(company?.Id, result?.Id);
+        Assert.True(result?.CanBeDeleted);
         AssertNoManager(result);
         AssertNoOtherFields(result);
-        Assert.True(result?.CanBeDeleted);
     }
 
     private static void AssertNoManager(CompanyVm? result)
@@ -175,7 +175,7 @@ public class GetCompanyTests : BaseTest
         Assert.Equal(company?.ManagerId, (result?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
     }
 
-    public class DeleteCompanyAuthorizationHandlerMock : AuthorizationHandler<DeleteCompanyRequirement>
+    private class DeleteCompanyAuthorizationHandlerMock : AuthorizationHandler<DeleteCompanyRequirement>
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
         {
