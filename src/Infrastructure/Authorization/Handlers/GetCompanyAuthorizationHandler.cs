@@ -46,6 +46,11 @@ public class GetCompanyByDeleteAuthorizationHandler : AuthorizationHandler<GetCo
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {
+        if (context.HasSucceeded)
+        {
+            return;
+        }
+
         using var scope = _serviceProvider.CreateScope();
         var handler = scope.ServiceProvider
             .GetServices<IAuthorizationHandler>()
@@ -71,6 +76,11 @@ public class GetCompanyByUpdateAuthorizationHandler : AuthorizationHandler<GetCo
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {
+        if (context.HasSucceeded)
+        {
+            return;
+        }
+
         using var scope = _serviceProvider.CreateScope();
         var handler = scope.ServiceProvider
             .GetServices<IAuthorizationHandler>()
