@@ -1,4 +1,3 @@
-using CRM.Application.Common.Behaviours.Authorization.Resources;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Models;
@@ -129,7 +128,7 @@ public class GetCompanyTests : BaseTest
         await _fixture.AddAsync(company);
 
         var userAuthServiceMock = Substitute.For<IUserAuthorizationService>();
-        userAuthServiceMock.AuthorizeDeleteCompanyAsync(user.Id, Arg.Any<CompanyDto>()).Returns(Result.Success());
+        userAuthServiceMock.AuthorizeDeleteCompanyAsync(user.Id, Arg.Any<Company>()).Returns(Result.Success());
         _fixture.ReplaceService<IUserAuthorizationService>(userAuthServiceMock);
 
         var request = new GetCompanyQuery { Id = company.Id };

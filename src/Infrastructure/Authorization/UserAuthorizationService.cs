@@ -1,6 +1,6 @@
-using CRM.Application.Common.Behaviours.Authorization.Resources;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Models;
+using CRM.Domain.Entities;
 using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Authorization;
@@ -14,7 +14,7 @@ public class UserAuthorizationService : IUserAuthorizationService
         _accessService = accessService;
     }
 
-    public async Task<Result> AuthorizeDeleteCompanyAsync(string userId, CompanyDto company)
+    public async Task<Result> AuthorizeDeleteCompanyAsync(string userId, Company company)
     {
         var accessRights = await _accessService.CheckAccessAsync(userId);
         if (!accessRights.Any())

@@ -1,5 +1,4 @@
 using AutoMapper;
-using CRM.Application.Common.Behaviours.Authorization.Resources;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
@@ -68,7 +67,7 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
             result.Fields.Add(nameof(Company.Type), _mapper.Map<CompanyTypeDto>(entity.Type));
         }
 
-        result.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, _mapper.Map<CompanyDto>(entity), Constants.Policies.Company.Delete);
+        result.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Delete);
 
         return result;
     }

@@ -34,7 +34,7 @@ public class RequestResourceProvider : IRequestResourceProvider
         };
     }
 
-    private async Task<CompanyDto> GetResourceAsync(UpdateCompanyCommand query)
+    private async Task<Company> GetResourceAsync(UpdateCompanyCommand query)
     {
         return await _resourceProvider.GetCompanyAsync(query.Id) ?? throw new NotFoundException(nameof(Company), query.Id);
     }

@@ -1,6 +1,6 @@
-using CRM.Application.Common.Behaviours.Authorization.Resources;
 using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
+using CRM.Domain.Entities;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using static CRM.Application.Constants;
@@ -25,7 +25,7 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
         {
             context.Succeed(requirement);
         }
-        else if (context.Resource is CompanyDto company)
+        else if (context.Resource is Company company)
         {
             if (company.ManagerId == context.User.GetSubjectId() && accessRights.ContainsAny(Access.Company.WhereUserIsManager.Other.View, Access.Company.WhereUserIsManager.Manager.View))
             {

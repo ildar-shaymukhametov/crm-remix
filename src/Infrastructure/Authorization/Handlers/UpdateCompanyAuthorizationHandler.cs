@@ -3,6 +3,7 @@ using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Models;
 using CRM.Application.Companies.Commands.UpdateCompany;
+using CRM.Domain.Entities;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using static CRM.Application.Constants;
@@ -67,14 +68,14 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         return Ok(context, requirement);
     }
 
-    private static (CompanyDto, UpdateCompanyCommand?) GetResources(AuthorizationHandlerContext context)
+    private static (Company, UpdateCompanyCommand?) GetResources(AuthorizationHandlerContext context)
     {
         if (context.Resource == null)
         {
             throw new InvalidOperationException("Resource is missing");
         }
 
-        if (context.Resource is CompanyDto company)
+        if (context.Resource is Company company)
         {
             return (company, null);
         }
@@ -83,7 +84,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         return (resource.Company, resource.Request);
     }
 
-    private static Result CheckManager(CompanyDto company, UpdateCompanyCommand request, string userId, string[] accessRights)
+    private static Result CheckManager(Company company, UpdateCompanyCommand request, string userId, string[] accessRights)
     {
         if (company.ManagerId == null)
         {

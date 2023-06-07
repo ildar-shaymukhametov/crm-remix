@@ -1,5 +1,5 @@
-using CRM.Application.Common.Behaviours.Authorization.Resources;
 using CRM.Application.Common.Interfaces;
+using CRM.Domain.Entities;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 
@@ -18,12 +18,12 @@ public class DeleteCompanyAuthorizationHandler : BaseAuthorizationHandler<Delete
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
     {
-        if (context.Resource is not CompanyDto)
+        if (context.Resource is not Company)
         {
             throw new InvalidOperationException("Resource is missing");
         }
 
-        var result = await _userAuthorizationService.AuthorizeDeleteCompanyAsync(context.User.GetSubjectId(), (CompanyDto)context.Resource);
+        var result = await _userAuthorizationService.AuthorizeDeleteCompanyAsync(context.User.GetSubjectId(), (Company)context.Resource);
         if (!result.Succeeded)
         {
             _ = Fail(context, "Delete company");
