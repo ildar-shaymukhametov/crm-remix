@@ -38,8 +38,7 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
             .AsNoTracking()
             .Include(x => x.Manager)
             .Include(x => x.Type)
-            .Where(x => x.Id == request.Id)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (entity == null)
         {
