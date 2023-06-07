@@ -24,9 +24,10 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         var accessRights = _accessService.CheckAccess(context.User);
         var userId = context.User.GetSubjectId();
 
-        if (accessRights.Contains(Access.Company.Any.Update) || company.ManagerId == userId && accessRights.Contains(Access.Company.WhereUserIsManager.Update))
+        var canUpdate = accessRights.Contains(Access.Company.Any.Update) || company.ManagerId == userId && accessRights.Contains(Access.Company.WhereUserIsManager.Update);
+        if (!canUpdate)
         {
-            return Ok(context, requirement);
+            return Fail(context, "Update company");
         }
 
         if (request == null)

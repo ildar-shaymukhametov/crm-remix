@@ -68,6 +68,7 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
         }
 
         result.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Delete);
+        result.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Update);
 
         return result;
     }

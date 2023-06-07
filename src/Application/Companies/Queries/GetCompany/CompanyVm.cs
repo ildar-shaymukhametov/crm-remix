@@ -8,6 +8,7 @@ public class CompanyVm : IMapFrom<Company>
     public int Id { get; set; }
     public Dictionary<string, object?> Fields { get; set; } = new();
     public bool CanBeDeleted { get; set; }
+    public bool CanBeUpdated { get; set; }
 }
 
 public class ManagerDto : IMapFrom<ApplicationUser>

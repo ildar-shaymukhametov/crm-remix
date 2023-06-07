@@ -135,6 +135,25 @@ public class GetCompanyTests : BaseTest
         AssertNoOtherFields(result);
     }
 
+    [Fact]
+    public async Task User_can_update_company___Returns_id_only()
+    {
+        await _fixture.RunAsDefaultUserAsync();
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        _fixture.ReplaceService<IAuthorizationHandler, UpdateCompanyAuthorizationHandler>(new UpdateCompanyAuthorizationHandlerMock());
+
+        var request = new GetCompanyQuery { Id = company.Id };
+        var result = await _fixture.SendAsync(request);
+
+        Assert.Equal(company?.Id, result?.Id);
+        Assert.True(result?.CanBeUpdated);
+        AssertNoManager(result);
+        AssertNoOtherFields(result);
+    }
+
     private static void AssertNoManager(CompanyVm? result)
     {
         Assert.False(result?.Fields.ContainsKey(nameof(Company.Manager)));
@@ -172,6 +191,15 @@ public class GetCompanyTests : BaseTest
     private class DeleteCompanyAuthorizationHandlerMock : AuthorizationHandler<DeleteCompanyRequirement>
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
+        {
+            context.Succeed(requirement);
+            return Task.CompletedTask;
+        }
+    }
+
+    private class UpdateCompanyAuthorizationHandlerMock : AuthorizationHandler<UpdateCompanyRequirement>
+    {
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
         {
             context.Succeed(requirement);
             return Task.CompletedTask;

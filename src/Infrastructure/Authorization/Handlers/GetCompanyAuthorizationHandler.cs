@@ -47,8 +47,36 @@ public class GetCompanyByDeleteAuthorizationHandler : AuthorizationHandler<GetCo
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {
         using var scope = _serviceProvider.CreateScope();
-        var handler = scope.ServiceProvider.GetServices<IAuthorizationHandler>().Single(x => x.GetType().IsAssignableTo(typeof(AuthorizationHandler<DeleteCompanyRequirement>)));
+        var handler = scope.ServiceProvider
+            .GetServices<IAuthorizationHandler>()
+            .OfType<AuthorizationHandler<DeleteCompanyRequirement>>()
+            .Single();
         var newContext = new AuthorizationHandlerContext(new[] { new DeleteCompanyRequirement() }, context.User, context.Resource);
+        await handler.HandleAsync(newContext);
+        if (newContext.HasSucceeded)
+        {
+            context.Succeed(requirement);
+        }
+    }
+}
+
+public class GetCompanyByUpdateAuthorizationHandler : AuthorizationHandler<GetCompanyRequirement>
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public GetCompanyByUpdateAuthorizationHandler(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
+    {
+        using var scope = _serviceProvider.CreateScope();
+        var handler = scope.ServiceProvider
+            .GetServices<IAuthorizationHandler>()
+            .OfType<AuthorizationHandler<UpdateCompanyRequirement>>()
+            .Single();
+        var newContext = new AuthorizationHandlerContext(new[] { new UpdateCompanyRequirement() }, context.User, context.Resource);
         await handler.HandleAsync(newContext);
         if (newContext.HasSucceeded)
         {
