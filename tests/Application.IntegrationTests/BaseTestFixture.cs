@@ -291,4 +291,17 @@ public class BaseTestFixture
             }
         }));
     }
+
+    public void ReplaceService<TServiceType, TImplementationType>(object replacement)
+    {
+        _modifiedFactory = Factory.WithWebHostBuilder(builder => builder.ConfigureServices(services =>
+        {
+            var serviceDescriptor = services.FirstOrDefault(d => d.ImplementationType == typeof(TImplementationType));
+            if (serviceDescriptor != null)
+            {
+                services.Remove(serviceDescriptor);
+                services.AddTransient(typeof(TServiceType), x => replacement);
+            }
+        }));
+    }
 }

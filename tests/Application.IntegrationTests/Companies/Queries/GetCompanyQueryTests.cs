@@ -1,11 +1,8 @@
 using CRM.Application.Common.Exceptions;
-using CRM.Application.Common.Interfaces;
-using CRM.Application.Common.Models;
 using CRM.Application.Companies.Queries.GetCompany;
 using CRM.Domain.Entities;
 using CRM.Infrastructure.Authorization.Handlers;
 using Microsoft.AspNetCore.Authorization;
-using NSubstitute;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
 
@@ -122,14 +119,12 @@ public class GetCompanyTests : BaseTest
     [Fact]
     public async Task User_can_delete_company___Returns_id_only()
     {
-        var user = await _fixture.RunAsDefaultUserAsync();
+        await _fixture.RunAsDefaultUserAsync();
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
 
-        var userAuthServiceMock = Substitute.For<IUserAuthorizationService>();
-        userAuthServiceMock.AuthorizeDeleteCompanyAsync(user.Id, Arg.Any<Company>()).Returns(Result.Success());
-        _fixture.ReplaceService<IUserAuthorizationService>(userAuthServiceMock);
+        _fixture.ReplaceService<IAuthorizationHandler, DeleteCompanyAuthorizationHandler>(new DeleteCompanyAuthorizationHandlerMock());
 
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
