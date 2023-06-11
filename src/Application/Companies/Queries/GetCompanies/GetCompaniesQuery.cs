@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
 using CRM.Domain.Entities;
@@ -56,7 +57,6 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
 
         var result = new List<CompanyVm>();
         var entities = await query.ToArrayAsync(cancellationToken);
-
         foreach (var entity in entities)
         {
             var item = new CompanyVm { Id = entity.Id };
@@ -89,13 +89,13 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
     private List<Expression<Func<Company, bool>>> GetExpressions(string[] accessRights)
     {
         var result = new List<Expression<Func<Company, bool>>>();
-        if (accessRights.Contains(Access.Company.Any.Other.View))
+        if (accessRights.ContainsAny(Access.Company.Any.Other.View))
         {
             result.Add(x => true);
             return result;
         }
 
-        if (accessRights.Contains(Access.Company.WhereUserIsManager.Other.View))
+        if (accessRights.Contains(Access.Company.WhereUserIsManager.Manager.View))
         {
             result.Add(x => x.ManagerId == _currentUserService.UserId);
         }

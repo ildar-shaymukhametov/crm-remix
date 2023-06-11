@@ -40,7 +40,7 @@ public class GetCompaniesQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_view_other_fields_in_any_company___Returns_companies_with_other_fields_only()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.Any.Other.View);
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.View });
         var company = await _fixture.AddCompanyAsync();
 
         var actual = await _fixture.SendAsync(new GetCompaniesQuery());
@@ -50,6 +50,22 @@ public class GetCompaniesQueryTests : BaseTest
             Assert.Equal(company.Id, x.Id);
             AssertOtherFieldsEqual(company, x);
             AssertNoManager(x);
+        });
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_view_manager_in_any_company___Returns_companies_with_manager_only()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Manager.View });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
+
+        Assert.Collection(actual, x =>
+        {
+            Assert.Equal(company.Id, x.Id);
+            AssertNoOtherFields(x);
+            AssertManagerEqual(company, x);
         });
     }
 

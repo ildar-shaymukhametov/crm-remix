@@ -242,6 +242,7 @@ public class AccessService : IAccessService
             }))
         {
             result.Add(Access.Company.Any.Manager.View);
+            result.Add(Access.Company.WhereUserIsManager.Manager.View);
         }
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
