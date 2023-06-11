@@ -85,82 +85,21 @@ public class GetCompaniesQueryTests : BaseTest
         });
     }
 
-    // [Fact]
-    // public async Task User_can_update_any_company___Returns_companies()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.Any.Other.Update);
-    //     var company = await _fixture.AddCompanyAsync();
+    [Fact]
+    public async Task User_has_claim_to_view_manager_in_own_company___Returns_companies_with_manager_only()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Manager.View });
+        var company = await _fixture.AddCompanyAsync(user.Id);
 
-    //     var request = new GetCompaniesQuery();
-    //     var actual = await _fixture.SendAsync(request);
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
 
-    //     Assert.Collection(actual, x => Assert.True(x.Id == company.Id && x.CanBeUpdated && !x.CanBeDeleted));
-    // }
-
-    // [Fact]
-    // public async Task User_can_delete_any_company___Returns_companies()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.Any.Delete);
-    //     var company = await _fixture.AddCompanyAsync();
-
-    //     var request = new GetCompaniesQuery();
-    //     var actual = await _fixture.SendAsync(request);
-
-    //     Assert.Collection(actual, x => Assert.True(x.Id == company.Id && !x.CanBeUpdated && x.CanBeDeleted));
-    // }
-
-    // [Fact]
-    // public async Task User_can_view_own_company_and_is_manager___Returns_companies()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.WhereUserIsManager.Other.View);
-    //     var company = await _fixture.AddCompanyAsync(user.Id);
-
-    //     var request = new GetCompaniesQuery();
-    //     var actual = await _fixture.SendAsync(request);
-
-    //     Assert.Collection(actual, x => Assert.True(x.Id == company.Id && !x.CanBeUpdated && !x.CanBeDeleted));
-    // }
-
-    // [Theory]
-    // [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.View)]
-    // [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.Update)]
-    // [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    // public async Task User_can_view_update_delete_own_company_and_is_not_manager___Returns_empty_list(string claim)
-    // {
-    //     await _fixture.RunAsDefaultUserAsync(new[] { claim });
-    //     await _fixture.AddCompanyAsync();
-
-    //     var request = new GetCompaniesQuery();
-    //     var actual = await _fixture.SendAsync(request);
-
-    //     Assert.Empty(actual);
-    // }
-
-    // [Fact]
-    // public async Task User_can_update_own_company___Returns_companies()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.WhereUserIsManager.Other.Update);
-    //     var company = await _fixture.AddCompanyAsync(user.Id);
-
-    //     var request = new GetCompaniesQuery();
-    //     var actual = await _fixture.SendAsync(request);
-
-    //     Assert.Collection(actual, x => Assert.True(x.Id == company.Id && x.CanBeUpdated && !x.CanBeDeleted));
-    // }
-
-    // [Theory]
-    // [InlineData(Constants.Claims.Company.Any.Delete)]
-    // [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
-    // public async Task User_can_delete_own_company___Returns_companies(string claim)
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(claim);
-    //     var company = await _fixture.AddCompanyAsync(user.Id);
-
-    //     var request = new GetCompaniesQuery();
-    //     var actual = await _fixture.SendAsync(request);
-
-    //     Assert.Collection(actual, x => Assert.True(x.Id == company.Id && !x.CanBeUpdated && x.CanBeDeleted));
-    // }
+        Assert.Collection(actual, x =>
+        {
+            Assert.Equal(company.Id, x.Id);
+            AssertManagerEqual(company, x);
+            AssertNoOtherFields(x);
+        });
+    }
 
     private static void AssertOtherFieldsEqual(Company? expected, CompanyVm? actual)
     {
