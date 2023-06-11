@@ -132,6 +132,24 @@ public class GetCompaniesQueryTests : BaseTest
         });
     }
 
+    [Fact]
+    public async Task User_can_delete_own_company___Returns_companies_with_id_only()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Access.Company.WhereUserIsManager.Delete });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+        _fixture.ReplaceService<IAuthorizationHandler, DeleteCompanyAuthorizationHandler>(new DeleteCompanyAuthorizationHandlerMock());
+
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
+
+        Assert.Collection(actual, x =>
+        {
+            Assert.Equal(company?.Id, x?.Id);
+            Assert.True(x?.CanBeDeleted);
+            AssertNoManager(x);
+            AssertNoOtherFields(x);
+        });
+    }
+
     private static void AssertOtherFieldsEqual(Company? expected, CompanyVm? actual)
     {
         Assert.Equal(expected?.TypeId, (actual?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
