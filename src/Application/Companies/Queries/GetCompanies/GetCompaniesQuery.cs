@@ -89,7 +89,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
     private List<Expression<Func<Company, bool>>> GetExpressions(string[] accessRights)
     {
         var result = new List<Expression<Func<Company, bool>>>();
-        if (accessRights.ContainsAny(Access.Company.Any.Other.View))
+        if (accessRights.ContainsAny(Access.Company.Any.Other.View, Access.Company.Any.Delete))
         {
             result.Add(x => true);
             return result;

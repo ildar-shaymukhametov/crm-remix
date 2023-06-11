@@ -1,6 +1,8 @@
 using CRM.Application.Companies.Queries;
 using CRM.Application.Companies.Queries.GetCompanies;
 using CRM.Domain.Entities;
+using CRM.Infrastructure.Authorization.Handlers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
 
@@ -19,8 +21,6 @@ public class GetCompaniesQueryTests : BaseTest
         Assert.Collection(actual, x =>
         {
             Assert.Equal(company.Id, x.Id);
-            Assert.True(x.CanBeUpdated);
-            Assert.True(x.CanBeDeleted);
             AssertOtherFieldsEqual(company, x);
             AssertManagerEqual(company, x);
         });
@@ -112,6 +112,24 @@ public class GetCompaniesQueryTests : BaseTest
         var actual = await _fixture.SendAsync(new GetCompaniesQuery());
 
         Assert.Empty(actual);
+    }
+
+    [Fact]
+    public async Task User_can_delete_any_company___Returns_companies_with_id_only()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Access.Company.Any.Delete });
+        var company = await _fixture.AddCompanyAsync();
+        _fixture.ReplaceService<IAuthorizationHandler, DeleteCompanyAuthorizationHandler>(new DeleteCompanyAuthorizationHandlerMock());
+
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
+
+        Assert.Collection(actual, x =>
+        {
+            Assert.Equal(company?.Id, x?.Id);
+            Assert.True(x?.CanBeDeleted);
+            AssertNoManager(x);
+            AssertNoOtherFields(x);
+        });
     }
 
     private static void AssertOtherFieldsEqual(Company? expected, CompanyVm? actual)

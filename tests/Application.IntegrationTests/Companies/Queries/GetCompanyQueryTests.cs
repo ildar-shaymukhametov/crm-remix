@@ -172,21 +172,22 @@ public class GetCompanyTests : BaseTest
         Assert.Equal(expected?.ManagerId, (actual?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
     }
 
-    private class DeleteCompanyAuthorizationHandlerMock : AuthorizationHandler<DeleteCompanyRequirement>
-    {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
-        {
-            context.Succeed(requirement);
-            return Task.CompletedTask;
-        }
-    }
+}
 
-    private class UpdateCompanyAuthorizationHandlerMock : AuthorizationHandler<UpdateCompanyRequirement>
+internal class DeleteCompanyAuthorizationHandlerMock : AuthorizationHandler<DeleteCompanyRequirement>
+{
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
-        {
-            context.Succeed(requirement);
-            return Task.CompletedTask;
-        }
+        context.Succeed(requirement);
+        return Task.CompletedTask;
+    }
+}
+
+internal class UpdateCompanyAuthorizationHandlerMock : AuthorizationHandler<UpdateCompanyRequirement>
+{
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
+    {
+        context.Succeed(requirement);
+        return Task.CompletedTask;
     }
 }
