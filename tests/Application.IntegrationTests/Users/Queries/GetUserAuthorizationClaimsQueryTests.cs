@@ -1,7 +1,6 @@
-using CRM.Application.IntegrationTests;
 using CRM.Application.Users.Queries.GetUserAuthorizationClaims;
 
-namespace Application.IntegrationTests.Users.Queries;
+namespace CRM.Application.IntegrationTests.Users.Queries;
 
 public class GetUserAuthorizationClaimsTests : BaseTest
 {

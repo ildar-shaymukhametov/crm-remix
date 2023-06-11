@@ -1,9 +1,7 @@
-using CRM.Application;
-using CRM.Application.IntegrationTests;
 using CRM.Application.Users.Commands.CreateUser;
 using CRM.Infrastructure.Identity;
 
-namespace Application.IntegrationTests.Users.Commands;
+namespace CRM.Application.IntegrationTests.Users.Commands;
 
 public class CreateUserCommandTests : BaseTest
 {

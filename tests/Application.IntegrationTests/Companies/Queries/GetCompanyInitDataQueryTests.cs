@@ -1,9 +1,8 @@
 using CRM.Application.Companies.Queries.GetCompanyManagers;
-using CRM.Application.IntegrationTests;
 using FluentAssertions;
 using static CRM.Application.Constants;
 
-namespace Application.IntegrationTests.Companies.Queries;
+namespace CRM.Application.IntegrationTests.Companies.Queries;
 
 public class GetCompanyManagersQueryTests : BaseTest
 {

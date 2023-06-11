@@ -1,10 +1,8 @@
-using CRM.Application;
-using CRM.Application.IntegrationTests;
 using CRM.Application.IntegrationTests.Companies;
 using CRM.Application.Tests;
 using CRM.Domain.Entities;
 
-namespace Application.IntegrationTests.Tests;
+namespace CRM.Application.IntegrationTests.Tests;
 
 public class ResetDbCommandTests : BaseTest
 {

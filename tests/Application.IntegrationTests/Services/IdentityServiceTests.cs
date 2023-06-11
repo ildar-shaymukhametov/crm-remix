@@ -1,10 +1,9 @@
 using CRM.Application.Common.Interfaces;
-using CRM.Application.IntegrationTests;
 using CRM.Domain.Entities;
 using CRM.Infrastructure.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Application.IntegrationTests.Services;
+namespace CRM.Application.IntegrationTests.Services;
 
 public class IdentityServiceTests : BaseTest
 {
