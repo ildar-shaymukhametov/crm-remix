@@ -14,8 +14,7 @@ public class GetCompanyTests : BaseTest
     public async Task User_is_admin___Returns_all_fields()
     {
         var user = await _fixture.RunAsAdministratorAsync();
-        var newCompany = Faker.Builders.Company(managerId: user.Id);
-        await _fixture.AddAsync(newCompany);
+        var newCompany = await _fixture.AddCompanyAsync(user.Id);
 
         var request = new GetCompanyQuery { Id = newCompany.Id };
         var result = await _fixture.SendAsync(request);
@@ -30,9 +29,7 @@ public class GetCompanyTests : BaseTest
     public async Task User_has_no_claim___Forbidden()
     {
         var user = await _fixture.RunAsDefaultUserAsync();
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
+        var company = await _fixture.AddCompanyAsync();
 
         var request = new GetCompanyQuery { Id = company.Id };
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
@@ -42,9 +39,7 @@ public class GetCompanyTests : BaseTest
     public async Task User_has_claim_to_view_other_fields_in_any_company___Returns_other_fields_only()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.View });
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
+        var company = await _fixture.AddCompanyAsync();
 
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
@@ -58,9 +53,7 @@ public class GetCompanyTests : BaseTest
     public async Task User_has_claim_to_view_manager_in_any_company___Returns_manager_only()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Manager.View });
-
-        var company = Faker.Builders.Company(user.Id);
-        await _fixture.AddAsync(company);
+        var company = await _fixture.AddCompanyAsync(user.Id);
 
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
@@ -74,9 +67,7 @@ public class GetCompanyTests : BaseTest
     public async Task User_has_claim_to_view_other_fields_in_own_company___Returns_other_fields_only()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.View });
-
-        var company = Faker.Builders.Company(managerId: user.Id);
-        await _fixture.AddAsync(company);
+        var company = await _fixture.AddCompanyAsync(user.Id);
 
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
@@ -90,9 +81,7 @@ public class GetCompanyTests : BaseTest
     public async Task User_has_claim_to_view_manager_in_own_company___Returns_manager_only()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Manager.View });
-
-        var company = Faker.Builders.Company(managerId: user.Id);
-        await _fixture.AddAsync(company);
+        var company = await _fixture.AddCompanyAsync(user.Id);
 
         var request = new GetCompanyQuery { Id = company.Id };
         var result = await _fixture.SendAsync(request);
@@ -108,9 +97,7 @@ public class GetCompanyTests : BaseTest
     public async Task User_has_claim_to_view_certain_fields_in_own_company_and_is_not_manager___Forbidden(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
+        var company = await _fixture.AddCompanyAsync();
 
         var request = new GetCompanyQuery { Id = company.Id };
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
@@ -120,9 +107,7 @@ public class GetCompanyTests : BaseTest
     public async Task User_can_delete_company___Returns_id_only()
     {
         await _fixture.RunAsDefaultUserAsync();
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
+        var company = await _fixture.AddCompanyAsync();
 
         _fixture.ReplaceService<IAuthorizationHandler, DeleteCompanyAuthorizationHandler>(new DeleteCompanyAuthorizationHandlerMock());
 
@@ -139,9 +124,7 @@ public class GetCompanyTests : BaseTest
     public async Task User_can_update_company___Returns_id_only()
     {
         await _fixture.RunAsDefaultUserAsync();
-
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
+        var company = await _fixture.AddCompanyAsync();
 
         _fixture.ReplaceService<IAuthorizationHandler, UpdateCompanyAuthorizationHandler>(new UpdateCompanyAuthorizationHandlerMock());
 
