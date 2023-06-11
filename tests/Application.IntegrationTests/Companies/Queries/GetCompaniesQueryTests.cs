@@ -101,6 +101,19 @@ public class GetCompaniesQueryTests : BaseTest
         });
     }
 
+    [Theory]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.View)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.View)]
+    public async Task User_has_claim_to_view_certain_fields_in_own_company_and_is_not_manager___Returns_empty_list(string claim)
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        await _fixture.AddCompanyAsync();
+
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
+
+        Assert.Empty(actual);
+    }
+
     private static void AssertOtherFieldsEqual(Company? expected, CompanyVm? actual)
     {
         Assert.Equal(expected?.TypeId, (actual?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
