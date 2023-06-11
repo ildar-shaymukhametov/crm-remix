@@ -95,7 +95,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             return result;
         }
 
-        if (accessRights.Contains(Access.Company.WhereUserIsManager.Manager.View))
+        if (accessRights.ContainsAny(Access.Company.WhereUserIsManager.Manager.View, Access.Company.WhereUserIsManager.Other.View))
         {
             result.Add(x => x.ManagerId == _currentUserService.UserId);
         }

@@ -69,6 +69,22 @@ public class GetCompaniesQueryTests : BaseTest
         });
     }
 
+    [Fact]
+    public async Task User_has_claim_to_view_other_fields_in_own_company___Returns_companies_with_other_fields_only()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.View });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
+
+        Assert.Collection(actual, x =>
+        {
+            Assert.Equal(company.Id, x.Id);
+            AssertOtherFieldsEqual(company, x);
+            AssertNoManager(x);
+        });
+    }
+
     // [Fact]
     // public async Task User_can_update_any_company___Returns_companies()
     // {
