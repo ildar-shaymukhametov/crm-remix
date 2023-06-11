@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
 using CRM.Domain.Entities;
@@ -11,9 +10,9 @@ using static CRM.Application.Constants;
 namespace CRM.Application.Companies.Queries.GetCompanies;
 
 [Authorize]
-public record GetCompaniesQuery : IRequest<CompanyDto[]>;
+public record GetCompaniesQuery : IRequest<CompanyVm[]>;
 
-public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, CompanyDto[]>
+public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, CompanyVm[]>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
@@ -30,18 +29,18 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         _mapper = mapper;
     }
 
-    public async Task<CompanyDto[]> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
+    public async Task<CompanyVm[]> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
     {
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
         if (!accessRights.Any())
         {
-            return Array.Empty<CompanyDto>();
+            return Array.Empty<CompanyVm>();
         }
 
         var expressions = GetExpressions(accessRights);
         if (!expressions.Any())
         {
-            return Array.Empty<CompanyDto>();
+            return Array.Empty<CompanyVm>();
         }
 
         var query = _dbContext.Companies.AsNoTracking();
@@ -51,7 +50,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         }
 
         var result = await query
-            .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
+            .Select(x => new CompanyVm { Id = x.Id })
             .ToArrayAsync(cancellationToken);
 
         var permissions = await _permissionsVerifier.VerifyCompanyPermissionsAsync(_currentUserService.UserId!, result.Select(x => x.Id).ToArray(), new[] { Permissions.Company.Update, Permissions.Company.Delete });
@@ -62,7 +61,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
                 continue;
             }
 
-            item.CanBeEdited = permissions[item.Id].Contains(Permissions.Company.Update);
+            item.CanBeUpdated = permissions[item.Id].Contains(Permissions.Company.Update);
             item.CanBeDeleted = permissions[item.Id].Contains(Permissions.Company.Delete);
         }
 

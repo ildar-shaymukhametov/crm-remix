@@ -1,6 +1,7 @@
 using CRM.Application.Companies.Commands.CreateCompany;
 using CRM.Application.Companies.Commands.DeleteCompany;
 using CRM.Application.Companies.Commands.UpdateCompany;
+using CRM.Application.Companies.Queries;
 using CRM.Application.Companies.Queries.GetCompanies;
 using CRM.Application.Companies.Queries.GetCompany;
 using CRM.Application.Companies.Queries.GetCompanyManagers;
@@ -18,7 +19,7 @@ public class CompaniesController : ApiControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<CompanyDto[]>> Get()
+    public async Task<ActionResult<CompanyVm[]>> Get()
     {
         return await Mediator.Send(new GetCompaniesQuery());
     }

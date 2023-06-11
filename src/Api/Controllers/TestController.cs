@@ -1,4 +1,5 @@
 using AwesomeApi.Filters;
+using CRM.Application.Companies.Queries;
 using CRM.Application.Companies.Queries.GetCompany;
 using CRM.Application.Companies.Queries.GetUserClaimsTypes;
 using CRM.Application.Tests;
