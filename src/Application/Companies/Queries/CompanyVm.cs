@@ -1,7 +1,7 @@
 using CRM.Application.Common.Mappings;
 using CRM.Domain.Entities;
 
-namespace CRM.Application.Companies.Queries.GetCompany;
+namespace CRM.Application.Companies.Queries;
 
 public class CompanyVm : IMapFrom<Company>
 {

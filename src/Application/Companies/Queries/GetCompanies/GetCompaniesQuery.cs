@@ -18,13 +18,13 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
     private readonly IMapper _mapper;
     private readonly ICurrentUserService _currentUserService;
     private readonly IAccessService _accessService;
-    private readonly IPermissionsVerifier _permissionsVerifier;
+    private readonly IIdentityService _identityService;
 
-    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IAccessService accessService, IPermissionsVerifier permissionsVerifier)
+    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IAccessService accessService, IIdentityService identityService)
     {
         _currentUserService = currentUserService;
         _accessService = accessService;
-        _permissionsVerifier = permissionsVerifier;
+        _identityService = identityService;
         _dbContext = dbContext;
         _mapper = mapper;
     }
@@ -43,29 +43,47 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             return Array.Empty<CompanyVm>();
         }
 
-        var query = _dbContext.Companies.AsNoTracking();
+        var query = _dbContext.Companies
+            .AsNoTracking()
+            .Include(x => x.Type)
+            .Include(x => x.Manager)
+            .AsQueryable();
+
         foreach (var expression in expressions)
         {
             query = query.Where(expression);
         }
 
-        var result = await query
-            .Select(x => new CompanyVm { Id = x.Id })
-            .ToArrayAsync(cancellationToken);
+        var result = new List<CompanyVm>();
+        var entities = await query.ToArrayAsync(cancellationToken);
 
-        var permissions = await _permissionsVerifier.VerifyCompanyPermissionsAsync(_currentUserService.UserId!, result.Select(x => x.Id).ToArray(), new[] { Permissions.Company.Update, Permissions.Company.Delete });
-        foreach (var item in result)
+        foreach (var entity in entities)
         {
-            if (!permissions.ContainsKey(item.Id))
+            var item = new CompanyVm { Id = entity.Id };
+            if (accessRights.Contains(Access.Company.Any.Manager.View) || accessRights.Contains(Access.Company.WhereUserIsManager.Manager.View))
             {
-                continue;
+                item.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
             }
 
-            item.CanBeUpdated = permissions[item.Id].Contains(Permissions.Company.Update);
-            item.CanBeDeleted = permissions[item.Id].Contains(Permissions.Company.Delete);
+            if (accessRights.Contains(Access.Company.Any.Other.View) || accessRights.Contains(Access.Company.WhereUserIsManager.Other.View))
+            {
+                item.Fields.Add(nameof(Company.Address), entity.Address);
+                item.Fields.Add(nameof(Company.Ceo), entity.Ceo);
+                item.Fields.Add(nameof(Company.Contacts), entity.Contacts);
+                item.Fields.Add(nameof(Company.Email), entity.Email);
+                item.Fields.Add(nameof(Company.Inn), entity.Inn);
+                item.Fields.Add(nameof(Company.Name), entity.Name);
+                item.Fields.Add(nameof(Company.Phone), entity.Phone);
+                item.Fields.Add(nameof(Company.Type), _mapper.Map<CompanyTypeDto>(entity.Type));
+            }
+
+            item.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Update);
+            item.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Delete);
+
+            result.Add(item);
         }
 
-        return result;
+        return result.ToArray();
     }
 
     private List<Expression<Func<Company, bool>>> GetExpressions(string[] accessRights)
