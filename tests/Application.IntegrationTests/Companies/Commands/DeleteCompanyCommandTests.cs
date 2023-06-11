@@ -2,7 +2,7 @@ using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Commands.DeleteCompany;
 using CRM.Domain.Entities;
 
-namespace CRM.Application.IntegrationTests.Companies;
+namespace CRM.Application.IntegrationTests.Companies.Commands;
 
 public class DeleteCompanyTests : BaseTest
 {

@@ -11,7 +11,6 @@ public static class ApplicationDbContextSeed
         var id = 1;
         builder.Entity<UserClaimType>().HasData(
             new UserClaimType { Id = id++, Value = Claims.Company.Create, Name = Claims.Company.Create, },
-            new UserClaimType { Id = id++, Value = Claims.Company.Any.Update, Name = Claims.Company.Any.Update },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Delete, Name = Claims.Company.Any.Delete },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Other.View, Name = Claims.Company.Any.Other.View },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Other.Update, Name = Claims.Company.Any.Other.Update },
@@ -22,7 +21,6 @@ public static class ApplicationDbContextSeed
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromAnyToNone, Name = Claims.Company.Any.Manager.SetFromAnyToNone },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromSelfToAny, Name = Claims.Company.Any.Manager.SetFromSelfToAny },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromSelfToNone, Name = Claims.Company.Any.Manager.SetFromSelfToNone },
-            new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Update, Name = Claims.Company.WhereUserIsManager.Update },
             new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Delete, Name = Claims.Company.WhereUserIsManager.Delete },
             new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Other.View, Name = Claims.Company.WhereUserIsManager.Other.View },
             new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Other.Update, Name = Claims.Company.WhereUserIsManager.Other.Update },

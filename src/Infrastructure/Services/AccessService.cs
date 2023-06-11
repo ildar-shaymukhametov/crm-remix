@@ -222,22 +222,6 @@ public class AccessService : IAccessService
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
-                Claims.Company.Any.Update
-            }))
-        {
-            result.Add(Access.Company.Any.Update);
-        }
-
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.WhereUserIsManager.Update
-            }))
-        {
-            result.Add(Access.Company.WhereUserIsManager.Update);
-        }
-
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
                 Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone
             }))
         {

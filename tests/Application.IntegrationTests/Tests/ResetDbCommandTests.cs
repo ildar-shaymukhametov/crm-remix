@@ -1,4 +1,4 @@
-using CRM.Application.IntegrationTests.Companies;
+using CRM.Application.IntegrationTests.Companies.Commands;
 using CRM.Application.Tests;
 using CRM.Domain.Entities;
 

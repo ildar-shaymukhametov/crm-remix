@@ -3,7 +3,7 @@ using CRM.Application.Companies.Commands.CreateCompany;
 using CRM.Domain.Entities;
 using CRM.Infrastructure.Identity;
 
-namespace CRM.Application.IntegrationTests.Companies;
+namespace CRM.Application.IntegrationTests.Companies.Commands;
 
 public class CreateCompanyTests : BaseTest
 {

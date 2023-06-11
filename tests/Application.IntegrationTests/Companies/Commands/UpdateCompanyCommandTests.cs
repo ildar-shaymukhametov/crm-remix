@@ -5,7 +5,7 @@ using CRM.Infrastructure.Identity;
 using FluentAssertions;
 using static CRM.Application.Constants;
 
-namespace CRM.Application.IntegrationTests.Companies;
+namespace CRM.Application.IntegrationTests.Companies.Commands;
 
 public class UpdateCompanyTests : BaseTest
 {
@@ -25,17 +25,6 @@ public class UpdateCompanyTests : BaseTest
     public async Task User_is_admin___Updates_company()
     {
         var user = await _fixture.RunAsAdministratorAsync();
-        var company = await _fixture.AddCompanyAsync();
-        var manager = await _fixture.CreateUserAsync();
-        var command = CreateNewData(company.Id, managerId: manager.Id);
-
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
-    }
-
-    [Fact]
-    public async Task User_can_update_any_field_in_any_company___Updates_company()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Update });
         var company = await _fixture.AddCompanyAsync();
         var manager = await _fixture.CreateUserAsync();
         var command = CreateNewData(company.Id, managerId: manager.Id);
@@ -369,26 +358,6 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync(someUser.Id);
         var command = CreateCopyData(company);
         command.ManagerId = anotherUser.Id;
-
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_update_any_field_in_own_company_and_is_manager___Updates_company()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Update });
-        var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateNewData(company.Id, managerId: null);
-
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_update_any_field_in_own_company_and_he_is_not_manager___Throws_forbidden_access()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Update });
-        var company = await _fixture.AddCompanyAsync();
-        var command = CreateNewData(company.Id, user.Id);
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }

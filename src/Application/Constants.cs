@@ -12,7 +12,6 @@ public static class Constants
             public static class Any
             {
                 public const string Delete = $"{nameof(Company)}.{nameof(Any)}.{nameof(Delete)}";
-                public const string Update = $"{nameof(Company)}.{nameof(Any)}.{nameof(Update)}";
 
                 public static class Manager
                 {
@@ -35,7 +34,6 @@ public static class Constants
             public static class WhereUserIsManager
             {
                 public const string Delete = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Delete)}";
-                public const string Update = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Update)}";
 
                 public static class Other
                 {
@@ -90,7 +88,6 @@ public static class Constants
             public static class Any
             {
                 public const string Delete = $"{nameof(Company)}.{nameof(Any)}.{nameof(Delete)}";
-                public const string Update = $"{nameof(Company)}.{nameof(Any)}.{nameof(Update)}";
 
                 public static class Manager
                 {
@@ -113,7 +110,6 @@ public static class Constants
             public static class WhereUserIsManager
             {
                 public const string Delete = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Delete)}";
-                public const string Update = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Update)}";
 
                 public static class Other
                 {

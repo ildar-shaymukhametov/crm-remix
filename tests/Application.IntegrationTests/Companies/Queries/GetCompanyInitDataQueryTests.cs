@@ -4,9 +4,9 @@ using static CRM.Application.Constants;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
 
-public class GetCompanyManagersQueryTests : BaseTest
+public class GetCompanyInitDataQueryTests : BaseTest
 {
-    public GetCompanyManagersQueryTests(BaseTestFixture fixture) : base(fixture) { }
+    public GetCompanyInitDataQueryTests(BaseTestFixture fixture) : base(fixture) { }
 
     [Fact]
     public async Task User_is_admin___Returns_all_users()
