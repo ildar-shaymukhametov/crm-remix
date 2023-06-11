@@ -1,4 +1,5 @@
 using CRM.Application.Common.Exceptions;
+using CRM.Application.Companies.Queries;
 using CRM.Application.Companies.Queries.GetCompany;
 using CRM.Domain.Entities;
 using CRM.Infrastructure.Authorization.Handlers;
@@ -137,38 +138,38 @@ public class GetCompanyTests : BaseTest
         AssertNoOtherFields(result);
     }
 
-    private static void AssertNoManager(CompanyVm? result)
+    private static void AssertNoManager(CompanyVm? actual)
     {
-        Assert.False(result?.Fields.ContainsKey(nameof(Company.Manager)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Manager)));
     }
 
-    private static void AssertNoOtherFields(CompanyVm? result)
+    private static void AssertNoOtherFields(CompanyVm? actual)
     {
-        Assert.False(result?.Fields.ContainsKey(nameof(Company.Address)));
-        Assert.False(result?.Fields.ContainsKey(nameof(Company.Ceo)));
-        Assert.False(result?.Fields.ContainsKey(nameof(Company.Contacts)));
-        Assert.False(result?.Fields.ContainsKey(nameof(Company.Email)));
-        Assert.False(result?.Fields.ContainsKey(nameof(Company.Inn)));
-        Assert.False(result?.Fields.ContainsKey(nameof(Company.Name)));
-        Assert.False(result?.Fields.ContainsKey(nameof(Company.Phone)));
-        Assert.False(result?.Fields.ContainsKey(nameof(Company.Type)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Address)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Ceo)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Contacts)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Email)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Inn)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Name)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Phone)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Type)));
     }
 
-    private static void AssertOtherFieldsEqual(Company? company, CompanyVm? result)
+    private static void AssertOtherFieldsEqual(Company? expected, CompanyVm? actual)
     {
-        Assert.Equal(company?.TypeId, (result?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
-        Assert.Equal(company?.Address, result?.Fields[nameof(Company.Address)]);
-        Assert.Equal(company?.Ceo, result?.Fields[nameof(Company.Ceo)]);
-        Assert.Equal(company?.Contacts, result?.Fields[nameof(Company.Contacts)]);
-        Assert.Equal(company?.Email, result?.Fields[nameof(Company.Email)]);
-        Assert.Equal(company?.Inn, result?.Fields[nameof(Company.Inn)]);
-        Assert.Equal(company?.Name, result?.Fields[nameof(Company.Name)]);
-        Assert.Equal(company?.Phone, result?.Fields[nameof(Company.Phone)]);
+        Assert.Equal(expected?.TypeId, (actual?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
+        Assert.Equal(expected?.Address, actual?.Fields[nameof(Company.Address)]);
+        Assert.Equal(expected?.Ceo, actual?.Fields[nameof(Company.Ceo)]);
+        Assert.Equal(expected?.Contacts, actual?.Fields[nameof(Company.Contacts)]);
+        Assert.Equal(expected?.Email, actual?.Fields[nameof(Company.Email)]);
+        Assert.Equal(expected?.Inn, actual?.Fields[nameof(Company.Inn)]);
+        Assert.Equal(expected?.Name, actual?.Fields[nameof(Company.Name)]);
+        Assert.Equal(expected?.Phone, actual?.Fields[nameof(Company.Phone)]);
     }
 
-    private static void AssertManagerEqual(Company? company, CompanyVm? result)
+    private static void AssertManagerEqual(Company? expected, CompanyVm? actual)
     {
-        Assert.Equal(company?.ManagerId, (result?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
+        Assert.Equal(expected?.ManagerId, (actual?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
     }
 
     private class DeleteCompanyAuthorizationHandlerMock : AuthorizationHandler<DeleteCompanyRequirement>
