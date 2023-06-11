@@ -27,6 +27,20 @@ public class GetCompaniesQueryTests : BaseTest
         });
     }
 
+    [Fact]
+    public async Task User_has_no_claim___Returns_empty_list()
+    {
+        await _fixture.RunAsDefaultUserAsync();
+
+        var company = Faker.Builders.Company();
+        await _fixture.AddAsync(company);
+
+        var request = new GetCompaniesQuery();
+        var actual = await _fixture.SendAsync(request);
+
+        Assert.Empty(actual);
+    }
+
     // [Fact]
     // public async Task User_can_view_any_company___Returns_companies()
     // {
@@ -61,20 +75,6 @@ public class GetCompaniesQueryTests : BaseTest
     //     var actual = await _fixture.SendAsync(request);
 
     //     Assert.Collection(actual, x => Assert.True(x.Id == company.Id && !x.CanBeUpdated && x.CanBeDeleted));
-    // }
-
-    // [Fact]
-    // public async Task User_has_no_permissions___Returns_empty_list()
-    // {
-    //     await _fixture.RunAsDefaultUserAsync();
-
-    //     var company = Faker.Builders.Company();
-    //     await _fixture.AddAsync(company);
-
-    //     var request = new GetCompaniesQuery();
-    //     var actual = await _fixture.SendAsync(request);
-
-    //     Assert.Empty(actual);
     // }
 
     // [Fact]
