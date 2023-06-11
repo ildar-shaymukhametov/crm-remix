@@ -1,7 +1,6 @@
 using CRM.Application.Companies.Queries;
 using CRM.Application.Companies.Queries.GetCompanies;
 using CRM.Domain.Entities;
-using FluentAssertions;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
 
@@ -31,27 +30,28 @@ public class GetCompaniesQueryTests : BaseTest
     public async Task User_has_no_claim___Returns_empty_list()
     {
         await _fixture.RunAsDefaultUserAsync();
+        await _fixture.AddCompanyAsync();
 
-        var company = Faker.Builders.Company();
-        await _fixture.AddAsync(company);
-
-        var request = new GetCompaniesQuery();
-        var actual = await _fixture.SendAsync(request);
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
 
         Assert.Empty(actual);
     }
 
-    // [Fact]
-    // public async Task User_can_view_any_company___Returns_companies()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.Any.Other.View);
-    //     var company = await _fixture.AddCompanyAsync();
+    [Fact]
+    public async Task User_has_claim_to_view_other_fields_in_any_company___Returns_companies_with_other_fields_only()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(Constants.Claims.Company.Any.Other.View);
+        var company = await _fixture.AddCompanyAsync();
 
-    //     var request = new GetCompaniesQuery();
-    //     var actual = await _fixture.SendAsync(request);
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
 
-    //     actual.Select(x => x.Id).Should().BeEquivalentTo(new[] { company.Id });
-    // }
+        Assert.Collection(actual, x =>
+        {
+            Assert.Equal(company.Id, x.Id);
+            AssertOtherFieldsEqual(company, x);
+            AssertNoManager(x);
+        });
+    }
 
     // [Fact]
     // public async Task User_can_update_any_company___Returns_companies()
@@ -145,5 +145,22 @@ public class GetCompaniesQueryTests : BaseTest
     private static void AssertManagerEqual(Company? expected, CompanyVm? actual)
     {
         Assert.Equal(expected?.ManagerId, (actual?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
+    }
+
+    private static void AssertNoManager(CompanyVm? actual)
+    {
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Manager)));
+    }
+
+    private static void AssertNoOtherFields(CompanyVm? actual)
+    {
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Address)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Ceo)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Contacts)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Email)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Inn)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Name)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Phone)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Type)));
     }
 }
