@@ -83,12 +83,16 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             result.Add(_allManagers);
             return result;
         }
-        if (accessRights.Contains(Access.Company.Any.Manager.SetFromAnyToSelf) && managerId != null
-            || accessRights.ContainsAny(Access.Company.Any.Manager.SetFromNoneToSelf,
+        if (accessRights.ContainsAny(
+                Access.Company.Any.Manager.SetFromAnyToSelf,
+                Access.Company.Any.Manager.SetFromAnyToAny) && managerId != null
+            || accessRights.ContainsAny(
+                Access.Company.Any.Manager.SetFromNoneToSelf,
                 Access.Company.Any.Manager.SetFromNoneToAny,
                 Access.Company.Any.Manager.SetFromAnyToSelf,
                 Access.Company.Any.Manager.SetFromAnyToAny) && managerId == null
-            || accessRights.ContainsAny(Access.Company.Any.Manager.SetFromSelfToAny,
+            || accessRights.ContainsAny(
+                Access.Company.Any.Manager.SetFromSelfToAny,
                 Access.Company.Any.Manager.SetFromAnyToAny,
                 Access.Company.Any.Manager.SetFromSelfToNone,
                 Access.Company.Any.Manager.SetFromAnyToNone) && managerId == _currentUserService.UserId)
@@ -96,18 +100,21 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
             result.Add(x => x.Id == _currentUserService.UserId);
         }
 
-        if (accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToNone,
-                Access.Company.Any.Manager.SetFromAnyToSelf,
-                Access.Company.Any.Manager.SetFromAnyToAny) && managerId != null)
+        if (accessRights.ContainsAny(
+            Access.Company.Any.Manager.SetFromAnyToNone,
+            Access.Company.Any.Manager.SetFromAnyToSelf,
+            Access.Company.Any.Manager.SetFromAnyToAny) && managerId != null)
         {
             result.Add(x => x.Id == managerId);
         }
 
-        if (accessRights.ContainsAny(Access.Company.Any.Manager.SetFromSelfToAny,
+        if (accessRights.ContainsAny(
+                Access.Company.Any.Manager.SetFromSelfToAny,
                 Access.Company.Any.Manager.SetFromAnyToAny,
                 Access.Company.Any.Manager.SetFromSelfToNone,
                 Access.Company.Any.Manager.SetFromAnyToNone) && managerId == _currentUserService.UserId
-            || accessRights.ContainsAny(Access.Company.Any.Manager.SetFromNoneToAny,
+            || accessRights.ContainsAny(
+                Access.Company.Any.Manager.SetFromNoneToAny,
                 Access.Company.Any.Manager.SetFromNoneToSelf,
                 Access.Company.Any.Manager.SetFromAnyToAny,
                 Access.Company.Any.Manager.SetFromAnyToNone,
