@@ -18,11 +18,15 @@ public class UpdateCompanyQueryAuthorizationHandler : BaseAuthorizationHandler<U
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyQueryRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
+        if (accessRights.Contains(Access.Company.Any.Other.Update))
+        {
+            return Ok(context, requirement);
+        }
+
         var userId = context.User.GetSubjectId();
         var company = GetResources(context);
 
         var canUpdate = new[] {
-            accessRights.Contains(Access.Company.Any.Other.Update),
             company.ManagerId != userId && accessRights.ContainsAny(
                 Access.Company.Any.Manager.SetFromAnyToAny,
                 Access.Company.Any.Manager.SetFromAnyToNone,
