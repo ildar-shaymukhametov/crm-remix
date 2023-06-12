@@ -133,6 +133,7 @@ public class GetCompanyTests : BaseTest
 
     [Theory]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
     public async Task User_has_claim_to_update_manager_in_any_company___Returns_id_and_manager_only(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(claim);

@@ -141,6 +141,7 @@ public class AccessService : IAccessService
             }))
         {
             result.Add(Access.Company.Any.Manager.SetFromAnyToNone);
+            result.Add(Access.Company.Any.Manager.View);
         }
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
@@ -180,7 +181,6 @@ public class AccessService : IAccessService
             }))
         {
             result.Add(Access.Company.Any.Manager.SetFromAnyToAny);
-            result.Add(Access.Company.Any.Manager.View);
         }
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
