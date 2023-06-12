@@ -44,7 +44,7 @@ public class AccessService : IAccessService
             result.Add(Access.Company.Any.Delete);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Other.View, Claims.Company.Any.Other.Update))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Other.View))
         {
             result.Add(Access.Company.Any.Other.View);
         }

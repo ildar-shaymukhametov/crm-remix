@@ -56,7 +56,7 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
             result.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
         }
 
-        if (accessRights.Contains(Constants.Access.Company.Any.Other.View) || accessRights.Contains(Constants.Access.Company.WhereUserIsManager.Other.View))
+        if (accessRights.ContainsAny(Constants.Access.Company.Any.Other.View, Constants.Claims.Company.Any.Other.Update, Constants.Access.Company.WhereUserIsManager.Other.View))
         {
             result.Fields.Add(nameof(Company.Address), entity.Address);
             result.Fields.Add(nameof(Company.Ceo), entity.Ceo);
