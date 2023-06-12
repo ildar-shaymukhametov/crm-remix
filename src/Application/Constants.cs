@@ -77,10 +77,6 @@ public static class Constants
         public static class Company
         {
             public const string Create = $"{nameof(Company)}.{nameof(Create)}";
-            public const string SetManagerToAny = "Company.SetManagerToAny";
-            public const string SetManagerToSelf = "Company.SetManagerToSelf";
-            public const string SetManagerFromAny = "Company.SetManagerFromAny";
-            public const string SetManagerFromSelf = "Company.SetManagerFromSelf";
 
             public static class Any
             {

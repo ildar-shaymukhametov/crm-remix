@@ -1,4 +1,5 @@
 using CRM.Application.Common.Behaviours.Authorization.Resources;
+using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -28,14 +29,19 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
             {
                 if (resource.Request.ManagerId == context.User.GetSubjectId())
                 {
-                    if (!accessRights.Contains(Access.Company.SetManagerToSelf))
+                    if (!accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToAny,
+                        Access.Company.Any.Manager.SetFromAnyToSelf,
+                        Access.Company.Any.Manager.SetFromNoneToSelf,
+                        Access.Company.Any.Manager.SetFromNoneToAny))
                     {
                         return Fail(context, "Set manager to self");
                     }
                 }
                 else
                 {
-                    if (!accessRights.Contains(Access.Company.SetManagerToAny))
+                    if (!accessRights.ContainsAny(Access.Company.Any.Manager.SetFromNoneToAny,
+                        Access.Company.Any.Manager.SetFromSelfToAny,
+                        Access.Company.Any.Manager.SetFromAnyToAny))
                     {
                         return Fail(context, "Set manager to any");
                     }
