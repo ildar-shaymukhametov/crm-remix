@@ -60,12 +60,17 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         foreach (var entity in entities)
         {
             var item = new CompanyVm { Id = entity.Id };
-            if (accessRights.ContainsAny(Access.Company.Any.Manager.View, Access.Company.WhereUserIsManager.Manager.View))
+            if (accessRights.ContainsAny(
+                Access.Company.Any.Manager.View,
+                Access.Company.WhereUserIsManager.Manager.View))
             {
                 item.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
             }
 
-            if (accessRights.ContainsAny(Access.Company.Any.Other.View, Claims.Company.Any.Other.Update, Access.Company.WhereUserIsManager.Other.View))
+            if (accessRights.ContainsAny(
+                Access.Company.Any.Other.View,
+                Claims.Company.Any.Other.Update,
+                Access.Company.WhereUserIsManager.Other.View))
             {
                 item.Fields.Add(nameof(Company.Address), entity.Address);
                 item.Fields.Add(nameof(Company.Ceo), entity.Ceo);
