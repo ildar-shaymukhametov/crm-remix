@@ -168,6 +168,22 @@ public class GetCompaniesQueryTests : BaseTest
         });
     }
 
+    [Fact]
+    public async Task User_has_claim_to_update_other_fields_in_own_company___Returns_companies_with_id_and_other_fields_only()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Update });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
+        Assert.Collection(actual, x =>
+        {
+            Assert.Equal(company?.Id, x?.Id);
+            Assert.True(x?.CanBeUpdated);
+            AssertNoManager(x);
+            AssertOtherFieldsEqual(company, x);
+        });
+    }
+
     private static void AssertOtherFieldsEqual(Company? expected, CompanyVm? actual)
     {
         Assert.Equal(expected?.TypeId, (actual?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);

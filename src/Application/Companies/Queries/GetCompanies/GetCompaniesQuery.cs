@@ -72,7 +72,8 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             if (accessRights.ContainsAny(
                 Access.Company.Any.Other.View,
                 Access.Company.Any.Other.Update,
-                Access.Company.WhereUserIsManager.Other.View
+                Access.Company.WhereUserIsManager.Other.View,
+                Access.Company.WhereUserIsManager.Other.Update
             ))
             {
                 company.Fields.Add(nameof(Company.Address), entity.Address);
@@ -111,7 +112,8 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             Access.Company.Any.Manager.View,
             Access.Company.WhereUserIsManager.Manager.View,
             Access.Company.WhereUserIsManager.Other.View,
-            Access.Company.WhereUserIsManager.Delete
+            Access.Company.WhereUserIsManager.Delete,
+            Access.Company.WhereUserIsManager.Other.Update
         ))
         {
             result.Add(x => x.ManagerId == _currentUserService.UserId);
