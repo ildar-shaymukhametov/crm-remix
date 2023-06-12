@@ -127,7 +127,6 @@ public class AccessService : IAccessService
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
-                Claims.Company.Any.Other.Update,
                 Claims.Company.WhereUserIsManager.Other.Update
             }))
         {

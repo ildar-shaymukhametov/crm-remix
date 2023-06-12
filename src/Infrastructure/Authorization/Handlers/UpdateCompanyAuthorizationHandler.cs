@@ -59,7 +59,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         var otherFieldChanged = company.Address != request.Address || company.Ceo != request.Ceo || company.Contacts != request.Contacts || company.Email != request.Email || company.Inn != request.Inn || company.Name != request.Name || company.Phone != request.Phone || company.TypeId != request.TypeId;
         if (otherFieldChanged)
         {
-            if (company.ManagerId == userId && !accessRights.Contains(Access.Company.WhereUserIsManager.Other.Update))
+            if (company.ManagerId == userId && !accessRights.ContainsAny(Access.Company.WhereUserIsManager.Other.Update, Claims.Company.Any.Other.Update))
             {
                 return Fail(context, "Update other fields");
             }
