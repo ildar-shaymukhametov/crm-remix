@@ -59,7 +59,9 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
             Constants.Access.Company.Any.Manager.SetFromSelfToAny,
             Constants.Access.Company.Any.Manager.SetFromSelfToNone,
             Constants.Access.Company.Any.Manager.SetFromNoneToAny,
-            Constants.Access.Company.Any.Manager.SetFromNoneToSelf
+            Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
+            Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+            Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
         ))
         {
             result.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));

@@ -38,7 +38,9 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
                 Access.Company.Any.Manager.SetFromAnyToAny,
                 Access.Company.Any.Manager.SetFromAnyToNone,
                 Access.Company.Any.Manager.SetFromAnyToSelf,
-                Access.Company.WhereUserIsManager.Other.Update
+                Access.Company.WhereUserIsManager.Other.Update,
+                Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
             ),
             company.ManagerId == null && accessRights.ContainsAny(
                 Access.Company.Any.Manager.SetFromNoneToAny,

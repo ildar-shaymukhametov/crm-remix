@@ -188,7 +188,9 @@ public class GetCompanyTests : BaseTest
     [Theory]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
-    public async Task User_has_claim_to_set_manager_from_self_in_any_company___Returns_id_and_manager_only(string claim)
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
+    public async Task User_has_claim_to_set_manager_from_self_in_WhereUserIsManager_company___Returns_id_and_manager_only(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync(user.Id);
