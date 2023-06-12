@@ -265,7 +265,8 @@ public class AccessService : IAccessService
             {
                 Claims.Company.Any.Manager.SetFromAnyToAny,
                 Claims.Company.Any.Manager.SetFromAnyToNone,
-                Claims.Company.Any.Manager.SetFromAnyToSelf
+                Claims.Company.Any.Manager.SetFromAnyToSelf,
+                Claims.Company.Any.Manager.SetFromNoneToAny
             }))
         {
             result.Add(Access.Company.Any.Manager.View);
