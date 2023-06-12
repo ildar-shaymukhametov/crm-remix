@@ -205,6 +205,17 @@ public class GetCompanyTests : BaseTest
         AssertNoOtherFields(result);
     }
 
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    public async Task User_has_claim_to_set_manager_from_none_in_any_company_and_company_has_manager___Forbidden(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(claim);
+        var company = await _fixture.AddCompanyAsync(user.Id);
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));
+    }
+
     private static void AssertNoManager(CompanyVm? actual)
     {
         Assert.False(actual?.Fields.ContainsKey(nameof(Company.Manager)));
