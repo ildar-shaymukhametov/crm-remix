@@ -85,7 +85,10 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         }
 
         if (accessRights.Contains(Access.Company.Any.Manager.SetFromAnyToSelf) && managerId != null
-            || accessRights.Contains(Access.Company.Any.Manager.SetFromNoneToSelf) && managerId == null
+            || accessRights.ContainsAny(Access.Company.Any.Manager.SetFromNoneToSelf,
+                Access.Company.Any.Manager.SetFromNoneToAny,
+                Access.Company.Any.Manager.SetFromAnyToSelf,
+                Access.Company.Any.Manager.SetFromAnyToAny) && managerId == null
             || accessRights.ContainsAny(Access.Company.Any.Manager.SetFromSelfToAny,
                 Access.Company.Any.Manager.SetFromAnyToAny,
                 Access.Company.Any.Manager.SetFromSelfToNone) && managerId == _currentUserService.UserId)

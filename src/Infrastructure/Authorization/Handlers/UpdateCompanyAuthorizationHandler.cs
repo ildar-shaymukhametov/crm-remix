@@ -121,7 +121,10 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
                 }
                 else // ...to any
                 {
-                    if (!accessRights.Contains(Access.Company.Any.Manager.SetFromNoneToAny))
+                    if (!accessRights.ContainsAny(Access.Company.Any.Manager.SetFromNoneToSelf,
+                        Access.Company.Any.Manager.SetFromNoneToAny,
+                        Access.Company.Any.Manager.SetFromAnyToSelf,
+                        Access.Company.Any.Manager.SetFromAnyToAny))
                     {
                         return Result.Failure(new[] { "Set manager from none to any in any company" });
                     }
