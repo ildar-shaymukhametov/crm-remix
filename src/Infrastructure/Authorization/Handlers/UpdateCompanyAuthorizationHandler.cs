@@ -73,16 +73,11 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         return Ok(context, requirement);
     }
 
-    private static (Company, UpdateCompanyCommand?) GetResources(AuthorizationHandlerContext context)
+    private static (Company, UpdateCompanyCommand) GetResources(AuthorizationHandlerContext context)
     {
-        if (context.Resource == null)
+        if (context.Resource is not UpdateCompanyResource)
         {
             throw new InvalidOperationException("Resource is missing");
-        }
-
-        if (context.Resource is Company company)
-        {
-            return (company, null);
         }
 
         var resource = (UpdateCompanyResource)context.Resource;
