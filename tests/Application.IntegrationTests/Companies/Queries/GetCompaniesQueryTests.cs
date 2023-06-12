@@ -104,6 +104,7 @@ public class GetCompaniesQueryTests : BaseTest
     [Theory]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.View)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.View)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
     public async Task User_has_claim_to_view_certain_fields_in_own_company_and_is_not_manager___Returns_empty_list(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -115,7 +116,7 @@ public class GetCompaniesQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_delete_any_company___Returns_companies_with_id_only()
+    public async Task User_has_claim_to_delete_any_company___Returns_companies_with_id_only()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Access.Company.Any.Delete });
         var company = await _fixture.AddCompanyAsync();
@@ -133,7 +134,7 @@ public class GetCompaniesQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_delete_own_company___Returns_companies_with_id_only()
+    public async Task User_has_claim_to_delete_own_company___Returns_companies_with_id_only()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Access.Company.WhereUserIsManager.Delete });
         var company = await _fixture.AddCompanyAsync(user.Id);

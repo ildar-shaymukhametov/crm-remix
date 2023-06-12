@@ -105,7 +105,7 @@ public class GetCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_delete_company___Returns_id_only()
+    public async Task User_has_claim_to_delete_company___Returns_id_only()
     {
         await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync();
@@ -122,7 +122,7 @@ public class GetCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_update_company___Returns_id_only()
+    public async Task User_has_claim_to_update_company___Returns_id_only()
     {
         await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync();
