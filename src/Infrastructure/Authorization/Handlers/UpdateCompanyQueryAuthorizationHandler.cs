@@ -18,7 +18,12 @@ public class UpdateCompanyQueryAuthorizationHandler : BaseAuthorizationHandler<U
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyQueryRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        if (accessRights.Contains(Access.Company.Any.Other.Update))
+        if (accessRights.ContainsAny(
+            Access.Company.Any.Other.Update,
+            Access.Company.Any.Manager.SetFromAnyToAny,
+            Access.Company.Any.Manager.SetFromAnyToNone,
+            Access.Company.Any.Manager.SetFromAnyToSelf
+        ))
         {
             return Ok(context, requirement);
         }
@@ -27,17 +32,9 @@ public class UpdateCompanyQueryAuthorizationHandler : BaseAuthorizationHandler<U
         var company = GetResources(context);
 
         var canUpdate = new[] {
-            company.ManagerId != userId && accessRights.ContainsAny(
-                Access.Company.Any.Manager.SetFromAnyToAny,
-                Access.Company.Any.Manager.SetFromAnyToNone,
-                Access.Company.Any.Manager.SetFromAnyToSelf
-            ),
             company.ManagerId == userId && accessRights.ContainsAny(
                 Access.Company.Any.Manager.SetFromSelfToNone,
                 Access.Company.Any.Manager.SetFromSelfToAny,
-                Access.Company.Any.Manager.SetFromAnyToAny,
-                Access.Company.Any.Manager.SetFromAnyToNone,
-                Access.Company.Any.Manager.SetFromAnyToSelf,
                 Access.Company.WhereUserIsManager.Other.Update,
                 Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
                 Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
