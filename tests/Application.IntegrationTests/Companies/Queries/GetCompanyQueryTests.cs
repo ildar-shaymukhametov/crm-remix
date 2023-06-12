@@ -103,7 +103,6 @@ public class GetCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync();
-
         _fixture.ReplaceService<IAuthorizationHandler, DeleteCompanyAuthorizationHandler>(new DeleteCompanyAuthorizationHandlerMock());
 
         var result = await _fixture.SendAsync(new GetCompanyQuery(company.Id));

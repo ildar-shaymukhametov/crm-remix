@@ -59,33 +59,36 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         var entities = await query.ToArrayAsync(cancellationToken);
         foreach (var entity in entities)
         {
-            var item = new CompanyVm { Id = entity.Id };
+            var company = new CompanyVm { Id = entity.Id };
+
             if (accessRights.ContainsAny(
                 Access.Company.Any.Manager.View,
-                Access.Company.WhereUserIsManager.Manager.View))
+                Access.Company.WhereUserIsManager.Manager.View
+            ))
             {
-                item.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
+                company.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
             }
 
             if (accessRights.ContainsAny(
                 Access.Company.Any.Other.View,
                 Access.Company.Any.Other.Update,
-                Access.Company.WhereUserIsManager.Other.View))
+                Access.Company.WhereUserIsManager.Other.View
+            ))
             {
-                item.Fields.Add(nameof(Company.Address), entity.Address);
-                item.Fields.Add(nameof(Company.Ceo), entity.Ceo);
-                item.Fields.Add(nameof(Company.Contacts), entity.Contacts);
-                item.Fields.Add(nameof(Company.Email), entity.Email);
-                item.Fields.Add(nameof(Company.Inn), entity.Inn);
-                item.Fields.Add(nameof(Company.Name), entity.Name);
-                item.Fields.Add(nameof(Company.Phone), entity.Phone);
-                item.Fields.Add(nameof(Company.Type), _mapper.Map<CompanyTypeDto>(entity.Type));
+                company.Fields.Add(nameof(Company.Address), entity.Address);
+                company.Fields.Add(nameof(Company.Ceo), entity.Ceo);
+                company.Fields.Add(nameof(Company.Contacts), entity.Contacts);
+                company.Fields.Add(nameof(Company.Email), entity.Email);
+                company.Fields.Add(nameof(Company.Inn), entity.Inn);
+                company.Fields.Add(nameof(Company.Name), entity.Name);
+                company.Fields.Add(nameof(Company.Phone), entity.Phone);
+                company.Fields.Add(nameof(Company.Type), _mapper.Map<CompanyTypeDto>(entity.Type));
             }
 
-            item.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Queries.Update);
-            item.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Queries.Delete);
+            company.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Queries.Update);
+            company.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Queries.Delete);
 
-            result.Add(item);
+            result.Add(company);
         }
 
         return result.ToArray();
@@ -104,7 +107,12 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             return result;
         }
 
-        if (accessRights.ContainsAny(Access.Company.WhereUserIsManager.Manager.View, Access.Company.WhereUserIsManager.Other.View, Access.Company.WhereUserIsManager.Delete))
+        if (accessRights.ContainsAny(
+            Access.Company.Any.Manager.View,
+            Access.Company.WhereUserIsManager.Manager.View,
+            Access.Company.WhereUserIsManager.Other.View,
+            Access.Company.WhereUserIsManager.Delete
+        ))
         {
             result.Add(x => x.ManagerId == _currentUserService.UserId);
         }
