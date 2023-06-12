@@ -49,130 +49,82 @@ public class AccessService : IAccessService
             result.Add(Access.Company.Any.Other.View);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.Any.Other.Update
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Other.Update))
         {
             result.Add(Access.Company.Any.Other.Update);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.Any.Manager.SetFromNoneToSelf
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Manager.SetFromNoneToSelf))
         {
             result.Add(Access.Company.Any.Manager.SetFromNoneToSelf);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.Any.Manager.SetFromNoneToAny
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Manager.SetFromNoneToAny))
         {
             result.Add(Access.Company.Any.Manager.SetFromNoneToAny);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.Any.Manager.SetFromAnyToNone
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Manager.SetFromAnyToNone))
         {
             result.Add(Access.Company.Any.Manager.SetFromAnyToNone);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.Any.Manager.SetFromSelfToNone
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Manager.SetFromSelfToNone))
         {
             result.Add(Access.Company.Any.Manager.SetFromSelfToNone);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.Any.Manager.SetFromAnyToSelf
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Manager.SetFromAnyToSelf))
         {
             result.Add(Access.Company.Any.Manager.SetFromAnyToSelf);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.Any.Manager.SetFromSelfToAny
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Manager.SetFromSelfToAny))
         {
             result.Add(Access.Company.Any.Manager.SetFromSelfToAny);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny))
         {
             result.Add(Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.Any.Manager.SetFromAnyToAny
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Manager.SetFromAnyToAny))
         {
             result.Add(Access.Company.Any.Manager.SetFromAnyToAny);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.WhereUserIsManager.Other.Update
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Other.Update))
         {
             result.Add(Access.Company.WhereUserIsManager.Other.Update);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.WhereUserIsManager.Delete
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Delete))
         {
             result.Add(Access.Company.WhereUserIsManager.Delete);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
         {
             result.Add(Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny))
         {
             result.Add(Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.Any.Manager.View
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Manager.View))
         {
             result.Add(Access.Company.Any.Manager.View);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.WhereUserIsManager.Other.View
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Other.View))
         {
             result.Add(Access.Company.WhereUserIsManager.Other.View);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, new[]
-            {
-                Claims.Company.WhereUserIsManager.Manager.View
-            }))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Manager.View))
         {
             result.Add(Access.Company.WhereUserIsManager.Manager.View);
         }
