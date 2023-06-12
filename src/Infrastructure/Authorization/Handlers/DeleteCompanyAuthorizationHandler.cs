@@ -1,4 +1,3 @@
-using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Domain.Entities;
 using Duende.IdentityServer.Extensions;
@@ -18,12 +17,6 @@ public class DeleteCompanyAuthorizationHandler : BaseAuthorizationHandler<Delete
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        var canDelete = accessRights.ContainsAny(Access.Company.Any.Delete, Access.Company.WhereUserIsManager.Delete);
-        if (!canDelete)
-        {
-            return Fail(context, "Delete company");
-        }
-
         if (accessRights.Contains(Access.Company.Any.Delete))
         {
             return Ok(context, requirement);
