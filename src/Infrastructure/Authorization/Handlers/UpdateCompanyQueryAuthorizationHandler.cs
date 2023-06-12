@@ -31,23 +31,26 @@ public class UpdateCompanyQueryAuthorizationHandler : BaseAuthorizationHandler<U
         var userId = context.User.GetSubjectId();
         var company = GetResources(context);
 
-        var canUpdate = new[] {
-            company.ManagerId == userId && accessRights.ContainsAny(
+        if (company.ManagerId == userId)
+        {
+            if (!accessRights.ContainsAny(
                 Access.Company.Any.Manager.SetFromSelfToNone,
                 Access.Company.Any.Manager.SetFromSelfToAny,
                 Access.Company.WhereUserIsManager.Other.Update,
                 Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
-                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
-            ),
-            company.ManagerId == null && accessRights.ContainsAny(
-                Access.Company.Any.Manager.SetFromNoneToAny,
-                Access.Company.Any.Manager.SetFromNoneToSelf
-            )
-        }.Any(x => x);
-
-        if (!canUpdate)
+                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
+            {
+                return Fail(context, "Update company");
+            }
+        }
+        else if (company.ManagerId == null)
         {
-            return Fail(context, "Update company");
+            if (!accessRights.ContainsAny(
+                Access.Company.Any.Manager.SetFromNoneToAny,
+                Access.Company.Any.Manager.SetFromNoneToSelf))
+            {
+                return Fail(context, "Update company");
+            }
         }
 
         return Ok(context, requirement);
