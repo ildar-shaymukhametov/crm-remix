@@ -71,11 +71,18 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
 
         if (company.ManagerId != request.ManagerId)
         {
-            if (company.ManagerId == userId && !accessRights.ContainsAny(Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny, Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
+            if (company.ManagerId == userId && !accessRights.ContainsAny(Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
             {
                 return Fail(context, "Update manager");
             }
-            else if (company.ManagerId != userId && !accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToAny, Access.Company.Any.Manager.SetFromAnyToNone, Access.Company.Any.Manager.SetFromAnyToSelf, Access.Company.Any.Manager.SetFromNoneToAny, Access.Company.Any.Manager.SetFromNoneToSelf, Access.Company.Any.Manager.SetFromSelfToAny, Access.Company.Any.Manager.SetFromSelfToNone))
+            else if (company.ManagerId != userId && !accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToAny,
+                Access.Company.Any.Manager.SetFromAnyToNone,
+                Access.Company.Any.Manager.SetFromAnyToSelf,
+                Access.Company.Any.Manager.SetFromNoneToAny,
+                Access.Company.Any.Manager.SetFromNoneToSelf,
+                Access.Company.Any.Manager.SetFromSelfToAny,
+                Access.Company.Any.Manager.SetFromSelfToNone))
             {
                 return Fail(context, "Update manager");
             }
