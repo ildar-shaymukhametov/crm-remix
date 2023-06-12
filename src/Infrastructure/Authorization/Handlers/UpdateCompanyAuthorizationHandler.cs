@@ -26,10 +26,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
 
         // GET
         var canUpdate = new[] {
-            accessRights.ContainsAny(
-                Access.Company.Any.Other.Update,
-                Access.Company.WhereUserIsManager.Other.Update
-            ),
+            accessRights.Contains(Access.Company.Any.Other.Update),
             company.ManagerId != userId && accessRights.ContainsAny(
                 Access.Company.Any.Manager.SetFromAnyToAny,
                 Access.Company.Any.Manager.SetFromAnyToNone,
@@ -40,7 +37,8 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
                 Access.Company.Any.Manager.SetFromSelfToAny,
                 Access.Company.Any.Manager.SetFromAnyToAny,
                 Access.Company.Any.Manager.SetFromAnyToNone,
-                Access.Company.Any.Manager.SetFromAnyToSelf
+                Access.Company.Any.Manager.SetFromAnyToSelf,
+                Access.Company.WhereUserIsManager.Other.Update
             ),
             company.ManagerId == null && accessRights.ContainsAny(
                 Access.Company.Any.Manager.SetFromNoneToAny,

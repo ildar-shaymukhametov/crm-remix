@@ -128,6 +128,29 @@ public class GetCompanyTests : BaseTest
         AssertOtherFieldsEqual(company, result);
     }
 
+    [Fact]
+    public async Task User_has_claim_to_update_other_fields_in_own_company___Returns_id_and_other_fields_only()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Update });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+
+        var result = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
+
+        Assert.Equal(company?.Id, result?.Id);
+        Assert.True(result?.CanBeUpdated);
+        AssertNoManager(result);
+        AssertOtherFieldsEqual(company, result);
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_update_other_fields_in_own_company_and_is_not_manager___Forbidden()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Update });
+        var company = await _fixture.AddCompanyAsync();
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));
+    }
+
     [Theory]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
