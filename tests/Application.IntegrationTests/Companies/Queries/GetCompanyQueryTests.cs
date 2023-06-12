@@ -17,8 +17,7 @@ public class GetCompanyTests : BaseTest
         var user = await _fixture.RunAsAdministratorAsync();
         var newCompany = await _fixture.AddCompanyAsync(user.Id);
 
-        var request = new GetCompanyQuery { Id = newCompany.Id };
-        var result = await _fixture.SendAsync(request);
+        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = newCompany.Id });
         var company = await _fixture.FindAsync<Company>(result.Id, nameof(Company.Type));
 
         Assert.Equal(company?.Id, result?.Id);
@@ -42,8 +41,7 @@ public class GetCompanyTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.View });
         var company = await _fixture.AddCompanyAsync();
 
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
+        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
 
         Assert.Equal(company?.Id, result?.Id);
         AssertOtherFieldsEqual(company, result);
@@ -56,8 +54,7 @@ public class GetCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Manager.View });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
+        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
 
         Assert.Equal(company?.Id, result?.Id);
         AssertManagerEqual(company, result);
@@ -70,8 +67,7 @@ public class GetCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.View });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
+        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
 
         Assert.Equal(company?.Id, result?.Id);
         AssertOtherFieldsEqual(company, result);
@@ -84,8 +80,7 @@ public class GetCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Manager.View });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
+        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
 
         Assert.Equal(company?.Id, result?.Id);
         AssertManagerEqual(company, result);
@@ -112,8 +107,7 @@ public class GetCompanyTests : BaseTest
 
         _fixture.ReplaceService<IAuthorizationHandler, DeleteCompanyAuthorizationHandler>(new DeleteCompanyAuthorizationHandlerMock());
 
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
+        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
 
         Assert.Equal(company?.Id, result?.Id);
         Assert.True(result?.CanBeDeleted);
@@ -122,19 +116,35 @@ public class GetCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_update_company___Returns_id_only()
+    public async Task User_has_claim_to_update_other_fields_in_any_company___Returns_id_and_other_fields_only()
     {
-        await _fixture.RunAsDefaultUserAsync();
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Update });
         var company = await _fixture.AddCompanyAsync();
 
         _fixture.ReplaceService<IAuthorizationHandler, UpdateCompanyAuthorizationHandler>(new UpdateCompanyAuthorizationHandlerMock());
 
-        var request = new GetCompanyQuery { Id = company.Id };
-        var result = await _fixture.SendAsync(request);
+        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
 
         Assert.Equal(company?.Id, result?.Id);
         Assert.True(result?.CanBeUpdated);
         AssertNoManager(result);
+        AssertOtherFieldsEqual(company, result);
+    }
+
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    public async Task User_has_claim_to_update_manager_in_any_company___Returns_id_and_manager_only(string claim)
+    {
+        await _fixture.RunAsDefaultUserAsync(claim);
+        var company = await _fixture.AddCompanyAsync();
+
+        _fixture.ReplaceService<IAuthorizationHandler, UpdateCompanyAuthorizationHandler>(new UpdateCompanyAuthorizationHandlerMock());
+
+        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
+
+        Assert.Equal(company?.Id, result?.Id);
+        Assert.True(result?.CanBeUpdated);
+        AssertManagerEqual(company, result);
         AssertNoOtherFields(result);
     }
 
