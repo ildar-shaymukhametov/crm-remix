@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Application.Companies.Queries.GetCompany;
 
-[Authorize(Constants.Policies.Company.View)]
+[Authorize(Constants.Policies.Company.Queries.View)]
 public record GetCompanyQuery(int Id) : IRequest<CompanyVm>
 {
 }
@@ -84,8 +84,8 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
             result.Fields.Add(nameof(Company.Type), _mapper.Map<CompanyTypeDto>(entity.Type));
         }
 
-        result.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Delete);
-        result.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.QueryUpdate);
+        result.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Queries.Delete);
+        result.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Queries.Update);
 
         return result;
     }

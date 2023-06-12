@@ -157,7 +157,7 @@ public class GetCompaniesQueryTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync();
-        _fixture.ReplaceService<IAuthorizationHandler, UpdateCompanyAuthorizationHandler>(new UpdateCompanyAuthorizationHandlerMock());
+        _fixture.ReplaceService<IAuthorizationHandler, UpdateCompanyCommandAuthorizationHandler>(new UpdateCompanyAuthorizationHandlerMock());
 
         var actual = await _fixture.SendAsync(new GetCompaniesQuery());
 

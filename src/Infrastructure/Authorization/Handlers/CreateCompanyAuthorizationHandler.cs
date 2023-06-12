@@ -29,7 +29,8 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
             {
                 if (resource.Request.ManagerId == context.User.GetSubjectId())
                 {
-                    if (!accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToAny,
+                    if (!accessRights.ContainsAny(
+                        Access.Company.Any.Manager.SetFromAnyToAny,
                         Access.Company.Any.Manager.SetFromAnyToSelf,
                         Access.Company.Any.Manager.SetFromNoneToSelf,
                         Access.Company.Any.Manager.SetFromNoneToAny))
@@ -39,7 +40,8 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
                 }
                 else
                 {
-                    if (!accessRights.ContainsAny(Access.Company.Any.Manager.SetFromNoneToAny,
+                    if (!accessRights.ContainsAny(
+                        Access.Company.Any.Manager.SetFromNoneToAny,
                         Access.Company.Any.Manager.SetFromSelfToAny,
                         Access.Company.Any.Manager.SetFromAnyToAny))
                     {

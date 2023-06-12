@@ -5,7 +5,7 @@ using MediatR;
 
 namespace CRM.Application.Companies.Commands.DeleteCompany;
 
-[Authorize(Constants.Policies.Company.Delete)]
+[Authorize(Constants.Policies.Company.Commands.Delete)]
 public record DeleteCompanyCommand : IRequest
 {
     public int Id { get; set; }

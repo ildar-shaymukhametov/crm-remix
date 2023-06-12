@@ -82,8 +82,8 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
                 item.Fields.Add(nameof(Company.Type), _mapper.Map<CompanyTypeDto>(entity.Type));
             }
 
-            item.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Update);
-            item.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Delete);
+            item.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Queries.Update);
+            item.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Queries.Delete);
 
             result.Add(item);
         }

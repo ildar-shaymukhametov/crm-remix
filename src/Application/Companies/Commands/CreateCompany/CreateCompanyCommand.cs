@@ -6,7 +6,7 @@ using MediatR;
 
 namespace CRM.Application.Companies.Commands.CreateCompany;
 
-[Authorize(Constants.Policies.Company.Create)]
+[Authorize(Constants.Policies.Company.Commands.Create)]
 public record CreateCompanyCommand : IRequest<int>
 {
     public int? TypeId { get; set; }

@@ -287,9 +287,9 @@ internal class DeleteCompanyAuthorizationHandlerMock : AuthorizationHandler<Dele
     }
 }
 
-internal class UpdateCompanyAuthorizationHandlerMock : AuthorizationHandler<UpdateCompanyRequirement>
+internal class UpdateCompanyAuthorizationHandlerMock : AuthorizationHandler<UpdateCompanyCommandRequirement>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyCommandRequirement requirement)
     {
         context.Succeed(requirement);
         return Task.CompletedTask;

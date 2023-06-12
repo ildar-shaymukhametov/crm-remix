@@ -10,15 +10,15 @@ using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Authorization.Handlers;
 
-public class UpdateCompanyRequirement : IAuthorizationRequirement { }
+public class UpdateCompanyCommandRequirement : IAuthorizationRequirement { }
 
-public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<UpdateCompanyRequirement>
+public class UpdateCompanyCommandAuthorizationHandler : BaseAuthorizationHandler<UpdateCompanyCommandRequirement>
 {
-    public UpdateCompanyAuthorizationHandler(IAccessService accessService) : base(accessService)
+    public UpdateCompanyCommandAuthorizationHandler(IAccessService accessService) : base(accessService)
     {
     }
 
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyCommandRequirement requirement)
     {
         var (company, request) = GetResources(context);
         var accessRights = _accessService.CheckAccess(context.User);
