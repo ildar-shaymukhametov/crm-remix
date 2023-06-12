@@ -151,13 +151,11 @@ public class GetCompaniesQueryTests : BaseTest
         });
     }
 
-    [Theory]
-    [InlineData(Constants.Access.Company.Any.Other.Update)]
-    public async Task User_has_claim_to_update_any_company___Returns_companies_with_other_fields_and_id_only(string claim)
+    [Fact]
+    public async Task User_has_claim_to_update_other_fields_in_any_company___Returns_companies_with_id_and_other_fields_only()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Update });
         var company = await _fixture.AddCompanyAsync();
-        _fixture.ReplaceService<IAuthorizationHandler, UpdateCompanyCommandAuthorizationHandler>(new UpdateCompanyAuthorizationHandlerMock());
 
         var actual = await _fixture.SendAsync(new GetCompaniesQuery());
 
