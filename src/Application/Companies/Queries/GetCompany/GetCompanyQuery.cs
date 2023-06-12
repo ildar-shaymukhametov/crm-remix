@@ -10,9 +10,8 @@ using Microsoft.EntityFrameworkCore;
 namespace CRM.Application.Companies.Queries.GetCompany;
 
 [Authorize(Constants.Policies.Company.View)]
-public record GetCompanyQuery(int id) : IRequest<CompanyVm>
+public record GetCompanyQuery(int Id) : IRequest<CompanyVm>
 {
-    public int Id => id;
 }
 
 public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, CompanyVm>
