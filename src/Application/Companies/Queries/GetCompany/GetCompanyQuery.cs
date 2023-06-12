@@ -51,12 +51,17 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
         };
 
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
-        if (accessRights.ContainsAny(Constants.Access.Company.Any.Manager.View, Constants.Access.Company.WhereUserIsManager.Manager.View, Constants.Access.Company.Any.Manager.SetFromSelfToAny, Constants.Access.Company.Any.Manager.SetFromSelfToNone))
+        if (accessRights.ContainsAny(Constants.Access.Company.Any.Manager.View,
+            Constants.Access.Company.WhereUserIsManager.Manager.View,
+            Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+            Constants.Access.Company.Any.Manager.SetFromSelfToNone))
         {
             result.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
         }
 
-        if (accessRights.ContainsAny(Constants.Access.Company.Any.Other.View, Constants.Claims.Company.Any.Other.Update, Constants.Access.Company.WhereUserIsManager.Other.View))
+        if (accessRights.ContainsAny(Constants.Access.Company.Any.Other.View,
+            Constants.Claims.Company.Any.Other.Update,
+            Constants.Access.Company.WhereUserIsManager.Other.View))
         {
             result.Fields.Add(nameof(Company.Address), entity.Address);
             result.Fields.Add(nameof(Company.Ceo), entity.Ceo);

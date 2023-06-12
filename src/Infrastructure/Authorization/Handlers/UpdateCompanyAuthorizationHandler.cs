@@ -71,12 +71,18 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
 
         if (company.ManagerId != request.ManagerId)
         {
-            if (company.ManagerId == userId && !accessRights.ContainsAny(Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
-                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
+            if (company.ManagerId == userId && !accessRights.ContainsAny(
+                Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
+                Access.Company.Any.Manager.SetFromSelfToAny,
+                Access.Company.Any.Manager.SetFromSelfToNone,
+                Access.Company.Any.Manager.SetFromAnyToAny,
+                Access.Company.Any.Manager.SetFromAnyToNone))
             {
                 return Fail(context, "Update manager");
             }
-            else if (company.ManagerId != userId && !accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToAny,
+            else if (company.ManagerId != userId && !accessRights.ContainsAny(
+                Access.Company.Any.Manager.SetFromAnyToAny,
                 Access.Company.Any.Manager.SetFromAnyToNone,
                 Access.Company.Any.Manager.SetFromAnyToSelf,
                 Access.Company.Any.Manager.SetFromNoneToAny,
@@ -140,9 +146,14 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         }
         else if (company.ManagerId == userId) // from self...
         {
-            if (request.ManagerId == null) // ..to none
+            if (request.ManagerId == null) // ...to none
             {
-                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToNone) && !accessRights.Contains(Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
+                if (!accessRights.ContainsAny(
+                    Access.Company.Any.Manager.SetFromSelfToAny,
+                    Access.Company.Any.Manager.SetFromSelfToNone,
+                    Access.Company.Any.Manager.SetFromAnyToAny,
+                    Access.Company.Any.Manager.SetFromAnyToNone)
+                && !accessRights.Contains(Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
                 {
                     return Result.Failure(new[] { "Set manager from self to none" });
                 }
