@@ -69,7 +69,7 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
 
         if (accessRights.ContainsAny(
             Constants.Access.Company.Any.Other.View,
-            Constants.Claims.Company.Any.Other.Update,
+            Constants.Access.Company.Any.Other.Update,
             Constants.Access.Company.WhereUserIsManager.Other.View,
             Constants.Access.Company.WhereUserIsManager.Other.Update
         ))
@@ -85,7 +85,7 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
         }
 
         result.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Delete);
-        result.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Update);
+        result.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Queries.Update);
 
         return result;
     }

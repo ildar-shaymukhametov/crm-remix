@@ -69,7 +69,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
 
             if (accessRights.ContainsAny(
                 Access.Company.Any.Other.View,
-                Claims.Company.Any.Other.Update,
+                Access.Company.Any.Other.Update,
                 Access.Company.WhereUserIsManager.Other.View))
             {
                 item.Fields.Add(nameof(Company.Address), entity.Address);

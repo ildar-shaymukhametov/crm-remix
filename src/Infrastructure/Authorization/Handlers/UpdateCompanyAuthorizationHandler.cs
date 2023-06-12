@@ -24,41 +24,6 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         var accessRights = _accessService.CheckAccess(context.User);
         var userId = context.User.GetSubjectId();
 
-        // GET
-        var canUpdate = new[] {
-            accessRights.Contains(Access.Company.Any.Other.Update),
-            company.ManagerId != userId && accessRights.ContainsAny(
-                Access.Company.Any.Manager.SetFromAnyToAny,
-                Access.Company.Any.Manager.SetFromAnyToNone,
-                Access.Company.Any.Manager.SetFromAnyToSelf
-            ),
-            company.ManagerId == userId && accessRights.ContainsAny(
-                Access.Company.Any.Manager.SetFromSelfToNone,
-                Access.Company.Any.Manager.SetFromSelfToAny,
-                Access.Company.Any.Manager.SetFromAnyToAny,
-                Access.Company.Any.Manager.SetFromAnyToNone,
-                Access.Company.Any.Manager.SetFromAnyToSelf,
-                Access.Company.WhereUserIsManager.Other.Update,
-                Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
-                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
-            ),
-            company.ManagerId == null && accessRights.ContainsAny(
-                Access.Company.Any.Manager.SetFromNoneToAny,
-                Access.Company.Any.Manager.SetFromNoneToSelf
-            )
-        }.Any(x => x);
-
-        if (!canUpdate)
-        {
-            return Fail(context, "Update company");
-        }
-
-        if (request == null)
-        {
-            return Ok(context, requirement);
-        }
-
-        // POST
         var otherFieldChanged = company.Address != request.Address || company.Ceo != request.Ceo || company.Contacts != request.Contacts || company.Email != request.Email || company.Inn != request.Inn || company.Name != request.Name || company.Phone != request.Phone || company.TypeId != request.TypeId;
         if (otherFieldChanged)
         {

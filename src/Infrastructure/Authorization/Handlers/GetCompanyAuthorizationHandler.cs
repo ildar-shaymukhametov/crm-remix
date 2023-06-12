@@ -19,7 +19,7 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        if (accessRights.ContainsAny(Access.Company.Any.Other.View, Claims.Company.Any.Other.Update, Access.Company.Any.Manager.View))
+        if (accessRights.ContainsAny(Access.Company.Any.Other.View, Access.Company.Any.Other.Update, Access.Company.Any.Manager.View))
         {
             context.Succeed(requirement);
         }
@@ -84,9 +84,9 @@ public class GetCompanyByUpdateAuthorizationHandler : AuthorizationHandler<GetCo
         using var scope = _serviceProvider.CreateScope();
         var handler = scope.ServiceProvider
             .GetServices<IAuthorizationHandler>()
-            .OfType<AuthorizationHandler<UpdateCompanyRequirement>>()
+            .OfType<AuthorizationHandler<UpdateCompanyQueryRequirement>>()
             .Single();
-        var newContext = new AuthorizationHandlerContext(new[] { new UpdateCompanyRequirement() }, context.User, context.Resource);
+        var newContext = new AuthorizationHandlerContext(new[] { new UpdateCompanyQueryRequirement() }, context.User, context.Resource);
         await handler.HandleAsync(newContext);
         if (newContext.HasSucceeded)
         {
