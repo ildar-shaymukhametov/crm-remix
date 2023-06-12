@@ -15,7 +15,7 @@ public class CompaniesController : ApiControllerBase
     [Route("{id}")]
     public async Task<ActionResult<CompanyVm>> Get(int id)
     {
-        return await Mediator.Send(new GetCompanyQuery { Id = id });
+        return await Mediator.Send(new GetCompanyQuery(id));
     }
 
     [HttpGet]

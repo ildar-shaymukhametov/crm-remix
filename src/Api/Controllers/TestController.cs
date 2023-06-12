@@ -30,7 +30,7 @@ public class TestController : ApiControllerBase
     [Route("Companies/{id}")]
     public async Task<ActionResult<CompanyVm>> GetCompany(int id)
     {
-        return await Mediator.Send(new GetTestCompanyQuery { Id = id });
+        return await Mediator.Send(new GetTestCompanyQuery(id));
     }
 
     [HttpGet]

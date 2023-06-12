@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CRM.Application.Companies.Queries.GetCompany;
 
-public record GetTestCompanyQuery : GetCompanyQuery
+public record GetTestCompanyQuery(int id) : GetCompanyQuery(id)
 {
 }
 

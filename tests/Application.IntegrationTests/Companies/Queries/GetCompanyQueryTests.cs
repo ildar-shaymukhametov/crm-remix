@@ -15,14 +15,14 @@ public class GetCompanyTests : BaseTest
     public async Task User_is_admin___Returns_all_fields()
     {
         var user = await _fixture.RunAsAdministratorAsync();
-        var newCompany = await _fixture.AddCompanyAsync(user.Id);
+        var company = await _fixture.AddCompanyAsync(user.Id);
 
-        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = newCompany.Id });
-        var company = await _fixture.FindAsync<Company>(result.Id, nameof(Company.Type));
+        var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
+        var expected = await _fixture.FindAsync<Company>(actual.Id, nameof(Company.Type));
 
-        Assert.Equal(company?.Id, result?.Id);
-        AssertOtherFieldsEqual(company, result);
-        AssertManagerEqual(company, result);
+        Assert.Equal(expected?.Id, actual?.Id);
+        AssertOtherFieldsEqual(expected, actual);
+        AssertManagerEqual(expected, actual);
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class GetCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync();
 
-        var request = new GetCompanyQuery { Id = company.Id };
+        var request = new GetCompanyQuery(company.Id);
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
     }
 
@@ -41,7 +41,7 @@ public class GetCompanyTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.View });
         var company = await _fixture.AddCompanyAsync();
 
-        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
+        var result = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
         Assert.Equal(company?.Id, result?.Id);
         AssertOtherFieldsEqual(company, result);
@@ -54,7 +54,7 @@ public class GetCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Manager.View });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
-        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
+        var result = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
         Assert.Equal(company?.Id, result?.Id);
         AssertManagerEqual(company, result);
@@ -67,7 +67,7 @@ public class GetCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.View });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
-        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
+        var result = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
         Assert.Equal(company?.Id, result?.Id);
         AssertOtherFieldsEqual(company, result);
@@ -80,7 +80,7 @@ public class GetCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Manager.View });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
-        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
+        var result = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
         Assert.Equal(company?.Id, result?.Id);
         AssertManagerEqual(company, result);
@@ -95,7 +95,7 @@ public class GetCompanyTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync();
 
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery { Id = company.Id }));
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class GetCompanyTests : BaseTest
 
         _fixture.ReplaceService<IAuthorizationHandler, DeleteCompanyAuthorizationHandler>(new DeleteCompanyAuthorizationHandlerMock());
 
-        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
+        var result = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
         Assert.Equal(company?.Id, result?.Id);
         Assert.True(result?.CanBeDeleted);
@@ -120,7 +120,7 @@ public class GetCompanyTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Update });
         var company = await _fixture.AddCompanyAsync();
 
-        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
+        var result = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
         Assert.Equal(company?.Id, result?.Id);
         Assert.True(result?.CanBeUpdated);
@@ -137,7 +137,7 @@ public class GetCompanyTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync();
 
-        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
+        var result = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
         Assert.Equal(company?.Id, result?.Id);
         Assert.True(result?.CanBeUpdated);
@@ -156,7 +156,7 @@ public class GetCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync(user.Id);
 
-        var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
+        var result = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
         Assert.Equal(company?.Id, result?.Id);
         Assert.True(result?.CanBeUpdated);
@@ -172,7 +172,7 @@ public class GetCompanyTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync();
 
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery { Id = company.Id }));
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));
     }
 
     private static void AssertNoManager(CompanyVm? actual)
