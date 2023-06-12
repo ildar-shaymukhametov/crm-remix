@@ -37,12 +37,7 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
             .AsNoTracking()
             .Include(x => x.Manager)
             .Include(x => x.Type)
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
-
-        if (entity == null)
-        {
-            throw new NotFoundException("Company", request.Id);
-        }
+            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken) ?? throw new NotFoundException("Company", request.Id);
 
         var result = new CompanyVm
         {
