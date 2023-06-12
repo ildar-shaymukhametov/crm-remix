@@ -25,26 +25,29 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         var userId = context.User.GetSubjectId();
 
         // GET
-        var canUpdateOtherFields = accessRights.ContainsAny(
-            Access.Company.Any.Other.Update,
-            Access.Company.WhereUserIsManager.Other.Update
-        );
+        var canUpdate = new[] {
+            accessRights.ContainsAny(
+                Access.Company.Any.Other.Update,
+                Access.Company.WhereUserIsManager.Other.Update
+            ),
+            company.ManagerId != userId && accessRights.ContainsAny(
+                Access.Company.Any.Manager.SetFromAnyToAny,
+                Access.Company.Any.Manager.SetFromAnyToNone,
+                Access.Company.Any.Manager.SetFromAnyToSelf
+            ),
+            company.ManagerId == userId && accessRights.ContainsAny(
+                Access.Company.Any.Manager.SetFromSelfToNone,
+                Access.Company.Any.Manager.SetFromSelfToAny,
+                Access.Company.Any.Manager.SetFromAnyToAny,
+                Access.Company.Any.Manager.SetFromAnyToNone,
+                Access.Company.Any.Manager.SetFromAnyToSelf
+            ),
+            company.ManagerId == null && accessRights.ContainsAny(
+                Access.Company.Any.Manager.SetFromNoneToAny,
+                Access.Company.Any.Manager.SetFromNoneToSelf
+            )
+        }.Any(x => x);
 
-        var canSetManagerFromAny = company.ManagerId != userId && accessRights.ContainsAny(
-            Access.Company.Any.Manager.SetFromAnyToAny,
-            Access.Company.Any.Manager.SetFromAnyToNone,
-            Access.Company.Any.Manager.SetFromAnyToSelf
-        );
-
-        var canSetManagerFromSelf = company.ManagerId == userId && accessRights.ContainsAny(
-            Access.Company.Any.Manager.SetFromSelfToNone,
-            Access.Company.Any.Manager.SetFromSelfToAny,
-            Access.Company.Any.Manager.SetFromAnyToAny,
-            Access.Company.Any.Manager.SetFromAnyToNone,
-            Access.Company.Any.Manager.SetFromAnyToSelf
-        );
-
-        var canUpdate = canUpdateOtherFields || canSetManagerFromAny || canSetManagerFromSelf;
         if (!canUpdate)
         {
             return Fail(context, "Update company");
@@ -59,7 +62,9 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         var otherFieldChanged = company.Address != request.Address || company.Ceo != request.Ceo || company.Contacts != request.Contacts || company.Email != request.Email || company.Inn != request.Inn || company.Name != request.Name || company.Phone != request.Phone || company.TypeId != request.TypeId;
         if (otherFieldChanged)
         {
-            if (company.ManagerId == userId && !accessRights.ContainsAny(Access.Company.WhereUserIsManager.Other.Update, Claims.Company.Any.Other.Update))
+            if (company.ManagerId == userId && !accessRights.ContainsAny(
+                Access.Company.WhereUserIsManager.Other.Update,
+                Access.Company.Any.Other.Update))
             {
                 return Fail(context, "Update other fields");
             }
@@ -134,7 +139,8 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
                 }
                 else // ...to any
                 {
-                    if (!accessRights.ContainsAny(Access.Company.Any.Manager.SetFromNoneToSelf,
+                    if (!accessRights.ContainsAny(
+                        Access.Company.Any.Manager.SetFromNoneToSelf,
                         Access.Company.Any.Manager.SetFromNoneToAny,
                         Access.Company.Any.Manager.SetFromAnyToSelf,
                         Access.Company.Any.Manager.SetFromAnyToAny))

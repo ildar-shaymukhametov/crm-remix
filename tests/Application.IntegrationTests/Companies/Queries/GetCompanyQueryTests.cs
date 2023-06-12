@@ -149,6 +149,20 @@ public class GetCompanyTests : BaseTest
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
+    public async Task User_has_claim_to_set_manager_from_any_in_any_company_and_is_manager___Returns_id_and_manager_only(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(claim);
+        var company = await _fixture.AddCompanyAsync(user.Id);
+
+        var result = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
+
+        Assert.Equal(company?.Id, result?.Id);
+        Assert.True(result?.CanBeUpdated);
+        AssertManagerEqual(company, result);
+        AssertNoOtherFields(result);
+    }
+
+    [Theory]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
     public async Task User_has_claim_to_set_manager_from_self_in_any_company___Returns_id_and_manager_only(string claim)
@@ -173,6 +187,22 @@ public class GetCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));
+    }
+
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    public async Task User_has_claim_to_set_manager_from_none_in_any_company___Returns_id_and_manager_only(string claim)
+    {
+        await _fixture.RunAsDefaultUserAsync(claim);
+        var company = await _fixture.AddCompanyAsync();
+
+        var result = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
+
+        Assert.Equal(company?.Id, result?.Id);
+        Assert.True(result?.CanBeUpdated);
+        AssertManagerEqual(company, result);
+        AssertNoOtherFields(result);
     }
 
     private static void AssertNoManager(CompanyVm? actual)
