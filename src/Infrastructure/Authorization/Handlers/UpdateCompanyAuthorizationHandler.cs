@@ -166,7 +166,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             }
             else if (request.ManagerId == null) // ...to none
             {
-                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromAnyToNone))
+                if (!accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToNone, Access.Company.Any.Manager.SetFromAnyToAny))
                 {
                     return Result.Failure(new[] { "Set manager from any to none in any company" });
                 }
