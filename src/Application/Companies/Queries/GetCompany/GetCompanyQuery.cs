@@ -51,8 +51,10 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
         };
 
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
-        if (accessRights.ContainsAny(Constants.Access.Company.Any.Manager.View,
+        if (accessRights.ContainsAny(
+            Constants.Access.Company.Any.Manager.View,
             Constants.Access.Company.WhereUserIsManager.Manager.View,
+            Constants.Access.Company.Any.Manager.SetFromAnyToAny,
             Constants.Access.Company.Any.Manager.SetFromSelfToAny,
             Constants.Access.Company.Any.Manager.SetFromSelfToNone))
         {

@@ -77,8 +77,12 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
 
         var managerId = await GetManagerIdAsync(request);
 
-        if (accessRights.ContainsAny(Access.Company.Any.Manager.SetFromNoneToAny, Access.Company.Any.Manager.SetFromAnyToAny) && managerId == null
-            || accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToAny) && managerId == _currentUserService.UserId)
+        if (accessRights.ContainsAny(
+                Access.Company.Any.Manager.SetFromNoneToAny,
+                Access.Company.Any.Manager.SetFromAnyToAny) && managerId == null
+            || accessRights.ContainsAny(
+                Access.Company.Any.Manager.SetFromSelfToAny,
+                Access.Company.Any.Manager.SetFromAnyToAny) && managerId == _currentUserService.UserId)
         {
             result.Add(_allManagers);
             return result;

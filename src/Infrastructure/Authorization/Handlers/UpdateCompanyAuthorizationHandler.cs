@@ -160,7 +160,10 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             }
             else // ...to any
             {
-                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToAny) && !accessRights.Contains(Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny))
+                if (!accessRights.ContainsAny(
+                    Access.Company.Any.Manager.SetFromSelfToAny,
+                    Access.Company.Any.Manager.SetFromAnyToAny,
+                    Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny))
                 {
                     return Result.Failure(new[] { "Set manager from self to any" });
                 }

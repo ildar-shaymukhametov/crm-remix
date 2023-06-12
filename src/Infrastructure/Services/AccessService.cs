@@ -99,11 +99,17 @@ public class AccessService : IAccessService
 
         if (IsAdmin(user) || HasAnyClaim(user, new[]
             {
-                Claims.Company.Any.Manager.SetFromSelfToAny,
-                Claims.Company.Any.Manager.SetFromAnyToAny
+                Claims.Company.Any.Manager.SetFromSelfToAny
             }))
         {
             result.Add(Access.Company.Any.Manager.SetFromSelfToAny);
+        }
+
+        if (IsAdmin(user) || HasAnyClaim(user, new[]
+            {
+                Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny
+            }))
+        {
             result.Add(Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny);
         }
 
