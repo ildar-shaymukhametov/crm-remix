@@ -111,7 +111,8 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
         {
             Status = StatusCodes.Status403Forbidden,
             Title = "Forbidden",
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3"
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3",
+            Detail = context.Exception.Message
         };
 
         context.Result = new ObjectResult(details)

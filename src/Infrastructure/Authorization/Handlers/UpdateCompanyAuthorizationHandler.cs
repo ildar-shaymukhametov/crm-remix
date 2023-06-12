@@ -24,11 +24,9 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         var accessRights = _accessService.CheckAccess(context.User);
         var userId = context.User.GetSubjectId();
 
+        // GET
         var canUpdate = accessRights.ContainsAny(
             Access.Company.Any.Other.Update,
-            Access.Company.Any.Manager.SetFromAnyToAny,
-            Access.Company.Any.Manager.SetFromAnyToNone,
-            Access.Company.Any.Manager.SetFromAnyToSelf,
             Access.Company.Any.Manager.SetFromNoneToAny,
             Access.Company.Any.Manager.SetFromNoneToSelf,
             Access.Company.Any.Manager.SetFromSelfToAny,
@@ -42,11 +40,21 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             return Fail(context, "Update company");
         }
 
+        if (company.ManagerId != userId && !accessRights.ContainsAny(
+            Access.Company.Any.Manager.SetFromAnyToAny,
+            Access.Company.Any.Manager.SetFromAnyToNone,
+            Access.Company.Any.Manager.SetFromAnyToSelf
+        ))
+        {
+            return Fail(context, "Update company. Current user is not manager");
+        }
+
         if (request == null)
         {
             return Ok(context, requirement);
         }
 
+        // POST
         var otherFieldChanged = company.Address != request.Address || company.Ceo != request.Ceo || company.Contacts != request.Contacts || company.Email != request.Email || company.Inn != request.Inn || company.Name != request.Name || company.Phone != request.Phone || company.TypeId != request.TypeId;
         if (otherFieldChanged)
         {

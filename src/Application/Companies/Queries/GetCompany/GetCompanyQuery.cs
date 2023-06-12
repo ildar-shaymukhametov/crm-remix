@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CRM.Application.Companies.Queries.GetCompany;
 
 [Authorize(Constants.Policies.Company.View)]
-public record GetCompanyQuery : IRequest<CompanyVm>
+public record GetCompanyQuery : IRequest<CompanyVm> // todo: use primary ctor
 {
     public int Id { get; set; }
 }

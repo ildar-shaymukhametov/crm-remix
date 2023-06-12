@@ -95,12 +95,11 @@ public class GetCompanyTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync();
 
-        var request = new GetCompanyQuery { Id = company.Id };
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery { Id = company.Id }));
     }
 
     [Fact]
-    public async Task User_has_claim_to_delete_company___Returns_id_only()
+    public async Task User_can_delete_company___Returns_id_only()
     {
         await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync();
@@ -121,8 +120,6 @@ public class GetCompanyTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Update });
         var company = await _fixture.AddCompanyAsync();
 
-        _fixture.ReplaceService<IAuthorizationHandler, UpdateCompanyAuthorizationHandler>(new UpdateCompanyAuthorizationHandlerMock());
-
         var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
 
         Assert.Equal(company?.Id, result?.Id);
@@ -135,14 +132,10 @@ public class GetCompanyTests : BaseTest
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
-    public async Task User_has_claim_to_update_manager_in_any_company___Returns_id_and_manager_only(string claim)
+    public async Task User_has_claim_to_set_manager_from_any_in_any_company___Returns_id_and_manager_only(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync();
-
-        _fixture.ReplaceService<IAuthorizationHandler, UpdateCompanyAuthorizationHandler>(new UpdateCompanyAuthorizationHandlerMock());
 
         var result = await _fixture.SendAsync(new GetCompanyQuery { Id = company.Id });
 
@@ -150,6 +143,17 @@ public class GetCompanyTests : BaseTest
         Assert.True(result?.CanBeUpdated);
         AssertManagerEqual(company, result);
         AssertNoOtherFields(result);
+    }
+
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
+    public async Task User_has_claim_to_set_manager_from_self_in_any_company_and_is_not_manager___Forbidden(string claim)
+    {
+        await _fixture.RunAsDefaultUserAsync(claim);
+        var company = await _fixture.AddCompanyAsync();
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery { Id = company.Id }));
     }
 
     private static void AssertNoManager(CompanyVm? actual)
@@ -185,7 +189,6 @@ public class GetCompanyTests : BaseTest
     {
         Assert.Equal(expected?.ManagerId, (actual?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
     }
-
 }
 
 internal class DeleteCompanyAuthorizationHandlerMock : AuthorizationHandler<DeleteCompanyRequirement>
