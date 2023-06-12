@@ -20,7 +20,7 @@ public static class ConfigurePolicies
         options.AddPolicy(Policies.Company.Delete, policy =>
             policy.AddRequirements(new DeleteCompanyRequirement()));
 
-        options.AddPolicy(Policies.Company.Queries.Update, policy =>
-            policy.AddRequirements(new UpdateCompanyQueryRequirement()));
+        options.AddPolicy(Policies.Company.QueryUpdate, policy =>
+            policy.AddRequirements(new QueryUpdateCompanyRequirement()));
     }
 }
