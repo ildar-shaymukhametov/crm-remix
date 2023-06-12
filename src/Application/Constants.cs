@@ -80,7 +80,6 @@ public static class Constants
             public const string SetManagerToAny = "Company.SetManagerToAny";
             public const string SetManagerToSelf = "Company.SetManagerToSelf";
             public const string SetManagerFromAny = "Company.SetManagerFromAny";
-            public const string SetManagerFromNone = "Company.SetManagerFromNone";
             public const string SetManagerFromSelf = "Company.SetManagerFromSelf";
 
             public static class Any

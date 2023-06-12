@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using static CRM.Application.Constants;
 using CRM.Application.Utils;
 using CRM.Application.Common.Mappings;
+using CRM.Application.Common.Extensions;
 
 namespace CRM.Application.Companies.Queries.GetCompanyManagers;
 
@@ -96,7 +97,11 @@ public class GetCompanyManagersRequestHandler : IRequestHandler<GetCompanyInitDa
         }
 
         if (accessRights.Contains(Access.Company.Any.Manager.SetFromSelfToNone) && managerId == _currentUserService.UserId
-            || accessRights.Contains(Access.Company.SetManagerFromNone) && managerId == null
+            || accessRights.ContainsAny(Access.Company.Any.Manager.SetFromNoneToAny,
+                Access.Company.Any.Manager.SetFromNoneToSelf,
+                Access.Company.Any.Manager.SetFromAnyToAny,
+                Access.Company.Any.Manager.SetFromAnyToNone,
+                Access.Company.Any.Manager.SetFromAnyToSelf) && managerId == null
             || accessRights.Contains(Access.Company.Any.Manager.SetFromAnyToNone) && managerId != null)
         {
             result.Add(_emptyManager);
