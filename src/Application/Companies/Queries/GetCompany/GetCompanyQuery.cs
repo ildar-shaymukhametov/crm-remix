@@ -1,5 +1,6 @@
 using AutoMapper;
 using CRM.Application.Common.Exceptions;
+using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
 using CRM.Domain.Entities;
@@ -50,7 +51,7 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
         };
 
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
-        if (accessRights.Contains(Constants.Access.Company.Any.Manager.View) || accessRights.Contains(Constants.Access.Company.WhereUserIsManager.Manager.View))
+        if (accessRights.ContainsAny(Constants.Access.Company.Any.Manager.View, Constants.Access.Company.WhereUserIsManager.Manager.View, Constants.Access.Company.Any.Manager.SetFromSelfToAny, Constants.Access.Company.Any.Manager.SetFromSelfToNone))
         {
             result.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
         }
