@@ -70,7 +70,9 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
                 Access.Company.Any.Manager.SetFromSelfToAny,
                 Access.Company.Any.Manager.SetFromSelfToNone,
                 Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
-                Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny
+                Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+                Access.Company.Any.Manager.SetFromNoneToAny,
+                Access.Company.Any.Manager.SetFromNoneToSelf
             ))
             {
                 company.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
@@ -111,7 +113,9 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             Access.Company.Any.Other.Update,
             Access.Company.Any.Manager.SetFromAnyToAny,
             Access.Company.Any.Manager.SetFromAnyToNone,
-            Access.Company.Any.Manager.SetFromAnyToSelf
+            Access.Company.Any.Manager.SetFromAnyToSelf,
+            Access.Company.Any.Manager.SetFromNoneToAny,
+            Access.Company.Any.Manager.SetFromNoneToSelf
         ))
         {
             result.Add(x => true);
