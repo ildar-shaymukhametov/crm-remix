@@ -124,8 +124,11 @@ public class UpdateCompanyCommandAuthorizationHandler : BaseAuthorizationHandler
                     Access.Company.Any.Manager.SetFromSelfToAny,
                     Access.Company.Any.Manager.SetFromSelfToNone,
                     Access.Company.Any.Manager.SetFromAnyToAny,
-                    Access.Company.Any.Manager.SetFromAnyToNone)
-                && !accessRights.Contains(Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone))
+                    Access.Company.Any.Manager.SetFromAnyToNone
+                ) && !accessRights.ContainsAny(
+                    Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
+                    Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny
+                ))
                 {
                     return Result.Failure(new[] { "Set manager from self to none" });
                 }
@@ -135,7 +138,8 @@ public class UpdateCompanyCommandAuthorizationHandler : BaseAuthorizationHandler
                 if (!accessRights.ContainsAny(
                     Access.Company.Any.Manager.SetFromSelfToAny,
                     Access.Company.Any.Manager.SetFromAnyToAny,
-                    Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny))
+                    Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny
+                ))
                 {
                     return Result.Failure(new[] { "Set manager from self to any" });
                 }

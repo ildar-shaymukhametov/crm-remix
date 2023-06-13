@@ -60,12 +60,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateNewData(company.Id);
 
-        await _fixture.SendAsync(command);
-
-        var actual = await _fixture.FindAsync<Company>(company.Id);
-        AssertCompanyUpdated(user, actual);
-        AssertOtherFieldsUpdated(command, actual);
-        AssertManagerUnchanged(company, actual);
+        await AssertCompanyUpdatedAsync(user, company.Id, command);
     }
 
     [Fact]
@@ -185,12 +180,7 @@ public class UpdateCompanyTests : BaseTest
         var command = CreateCopyData(company);
         command.ManagerId = user.Id;
 
-        await _fixture.SendAsync(command);
-
-        var actual = await _fixture.FindAsync<Company>(company.Id);
-        AssertCompanyUpdated(user, actual);
-        AssertManagerUpdated(command, actual);
-        AssertOtherFieldsUnchanged(company, actual);
+        await AssertCompanyUpdatedAsync(user, company.Id, command);
     }
 
     [Fact]
@@ -215,12 +205,7 @@ public class UpdateCompanyTests : BaseTest
         var command = CreateCopyData(company);
         command.ManagerId = anotherUser.Id;
 
-        await _fixture.SendAsync(command);
-
-        var actual = await _fixture.FindAsync<Company>(company.Id);
-        AssertCompanyUpdated(user, actual);
-        AssertManagerUpdated(command, actual);
-        AssertOtherFieldsUnchanged(company, actual);
+        await AssertCompanyUpdatedAsync(user, company.Id, command);
     }
 
     [Fact]
@@ -247,12 +232,7 @@ public class UpdateCompanyTests : BaseTest
         var command = CreateCopyData(company);
         command.ManagerId = null;
 
-        await _fixture.SendAsync(command);
-
-        var actual = await _fixture.FindAsync<Company>(company.Id);
-        AssertCompanyUpdated(user, actual);
-        AssertManagerUpdated(command, actual);
-        AssertOtherFieldsUnchanged(company, actual);
+        await AssertCompanyUpdatedAsync(user, company.Id, command);
     }
 
     [Fact]
@@ -505,45 +485,5 @@ public class UpdateCompanyTests : BaseTest
         Assert.Equal(user.Id, actual?.LastModifiedBy);
         expected.Should().BeEquivalentTo(actual, options =>
             options.ExcludingNestedObjects().ExcludingMissingMembers());
-    }
-
-    private static void AssertCompanyUpdated(AspNetUser user, Company? actual)
-    {
-        Assert.Equal(BaseTestFixture.UtcNow, actual?.LastModifiedAtUtc);
-        Assert.Equal(user.Id, actual?.LastModifiedBy);
-    }
-
-    private static void AssertOtherFieldsUpdated(UpdateCompanyCommand? expected, Company? actual)
-    {
-        Assert.Equal(expected?.TypeId, actual?.TypeId);
-        Assert.Equal(expected?.Address, actual?.Address);
-        Assert.Equal(expected?.Ceo, actual?.Ceo);
-        Assert.Equal(expected?.Contacts, actual?.Contacts);
-        Assert.Equal(expected?.Email, actual?.Email);
-        Assert.Equal(expected?.Inn, actual?.Inn);
-        Assert.Equal(expected?.Name, actual?.Name);
-        Assert.Equal(expected?.Phone, actual?.Phone);
-    }
-
-    private static void AssertOtherFieldsUnchanged(Company? expected, Company? actual)
-    {
-        Assert.Equal(expected?.TypeId, actual?.TypeId);
-        Assert.Equal(expected?.Address, actual?.Address);
-        Assert.Equal(expected?.Ceo, actual?.Ceo);
-        Assert.Equal(expected?.Contacts, actual?.Contacts);
-        Assert.Equal(expected?.Email, actual?.Email);
-        Assert.Equal(expected?.Inn, actual?.Inn);
-        Assert.Equal(expected?.Name, actual?.Name);
-        Assert.Equal(expected?.Phone, actual?.Phone);
-    }
-
-    private static void AssertManagerUpdated(UpdateCompanyCommand? expected, Company? actual)
-    {
-        Assert.Equal(expected?.ManagerId, actual?.ManagerId);
-    }
-
-    private static void AssertManagerUnchanged(Company? expected, Company? actual)
-    {
-        Assert.Equal(expected?.ManagerId, actual?.ManagerId);
     }
 }
