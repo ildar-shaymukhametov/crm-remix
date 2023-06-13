@@ -66,7 +66,11 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
                 Access.Company.WhereUserIsManager.Manager.View,
                 Access.Company.Any.Manager.SetFromAnyToAny,
                 Access.Company.Any.Manager.SetFromAnyToNone,
-                Access.Company.Any.Manager.SetFromAnyToSelf
+                Access.Company.Any.Manager.SetFromAnyToSelf,
+                Access.Company.Any.Manager.SetFromSelfToAny,
+                Access.Company.Any.Manager.SetFromSelfToNone,
+                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
+                Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny
             ))
             {
                 company.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
@@ -119,7 +123,11 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             Access.Company.WhereUserIsManager.Manager.View,
             Access.Company.WhereUserIsManager.Other.View,
             Access.Company.WhereUserIsManager.Delete,
-            Access.Company.WhereUserIsManager.Other.Update
+            Access.Company.WhereUserIsManager.Other.Update,
+            Access.Company.Any.Manager.SetFromSelfToAny,
+            Access.Company.Any.Manager.SetFromSelfToNone,
+            Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
+            Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny
         ))
         {
             result.Add(x => x.ManagerId == _currentUserService.UserId);
