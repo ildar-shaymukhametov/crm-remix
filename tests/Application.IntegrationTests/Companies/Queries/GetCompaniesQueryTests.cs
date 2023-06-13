@@ -195,6 +195,26 @@ public class GetCompaniesQueryTests : BaseTest
         Assert.Empty(actual);
     }
 
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
+    public async Task User_has_claim_to_set_manager_from_any_in_any_company___Returns_companies_with_id_and_manager_only(string claim)
+    {
+        await _fixture.RunAsDefaultUserAsync(claim);
+        var company = await _fixture.AddCompanyAsync();
+
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
+
+        Assert.Collection(actual, x =>
+        {
+            Assert.Equal(company?.Id, x?.Id);
+            Assert.True(x?.CanBeUpdated);
+            AssertManagerEqual(company, x);
+            AssertNoOtherFields(x);
+        });
+    }
+
     private static void AssertOtherFieldsEqual(Company? expected, CompanyVm? actual)
     {
         Assert.Equal(expected?.TypeId, (actual?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
