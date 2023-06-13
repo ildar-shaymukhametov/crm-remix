@@ -215,7 +215,12 @@ public class UpdateCompanyTests : BaseTest
         var command = CreateCopyData(company);
         command.ManagerId = anotherUser.Id;
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await _fixture.SendAsync(command);
+
+        var actual = await _fixture.FindAsync<Company>(company.Id);
+        AssertCompanyUpdated(user, actual);
+        AssertManagerUpdated(command, actual);
+        AssertOtherFieldsUnchanged(company, actual);
     }
 
     [Fact]
@@ -486,14 +491,14 @@ public class UpdateCompanyTests : BaseTest
         };
     }
 
-    private async Task AssertCompanyUpdatedAsync(AspNetUser user, int companyId, UpdateCompanyCommand command)
+    private async Task AssertCompanyUpdatedAsync(AspNetUser user, int companyId, UpdateCompanyCommand expected)
     {
-        await _fixture.SendAsync(command);
-        var updatedCompany = await _fixture.FindAsync<Company>(companyId);
+        await _fixture.SendAsync(expected);
+        var actual = await _fixture.FindAsync<Company>(companyId);
 
-        Assert.Equal(BaseTestFixture.UtcNow, updatedCompany?.LastModifiedAtUtc);
-        Assert.Equal(user.Id, updatedCompany?.LastModifiedBy);
-        command.Should().BeEquivalentTo(updatedCompany, options =>
+        Assert.Equal(BaseTestFixture.UtcNow, actual?.LastModifiedAtUtc);
+        Assert.Equal(user.Id, actual?.LastModifiedBy);
+        expected.Should().BeEquivalentTo(actual, options =>
             options.ExcludingNestedObjects().ExcludingMissingMembers());
     }
 
