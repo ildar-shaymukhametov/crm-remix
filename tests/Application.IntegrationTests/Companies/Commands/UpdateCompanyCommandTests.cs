@@ -247,7 +247,12 @@ public class UpdateCompanyTests : BaseTest
         var command = CreateCopyData(company);
         command.ManagerId = null;
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await _fixture.SendAsync(command);
+
+        var actual = await _fixture.FindAsync<Company>(company.Id);
+        AssertCompanyUpdated(user, actual);
+        AssertManagerUpdated(command, actual);
+        AssertOtherFieldsUnchanged(company, actual);
     }
 
     [Fact]
