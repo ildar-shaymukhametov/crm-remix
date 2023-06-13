@@ -78,17 +78,6 @@ public class UpdateCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    [Fact]
-    public async Task User_can_update_manager_in_any_company___Updates_manager()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
-        var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.ManagerId = user.Id;
-
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
-    }
-
     [Theory]
     [InlineData(Claims.Company.Any.Manager.SetFromAnyToAny)]
     [InlineData(Claims.Company.Any.Manager.SetFromAnyToNone)]
