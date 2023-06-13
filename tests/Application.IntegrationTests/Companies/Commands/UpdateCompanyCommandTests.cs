@@ -86,7 +86,7 @@ public class UpdateCompanyTests : BaseTest
     [InlineData(Claims.Company.Any.Manager.SetFromNoneToSelf)]
     [InlineData(Claims.Company.Any.Manager.SetFromSelfToAny)]
     [InlineData(Claims.Company.Any.Manager.SetFromSelfToNone)]
-    public async Task User_can_update_manager_in_any_company___Forbidden_to_update_address(string claim)
+    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_address(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync();
@@ -97,7 +97,7 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_update_manager_in_any_company___Forbidden_to_update_ceo()
+    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_ceo()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
@@ -108,7 +108,7 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_update_manager_in_any_company___Forbidden_to_update_contacts()
+    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_contacts()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
@@ -119,7 +119,7 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_update_manager_in_any_company___Forbidden_to_update_email()
+    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_email()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
@@ -130,7 +130,7 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_update_manager_in_any_company___Forbidden_to_update_inn()
+    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_inn()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
@@ -141,7 +141,7 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_update_manager_in_any_company___Forbidden_to_update_name()
+    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_name()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
@@ -152,7 +152,7 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_update_manager_in_any_company___Forbidden_to_update_phone()
+    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_phone()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
@@ -163,7 +163,7 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_update_manager_in_any_company___Forbidden_to_update_type()
+    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_type()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
         var company = await _fixture.AddCompanyAsync();
@@ -185,7 +185,12 @@ public class UpdateCompanyTests : BaseTest
         var command = CreateCopyData(company);
         command.ManagerId = user.Id;
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await _fixture.SendAsync(command);
+
+        var actual = await _fixture.FindAsync<Company>(company.Id);
+        AssertCompanyUpdated(user, actual);
+        AssertManagerUpdated(command, actual);
+        AssertOtherFieldsUnchanged(company, actual);
     }
 
     [Fact]

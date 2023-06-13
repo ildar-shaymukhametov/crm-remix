@@ -92,7 +92,12 @@ public class UpdateCompanyCommandAuthorizationHandler : BaseAuthorizationHandler
             {
                 if (request.ManagerId == userId) // ...to self
                 {
-                    if (!accessRights.Contains(Access.Company.Any.Manager.SetFromNoneToSelf))
+                    if (!accessRights.ContainsAny(
+                        Access.Company.Any.Manager.SetFromNoneToSelf,
+                        Access.Company.Any.Manager.SetFromNoneToAny,
+                        Access.Company.Any.Manager.SetFromAnyToAny,
+                        Access.Company.Any.Manager.SetFromAnyToSelf
+                    ))
                     {
                         return Result.Failure(new[] { "Set manager from none to self in any company" });
                     }
@@ -103,7 +108,8 @@ public class UpdateCompanyCommandAuthorizationHandler : BaseAuthorizationHandler
                         Access.Company.Any.Manager.SetFromNoneToSelf,
                         Access.Company.Any.Manager.SetFromNoneToAny,
                         Access.Company.Any.Manager.SetFromAnyToSelf,
-                        Access.Company.Any.Manager.SetFromAnyToAny))
+                        Access.Company.Any.Manager.SetFromAnyToAny
+                    ))
                     {
                         return Result.Failure(new[] { "Set manager from none to any in any company" });
                     }
