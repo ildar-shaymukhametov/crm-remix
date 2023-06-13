@@ -290,6 +290,19 @@ public class GetCompaniesQueryTests : BaseTest
         });
     }
 
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    public async Task User_has_claim_to_set_manager_from_none_in_any_company_and_company_has_manager___Returns_empty_list(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(claim);
+        await _fixture.AddCompanyAsync(user.Id);
+
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
+
+        Assert.Empty(actual);
+    }
+
     private static void AssertOtherFieldsEqual(Company? expected, CompanyVm? actual)
     {
         Assert.Equal(expected?.TypeId, (actual?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);

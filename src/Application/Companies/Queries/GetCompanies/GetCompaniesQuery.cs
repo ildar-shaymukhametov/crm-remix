@@ -113,9 +113,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             Access.Company.Any.Other.Update,
             Access.Company.Any.Manager.SetFromAnyToAny,
             Access.Company.Any.Manager.SetFromAnyToNone,
-            Access.Company.Any.Manager.SetFromAnyToSelf,
-            Access.Company.Any.Manager.SetFromNoneToAny,
-            Access.Company.Any.Manager.SetFromNoneToSelf
+            Access.Company.Any.Manager.SetFromAnyToSelf
         ))
         {
             result.Add(x => true);
@@ -135,6 +133,14 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         ))
         {
             result.Add(x => x.ManagerId == _currentUserService.UserId);
+        }
+
+        if (accessRights.ContainsAny(
+            Access.Company.Any.Manager.SetFromNoneToAny,
+            Access.Company.Any.Manager.SetFromNoneToSelf
+        ))
+        {
+            result.Add(x => x.ManagerId == null);
         }
 
         return result;
