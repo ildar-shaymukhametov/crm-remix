@@ -54,17 +54,22 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_update_other_fields_in_any_company___Updates_other_fields()
+    public async Task User_has_claim_to_update_other_fields_in_any_company___Updates_other_fields()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Update });
         var company = await _fixture.AddCompanyAsync();
         var command = CreateNewData(company.Id);
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await _fixture.SendAsync(command);
+
+        var actual = await _fixture.FindAsync<Company>(company.Id);
+        AssertCompanyUpdated(user, actual);
+        AssertOtherFieldsUpdated(command, actual);
+        AssertManagerUnchanged(company, actual);
     }
 
     [Fact]
-    public async Task User_can_update_other_fields_in_any_company___Forbidden_to_update_manager()
+    public async Task User_has_claim_to_update_other_fields_in_any_company___Forbidden_to_update_manager()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Update });
         var company = await _fixture.AddCompanyAsync();
@@ -496,5 +501,45 @@ public class UpdateCompanyTests : BaseTest
         Assert.Equal(user.Id, updatedCompany?.LastModifiedBy);
         command.Should().BeEquivalentTo(updatedCompany, options =>
             options.ExcludingNestedObjects().ExcludingMissingMembers());
+    }
+
+    private static void AssertCompanyUpdated(AspNetUser user, Company? actual)
+    {
+        Assert.Equal(BaseTestFixture.UtcNow, actual?.LastModifiedAtUtc);
+        Assert.Equal(user.Id, actual?.LastModifiedBy);
+    }
+
+    private static void AssertOtherFieldsUpdated(UpdateCompanyCommand? expected, Company? actual)
+    {
+        Assert.Equal(expected?.TypeId, actual?.TypeId);
+        Assert.Equal(expected?.Address, actual?.Address);
+        Assert.Equal(expected?.Ceo, actual?.Ceo);
+        Assert.Equal(expected?.Contacts, actual?.Contacts);
+        Assert.Equal(expected?.Email, actual?.Email);
+        Assert.Equal(expected?.Inn, actual?.Inn);
+        Assert.Equal(expected?.Name, actual?.Name);
+        Assert.Equal(expected?.Phone, actual?.Phone);
+    }
+
+    private static void AssertOtherFieldsUnchanged(Company? expected, Company? actual)
+    {
+        Assert.Equal(expected?.TypeId, actual?.TypeId);
+        Assert.Equal(expected?.Address, actual?.Address);
+        Assert.Equal(expected?.Ceo, actual?.Ceo);
+        Assert.Equal(expected?.Contacts, actual?.Contacts);
+        Assert.Equal(expected?.Email, actual?.Email);
+        Assert.Equal(expected?.Inn, actual?.Inn);
+        Assert.Equal(expected?.Name, actual?.Name);
+        Assert.Equal(expected?.Phone, actual?.Phone);
+    }
+
+    private static void AssertManagerUpdated(UpdateCompanyCommand? expected, Company? actual)
+    {
+        Assert.Equal(expected?.ManagerId, actual?.ManagerId);
+    }
+
+    private static void AssertManagerUnchanged(Company? expected, Company? actual)
+    {
+        Assert.Equal(expected?.ManagerId, actual?.ManagerId);
     }
 }
