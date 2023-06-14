@@ -41,7 +41,11 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
 
         var result = new CompanyVm
         {
-            Id = entity.Id
+            Id = entity.Id,
+            Fields = new Dictionary<string, object?>
+            {
+                [nameof(Company.Name)] = entity.Name
+            }
         };
 
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
@@ -74,7 +78,6 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
             result.Fields.Add(nameof(Company.Contacts), entity.Contacts);
             result.Fields.Add(nameof(Company.Email), entity.Email);
             result.Fields.Add(nameof(Company.Inn), entity.Inn);
-            result.Fields.Add(nameof(Company.Name), entity.Name);
             result.Fields.Add(nameof(Company.Phone), entity.Phone);
             result.Fields.Add(nameof(Company.Type), _mapper.Map<CompanyTypeDto>(entity.Type));
         }
