@@ -20,7 +20,7 @@ public class GetNewCompanyQueryTests : BaseTest
 
         AssertInitialFields(actual);
         AssertOtherFields(actual);
-        AssertManager(actual);
+        AssertManagerField(actual);
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class GetNewCompanyQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_create_company___Returns_initial_fields()
+    public async Task User_has_claim_to_create_company___Includes_initial_fields()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
 
@@ -40,11 +40,11 @@ public class GetNewCompanyQueryTests : BaseTest
 
         AssertInitialFields(actual);
         AssertNoOtherFields(actual);
-        AssertNoManager(actual);
+        AssertNoManagerField(actual);
     }
 
     [Fact]
-    public async Task User_has_claim_to_set_other_fields___Returns_other_fields()
+    public async Task User_has_claim_to_set_other_fields___Includes_other_fields()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.SetOther });
 
@@ -52,7 +52,19 @@ public class GetNewCompanyQueryTests : BaseTest
 
         AssertInitialFields(actual);
         AssertOtherFields(actual);
-        AssertNoManager(actual);
+        AssertNoManagerField(actual);
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_set_manager___Includes_manager_field()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.SetManager });
+
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+
+        AssertInitialFields(actual);
+        AssertNoOtherFields(actual);
+        AssertManagerField(actual);
     }
 
     private static void AssertOtherFields(NewCompanyVm? actual)
@@ -77,12 +89,12 @@ public class GetNewCompanyQueryTests : BaseTest
         Assert.False(actual?.Fields.ContainsKey(nameof(Company.Phone)));
     }
 
-    private static void AssertManager(NewCompanyVm? actual)
+    private static void AssertManagerField(NewCompanyVm? actual)
     {
         Assert.Null((actual?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
     }
 
-    private static void AssertNoManager(NewCompanyVm? actual)
+    private static void AssertNoManagerField(NewCompanyVm? actual)
     {
         Assert.False(actual?.Fields.ContainsKey(nameof(Company.Manager)));
     }
