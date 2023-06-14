@@ -10,16 +10,3 @@ public class CompanyVm : IMapFrom<Company>
     public bool CanBeDeleted { get; set; }
     public bool CanBeUpdated { get; set; }
 }
-
-public class ManagerDto : IMapFrom<ApplicationUser>
-{
-    public string? Id { get; set; }
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-}
-
-public class CompanyTypeDto : IMapFrom<CompanyType>
-{
-    public int Id { get; set; }
-    public string? Name { get; set; }
-}
