@@ -14,8 +14,7 @@ public class GetNewCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_is_admin___Returns_all_fields()
     {
-        var user = await _fixture.RunAsAdministratorAsync();
-        var company = await _fixture.AddCompanyAsync(user.Id);
+        await _fixture.RunAsAdministratorAsync();
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
@@ -28,9 +27,20 @@ public class GetNewCompanyQueryTests : BaseTest
     public async Task User_has_no_claim___Forbidden()
     {
         var user = await _fixture.RunAsDefaultUserAsync();
-        var company = await _fixture.AddCompanyAsync();
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetNewCompanyQuery()));
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_create_company___Returns_initial_fields()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+
+        AssertInitialFields(actual);
+        AssertNoOtherFields(actual);
+        AssertNoManager(actual);
     }
 
     private static void AssertOtherFields(NewCompanyVm? actual)
@@ -44,9 +54,25 @@ public class GetNewCompanyQueryTests : BaseTest
         Assert.Null(actual?.Fields[nameof(Company.Phone)]);
     }
 
+    private static void AssertNoOtherFields(NewCompanyVm? actual)
+    {
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Type)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Address)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Ceo)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Contacts)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Email)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Inn)));
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Phone)));
+    }
+
     private static void AssertManager(NewCompanyVm? actual)
     {
         Assert.Null((actual?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
+    }
+
+    private static void AssertNoManager(NewCompanyVm? actual)
+    {
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Manager)));
     }
 
     private static void AssertInitialFields(NewCompanyVm? actual)

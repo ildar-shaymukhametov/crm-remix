@@ -8,7 +8,6 @@ namespace CRM.Application.Companies.Queries.GetNewCompany;
 [Authorize(Constants.Policies.Company.Queries.Create)]
 public record GetNewCompanyQuery : IRequest<NewCompanyVm>
 {
-
 }
 
 public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, NewCompanyVm>
@@ -24,24 +23,33 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
         _identityService = identityService;
     }
 
-    public Task<NewCompanyVm> Handle(GetNewCompanyQuery request, CancellationToken cancellationToken)
+    public async Task<NewCompanyVm> Handle(GetNewCompanyQuery request, CancellationToken cancellationToken)
     {
+        var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
         var result = new NewCompanyVm
         {
             Fields = new Dictionary<string, object?>
             {
-                [nameof(Company.Name)] = null,
-                [nameof(Company.Address)] = null,
-                [nameof(Company.Ceo)] = null,
-                [nameof(Company.Contacts)] = null,
-                [nameof(Company.Email)] = null,
-                [nameof(Company.Inn)] = null,
-                [nameof(Company.Phone)] = null,
-                [nameof(Company.Type)] = null,
-                [nameof(Company.Manager)] = null
+                [nameof(Company.Name)] = default,
             }
         };
 
-        return Task.FromResult(result);
+        if (accessRights.Contains(Constants.Access.Company.New.Other.Set))
+        {
+            result.Fields.Add(nameof(Company.Address), default);
+            result.Fields.Add(nameof(Company.Ceo), default);
+            result.Fields.Add(nameof(Company.Contacts), default);
+            result.Fields.Add(nameof(Company.Email), default);
+            result.Fields.Add(nameof(Company.Inn), default);
+            result.Fields.Add(nameof(Company.Phone), default);
+            result.Fields.Add(nameof(Company.Type), default);
+        }
+
+        if (accessRights.Contains(Constants.Access.Company.New.Manager.Set))
+        {
+            result.Fields.Add(nameof(Company.Manager), default);
+        }
+
+        return result;
     }
 }

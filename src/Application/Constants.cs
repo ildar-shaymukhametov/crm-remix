@@ -9,6 +9,19 @@ public static class Constants
         public static class Company
         {
             public const string Create = $"{nameof(Company)}.{nameof(Create)}";
+
+            public static class New
+            {
+                public static class Other
+                {
+                    public const string Set = $"{nameof(Company)}.{nameof(New)}.{nameof(Other)}.{nameof(Set)}";
+                }
+                public static class Manager
+                {
+                    public const string Set = $"{nameof(Company)}.{nameof(New)}.{nameof(Manager)}.{nameof(Set)}";
+                }
+            }
+
             public static class Any
             {
                 public const string Delete = $"{nameof(Company)}.{nameof(Any)}.{nameof(Delete)}";
@@ -87,6 +100,18 @@ public static class Constants
         public static class Company
         {
             public const string Create = $"{nameof(Company)}.{nameof(Create)}";
+
+            public static class New
+            {
+                public static class Other
+                {
+                    public const string Set = $"{nameof(Company)}.{nameof(New)}.{nameof(Other)}.{nameof(Set)}";
+                }
+                public static class Manager
+                {
+                    public const string Set = $"{nameof(Company)}.{nameof(New)}.{nameof(Manager)}.{nameof(Set)}";
+                }
+            }
 
             public static class Any
             {
