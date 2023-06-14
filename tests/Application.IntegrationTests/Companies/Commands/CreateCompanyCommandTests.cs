@@ -21,32 +21,28 @@ public class CreateCompanyTests : BaseTest
     public async Task User_is_admin___Creates_company()
     {
         var user = await _fixture.RunAsAdministratorAsync();
-        var command = CreateCommand();
-        await AssertCompanyCreatedAsync(user, command);
+        var command = CreateCommand(user.Id);
+
+        var id = await _fixture.SendAsync(command);
+
+        var actual = await _fixture.FindAsync<Company>(id);
+        AssertCompanyCreated(user, id, command, actual);
+        AssertOtherFields(command, actual);
+        AssertManagerField(command, actual);
     }
 
     [Fact]
-    public async Task User_has_claim___Creates_company()
+    public async Task User_has_claim_to_create_company___Creates_company()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[]
-        {
-            Constants.Claims.Company.Create
-        });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+        var command = new CreateCompanyCommand { Name = Faker.Company.Name() };
 
-        var command = CreateCommand();
-        await AssertCompanyCreatedAsync(user, command);
-    }
+        var id = await _fixture.SendAsync(command);
 
-    private async Task AssertCompanyCreatedAsync(AspNetUser user, CreateCompanyCommand expected)
-    {
-        var companyId = await _fixture.SendAsync(expected);
-        var actual = await _fixture.FindAsync<Company>(companyId);
-
-        Assert.NotNull(actual);
-        Assert.Equal(companyId, actual!.Id);
-        Assert.Equal(BaseTestFixture.UtcNow, actual.CreatedAtUtc);
-        Assert.Equal(user.Id, actual.CreatedBy);
-        Assert.Equal(expected.ManagerId, actual.ManagerId);
+        var actual = await _fixture.FindAsync<Company>(id);
+        AssertCompanyCreated(user, id, command, actual);
+        AssertNoOtherFields(actual);
+        AssertNoManagerField(actual);
     }
 
     [Fact]
@@ -133,5 +129,58 @@ public class CreateCompanyTests : BaseTest
         };
 
         return command;
+    }
+
+    private static void AssertCompanyCreated(AspNetUser user, int companyId, CreateCompanyCommand expected, Company? actual)
+    {
+        Assert.NotNull(actual);
+        Assert.Equal(companyId, actual.Id);
+        Assert.Equal(expected.Name, actual.Name);
+        Assert.Equal(BaseTestFixture.UtcNow, actual.CreatedAtUtc);
+        Assert.Equal(user.Id, actual.CreatedBy);
+    }
+
+    private static void AssertOtherFields(CreateCompanyCommand expected, Company? actual)
+    {
+        Assert.Equal(expected.TypeId, actual?.TypeId);
+        Assert.Equal(expected.Address, actual?.Address);
+        Assert.Equal(expected.Ceo, actual?.Ceo);
+        Assert.Equal(expected.Contacts, actual?.Contacts);
+        Assert.Equal(expected.Email, actual?.Email);
+        Assert.Equal(expected.Inn, actual?.Inn);
+        Assert.Equal(expected.Phone, actual?.Phone);
+    }
+
+    private static void AssertNoOtherFields(Company? actual)
+    {
+        Assert.Equal(default, actual?.TypeId);
+        Assert.Equal(default, actual?.Address);
+        Assert.Equal(default, actual?.Ceo);
+        Assert.Equal(default, actual?.Contacts);
+        Assert.Equal(default, actual?.Email);
+        Assert.Equal(default, actual?.Inn);
+        Assert.Equal(default, actual?.Phone);
+    }
+
+    private static void AssertManagerField(CreateCompanyCommand expected, Company? actual)
+    {
+        Assert.Equal(expected.ManagerId, actual?.ManagerId);
+    }
+
+    private static void AssertNoManagerField(Company? actual)
+    {
+        Assert.Equal(default, actual?.ManagerId);
+    }
+
+    private async Task AssertCompanyCreatedAsync(AspNetUser user, CreateCompanyCommand expected)
+    {
+        var companyId = await _fixture.SendAsync(expected);
+        var actual = await _fixture.FindAsync<Company>(companyId);
+
+        Assert.NotNull(actual);
+        Assert.Equal(companyId, actual!.Id);
+        Assert.Equal(BaseTestFixture.UtcNow, actual.CreatedAtUtc);
+        Assert.Equal(user.Id, actual.CreatedBy);
+        Assert.Equal(expected.ManagerId, actual.ManagerId);
     }
 }

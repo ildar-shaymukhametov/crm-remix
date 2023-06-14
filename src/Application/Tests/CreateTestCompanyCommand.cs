@@ -1,6 +1,7 @@
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Companies.Commands.CreateCompany;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CRM.Application.Tests;
 
@@ -10,16 +11,16 @@ public record CreateTestCompanyCommand : CreateCompanyCommand
 
 public class CreateTestCompanyCommandHandler : IRequestHandler<CreateTestCompanyCommand, int>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IServiceProvider _serviceProvider;
 
-    public CreateTestCompanyCommandHandler(IApplicationDbContext context)
+    public CreateTestCompanyCommandHandler(IServiceProvider serviceProvider)
     {
-        _context = context;
+        _serviceProvider = serviceProvider;
     }
 
-    public Task<int> Handle(CreateTestCompanyCommand request, CancellationToken cancellationToken)
+    public async Task<int> Handle(CreateTestCompanyCommand request, CancellationToken cancellationToken)
     {
-        var handler = new CreateCompanyCommandHandler(_context);
-        return handler.Handle(request, cancellationToken);
+        var handler = _serviceProvider.GetRequiredService<CreateCompanyCommandHandler>();
+        return await handler.Handle(request, cancellationToken);
     }
 }

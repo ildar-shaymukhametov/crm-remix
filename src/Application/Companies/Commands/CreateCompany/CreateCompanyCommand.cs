@@ -23,10 +23,12 @@ public record CreateCompanyCommand : IRequest<int>
 public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand, int>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAccessService _accessService;
 
-    public CreateCompanyCommandHandler(IApplicationDbContext context)
+    public CreateCompanyCommandHandler(IApplicationDbContext context, IAccessService accessService)
     {
         _context = context;
+        _accessService = accessService;
     }
 
     public async Task<int> Handle(CreateCompanyCommand request, CancellationToken cancellationToken)
