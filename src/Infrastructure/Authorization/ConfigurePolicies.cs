@@ -9,10 +9,10 @@ public static class ConfigurePolicies
     public static void AddPolicies(this AuthorizationOptions options)
     {
         options.AddPolicy(Policies.Company.Commands.Create, policy =>
-            policy.AddRequirements(new CreateCompanyRequirement()));
+            policy.AddRequirements(new Handlers.Commands.CreateCompanyRequirement()));
 
         options.AddPolicy(Policies.Company.Queries.Create, policy =>
-            policy.AddRequirements(new CreateCompanyRequirement()));
+            policy.AddRequirements(new Handlers.Queries.CreateCompanyRequirement()));
 
         options.AddPolicy(Policies.Company.Queries.View, policy =>
             policy.AddRequirements(new GetCompanyRequirement()));

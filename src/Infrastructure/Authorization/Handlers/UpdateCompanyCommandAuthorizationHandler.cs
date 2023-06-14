@@ -29,7 +29,8 @@ public class UpdateCompanyCommandAuthorizationHandler : BaseAuthorizationHandler
         {
             if (company.ManagerId == userId && !accessRights.ContainsAny(
                 Access.Company.WhereUserIsManager.Other.Update,
-                Access.Company.Any.Other.Update))
+                Access.Company.Any.Other.Update
+            ))
             {
                 return Fail(context, "Update other fields");
             }
@@ -47,7 +48,8 @@ public class UpdateCompanyCommandAuthorizationHandler : BaseAuthorizationHandler
                 Access.Company.Any.Manager.SetFromSelfToAny,
                 Access.Company.Any.Manager.SetFromSelfToNone,
                 Access.Company.Any.Manager.SetFromAnyToAny,
-                Access.Company.Any.Manager.SetFromAnyToNone))
+                Access.Company.Any.Manager.SetFromAnyToNone
+            ))
             {
                 return Fail(context, "Update manager");
             }
@@ -58,7 +60,8 @@ public class UpdateCompanyCommandAuthorizationHandler : BaseAuthorizationHandler
                 Access.Company.Any.Manager.SetFromNoneToAny,
                 Access.Company.Any.Manager.SetFromNoneToSelf,
                 Access.Company.Any.Manager.SetFromSelfToAny,
-                Access.Company.Any.Manager.SetFromSelfToNone))
+                Access.Company.Any.Manager.SetFromSelfToNone
+            ))
             {
                 return Fail(context, "Update manager");
             }

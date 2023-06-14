@@ -5,7 +5,7 @@ using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using static CRM.Application.Constants;
 
-namespace CRM.Infrastructure.Authorization.Handlers;
+namespace CRM.Infrastructure.Authorization.Handlers.Commands;
 
 public class CreateCompanyRequirement : IAuthorizationRequirement { }
 
