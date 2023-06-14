@@ -23,32 +23,40 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
             return Fail(context, "Create company");
         }
 
-        if (context.Resource is CreateCompanyCommand resource)
+        if (context.Resource is not CreateCompanyCommand company)
         {
-            if (resource.ManagerId != null)
+            throw new InvalidOperationException("Resouce is missing");
+        }
+
+        var otherFieldChanged = company.Address != default;
+        if (otherFieldChanged && !accessRights.Contains(Access.Company.New.Other.Set))
+        {
+            return Fail(context, "Set other fields");
+        }
+
+        if (company.ManagerId != null)
+        {
+            if (company.ManagerId == context.User.GetSubjectId())
             {
-                if (resource.ManagerId == context.User.GetSubjectId())
+                if (!accessRights.ContainsAny(
+                    Access.Company.Any.Manager.SetFromAnyToAny,
+                    Access.Company.Any.Manager.SetFromAnyToSelf,
+                    Access.Company.Any.Manager.SetFromNoneToSelf,
+                    Access.Company.Any.Manager.SetFromNoneToAny
+                ))
                 {
-                    if (!accessRights.ContainsAny(
-                        Access.Company.Any.Manager.SetFromAnyToAny,
-                        Access.Company.Any.Manager.SetFromAnyToSelf,
-                        Access.Company.Any.Manager.SetFromNoneToSelf,
-                        Access.Company.Any.Manager.SetFromNoneToAny
-                    ))
-                    {
-                        return Fail(context, "Set manager to self");
-                    }
+                    return Fail(context, "Set manager to self");
                 }
-                else
+            }
+            else
+            {
+                if (!accessRights.ContainsAny(
+                    Access.Company.Any.Manager.SetFromNoneToAny,
+                    Access.Company.Any.Manager.SetFromSelfToAny,
+                    Access.Company.Any.Manager.SetFromAnyToAny
+                ))
                 {
-                    if (!accessRights.ContainsAny(
-                        Access.Company.Any.Manager.SetFromNoneToAny,
-                        Access.Company.Any.Manager.SetFromSelfToAny,
-                        Access.Company.Any.Manager.SetFromAnyToAny
-                    ))
-                    {
-                        return Fail(context, "Set manager to any");
-                    }
+                    return Fail(context, "Set manager to any");
                 }
             }
         }
