@@ -18,8 +18,9 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
         var accessRights = _accessService.CheckAccess(context.User);
         if (!accessRights.ContainsAny(
             Access.Company.Create,
-            Access.Company.New.SetOther,
-            Access.Company.New.SetManager
+            Access.Company.New.Other.Set,
+            Access.Company.New.Manager.SetToAny,
+            Access.Company.New.Manager.SetToSelf
         ))
         {
             return Fail(context, "Create company");

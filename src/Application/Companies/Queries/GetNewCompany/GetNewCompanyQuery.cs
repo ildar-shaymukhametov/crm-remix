@@ -1,3 +1,4 @@
+using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
 using CRM.Domain.Entities;
@@ -34,7 +35,7 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
             }
         };
 
-        if (accessRights.Contains(Constants.Access.Company.New.SetOther))
+        if (accessRights.Contains(Constants.Access.Company.New.Other.Set))
         {
             result.Fields.Add(nameof(Company.Address), default);
             result.Fields.Add(nameof(Company.Ceo), default);
@@ -45,7 +46,10 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
             result.Fields.Add(nameof(Company.Type), default);
         }
 
-        if (accessRights.Contains(Constants.Access.Company.New.SetManager))
+        if (accessRights.ContainsAny(
+            Constants.Access.Company.New.Manager.SetToAny,
+            Constants.Access.Company.New.Manager.SetToSelf
+        ))
         {
             result.Fields.Add(nameof(Company.Manager), default);
         }

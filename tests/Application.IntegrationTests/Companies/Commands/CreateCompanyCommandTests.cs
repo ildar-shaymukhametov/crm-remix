@@ -48,7 +48,7 @@ public class CreateCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_other_fields___Creates_company_with_other_fields()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.SetOther });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Other.Set });
         var command = CreateCommand();
 
         var id = await _fixture.SendAsync(command);

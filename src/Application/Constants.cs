@@ -12,8 +12,15 @@ public static class Constants
 
             public static class New
             {
-                public const string SetOther = $"{nameof(Company)}.{nameof(New)}.{nameof(SetOther)}";
-                public const string SetManager = $"{nameof(Company)}.{nameof(New)}.{nameof(SetManager)}";
+                public static class Other
+                {
+                    public const string Set = $"{nameof(Company)}.{nameof(New)}.{nameof(Other)}.{nameof(Set)}";
+                }
+                public static class Manager
+                {
+                    public const string SetToAny = $"{nameof(Company)}.{nameof(New)}.{nameof(Manager)}.{nameof(SetToAny)}";
+                    public const string SetToSelf = $"{nameof(Company)}.{nameof(New)}.{nameof(Manager)}.{nameof(SetToSelf)}";
+                }
             }
 
             public static class Any
@@ -97,8 +104,15 @@ public static class Constants
 
             public static class New
             {
-                public const string SetOther = $"{nameof(Company)}.{nameof(New)}.{nameof(SetOther)}";
-                public const string SetManager = $"{nameof(Company)}.{nameof(New)}.{nameof(SetManager)}";
+                public static class Other
+                {
+                    public const string Set = $"{nameof(Company)}.{nameof(New)}.{nameof(Other)}.{nameof(Set)}";
+                }
+                public static class Manager
+                {
+                    public const string SetToAny = $"{nameof(Company)}.{nameof(New)}.{nameof(Manager)}.{nameof(SetToAny)}";
+                    public const string SetToSelf = $"{nameof(Company)}.{nameof(New)}.{nameof(Manager)}.{nameof(SetToSelf)}";
+                }
             }
 
             public static class Any

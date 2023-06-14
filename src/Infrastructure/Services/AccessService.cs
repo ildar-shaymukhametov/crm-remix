@@ -129,14 +129,19 @@ public class AccessService : IAccessService
             result.Add(Access.Company.WhereUserIsManager.Manager.View);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.New.SetOther))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.New.Other.Set))
         {
-            result.Add(Access.Company.New.SetOther);
+            result.Add(Access.Company.New.Other.Set);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.New.SetManager))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.New.Manager.SetToAny))
         {
-            result.Add(Access.Company.New.SetManager);
+            result.Add(Access.Company.New.Manager.SetToAny);
+        }
+
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.New.Manager.SetToSelf))
+        {
+            result.Add(Access.Company.New.Manager.SetToSelf);
         }
 
         return result.ToArray();

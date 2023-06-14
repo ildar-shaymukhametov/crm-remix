@@ -46,7 +46,7 @@ public class GetNewCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_other_fields___Includes_other_fields()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.SetOther });
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Other.Set });
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
@@ -55,10 +55,12 @@ public class GetNewCompanyQueryTests : BaseTest
         AssertNoManagerField(actual);
     }
 
-    [Fact]
-    public async Task User_has_claim_to_set_manager___Includes_manager_field()
+    [Theory]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    public async Task User_has_claim_to_set_manager___Includes_manager_field(string claim)
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.SetManager });
+        await _fixture.RunAsDefaultUserAsync(new[] { claim });
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
