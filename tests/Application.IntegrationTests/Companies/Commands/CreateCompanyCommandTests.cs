@@ -13,7 +13,7 @@ public class CreateCompanyTests : BaseTest
     public async Task Requires_minimum_fields()
     {
         await _fixture.RunAsAdministratorAsync();
-        var command = new CreateCompanyCommand();
+        var command = new CreateCompanyCommand(string.Empty);
         await Assert.ThrowsAsync<ValidationException>(() => _fixture.SendAsync(command));
     }
 
@@ -35,7 +35,7 @@ public class CreateCompanyTests : BaseTest
     public async Task User_has_claim_to_create_company___Creates_company_with_initial_fields()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
-        var command = new CreateCompanyCommand { Name = Faker.Company.Name() };
+        var command = new CreateCompanyCommand(Faker.Company.Name());
 
         var id = await _fixture.SendAsync(command);
 
@@ -127,14 +127,13 @@ public class CreateCompanyTests : BaseTest
     public static CreateCompanyCommand CreateCommand(string? managerId = null)
     {
         var data = Faker.Builders.Company();
-        var command = new CreateCompanyCommand
+        var command = new CreateCompanyCommand(data.Name)
         {
             Address = data.Address,
             Ceo = data.Ceo,
             Contacts = data.Contacts,
             Email = data.Email,
             Inn = data.Inn,
-            Name = data.Name,
             Phone = data.Phone,
             TypeId = data.TypeId,
             ManagerId = managerId

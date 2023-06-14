@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CRM.Application.Tests;
 
-public record CreateTestCompanyCommand : CreateCompanyCommand
+public record CreateTestCompanyCommand(string Name) : CreateCompanyCommand(Name)
 {
 }
 
