@@ -29,7 +29,7 @@ public class RequestResourceProvider : IRequestResourceProvider
             GetCompanyQuery query => (await _resourceProvider.GetCompanyAsync(query.Id), query.Id),
             UpdateCompanyCommand query => (new UpdateCompanyResource(await GetResourceAsync(query), query), query.Id),
             DeleteCompanyCommand query => (await _resourceProvider.GetCompanyAsync(query.Id), query.Id),
-            CreateCompanyCommand query => (new CreateCompanyResource(query), null),
+            CreateCompanyCommand query => (query, null),
             _ => (null, null),
         };
     }

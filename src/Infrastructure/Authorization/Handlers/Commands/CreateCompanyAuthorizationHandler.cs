@@ -1,6 +1,6 @@
-using CRM.Application.Common.Behaviours.Authorization.Resources;
 using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
+using CRM.Application.Companies.Commands.CreateCompany;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using static CRM.Application.Constants;
@@ -18,22 +18,23 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CreateCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        if (!accessRights.Contains(Access.Company.Create))
+        if (!accessRights.ContainsAny(Access.Company.Create, Access.Company.New.SetOther))
         {
             return Fail(context, "Create company");
         }
 
-        if (context.Resource is CreateCompanyResource resource)
+        if (context.Resource is CreateCompanyCommand resource)
         {
-            if (resource.Request.ManagerId != null)
+            if (resource.ManagerId != null)
             {
-                if (resource.Request.ManagerId == context.User.GetSubjectId())
+                if (resource.ManagerId == context.User.GetSubjectId())
                 {
                     if (!accessRights.ContainsAny(
                         Access.Company.Any.Manager.SetFromAnyToAny,
                         Access.Company.Any.Manager.SetFromAnyToSelf,
                         Access.Company.Any.Manager.SetFromNoneToSelf,
-                        Access.Company.Any.Manager.SetFromNoneToAny))
+                        Access.Company.Any.Manager.SetFromNoneToAny
+                    ))
                     {
                         return Fail(context, "Set manager to self");
                     }
@@ -43,7 +44,8 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
                     if (!accessRights.ContainsAny(
                         Access.Company.Any.Manager.SetFromNoneToAny,
                         Access.Company.Any.Manager.SetFromSelfToAny,
-                        Access.Company.Any.Manager.SetFromAnyToAny))
+                        Access.Company.Any.Manager.SetFromAnyToAny
+                    ))
                     {
                         return Fail(context, "Set manager to any");
                     }

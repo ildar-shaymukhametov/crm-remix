@@ -18,7 +18,7 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_is_admin___Creates_company()
+    public async Task User_is_admin___Creates_company_with_all_fields()
     {
         var user = await _fixture.RunAsAdministratorAsync();
         var command = CreateCommand(user.Id);
@@ -32,7 +32,7 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_create_company___Creates_company()
+    public async Task User_has_claim_to_create_company___Creates_company_with_initial_fields()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
         var command = new CreateCompanyCommand { Name = Faker.Company.Name() };
@@ -42,6 +42,20 @@ public class CreateCompanyTests : BaseTest
         var actual = await _fixture.FindAsync<Company>(id);
         AssertCompanyCreated(user, id, command, actual);
         AssertNoOtherFields(actual);
+        AssertNoManagerField(actual);
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_set_other_fields___Creates_company_with_other_fields()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.SetOther });
+        var command = CreateCommand();
+
+        var id = await _fixture.SendAsync(command);
+
+        var actual = await _fixture.FindAsync<Company>(id);
+        AssertCompanyCreated(user, id, command, actual);
+        AssertOtherFields(command, actual);
         AssertNoManagerField(actual);
     }
 
