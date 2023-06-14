@@ -43,6 +43,18 @@ public class GetNewCompanyQueryTests : BaseTest
         AssertNoManager(actual);
     }
 
+    [Fact]
+    public async Task User_has_claim_to_set_other_fields___Returns_other_fields()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.SetOther });
+
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+
+        AssertInitialFields(actual);
+        AssertOtherFields(actual);
+        AssertNoManager(actual);
+    }
+
     private static void AssertOtherFields(NewCompanyVm? actual)
     {
         Assert.Null((actual?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
