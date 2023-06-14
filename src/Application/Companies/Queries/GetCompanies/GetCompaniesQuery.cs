@@ -59,7 +59,14 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         var entities = await query.ToArrayAsync(cancellationToken);
         foreach (var entity in entities)
         {
-            var company = new CompanyVm { Id = entity.Id };
+            var company = new CompanyVm
+            {
+                Id = entity.Id,
+                Fields = new Dictionary<string, object?>
+                {
+                    [nameof(Company.Name)] = entity.Name
+                }
+            };
 
             if (accessRights.ContainsAny(
                 Access.Company.Any.Manager.View,
@@ -90,7 +97,6 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
                 company.Fields.Add(nameof(Company.Contacts), entity.Contacts);
                 company.Fields.Add(nameof(Company.Email), entity.Email);
                 company.Fields.Add(nameof(Company.Inn), entity.Inn);
-                company.Fields.Add(nameof(Company.Name), entity.Name);
                 company.Fields.Add(nameof(Company.Phone), entity.Phone);
                 company.Fields.Add(nameof(Company.Type), _mapper.Map<CompanyTypeDto>(entity.Type));
             }

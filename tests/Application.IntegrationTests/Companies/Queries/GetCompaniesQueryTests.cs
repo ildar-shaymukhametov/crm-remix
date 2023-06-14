@@ -20,7 +20,7 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company.Id, x.Id);
+            AssertInitialFieldsEqual(company, x);
             AssertOtherFieldsEqual(company, x);
             AssertManagerEqual(company, x);
         });
@@ -47,7 +47,7 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company.Id, x.Id);
+            AssertInitialFieldsEqual(company, x);
             AssertOtherFieldsEqual(company, x);
             AssertNoManager(x);
         });
@@ -63,7 +63,7 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company.Id, x.Id);
+            AssertInitialFieldsEqual(company, x);
             AssertNoOtherFields(x);
             AssertManagerEqual(company, x);
         });
@@ -79,7 +79,7 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company.Id, x.Id);
+            AssertInitialFieldsEqual(company, x);
             AssertOtherFieldsEqual(company, x);
             AssertNoManager(x);
         });
@@ -95,7 +95,7 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company.Id, x.Id);
+            AssertInitialFieldsEqual(company, x);
             AssertManagerEqual(company, x);
             AssertNoOtherFields(x);
         });
@@ -126,7 +126,7 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company?.Id, x?.Id);
+            AssertInitialFieldsEqual(company, x);
             Assert.True(x?.CanBeDeleted);
             AssertNoManager(x);
             AssertNoOtherFields(x);
@@ -144,7 +144,7 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company?.Id, x?.Id);
+            AssertInitialFieldsEqual(company, x);
             Assert.True(x?.CanBeDeleted);
             AssertNoManager(x);
             AssertNoOtherFields(x);
@@ -161,7 +161,7 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company?.Id, x?.Id);
+            AssertInitialFieldsEqual(company, x);
             Assert.True(x?.CanBeUpdated);
             AssertNoManager(x);
             AssertOtherFieldsEqual(company, x);
@@ -177,7 +177,7 @@ public class GetCompaniesQueryTests : BaseTest
         var actual = await _fixture.SendAsync(new GetCompaniesQuery());
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company?.Id, x?.Id);
+            AssertInitialFieldsEqual(company, x);
             Assert.True(x?.CanBeUpdated);
             AssertNoManager(x);
             AssertOtherFieldsEqual(company, x);
@@ -208,7 +208,7 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company?.Id, x?.Id);
+            AssertInitialFieldsEqual(company, x);
             Assert.True(x?.CanBeUpdated);
             AssertManagerEqual(company, x);
             AssertNoOtherFields(x);
@@ -228,7 +228,7 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company?.Id, x?.Id);
+            AssertInitialFieldsEqual(company, x);
             Assert.True(x?.CanBeUpdated);
             AssertManagerEqual(company, x);
             AssertNoOtherFields(x);
@@ -249,7 +249,7 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company?.Id, x?.Id);
+            AssertInitialFieldsEqual(company, x);
             Assert.True(x?.CanBeUpdated);
             AssertManagerEqual(company, x);
             AssertNoOtherFields(x);
@@ -283,7 +283,7 @@ public class GetCompaniesQueryTests : BaseTest
 
         Assert.Collection(actual, x =>
         {
-            Assert.Equal(company?.Id, x?.Id);
+            AssertInitialFieldsEqual(company, x);
             Assert.True(x?.CanBeUpdated);
             AssertManagerEqual(company, x);
             AssertNoOtherFields(x);
@@ -311,7 +311,6 @@ public class GetCompaniesQueryTests : BaseTest
         Assert.Equal(expected?.Contacts, actual?.Fields[nameof(Company.Contacts)]);
         Assert.Equal(expected?.Email, actual?.Fields[nameof(Company.Email)]);
         Assert.Equal(expected?.Inn, actual?.Fields[nameof(Company.Inn)]);
-        Assert.Equal(expected?.Name, actual?.Fields[nameof(Company.Name)]);
         Assert.Equal(expected?.Phone, actual?.Fields[nameof(Company.Phone)]);
     }
 
@@ -332,8 +331,13 @@ public class GetCompaniesQueryTests : BaseTest
         Assert.False(actual?.Fields.ContainsKey(nameof(Company.Contacts)));
         Assert.False(actual?.Fields.ContainsKey(nameof(Company.Email)));
         Assert.False(actual?.Fields.ContainsKey(nameof(Company.Inn)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Name)));
         Assert.False(actual?.Fields.ContainsKey(nameof(Company.Phone)));
         Assert.False(actual?.Fields.ContainsKey(nameof(Company.Type)));
+    }
+
+    private static void AssertInitialFieldsEqual(Company? expected, CompanyVm? actual)
+    {
+        Assert.Equal(expected?.Id, actual?.Id);
+        Assert.Equal(expected?.Name, actual?.Fields[nameof(Company.Name)]);
     }
 }
