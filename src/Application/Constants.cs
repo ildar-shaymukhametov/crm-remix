@@ -63,7 +63,7 @@ public static class Constants
 
             public static class Queries
             {
-                public const string Create = "Company.Commands.Create";
+                public const string Create = "Company.Queries.Create";
                 public const string View = "Company.Queries.View";
                 public const string Update = "Company.Queries.Update";
                 public const string Delete = "Company.Queries.Delete";

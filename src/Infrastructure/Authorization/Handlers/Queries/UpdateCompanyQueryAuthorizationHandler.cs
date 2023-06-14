@@ -5,17 +5,17 @@ using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using static CRM.Application.Constants;
 
-namespace CRM.Infrastructure.Authorization.Handlers;
+namespace CRM.Infrastructure.Authorization.Handlers.Queries;
 
-public class UpdateCompanyQueryRequirement : IAuthorizationRequirement { }
+public class UpdateCompanyRequirement : IAuthorizationRequirement { }
 
-public class UpdateCompanyQueryAuthorizationHandler : BaseAuthorizationHandler<UpdateCompanyQueryRequirement>
+public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<UpdateCompanyRequirement>
 {
-    public UpdateCompanyQueryAuthorizationHandler(IAccessService accessService) : base(accessService)
+    public UpdateCompanyAuthorizationHandler(IAccessService accessService) : base(accessService)
     {
     }
 
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyQueryRequirement requirement)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
         if (accessRights.ContainsAny(

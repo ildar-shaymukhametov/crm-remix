@@ -84,9 +84,9 @@ public class GetCompanyByUpdateAuthorizationHandler : AuthorizationHandler<GetCo
         using var scope = _serviceProvider.CreateScope();
         var handler = scope.ServiceProvider
             .GetServices<IAuthorizationHandler>()
-            .OfType<AuthorizationHandler<UpdateCompanyQueryRequirement>>()
+            .OfType<AuthorizationHandler<Queries.UpdateCompanyRequirement>>()
             .Single();
-        var newContext = new AuthorizationHandlerContext(new[] { new UpdateCompanyQueryRequirement() }, context.User, context.Resource);
+        var newContext = new AuthorizationHandlerContext(new[] { new Queries.UpdateCompanyRequirement() }, context.User, context.Resource);
         await handler.HandleAsync(newContext);
         if (newContext.HasSucceeded)
         {
