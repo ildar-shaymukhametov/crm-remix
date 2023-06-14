@@ -47,7 +47,7 @@ public class UpdateCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Claims.Company.Any.Other.Update
+            Claims.Company.Any.Other.Set
         });
         var command = CreateNewData(1);
         await Assert.ThrowsAsync<NotFoundException>(() => _fixture.SendAsync(command));
@@ -56,7 +56,7 @@ public class UpdateCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_update_other_fields_in_any_company___Updates_other_fields()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Update });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Set });
         var company = await _fixture.AddCompanyAsync();
         var command = CreateNewData(company.Id);
 
@@ -66,7 +66,7 @@ public class UpdateCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_update_other_fields_in_any_company___Forbidden_to_update_manager()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Update });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Set });
         var company = await _fixture.AddCompanyAsync();
         var command = CreateNewData(company.Id, user.Id);
 
@@ -227,7 +227,7 @@ public class UpdateCompanyTests : BaseTest
     [InlineData(Claims.Company.Any.Manager.SetFromAnyToNone)]
     public async Task User_has_claim_to_set_manager_from_self_to_none_in_any_company___Updates_manager(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Claims.Company.Any.Other.Update });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Claims.Company.Any.Other.Set });
         var company = await _fixture.AddCompanyAsync(user.Id);
         var command = CreateCopyData(company);
         command.ManagerId = null;
@@ -354,7 +354,7 @@ public class UpdateCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_update_other_fields_in_own_company_and_is_manager___Updates_other_fields()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Update });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync(user.Id);
         var command = CreateNewData(company.Id, user.Id);
 
@@ -364,7 +364,7 @@ public class UpdateCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_update_other_fields_in_own_company_and_is_manager___Forbidden_to_update_manager()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Update });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync(user.Id);
         var command = CreateNewData(company.Id);
 

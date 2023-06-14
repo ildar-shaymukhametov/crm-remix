@@ -29,7 +29,7 @@ public static class Constants
 
                 public static class Manager
                 {
-                    public const string View = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(View)}";
+                    public const string Get = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(Get)}";
                     public const string SetFromAnyToAny = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(SetFromAnyToAny)}";
                     public const string SetFromAnyToSelf = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(SetFromAnyToSelf)}";
                     public const string SetFromNoneToAny = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(SetFromNoneToAny)}";
@@ -40,8 +40,8 @@ public static class Constants
                 }
                 public static class Other
                 {
-                    public const string View = $"{nameof(Company)}.{nameof(Any)}.{nameof(Other)}.{nameof(View)}";
-                    public const string Update = $"{nameof(Company)}.{nameof(Any)}.{nameof(Other)}.{nameof(Update)}";
+                    public const string Get = $"{nameof(Company)}.{nameof(Any)}.{nameof(Other)}.{nameof(Get)}";
+                    public const string Set = $"{nameof(Company)}.{nameof(Any)}.{nameof(Other)}.{nameof(Set)}";
                 }
             }
 
@@ -51,12 +51,12 @@ public static class Constants
 
                 public static class Other
                 {
-                    public const string View = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Other)}.{nameof(View)}";
-                    public const string Update = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Other)}.{nameof(Update)}";
+                    public const string Get = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Other)}.{nameof(Get)}";
+                    public const string Set = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Other)}.{nameof(Set)}";
                 }
                 public static class Manager
                 {
-                    public const string View = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(View)}";
+                    public const string Get = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(Get)}";
                     public const string SetFromSelfToAny = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(SetFromSelfToAny)}";
                     public const string SetFromSelfToNone = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(SetFromSelfToNone)}";
                 }
@@ -121,7 +121,7 @@ public static class Constants
 
                 public static class Manager
                 {
-                    public const string View = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(View)}";
+                    public const string Get = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(Get)}";
                     public const string SetFromAnyToAny = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(SetFromAnyToAny)}";
                     public const string SetFromAnyToSelf = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(SetFromAnyToSelf)}";
                     public const string SetFromNoneToAny = $"{nameof(Company)}.{nameof(Any)}.{nameof(Manager)}.{nameof(SetFromNoneToAny)}";
@@ -132,8 +132,8 @@ public static class Constants
                 }
                 public static class Other
                 {
-                    public const string View = $"{nameof(Company)}.{nameof(Any)}.{nameof(Other)}.{nameof(View)}";
-                    public const string Update = $"{nameof(Company)}.{nameof(Any)}.{nameof(Other)}.{nameof(Update)}";
+                    public const string Get = $"{nameof(Company)}.{nameof(Any)}.{nameof(Other)}.{nameof(Get)}";
+                    public const string Set = $"{nameof(Company)}.{nameof(Any)}.{nameof(Other)}.{nameof(Set)}";
                 }
             }
 
@@ -143,12 +143,12 @@ public static class Constants
 
                 public static class Other
                 {
-                    public const string View = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Other)}.{nameof(View)}";
-                    public const string Update = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Other)}.{nameof(Update)}";
+                    public const string Get = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Other)}.{nameof(Get)}";
+                    public const string Set = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Other)}.{nameof(Set)}";
                 }
                 public static class Manager
                 {
-                    public const string View = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(View)}";
+                    public const string Get = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(Get)}";
                     public const string SetFromSelfToAny = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(SetFromSelfToAny)}";
                     public const string SetFromSelfToNone = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(SetFromSelfToNone)}";
                 }

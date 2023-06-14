@@ -19,7 +19,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
     {
         var accessRights = _accessService.CheckAccess(context.User);
         if (accessRights.ContainsAny(
-            Access.Company.Any.Other.Update,
+            Access.Company.Any.Other.Set,
             Access.Company.Any.Manager.SetFromAnyToAny,
             Access.Company.Any.Manager.SetFromAnyToNone,
             Access.Company.Any.Manager.SetFromAnyToSelf
@@ -36,7 +36,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             if (!accessRights.ContainsAny(
                 Access.Company.Any.Manager.SetFromSelfToNone,
                 Access.Company.Any.Manager.SetFromSelfToAny,
-                Access.Company.WhereUserIsManager.Other.Update,
+                Access.Company.WhereUserIsManager.Other.Set,
                 Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
                 Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
             ))

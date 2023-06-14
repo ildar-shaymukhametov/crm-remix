@@ -50,8 +50,8 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
 
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
         if (accessRights.ContainsAny(
-            Constants.Access.Company.Any.Manager.View,
-            Constants.Access.Company.WhereUserIsManager.Manager.View,
+            Constants.Access.Company.Any.Manager.Get,
+            Constants.Access.Company.WhereUserIsManager.Manager.Get,
             Constants.Access.Company.Any.Manager.SetFromAnyToAny,
             Constants.Access.Company.Any.Manager.SetFromAnyToNone,
             Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
@@ -67,10 +67,10 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
         }
 
         if (accessRights.ContainsAny(
-            Constants.Access.Company.Any.Other.View,
-            Constants.Access.Company.Any.Other.Update,
-            Constants.Access.Company.WhereUserIsManager.Other.View,
-            Constants.Access.Company.WhereUserIsManager.Other.Update
+            Constants.Access.Company.Any.Other.Get,
+            Constants.Access.Company.Any.Other.Set,
+            Constants.Access.Company.WhereUserIsManager.Other.Get,
+            Constants.Access.Company.WhereUserIsManager.Other.Set
         ))
         {
             result.Fields.Add(nameof(Company.Address), entity.Address);

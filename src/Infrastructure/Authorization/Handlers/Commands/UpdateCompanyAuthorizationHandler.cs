@@ -28,13 +28,13 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         if (otherFieldChanged)
         {
             if (company.ManagerId == userId && !accessRights.ContainsAny(
-                Access.Company.WhereUserIsManager.Other.Update,
-                Access.Company.Any.Other.Update
+                Access.Company.WhereUserIsManager.Other.Set,
+                Access.Company.Any.Other.Set
             ))
             {
                 return Fail(context, "Update other fields");
             }
-            else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Other.Update))
+            else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Other.Set))
             {
                 return Fail(context, "Update other fields");
             }

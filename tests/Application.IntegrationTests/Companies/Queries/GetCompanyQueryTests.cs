@@ -36,7 +36,7 @@ public class GetCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_view_other_fields_in_any_company___Returns_other_fields_only()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.View });
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Get });
         var company = await _fixture.AddCompanyAsync();
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
@@ -49,7 +49,7 @@ public class GetCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_view_manager_in_any_company___Returns_manager_only()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Manager.View });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Manager.Get });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
@@ -62,7 +62,7 @@ public class GetCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_view_other_fields_in_own_company___Returns_other_fields_only()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.View });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Get });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
@@ -75,7 +75,7 @@ public class GetCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_view_manager_in_own_company___Returns_manager_only()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Manager.View });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Manager.Get });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
@@ -86,8 +86,8 @@ public class GetCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.View)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.View)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.Get)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.Get)]
     public async Task User_has_claim_to_view_certain_fields_in_own_company_and_is_not_manager___Forbidden(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -114,7 +114,7 @@ public class GetCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_update_other_fields_in_any_company___Returns_id_and_other_fields_only()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Update });
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Set });
         var company = await _fixture.AddCompanyAsync();
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
@@ -128,7 +128,7 @@ public class GetCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_update_other_fields_in_own_company___Returns_id_and_other_fields_only()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Update });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
@@ -142,7 +142,7 @@ public class GetCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_update_other_fields_in_own_company_and_is_not_manager___Forbidden()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Update });
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync();
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));

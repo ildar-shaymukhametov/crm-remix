@@ -69,8 +69,8 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             };
 
             if (accessRights.ContainsAny(
-                Access.Company.Any.Manager.View,
-                Access.Company.WhereUserIsManager.Manager.View,
+                Access.Company.Any.Manager.Get,
+                Access.Company.WhereUserIsManager.Manager.Get,
                 Access.Company.Any.Manager.SetFromAnyToAny,
                 Access.Company.Any.Manager.SetFromAnyToNone,
                 Access.Company.Any.Manager.SetFromAnyToSelf,
@@ -86,10 +86,10 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             }
 
             if (accessRights.ContainsAny(
-                Access.Company.Any.Other.View,
-                Access.Company.Any.Other.Update,
-                Access.Company.WhereUserIsManager.Other.View,
-                Access.Company.WhereUserIsManager.Other.Update
+                Access.Company.Any.Other.Get,
+                Access.Company.Any.Other.Set,
+                Access.Company.WhereUserIsManager.Other.Get,
+                Access.Company.WhereUserIsManager.Other.Set
             ))
             {
                 company.Fields.Add(nameof(Company.Address), entity.Address);
@@ -114,9 +114,9 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
     {
         var result = new List<Expression<Func<Company, bool>>>();
         if (accessRights.ContainsAny(
-            Access.Company.Any.Other.View,
+            Access.Company.Any.Other.Get,
             Access.Company.Any.Delete,
-            Access.Company.Any.Other.Update,
+            Access.Company.Any.Other.Set,
             Access.Company.Any.Manager.SetFromAnyToAny,
             Access.Company.Any.Manager.SetFromAnyToNone,
             Access.Company.Any.Manager.SetFromAnyToSelf
@@ -127,11 +127,11 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         }
 
         if (accessRights.ContainsAny(
-            Access.Company.Any.Manager.View,
-            Access.Company.WhereUserIsManager.Manager.View,
-            Access.Company.WhereUserIsManager.Other.View,
+            Access.Company.Any.Manager.Get,
+            Access.Company.WhereUserIsManager.Manager.Get,
+            Access.Company.WhereUserIsManager.Other.Get,
             Access.Company.WhereUserIsManager.Delete,
-            Access.Company.WhereUserIsManager.Other.Update,
+            Access.Company.WhereUserIsManager.Other.Set,
             Access.Company.Any.Manager.SetFromSelfToAny,
             Access.Company.Any.Manager.SetFromSelfToNone,
             Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,

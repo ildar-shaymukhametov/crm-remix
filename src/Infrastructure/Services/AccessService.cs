@@ -44,14 +44,14 @@ public class AccessService : IAccessService
             result.Add(Access.Company.Any.Delete);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Other.View))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Other.Get))
         {
-            result.Add(Access.Company.Any.Other.View);
+            result.Add(Access.Company.Any.Other.Get);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Other.Update))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Other.Set))
         {
-            result.Add(Access.Company.Any.Other.Update);
+            result.Add(Access.Company.Any.Other.Set);
         }
 
         if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Manager.SetFromNoneToSelf))
@@ -94,9 +94,9 @@ public class AccessService : IAccessService
             result.Add(Access.Company.Any.Manager.SetFromAnyToAny);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Other.Update))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Other.Set))
         {
-            result.Add(Access.Company.WhereUserIsManager.Other.Update);
+            result.Add(Access.Company.WhereUserIsManager.Other.Set);
         }
 
         if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Delete))
@@ -114,19 +114,19 @@ public class AccessService : IAccessService
             result.Add(Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Manager.View))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Manager.Get))
         {
-            result.Add(Access.Company.Any.Manager.View);
+            result.Add(Access.Company.Any.Manager.Get);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Other.View))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Other.Get))
         {
-            result.Add(Access.Company.WhereUserIsManager.Other.View);
+            result.Add(Access.Company.WhereUserIsManager.Other.Get);
         }
 
-        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Manager.View))
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Manager.Get))
         {
-            result.Add(Access.Company.WhereUserIsManager.Manager.View);
+            result.Add(Access.Company.WhereUserIsManager.Manager.Get);
         }
 
         if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.New.Other.Set))
