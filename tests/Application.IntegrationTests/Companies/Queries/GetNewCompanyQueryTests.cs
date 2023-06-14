@@ -1,3 +1,4 @@
+using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Queries;
 using CRM.Application.Companies.Queries.GetNewCompany;
 using CRM.Domain.Entities;
@@ -21,6 +22,15 @@ public class GetNewCompanyQueryTests : BaseTest
         AssertInitialFields(actual);
         AssertOtherFields(actual);
         AssertManager(actual);
+    }
+
+    [Fact]
+    public async Task User_has_no_claim___Forbidden()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync();
+        var company = await _fixture.AddCompanyAsync();
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetNewCompanyQuery()));
     }
 
     private static void AssertOtherFields(NewCompanyVm? actual)

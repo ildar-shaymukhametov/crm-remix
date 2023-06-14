@@ -1,9 +1,11 @@
 using CRM.Application.Common.Interfaces;
+using CRM.Application.Common.Security;
 using CRM.Domain.Entities;
 using MediatR;
 
 namespace CRM.Application.Companies.Queries.GetNewCompany;
 
+[Authorize(Constants.Policies.Company.Queries.Create)]
 public record GetNewCompanyQuery : IRequest<NewCompanyVm>
 {
 

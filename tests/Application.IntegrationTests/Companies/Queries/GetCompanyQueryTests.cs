@@ -30,8 +30,7 @@ public class GetCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync();
 
-        var request = new GetCompanyQuery(company.Id);
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(request));
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));
     }
 
     [Fact]
