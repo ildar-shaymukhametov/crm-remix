@@ -49,9 +49,7 @@ public class CreateCompanyTests : BaseTest
     public async Task User_has_no_claim___Throws_forbidden_access()
     {
         var user = await _fixture.RunAsDefaultUserAsync();
-        var command = CreateCommand();
-
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(CreateCommand()));
     }
 
     [Theory]
