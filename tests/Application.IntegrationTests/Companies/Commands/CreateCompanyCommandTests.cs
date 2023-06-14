@@ -35,7 +35,7 @@ public class CreateCompanyTests : BaseTest
     public async Task User_has_claim_to_create_company___Creates_company_with_initial_fields()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
-        var command = new CreateCompanyCommand(Faker.Company.Name());
+        var command = CreateRequiredCommand();
 
         var id = await _fixture.SendAsync(command);
 
@@ -127,19 +127,22 @@ public class CreateCompanyTests : BaseTest
     public static CreateCompanyCommand CreateCommand(string? managerId = null)
     {
         var data = Faker.Builders.Company();
-        var command = new CreateCompanyCommand(data.Name)
-        {
-            Address = data.Address,
-            Ceo = data.Ceo,
-            Contacts = data.Contacts,
-            Email = data.Email,
-            Inn = data.Inn,
-            Phone = data.Phone,
-            TypeId = data.TypeId,
-            ManagerId = managerId
-        };
+        var command = CreateRequiredCommand();
+        command.Address = data.Address;
+        command.Ceo = data.Ceo;
+        command.Contacts = data.Contacts;
+        command.Email = data.Email;
+        command.Inn = data.Inn;
+        command.Phone = data.Phone;
+        command.TypeId = data.TypeId;
+        command.ManagerId = managerId;
 
         return command;
+    }
+
+    public static CreateCompanyCommand CreateRequiredCommand()
+    {
+        return new CreateCompanyCommand(Faker.Company.Name());
     }
 
     private static void AssertCompanyCreated(AspNetUser user, int companyId, CreateCompanyCommand expected, Company? actual)
