@@ -34,7 +34,7 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
             }
         };
 
-        if (accessRights.Contains(Constants.Access.Company.New.Other.Set))
+        if (accessRights.Contains(Constants.Access.Company.New.SetOther))
         {
             result.Fields.Add(nameof(Company.Address), default);
             result.Fields.Add(nameof(Company.Ceo), default);
@@ -45,7 +45,7 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
             result.Fields.Add(nameof(Company.Type), default);
         }
 
-        if (accessRights.Contains(Constants.Access.Company.New.Manager.Set))
+        if (accessRights.Contains(Constants.Access.Company.New.SetManager))
         {
             result.Fields.Add(nameof(Company.Manager), default);
         }
