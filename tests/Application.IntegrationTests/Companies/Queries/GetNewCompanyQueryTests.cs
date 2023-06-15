@@ -30,7 +30,6 @@ public class GetNewCompanyQueryTests : BaseTest
     public async Task User_has_no_claim___Forbidden()
     {
         var user = await _fixture.RunAsDefaultUserAsync();
-
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetNewCompanyQuery()));
     }
 
