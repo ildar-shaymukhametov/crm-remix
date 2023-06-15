@@ -190,47 +190,6 @@ public class CreateCompanyTests : BaseTest
         AssertManagerField(command, actual);
     }
 
-    // [Fact]
-    // public async Task User_cannot_set_self_as_manager___Throws_forbidden_access()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[]
-    //     {
-    //         Constants.Claims.Company.Create
-    //     });
-
-    //     var command = CreateCommand(managerId: user.Id);
-    //     await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    // }
-
-    // [Theory]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
-    // public async Task User_can_set_anyone_as_manager___Creates_company(string claim)
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[]
-    //     {
-    //         Constants.Claims.Company.Create,
-    //         claim
-    //     });
-    //     var anotherUser = await _fixture.CreateUserAsync();
-
-    //     var command = CreateCommand(managerId: anotherUser.Id);
-    //     await AssertCompanyCreatedAsync(user, command);
-    // }
-
-    // [Fact]
-    // public async Task User_cannot_set_anyone_as_manager___Throws_forbidden_access()
-    // {
-    //     var user = await _fixture.RunAsDefaultUserAsync(new[]
-    //     {
-    //         Constants.Claims.Company.Create
-    //     });
-    //     var anotherUser = await _fixture.CreateUserAsync();
-
-    //     var command = CreateCommand(managerId: anotherUser.Id);
-    //     await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    // }
-
     public static CreateCompanyCommand CreateCommand(string? managerId = null)
     {
         var data = Faker.Builders.Company();
@@ -291,17 +250,5 @@ public class CreateCompanyTests : BaseTest
     private static void AssertNoManagerField(Company? actual)
     {
         Assert.Equal(default, actual?.ManagerId);
-    }
-
-    private async Task AssertCompanyCreatedAsync(AspNetUser user, CreateCompanyCommand expected)
-    {
-        var companyId = await _fixture.SendAsync(expected);
-        var actual = await _fixture.FindAsync<Company>(companyId);
-
-        Assert.NotNull(actual);
-        Assert.Equal(companyId, actual!.Id);
-        Assert.Equal(BaseTestFixture.UtcNow, actual.CreatedAtUtc);
-        Assert.Equal(user.Id, actual.CreatedBy);
-        Assert.Equal(expected.ManagerId, actual.ManagerId);
     }
 }
