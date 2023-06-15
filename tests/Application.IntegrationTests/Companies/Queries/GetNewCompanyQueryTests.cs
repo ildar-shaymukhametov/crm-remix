@@ -2,6 +2,8 @@ using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Queries;
 using CRM.Application.Companies.Queries.GetNewCompany;
 using CRM.Domain.Entities;
+using CRM.Infrastructure.Identity;
+using FluentAssertions;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
 
@@ -12,15 +14,16 @@ public class GetNewCompanyQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task User_is_admin___Returns_all_fields()
+    public async Task User_is_admin___Returns_all_fields_and_init_data()
     {
-        await _fixture.RunAsAdministratorAsync();
+        var user = await _fixture.RunAsAdministratorAsync();
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
-        AssertInitialFields(actual);
+        AssertRequiredFields(actual);
         AssertOtherFields(actual);
         AssertManagerField(actual);
+        await AssertInitialDataAsync(actual, new [] { user });
     }
 
     [Fact]
@@ -38,7 +41,7 @@ public class GetNewCompanyQueryTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
-        AssertInitialFields(actual);
+        AssertRequiredFields(actual);
         AssertNoOtherFields(actual);
         AssertNoManagerField(actual);
     }
@@ -50,7 +53,7 @@ public class GetNewCompanyQueryTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
-        AssertInitialFields(actual);
+        AssertRequiredFields(actual);
         AssertOtherFields(actual);
         AssertNoManagerField(actual);
     }
@@ -64,7 +67,7 @@ public class GetNewCompanyQueryTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
-        AssertInitialFields(actual);
+        AssertRequiredFields(actual);
         AssertNoOtherFields(actual);
         AssertManagerField(actual);
     }
@@ -101,8 +104,16 @@ public class GetNewCompanyQueryTests : BaseTest
         Assert.False(actual?.Fields.ContainsKey(nameof(Company.Manager)));
     }
 
-    private static void AssertInitialFields(NewCompanyVm? actual)
+    private static void AssertRequiredFields(NewCompanyVm? actual)
     {
         Assert.Null(actual?.Fields[nameof(Company.Name)]);
+    }
+
+    private async Task AssertInitialDataAsync(NewCompanyVm? actual, AspNetUser[] managers)
+    {
+        var types = await _fixture.GetCompanyTypesAsync();
+        types.Select(x => x.Id).Should().BeEquivalentTo(actual?.InitData?.CompanyTypes?.Select(x => x.Id));
+        
+        managers.Select(x => x.Id).Should().BeEquivalentTo(actual?.InitData?.Managers?.Select(x => x.Id));
     }
 }

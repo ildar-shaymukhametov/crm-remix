@@ -1,5 +1,7 @@
+using AutoMapper;
 using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
+using CRM.Application.Common.Mappings;
 using CRM.Application.Common.Security;
 using CRM.Domain.Entities;
 using MediatR;
@@ -15,23 +17,24 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
 {
     private readonly IAccessService _accessService;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IApplicationDbContext _dbContext;
+    private readonly IMapper _mapper;
 
-    public GetNewCompanyRequestHandler(IAccessService accessService, ICurrentUserService currentUserService)
+    public GetNewCompanyRequestHandler(IAccessService accessService, ICurrentUserService currentUserService, IApplicationDbContext dbContext, IMapper mapper)
     {
         _accessService = accessService;
         _currentUserService = currentUserService;
+        _dbContext = dbContext;
+        _mapper = mapper;
     }
 
     public async Task<NewCompanyVm> Handle(GetNewCompanyQuery request, CancellationToken cancellationToken)
     {
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
-        var result = new NewCompanyVm
-        {
-            Fields = new Dictionary<string, object?>
-            {
-                [nameof(Company.Name)] = default,
-            }
-        };
+        var result = new NewCompanyVm();
+        result.Fields.Add(nameof(Company.Name), default);
+        result.InitData.CompanyTypes = await GetCompanyTypesAsync();
+        result.InitData.Managers = await GetManagersAsync();
 
         if (accessRights.Contains(Constants.Access.Company.New.Other.Set))
         {
@@ -53,5 +56,15 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
         }
 
         return result;
+    }
+
+    private async Task<List<CompanyTypeDto>> GetCompanyTypesAsync()
+    {
+        return await _dbContext.CompanyTypes.ProjectToListAsync<CompanyTypeDto>(_mapper.ConfigurationProvider);
+    }
+
+    private async Task<List<ManagerDto>> GetManagersAsync()
+    {
+        return await _dbContext.ApplicationUsers.ProjectToListAsync<ManagerDto>(_mapper.ConfigurationProvider);
     }
 }

@@ -304,4 +304,11 @@ public class BaseTestFixture
             }
         }));
     }
+
+    internal async Task<List<CompanyType>> GetCompanyTypesAsync()
+    {
+        using var scope = ScopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        return await context.CompanyTypes.AsNoTracking().ToListAsync();
+    }
 }
