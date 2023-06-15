@@ -35,7 +35,7 @@ public class CreateCompanyTests : BaseTest
     public async Task User_has_no_claim___Throws_forbidden_access()
     {
         var user = await _fixture.RunAsDefaultUserAsync();
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(CreateCommand()));
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(CreateMinimumRequiredCommand()));
     }
 
     [Fact]
@@ -198,7 +198,7 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_set_manager_to_any___Creates_company_with_someone_as_manager()
+    public async Task User_can_set_manager_to_any___Creates_company_with_some_user_as_manager()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToAny });
         var someUser = await _fixture.AddUserAsync();
