@@ -163,6 +163,22 @@ public class CreateCompanyTests : BaseTest
         AssertManagerField(command, actual);
     }
 
+    [Fact]
+    public async Task User_can_set_manager_to_any___Creates_company_with_someone_as_manager()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToAny });
+        var someUser = await _fixture.AddUserAsync();
+        var command = CreateMinimumRequiredCommand();
+        command.ManagerId = someUser.Id;
+
+        var id = await _fixture.SendAsync(command);
+
+        var actual = await _fixture.FindAsync<Company>(id);
+        AssertCompanyCreated(user, id, command, actual);
+        AssertNoOtherFields(actual);
+        AssertManagerField(command, actual);
+    }
+
     // [Fact]
     // public async Task User_cannot_set_self_as_manager___Throws_forbidden_access()
     // {

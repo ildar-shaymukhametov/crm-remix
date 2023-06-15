@@ -54,9 +54,7 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
             else
             {
                 if (!accessRights.ContainsAny(
-                    Access.Company.Any.Manager.SetFromNoneToAny,
-                    Access.Company.Any.Manager.SetFromSelfToAny,
-                    Access.Company.Any.Manager.SetFromAnyToAny
+                    Access.Company.New.Manager.SetToAny
                 ))
                 {
                     return Fail(context, "Set manager to any");
