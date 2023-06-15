@@ -14,27 +14,17 @@ public class GetNewCompanyQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task User_is_admin___Returns_all_fields()
+    public async Task User_is_admin___Returns_all_fields_and_init_data()
     {
-        await _fixture.RunAsAdministratorAsync();
+        var user = await _fixture.RunAsAdministratorAsync();
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
         AssertRequiredFields(actual);
         AssertOtherFields(actual);
         AssertManagerField(actual);
-    }
-
-    [Fact]
-    public async Task User_is_admin___Returns_all_init_data()
-    {
-        var user = await _fixture.RunAsAdministratorAsync();
-        var anotherUser = await _fixture.AddUserAsync();
-
-        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
-
         await AssertCompanyTypesInitDataAsync(actual);
-        AssertManagerInitData(actual, new[] { user, anotherUser });
+        AssertManagerInitData(actual, new[] { user });
     }
 
     [Fact]
@@ -57,6 +47,17 @@ public class GetNewCompanyQueryTests : BaseTest
     }
 
     [Fact]
+    public async Task User_has_claim_to_create_company___Does_not_return_any_init_data()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+
+        Assert.Empty(actual.InitData.CompanyTypes);
+        Assert.Empty(actual.InitData.Managers);
+    }
+
+    [Fact]
     public async Task User_has_claim_to_set_other_fields___Includes_other_fields()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Other.Set });
@@ -66,6 +67,22 @@ public class GetNewCompanyQueryTests : BaseTest
         AssertRequiredFields(actual);
         AssertOtherFields(actual);
         AssertNoManagerField(actual);
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_set_other_fields___Returns_other_fields_init_data()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Other.Set });
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+        await AssertCompanyTypesInitDataAsync(actual);
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_set_other_fields___Does_not_return_unrelated_init_data()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Other.Set });
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+        Assert.Empty(actual.InitData.Managers);
     }
 
     [Theory]
@@ -80,6 +97,43 @@ public class GetNewCompanyQueryTests : BaseTest
         AssertRequiredFields(actual);
         AssertNoOtherFields(actual);
         AssertManagerField(actual);
+    }
+
+    [Theory]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    public async Task User_has_claim_to_set_manager_to_self___Returns_self_as_init_data(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+        AssertManagerInitData(actual, new[] { user });
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_set_manager_to_self___Does_not_return_unrelated_init_data()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToSelf });
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+        Assert.Empty(actual.InitData.CompanyTypes);
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_set_manager_to_any___Returns_all_users_as_init_data()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToAny });
+        var anotherUser = await _fixture.AddUserAsync();
+
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+
+        AssertManagerInitData(actual, new[] { user, anotherUser });
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_set_manager_to_any___Does_not_return_unrelated_init_data()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToAny });
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+        Assert.Empty(actual.InitData.CompanyTypes);
     }
 
     private static void AssertOtherFields(NewCompanyVm actual)
