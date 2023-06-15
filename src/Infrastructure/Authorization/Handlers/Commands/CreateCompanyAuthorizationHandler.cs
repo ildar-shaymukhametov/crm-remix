@@ -39,26 +39,21 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
             return Fail(context, "Set other fields");
         }
 
-        if (company.ManagerId != null)
+        if (company.ManagerId == context.User.GetSubjectId())
         {
-            if (company.ManagerId == context.User.GetSubjectId())
+            if (!accessRights.ContainsAny(
+                Access.Company.New.Manager.SetToAny,
+                Access.Company.New.Manager.SetToSelf
+            ))
             {
-                if (!accessRights.ContainsAny(
-                    Access.Company.New.Manager.SetToAny,
-                    Access.Company.New.Manager.SetToSelf
-                ))
-                {
-                    return Fail(context, "Set manager to self");
-                }
+                return Fail(context, "Set manager to self");
             }
-            else
+        }
+        else if (company.ManagerId != null)
+        {
+            if (!accessRights.Contains(Access.Company.New.Manager.SetToAny))
             {
-                if (!accessRights.ContainsAny(
-                    Access.Company.New.Manager.SetToAny
-                ))
-                {
-                    return Fail(context, "Set manager to any");
-                }
+                return Fail(context, "Set manager to any");
             }
         }
 
