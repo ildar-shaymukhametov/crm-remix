@@ -164,6 +164,17 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Fact]
+    public async Task User_can_set_manager_to_self___Forbidden_to_set_someone_else_as_manager()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToSelf });
+        var someUser = await _fixture.AddUserAsync();
+        var command = CreateMinimumRequiredCommand();
+        command.ManagerId = someUser.Id;
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
+    [Fact]
     public async Task User_can_set_manager_to_any___Creates_company_with_someone_as_manager()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToAny });
