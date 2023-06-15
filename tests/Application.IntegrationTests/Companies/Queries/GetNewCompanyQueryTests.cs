@@ -36,13 +36,14 @@ public class GetNewCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_create_company___Includes_initial_fields()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
         AssertRequiredFields(actual);
         AssertNoOtherFields(actual);
         AssertNoManagerField(actual);
+        await AssertInitialDataAsync(actual, new[] { user });
     }
 
     [Fact]
