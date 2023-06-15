@@ -24,7 +24,7 @@ public class GetNewCompanyQueryTests : BaseTest
         AssertOtherFields(actual);
         AssertManagerField(actual);
         await AssertCompanyTypesInitDataAsync(actual);
-        AssertManagerInitData(actual, new[] { user });
+        AssertManagerInitData(actual, new[] { user, new AspNetUser { Id = string.Empty } });
     }
 
     [Fact]
@@ -99,12 +99,10 @@ public class GetNewCompanyQueryTests : BaseTest
         AssertManagerField(actual);
     }
 
-    [Theory]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
-    public async Task User_has_claim_to_set_manager_to_self___Returns_self_as_init_data(string claim)
+    [Fact]
+    public async Task User_has_claim_to_set_manager_to_self___Returns_self_as_init_data()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToSelf });
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
         AssertManagerInitData(actual, new[] { user });
     }
@@ -136,7 +134,7 @@ public class GetNewCompanyQueryTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
-        AssertManagerInitData(actual, new[] { user, anotherUser });
+        AssertManagerInitData(actual, new[] { user, anotherUser, new AspNetUser { Id = string.Empty } });
     }
 
     [Fact]

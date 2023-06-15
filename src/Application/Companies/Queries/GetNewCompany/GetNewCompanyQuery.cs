@@ -91,6 +91,14 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
             return result;
         }
 
+        if (expressions.Contains(_allManagers))
+        {
+            result.Add(new ManagerDto
+            {
+                Id = string.Empty
+            });
+        }
+
         var expression = expressions.Aggregate(PredicateBuilder.False<ApplicationUser>(), (acc, v) => acc.Or(v));
         var users = await _dbContext.ApplicationUsers
             .AsNoTracking()
