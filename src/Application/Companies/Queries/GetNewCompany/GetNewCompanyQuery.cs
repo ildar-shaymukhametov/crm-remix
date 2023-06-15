@@ -33,8 +33,7 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
         var result = new NewCompanyVm();
         result.Fields.Add(nameof(Company.Name), default);
-        result.InitData.CompanyTypes = await GetCompanyTypesAsync();
-        result.InitData.Managers = await GetManagersAsync();
+
 
         if (accessRights.Contains(Constants.Access.Company.New.Other.Set))
         {
@@ -45,6 +44,7 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
             result.Fields.Add(nameof(Company.Inn), default);
             result.Fields.Add(nameof(Company.Phone), default);
             result.Fields.Add(nameof(Company.Type), default);
+            result.InitData.CompanyTypes = await _dbContext.CompanyTypes.ProjectToListAsync<CompanyTypeDto>(_mapper.ConfigurationProvider);
         }
 
         if (accessRights.ContainsAny(
@@ -53,14 +53,10 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
         ))
         {
             result.Fields.Add(nameof(Company.Manager), default);
+            result.InitData.Managers = await GetManagersAsync();
         }
 
         return result;
-    }
-
-    private async Task<List<CompanyTypeDto>> GetCompanyTypesAsync()
-    {
-        return await _dbContext.CompanyTypes.ProjectToListAsync<CompanyTypeDto>(_mapper.ConfigurationProvider);
     }
 
     private async Task<List<ManagerDto>> GetManagersAsync()

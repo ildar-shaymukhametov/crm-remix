@@ -17,13 +17,15 @@ public class GetNewCompanyQueryTests : BaseTest
     public async Task User_is_admin___Returns_all_fields_and_init_data()
     {
         var user = await _fixture.RunAsAdministratorAsync();
+        var anotherUser = await _fixture.AddUserAsync();
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
         AssertRequiredFields(actual);
         AssertOtherFields(actual);
         AssertManagerField(actual);
-        await AssertInitialDataAsync(actual, new [] { user });
+        await AssertCompanyTypesInitDataAsync(actual);
+        AssertManagerInitData(actual, new [] { user, anotherUser });
     }
 
     [Fact]
@@ -43,7 +45,6 @@ public class GetNewCompanyQueryTests : BaseTest
         AssertRequiredFields(actual);
         AssertNoOtherFields(actual);
         AssertNoManagerField(actual);
-        await AssertInitialDataAsync(actual, new[] { user });
     }
 
     [Fact]
@@ -109,11 +110,14 @@ public class GetNewCompanyQueryTests : BaseTest
         Assert.Null(actual?.Fields[nameof(Company.Name)]);
     }
 
-    private async Task AssertInitialDataAsync(NewCompanyVm? actual, AspNetUser[] managers)
+    private static void AssertManagerInitData(NewCompanyVm? actual, AspNetUser[] expected)
+    {
+        expected.Select(x => x.Id).Should().BeEquivalentTo(actual?.InitData?.Managers?.Select(x => x.Id));
+    }
+
+    private async Task AssertCompanyTypesInitDataAsync(NewCompanyVm? actual)
     {
         var types = await _fixture.GetCompanyTypesAsync();
         types.Select(x => x.Id).Should().BeEquivalentTo(actual?.InitData?.CompanyTypes?.Select(x => x.Id));
-        
-        managers.Select(x => x.Id).Should().BeEquivalentTo(actual?.InitData?.Managers?.Select(x => x.Id));
     }
 }
