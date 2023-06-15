@@ -21,7 +21,7 @@ public class CreateCompanyTests : BaseTest
     public async Task User_is_admin___Creates_company_with_all_fields()
     {
         var user = await _fixture.RunAsAdministratorAsync();
-        var command = CreateCommand(user.Id);
+        var command = CreateCommandWithAllFields(user.Id);
 
         var id = await _fixture.SendAsync(command);
 
@@ -147,7 +147,7 @@ public class CreateCompanyTests : BaseTest
     public async Task User_has_claim_to_set_other_fields___Creates_company_with_other_fields()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Other.Set });
-        var command = CreateCommand();
+        var command = CreateCommandWithOtherFields();
 
         var id = await _fixture.SendAsync(command);
 
@@ -213,7 +213,23 @@ public class CreateCompanyTests : BaseTest
         AssertManagerField(command, actual);
     }
 
-    public static CreateCompanyCommand CreateCommand(string? managerId = null)
+    public static CreateCompanyCommand CreateCommandWithAllFields(string? managerId = null)
+    {
+        var command = CreateMinimumRequiredCommand();
+        var otherFields = CreateCommandWithOtherFields();
+        command.Address = otherFields.Address;
+        command.Ceo = otherFields.Ceo;
+        command.Contacts = otherFields.Contacts;
+        command.Email = otherFields.Email;
+        command.Inn = otherFields.Inn;
+        command.Phone = otherFields.Phone;
+        command.TypeId = otherFields.TypeId;
+        command.ManagerId = managerId;
+
+        return command;
+    }
+
+    public static CreateCompanyCommand CreateCommandWithOtherFields()
     {
         var data = Faker.Builders.Company();
         var command = CreateMinimumRequiredCommand();
@@ -224,7 +240,6 @@ public class CreateCompanyTests : BaseTest
         command.Inn = data.Inn;
         command.Phone = data.Phone;
         command.TypeId = data.TypeId;
-        command.ManagerId = managerId;
 
         return command;
     }

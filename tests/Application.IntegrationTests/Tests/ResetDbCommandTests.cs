@@ -16,7 +16,7 @@ public class ResetDbCommandTests : BaseTest
             Constants.Claims.Company.Create
         }, new [] { Constants.Roles.Tester });
 
-        var createCompanyCommand = CreateCompanyTests.CreateCommand();
+        var createCompanyCommand = CreateCompanyTests.CreateMinimumRequiredCommand();
         var companyId = await _fixture.SendAsync(createCompanyCommand);
         var newCompany = await _fixture.FindAsync<Company>(companyId);
         Assert.NotNull(newCompany);
