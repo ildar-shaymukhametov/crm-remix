@@ -38,7 +38,7 @@ public class GetNewCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_create_company___Includes_initial_fields()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
@@ -73,51 +73,51 @@ public class GetNewCompanyQueryTests : BaseTest
         AssertManagerField(actual);
     }
 
-    private static void AssertOtherFields(NewCompanyVm? actual)
+    private static void AssertOtherFields(NewCompanyVm actual)
     {
-        Assert.Null((actual?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
-        Assert.Null(actual?.Fields[nameof(Company.Address)]);
-        Assert.Null(actual?.Fields[nameof(Company.Ceo)]);
-        Assert.Null(actual?.Fields[nameof(Company.Contacts)]);
-        Assert.Null(actual?.Fields[nameof(Company.Email)]);
-        Assert.Null(actual?.Fields[nameof(Company.Inn)]);
-        Assert.Null(actual?.Fields[nameof(Company.Phone)]);
+        Assert.Null((actual.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
+        Assert.Null(actual.Fields[nameof(Company.Address)]);
+        Assert.Null(actual.Fields[nameof(Company.Ceo)]);
+        Assert.Null(actual.Fields[nameof(Company.Contacts)]);
+        Assert.Null(actual.Fields[nameof(Company.Email)]);
+        Assert.Null(actual.Fields[nameof(Company.Inn)]);
+        Assert.Null(actual.Fields[nameof(Company.Phone)]);
     }
 
-    private static void AssertNoOtherFields(NewCompanyVm? actual)
+    private static void AssertNoOtherFields(NewCompanyVm actual)
     {
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Type)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Address)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Ceo)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Contacts)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Email)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Inn)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Phone)));
+        Assert.False(actual.Fields.ContainsKey(nameof(Company.Type)));
+        Assert.False(actual.Fields.ContainsKey(nameof(Company.Address)));
+        Assert.False(actual.Fields.ContainsKey(nameof(Company.Ceo)));
+        Assert.False(actual.Fields.ContainsKey(nameof(Company.Contacts)));
+        Assert.False(actual.Fields.ContainsKey(nameof(Company.Email)));
+        Assert.False(actual.Fields.ContainsKey(nameof(Company.Inn)));
+        Assert.False(actual.Fields.ContainsKey(nameof(Company.Phone)));
     }
 
-    private static void AssertManagerField(NewCompanyVm? actual)
+    private static void AssertManagerField(NewCompanyVm actual)
     {
-        Assert.Null((actual?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
+        Assert.Null((actual.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
     }
 
-    private static void AssertNoManagerField(NewCompanyVm? actual)
+    private static void AssertNoManagerField(NewCompanyVm actual)
     {
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Manager)));
+        Assert.False(actual.Fields.ContainsKey(nameof(Company.Manager)));
     }
 
-    private static void AssertRequiredFields(NewCompanyVm? actual)
+    private static void AssertRequiredFields(NewCompanyVm actual)
     {
-        Assert.Null(actual?.Fields[nameof(Company.Name)]);
+        Assert.Null(actual.Fields[nameof(Company.Name)]);
     }
 
-    private static void AssertManagerInitData(NewCompanyVm? actual, AspNetUser[] expected)
+    private static void AssertManagerInitData(NewCompanyVm actual, AspNetUser[] expected)
     {
-        expected.Select(x => x.Id).Should().BeEquivalentTo(actual?.InitData?.Managers?.Select(x => x.Id));
+        expected.Select(x => x.Id).Should().BeEquivalentTo(actual.InitData?.Managers?.Select(x => x.Id));
     }
 
-    private async Task AssertCompanyTypesInitDataAsync(NewCompanyVm? actual)
+    private async Task AssertCompanyTypesInitDataAsync(NewCompanyVm actual)
     {
         var types = await _fixture.GetCompanyTypesAsync();
-        types.Select(x => x.Id).Should().BeEquivalentTo(actual?.InitData?.CompanyTypes?.Select(x => x.Id));
+        types.Select(x => x.Id).Should().BeEquivalentTo(actual.InitData?.CompanyTypes?.Select(x => x.Id));
     }
 }
