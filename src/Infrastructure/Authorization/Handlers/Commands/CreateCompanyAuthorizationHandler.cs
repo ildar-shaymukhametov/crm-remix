@@ -28,7 +28,7 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
             throw new InvalidOperationException("Resouce is missing");
         }
 
-        var otherFieldChanged = company.Address != default || company.Ceo != default;
+        var otherFieldChanged = company.Address != default || company.Ceo != default || company.Contacts != default;
         if (otherFieldChanged && !accessRights.Contains(Access.Company.New.Other.Set))
         {
             return Fail(context, "Set other fields");
