@@ -14,18 +14,27 @@ public class GetNewCompanyQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task User_is_admin___Returns_all_fields_and_init_data()
+    public async Task User_is_admin___Returns_all_fields()
     {
-        var user = await _fixture.RunAsAdministratorAsync();
-        var anotherUser = await _fixture.AddUserAsync();
+        await _fixture.RunAsAdministratorAsync();
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
         AssertRequiredFields(actual);
         AssertOtherFields(actual);
         AssertManagerField(actual);
+    }
+
+    [Fact]
+    public async Task User_is_admin___Returns_all_init_data()
+    {
+        var user = await _fixture.RunAsAdministratorAsync();
+        var anotherUser = await _fixture.AddUserAsync();
+
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+
         await AssertCompanyTypesInitDataAsync(actual);
-        AssertManagerInitData(actual, new [] { user, anotherUser });
+        AssertManagerInitData(actual, new[] { user, anotherUser });
     }
 
     [Fact]
