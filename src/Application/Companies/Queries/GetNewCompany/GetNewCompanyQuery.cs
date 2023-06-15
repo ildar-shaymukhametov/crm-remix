@@ -15,13 +15,11 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
 {
     private readonly IAccessService _accessService;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IIdentityService _identityService;
 
-    public GetNewCompanyRequestHandler(IAccessService accessService, ICurrentUserService currentUserService, IIdentityService identityService)
+    public GetNewCompanyRequestHandler(IAccessService accessService, ICurrentUserService currentUserService)
     {
         _accessService = accessService;
         _currentUserService = currentUserService;
-        _identityService = identityService;
     }
 
     public async Task<NewCompanyVm> Handle(GetNewCompanyQuery request, CancellationToken cancellationToken)
