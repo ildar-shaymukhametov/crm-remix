@@ -49,7 +49,7 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
             result.Fields.Add(nameof(Company.Email), default);
             result.Fields.Add(nameof(Company.Inn), default);
             result.Fields.Add(nameof(Company.Phone), default);
-            result.Fields.Add(nameof(Company.Type), default);
+            result.Fields.Add(nameof(Company.TypeId), default);
             result.InitData.CompanyTypes = await _dbContext.CompanyTypes.ProjectToListAsync<CompanyTypeDto>(_mapper.ConfigurationProvider);
         }
 

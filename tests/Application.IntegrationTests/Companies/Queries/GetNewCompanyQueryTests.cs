@@ -156,7 +156,7 @@ public class GetNewCompanyQueryTests : BaseTest
 
     private static void AssertOtherFields(NewCompanyVm actual)
     {
-        Assert.Null((actual.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
+        Assert.Null(actual.Fields[nameof(Company.TypeId)]);
         Assert.Null(actual.Fields[nameof(Company.Address)]);
         Assert.Null(actual.Fields[nameof(Company.Ceo)]);
         Assert.Null(actual.Fields[nameof(Company.Contacts)]);
@@ -167,7 +167,7 @@ public class GetNewCompanyQueryTests : BaseTest
 
     private static void AssertNoOtherFields(NewCompanyVm actual)
     {
-        Assert.False(actual.Fields.ContainsKey(nameof(Company.Type)));
+        Assert.False(actual.Fields.ContainsKey(nameof(Company.TypeId)));
         Assert.False(actual.Fields.ContainsKey(nameof(Company.Address)));
         Assert.False(actual.Fields.ContainsKey(nameof(Company.Ceo)));
         Assert.False(actual.Fields.ContainsKey(nameof(Company.Contacts)));
