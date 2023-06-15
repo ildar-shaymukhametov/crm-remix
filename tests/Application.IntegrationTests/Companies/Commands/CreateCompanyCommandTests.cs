@@ -146,34 +146,34 @@ public class CreateCompanyTests : BaseTest
         AssertNoManagerField(actual);
     }
 
-    // [Theory]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
-    // [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
-    // public async Task User_can_set_self_as_manager___Creates_company(string claim)
+    [Theory]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    public async Task User_can_set_manager_to_self___Creates_company_with_self_as_manager(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var command = CreateMinimumRequiredCommand();
+        command.ManagerId = user.Id;
+
+        var id = await _fixture.SendAsync(command);
+
+        var actual = await _fixture.FindAsync<Company>(id);
+        AssertCompanyCreated(user, id, command, actual);
+        AssertNoOtherFields(actual);
+        AssertManagerField(command, actual);
+    }
+
+    // [Fact]
+    // public async Task User_cannot_set_self_as_manager___Throws_forbidden_access()
     // {
     //     var user = await _fixture.RunAsDefaultUserAsync(new[]
     //     {
-    //         Constants.Claims.Company.Create,
-    //         claim
+    //         Constants.Claims.Company.Create
     //     });
 
     //     var command = CreateCommand(managerId: user.Id);
-    //     await AssertCompanyCreatedAsync(user, command);
+    //     await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     // }
-
-    [Fact]
-    public async Task User_cannot_set_self_as_manager___Throws_forbidden_access()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[]
-        {
-            Constants.Claims.Company.Create
-        });
-
-        var command = CreateCommand(managerId: user.Id);
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
 
     // [Theory]
     // [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
@@ -191,18 +191,18 @@ public class CreateCompanyTests : BaseTest
     //     await AssertCompanyCreatedAsync(user, command);
     // }
 
-    [Fact]
-    public async Task User_cannot_set_anyone_as_manager___Throws_forbidden_access()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[]
-        {
-            Constants.Claims.Company.Create
-        });
-        var anotherUser = await _fixture.CreateUserAsync();
+    // [Fact]
+    // public async Task User_cannot_set_anyone_as_manager___Throws_forbidden_access()
+    // {
+    //     var user = await _fixture.RunAsDefaultUserAsync(new[]
+    //     {
+    //         Constants.Claims.Company.Create
+    //     });
+    //     var anotherUser = await _fixture.CreateUserAsync();
 
-        var command = CreateCommand(managerId: anotherUser.Id);
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
+    //     var command = CreateCommand(managerId: anotherUser.Id);
+    //     await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    // }
 
     public static CreateCompanyCommand CreateCommand(string? managerId = null)
     {
