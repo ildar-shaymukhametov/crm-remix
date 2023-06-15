@@ -20,6 +20,7 @@ public static class Constants
                 {
                     public const string SetToAny = $"{nameof(Company)}.{nameof(New)}.{nameof(Manager)}.{nameof(SetToAny)}";
                     public const string SetToSelf = $"{nameof(Company)}.{nameof(New)}.{nameof(Manager)}.{nameof(SetToSelf)}";
+                    public const string SetToNone = $"{nameof(Company)}.{nameof(New)}.{nameof(Manager)}.{nameof(SetToNone)}";
                 }
             }
 
@@ -112,6 +113,7 @@ public static class Constants
                 {
                     public const string SetToAny = $"{nameof(Company)}.{nameof(New)}.{nameof(Manager)}.{nameof(SetToAny)}";
                     public const string SetToSelf = $"{nameof(Company)}.{nameof(New)}.{nameof(Manager)}.{nameof(SetToSelf)}";
+                    public const string SetToNone = $"{nameof(Company)}.{nameof(New)}.{nameof(Manager)}.{nameof(SetToNone)}";
                 }
             }
 

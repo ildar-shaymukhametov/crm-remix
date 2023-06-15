@@ -88,6 +88,7 @@ public class GetNewCompanyQueryTests : BaseTest
     [Theory]
     [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
     [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToNone)]
     public async Task User_has_claim_to_set_manager___Includes_manager_field(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -143,6 +144,14 @@ public class GetNewCompanyQueryTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToAny });
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
         Assert.Empty(actual.InitData.CompanyTypes);
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_set_manager_to_none___Returns_empty_manager_as_init_data()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToNone });
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+        AssertManagerInitData(actual, new[] { new AspNetUser { Id = string.Empty } });
     }
 
     private static void AssertOtherFields(NewCompanyVm actual)

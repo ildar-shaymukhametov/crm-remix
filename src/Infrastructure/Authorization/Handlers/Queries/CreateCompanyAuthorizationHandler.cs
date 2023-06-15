@@ -20,7 +20,8 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
             Access.Company.Create,
             Access.Company.New.Other.Set,
             Access.Company.New.Manager.SetToAny,
-            Access.Company.New.Manager.SetToSelf
+            Access.Company.New.Manager.SetToSelf,
+            Access.Company.New.Manager.SetToNone
         ))
         {
             return Fail(context, "Create company");

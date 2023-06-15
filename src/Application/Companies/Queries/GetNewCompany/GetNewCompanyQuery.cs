@@ -23,6 +23,7 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
     private readonly ICurrentUserService _currentUserService;
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly Expression<Func<ApplicationUser, bool>> _emptyManager = x => x.Id == null;
     private readonly Expression<Func<ApplicationUser, bool>> _allManagers = x => true;
 
     public GetNewCompanyRequestHandler(IAccessService accessService, ICurrentUserService currentUserService, IApplicationDbContext dbContext, IMapper mapper)
@@ -54,7 +55,8 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
 
         if (accessRights.ContainsAny(
             Constants.Access.Company.New.Manager.SetToAny,
-            Constants.Access.Company.New.Manager.SetToSelf
+            Constants.Access.Company.New.Manager.SetToSelf,
+            Constants.Access.Company.New.Manager.SetToNone
         ))
         {
             result.Fields.Add(nameof(Company.Manager), default);
@@ -78,6 +80,11 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
             result.Add(x => x.Id == _currentUserService.UserId);
         }
 
+        if (accessRights.Contains(Constants.Access.Company.New.Manager.SetToNone))
+        {
+            result.Add(_emptyManager);
+        }
+
         return result;
     }
 
@@ -91,8 +98,9 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
             return result;
         }
 
-        if (expressions.Contains(_allManagers))
+        if (expressions.Contains(_emptyManager) || expressions.Contains(_allManagers))
         {
+            expressions.Remove(_emptyManager);
             result.Add(new ManagerDto
             {
                 Id = string.Empty
