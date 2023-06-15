@@ -52,70 +52,91 @@ public class CreateCompanyTests : BaseTest
         AssertNoManagerField(actual);
     }
 
-    [Fact]
-    public async Task User_has_claim_to_create_company___Forbidden_to_set_address()
+    [Theory]
+    [InlineData(Constants.Claims.Company.Create)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    public async Task Forbidden_to_set_address(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var command = CreateMinimumRequiredCommand();
         command.Address = Faker.RandomString.Next();
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    [Fact]
-    public async Task User_has_claim_to_create_company___Forbidden_to_set_ceo()
+    [Theory]
+    [InlineData(Constants.Claims.Company.Create)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    public async Task Forbidden_to_set_ceo(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var command = CreateMinimumRequiredCommand();
         command.Ceo = Faker.RandomString.Next();
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    [Fact]
-    public async Task User_has_claim_to_create_company___Forbidden_to_set_contacts()
+    [Theory]
+    [InlineData(Constants.Claims.Company.Create)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    public async Task Forbidden_to_set_contacts(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var command = CreateMinimumRequiredCommand();
         command.Contacts = Faker.RandomString.Next();
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    [Fact]
-    public async Task User_has_claim_to_create_company___Forbidden_to_set_email()
+    [Theory]
+    [InlineData(Constants.Claims.Company.Create)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    public async Task Forbidden_to_set_email(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var command = CreateMinimumRequiredCommand();
         command.Email = Faker.RandomString.Next();
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    [Fact]
-    public async Task User_has_claim_to_create_company___Forbidden_to_set_inn()
+    [Theory]
+    [InlineData(Constants.Claims.Company.Create)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    public async Task Forbidden_to_set_inn(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var command = CreateMinimumRequiredCommand();
         command.Inn = Faker.RandomString.Next();
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    [Fact]
-    public async Task User_has_claim_to_create_company___Forbidden_to_set_phone()
+    [Theory]
+    [InlineData(Constants.Claims.Company.Create)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    public async Task Forbidden_to_set_phone(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var command = CreateMinimumRequiredCommand();
         command.Phone = Faker.RandomString.Next();
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    [Fact]
-    public async Task User_has_claim_to_create_company___Forbidden_to_set_type()
+    [Theory]
+    [InlineData(Constants.Claims.Company.Create)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    public async Task Forbidden_to_set_type(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var command = CreateMinimumRequiredCommand();
         command.TypeId = 1;
 
