@@ -106,6 +106,16 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Fact]
+    public async Task User_has_claim_to_create_company___Forbidden_to_set_type()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+        var command = CreateMinimumRequiredCommand();
+        command.TypeId = 1;
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
+    [Fact]
     public async Task User_has_claim_to_set_other_fields___Creates_company_with_other_fields()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Other.Set });
