@@ -1,10 +1,14 @@
+using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Mappings;
 using CRM.Application.Common.Security;
+using CRM.Application.Utils;
 using CRM.Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Application.Companies.Queries.GetNewCompany;
 
@@ -19,6 +23,7 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
     private readonly ICurrentUserService _currentUserService;
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly Expression<Func<ApplicationUser, bool>> _allManagers = x => true;
 
     public GetNewCompanyRequestHandler(IAccessService accessService, ICurrentUserService currentUserService, IApplicationDbContext dbContext, IMapper mapper)
     {
@@ -53,14 +58,49 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
         ))
         {
             result.Fields.Add(nameof(Company.Manager), default);
-            result.InitData.Managers = await GetManagersAsync();
+            result.InitData.Managers = await GetManagersAsync(accessRights);
         }
 
         return result;
     }
 
-    private async Task<List<ManagerDto>> GetManagersAsync()
+    private List<Expression<Func<ApplicationUser, bool>>> GetManagerExpressions(string[] accessRights)
     {
-        return await _dbContext.ApplicationUsers.ProjectToListAsync<ManagerDto>(_mapper.ConfigurationProvider);
+        var result = new List<Expression<Func<ApplicationUser, bool>>>();
+        if (accessRights.Contains(Constants.Access.Company.New.Manager.SetToAny))
+        {
+            result.Add(_allManagers);
+            return result;
+        }
+
+        if (accessRights.Contains(Constants.Access.Company.New.Manager.SetToSelf))
+        {
+            result.Add(x => x.Id == _currentUserService.UserId);
+        }
+
+        return result;
+    }
+
+    private async Task<List<ManagerDto>> GetManagersAsync(string[] accessRights)
+    {
+        var result = new List<ManagerDto>();
+
+        var expressions = GetManagerExpressions(accessRights);
+        if (!expressions.Any())
+        {
+            return result;
+        }
+
+        var expression = expressions.Aggregate(PredicateBuilder.False<ApplicationUser>(), (acc, v) => acc.Or(v));
+        var users = await _dbContext.ApplicationUsers
+            .AsNoTracking()
+            .Where(expression)
+            .OrderBy(x => x.LastName)
+            .ProjectTo<ManagerDto>(_mapper.ConfigurationProvider)
+            .ToListAsync();
+
+        result.AddRange(users);
+
+        return result;
     }
 }

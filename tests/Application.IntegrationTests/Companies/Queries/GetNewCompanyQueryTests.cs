@@ -110,6 +110,17 @@ public class GetNewCompanyQueryTests : BaseTest
     }
 
     [Fact]
+    public async Task User_has_claim_to_set_manager_to_self___Does_not_return_other_users()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToSelf });
+        await _fixture.AddUserAsync();
+
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+
+        AssertManagerInitData(actual, new[] { user });
+    }
+
+    [Fact]
     public async Task User_has_claim_to_set_manager_to_self___Does_not_return_unrelated_init_data()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToSelf });
