@@ -14,7 +14,7 @@ public class ResetDbCommandTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(new[]
         {
             Constants.Claims.Company.Create
-        }, new [] { Constants.Roles.Tester });
+        });
 
         var createCompanyCommand = CreateCompanyTests.CreateMinimumRequiredCommand();
         var companyId = await _fixture.SendAsync(createCompanyCommand);

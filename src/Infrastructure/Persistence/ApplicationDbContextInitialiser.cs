@@ -53,19 +53,6 @@ public class ApplicationDbContextInitialiser
         }
     }
 
-    public async Task SeedTestUsersAsync()
-    {
-        try
-        {
-            await TrySeedTestUsersAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while seeding the database.");
-            throw;
-        }
-    }
-
     public async Task TrySeedAsync()
     {
         // Default roles
@@ -89,27 +76,6 @@ public class ApplicationDbContextInitialiser
         if (_userManager.Users.All(u => u.UserName != defaultUserName))
         {
             var (result, userId) = await _identityService.CreateUserAsync(defaultUserName, "Default1!", "default", "localhost");
-            var user = await _userManager.FindByIdAsync(userId);
-        }
-    }
-
-    public async Task TrySeedTestUsersAsync()
-    {
-        // Default roles
-        var testerRole = new IdentityRole("Tester");
-
-        if (_roleManager.Roles.All(r => r.Name != testerRole.Name))
-        {
-            await _roleManager.CreateAsync(testerRole);
-        }
-
-        // Default users
-        var userName = "tester@localhost";
-        if (_userManager.Users.All(u => u.UserName != userName))
-        {
-            var (result, userId) = await _identityService.CreateUserAsync(userName, "Tester1!", "tester", "localhost");
-            var user = await _userManager.FindByIdAsync(userId) ?? throw new NotFoundException(userId);
-            await _userManager.AddToRolesAsync(user, new[] { testerRole.Name! });
         }
     }
 }
