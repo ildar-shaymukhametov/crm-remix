@@ -63,17 +63,6 @@ public class UpdateCompanyTests : BaseTest
         await AssertCompanyUpdatedAsync(user, company.Id, command);
     }
 
-    [Fact]
-    public async Task User_has_claim_to_update_other_fields_in_any_company___Forbidden_to_update_manager()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Set });
-        var company = await _fixture.AddCompanyAsync();
-        var command = CreateOtherFields(company);
-        command.ManagerId = user.Id;
-
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
-
     [Theory]
     [InlineData(Claims.Company.Any.Manager.SetFromAnyToAny)]
     [InlineData(Claims.Company.Any.Manager.SetFromAnyToNone)]
@@ -83,77 +72,17 @@ public class UpdateCompanyTests : BaseTest
     [InlineData(Claims.Company.Any.Manager.SetFromSelfToAny)]
     [InlineData(Claims.Company.Any.Manager.SetFromSelfToNone)]
     [InlineData(Claims.Company.Any.Name.Set)]
-    public async Task Any_company___Forbidden_to_update_address(string claim)
+    [InlineData(Claims.Company.WhereUserIsManager.Other.Set)]
+    public async Task No_manager_company___Forbidden_to_update_other_fields(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync();
         var command = CreateCopyData(company);
         command.Address = Faker.RandomString.Next();
-
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_ceo()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
-        var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
         command.Ceo = Faker.RandomString.Next();
-
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_contacts()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
-        var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.Contacts = Faker.RandomString.Next();
-
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_email()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
-        var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
         command.Email = Faker.RandomString.Next();
-
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_inn()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
-        var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
         command.Inn = Faker.RandomString.Next();
-
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_phone()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
-        var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
         command.Phone = Faker.RandomString.Next();
-
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_update_manager_in_any_company___Forbidden_to_update_type()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Manager.SetFromAnyToAny });
-        var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
         command.TypeId = null;
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
@@ -361,6 +290,19 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync(user.Id);
         var command = CreateOtherFields(company);
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
+    [Theory]
+    [InlineData(Claims.Company.WhereUserIsManager.Other.Set)]
+    [InlineData(Claims.Company.WhereUserIsManager.Name.Set)]
+    public async Task No_manager_company___Forbidden_to_update_manager(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var company = await _fixture.AddCompanyAsync();
+        var command = CreateOtherFields(company);
+        command.ManagerId = user.Id;
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
