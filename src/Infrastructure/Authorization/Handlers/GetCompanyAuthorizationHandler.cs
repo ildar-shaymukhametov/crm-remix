@@ -29,7 +29,11 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
         }
         else if (context.Resource is Company company)
         {
-            if (company.ManagerId == context.User.GetSubjectId() && accessRights.ContainsAny(Access.Company.WhereUserIsManager.Other.Get, Access.Company.WhereUserIsManager.Manager.Get))
+            if (company.ManagerId == context.User.GetSubjectId() && accessRights.ContainsAny(
+                Access.Company.WhereUserIsManager.Other.Get,
+                Access.Company.WhereUserIsManager.Manager.Get,
+                Access.Company.WhereUserIsManager.Name.Get
+            ))
             {
                 context.Succeed(requirement);
             }

@@ -227,6 +227,17 @@ public class GetCompanyTests : BaseTest
         AssertFields(company, actual, name: true);
     }
 
+    [Fact]
+    public async Task User_has_claim_to_view_name_in_own_company___Returns_name_field()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Name.Get });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+
+        var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
+
+        AssertFields(company, actual, name: true);
+    }
+
     private static void AssertFields(Company? expected, CompanyVm? actual, bool name = false, bool manager = false, bool other = false)
     {
         Assert.Equal(expected?.Id, actual?.Id);

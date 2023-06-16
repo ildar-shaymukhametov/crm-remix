@@ -79,7 +79,8 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
         }
 
         if (accessRights.ContainsAny(
-            Constants.Access.Company.Any.Name.Get
+            Constants.Access.Company.Any.Name.Get,
+            Constants.Access.Company.WhereUserIsManager.Name.Get
         ))
         {
             result.Fields.Add(nameof(Company.Name), entity.Name);
