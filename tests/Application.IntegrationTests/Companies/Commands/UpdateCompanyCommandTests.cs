@@ -45,10 +45,7 @@ public class UpdateCompanyTests : BaseTest
     [Fact]
     public async Task Not_found()
     {
-        await _fixture.RunAsDefaultUserAsync(new[]
-        {
-            Claims.Company.Any.Other.Set
-        });
+        await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Set });
         var command = CreateAllFields(1);
         await Assert.ThrowsAsync<NotFoundException>(() => _fixture.SendAsync(command));
     }
