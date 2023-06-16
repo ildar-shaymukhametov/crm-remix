@@ -24,7 +24,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         var accessRights = _accessService.CheckAccess(context.User);
         var userId = context.User.GetSubjectId();
 
-        var otherFieldChanged = company.Address != request.Address || company.Ceo != request.Ceo || company.Contacts != request.Contacts || company.Email != request.Email || company.Inn != request.Inn || company.Name != request.Name || company.Phone != request.Phone || company.TypeId != request.TypeId;
+        var otherFieldChanged = company.Address != request.Address || company.Ceo != request.Ceo || company.Contacts != request.Contacts || company.Email != request.Email || company.Inn != request.Inn || company.Phone != request.Phone || company.TypeId != request.TypeId;
         if (otherFieldChanged)
         {
             if (company.ManagerId == userId && !accessRights.ContainsAny(
@@ -70,6 +70,17 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             if (!managerResult.Succeeded)
             {
                 return Fail(context, managerResult.Errors.First());
+            }
+        }
+
+        if (company.Name != request.Name)
+        {
+            if (!accessRights.ContainsAny(
+                Access.Company.Any.Name.Set,
+                Access.Company.WhereUserIsManager.Name.Set
+            ))
+            {
+                return Fail(context, "Update name");
             }
         }
 
