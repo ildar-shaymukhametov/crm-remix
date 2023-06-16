@@ -69,7 +69,7 @@ test("should be forbidden if non-owned company but has claim to edit other field
   });
 });
 
-test.only("should be able to edit any field in any company", async ({
+test("should be able to edit any field in any company", async ({
   page,
   runAsDefaultUser,
   createCompany,
