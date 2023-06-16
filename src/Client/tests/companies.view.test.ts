@@ -55,7 +55,7 @@ test.describe("edit company button", () => {
     createCompany
   }) => {
     await runAsDefaultUser({
-      claims: [claims.company.any.other.update]
+      claims: [claims.company.any.other.set]
     });
 
     const companyId = await createCompany();
@@ -74,7 +74,7 @@ test.describe("edit company button", () => {
     createCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.whereUserIsManager.other.update]
+      claims: [claims.company.whereUserIsManager.other.set]
     });
 
     const companyId = await createCompany({ managerId: user.id });
@@ -93,7 +93,7 @@ test.describe("edit company button", () => {
     createCompany
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.whereUserIsManager.other.view]
+      claims: [claims.company.whereUserIsManager.other.get]
     });
 
     await createCompany({ managerId: user.id });

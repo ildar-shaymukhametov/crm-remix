@@ -14,15 +14,15 @@ export const claims = {
         setFromSelfToNone: "Company.Any.Manager.SetFromSelfToNone"
       },
       other: {
-        view: "Company.Any.Other.View",
-        update: "Company.Any.Other.Update"
+        get: "Company.Any.Other.Get",
+        set: "Company.Any.Other.Set"
       }
     },
     whereUserIsManager: {
       delete: "Company.WhereUserIsManager.Delete",
       other: {
-        view: "Company.WhereUserIsManager.Other.View",
-        update: "Company.WhereUserIsManager.Other.Update"
+        get: "Company.WhereUserIsManager.Other.Get",
+        set: "Company.WhereUserIsManager.Other.Set"
       }
     }
   }

@@ -54,7 +54,7 @@ test("should be forbidden if non-owned company but has claim to edit other field
   getCompany
 }) => {
   await runAsDefaultUser({
-    claims: [claims.company.whereUserIsManager.other.update]
+    claims: [claims.company.whereUserIsManager.other.set]
   });
 
   const companyId = await createCompany();
@@ -100,7 +100,7 @@ test("should be able to edit any field in own company", async ({
   getCompany
 }) => {
   const user = await runAsDefaultUser({
-    claims: [claims.company.whereUserIsManager.other.update]
+    claims: [claims.company.whereUserIsManager.other.set]
   });
 
   const companyId = await createCompany({ managerId: user.id });
@@ -118,7 +118,7 @@ test("should be able to edit any field in own company", async ({
 });
 
 test("should see not found", async ({ page, runAsDefaultUser }) => {
-  await runAsDefaultUser({ claims: [claims.company.any.other.update] });
+  await runAsDefaultUser({ claims: [claims.company.any.other.set] });
   await page.goto(routes.companies.edit(1));
 
   await expectMinimalUi(page, undefined, {
