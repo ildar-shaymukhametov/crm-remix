@@ -19,9 +19,10 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFieldsEqual(company, actual);
-        AssertOtherFieldsEqual(company, actual);
-        AssertManagerEqual(company, actual);
+        AssertInitialFields(company, actual);
+        AssertOtherFields(company, actual);
+        AssertManagerField(company, actual);
+        AssertNameField(company, actual);
     }
 
     [Fact]
@@ -34,55 +35,59 @@ public class GetCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_view_other_fields_in_any_company___Returns_other_fields_only()
+    public async Task User_has_claim_to_view_other_fields_in_any_company___Returns_other_fields()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Get });
         var company = await _fixture.AddCompanyAsync();
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFieldsEqual(company, actual);
-        AssertOtherFieldsEqual(company, actual);
-        AssertNoManager(actual);
+        AssertInitialFields(company, actual);
+        AssertOtherFields(company, actual);
+        AssertNoManagerField(actual);
+        AssertNoNameField(actual);
     }
 
     [Fact]
-    public async Task User_has_claim_to_view_manager_in_any_company___Returns_manager_only()
+    public async Task User_has_claim_to_view_manager_in_any_company___Returns_manager()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Manager.Get });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFieldsEqual(company, actual);
-        AssertManagerEqual(company, actual);
+        AssertInitialFields(company, actual);
+        AssertManagerField(company, actual);
         AssertNoOtherFields(actual);
+        AssertNoNameField(actual);
     }
 
     [Fact]
-    public async Task User_has_claim_to_view_other_fields_in_own_company___Returns_other_fields_only()
+    public async Task User_has_claim_to_view_other_fields_in_own_company___Returns_other_fields()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Get });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFieldsEqual(company, actual);
-        AssertOtherFieldsEqual(company, actual);
-        AssertNoManager(actual);
+        AssertInitialFields(company, actual);
+        AssertOtherFields(company, actual);
+        AssertNoManagerField(actual);
+        AssertNoNameField(actual);
     }
 
     [Fact]
-    public async Task User_has_claim_to_view_manager_in_own_company___Returns_manager_only()
+    public async Task User_has_claim_to_view_manager_in_own_company___Returns_manager()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Manager.Get });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFieldsEqual(company, actual);
-        AssertManagerEqual(company, actual);
+        AssertInitialFields(company, actual);
+        AssertManagerField(company, actual);
         AssertNoOtherFields(actual);
+        AssertNoNameField(actual);
     }
 
     [Theory]
@@ -97,7 +102,7 @@ public class GetCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_delete_company___Returns_id_only()
+    public async Task User_can_delete_company___Returns_id()
     {
         await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync();
@@ -105,38 +110,41 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFieldsEqual(company, actual);
+        AssertInitialFields(company, actual);
         Assert.True(actual?.CanBeDeleted);
-        AssertNoManager(actual);
+        AssertNoManagerField(actual);
         AssertNoOtherFields(actual);
+        AssertNoNameField(actual);
     }
 
     [Fact]
-    public async Task User_has_claim_to_update_other_fields_in_any_company___Returns_id_and_other_fields_only()
+    public async Task User_has_claim_to_update_other_fields_in_any_company___Returns_id_and_other_fields()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Set });
         var company = await _fixture.AddCompanyAsync();
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFieldsEqual(company, actual);
+        AssertInitialFields(company, actual);
         Assert.True(actual?.CanBeUpdated);
-        AssertNoManager(actual);
-        AssertOtherFieldsEqual(company, actual);
+        AssertNoManagerField(actual);
+        AssertOtherFields(company, actual);
+        AssertNoNameField(actual);
     }
 
     [Fact]
-    public async Task User_has_claim_to_update_other_fields_in_own_company___Returns_id_and_other_fields_only()
+    public async Task User_has_claim_to_update_other_fields_in_own_company___Returns_id_and_other_fields()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFieldsEqual(company, actual);
+        AssertInitialFields(company, actual);
         Assert.True(actual?.CanBeUpdated);
-        AssertNoManager(actual);
-        AssertOtherFieldsEqual(company, actual);
+        AssertNoManagerField(actual);
+        AssertOtherFields(company, actual);
+        AssertNoNameField(actual);
     }
 
     [Fact]
@@ -152,34 +160,36 @@ public class GetCompanyTests : BaseTest
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
-    public async Task User_has_claim_to_set_manager_from_any_in_any_company___Returns_id_and_manager_only(string claim)
+    public async Task User_has_claim_to_set_manager_from_any_in_any_company___Returns_id_and_manager(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync();
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFieldsEqual(company, actual);
+        AssertInitialFields(company, actual);
         Assert.True(actual?.CanBeUpdated);
-        AssertManagerEqual(company, actual);
+        AssertManagerField(company, actual);
         AssertNoOtherFields(actual);
+        AssertNoNameField(actual);
     }
 
     [Theory]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
-    public async Task User_has_claim_to_set_manager_from_any_in_any_company_and_is_manager___Returns_id_and_manager_only(string claim)
+    public async Task User_has_claim_to_set_manager_from_any_in_any_company_and_is_manager___Returns_id_and_manager(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFieldsEqual(company, actual);
+        AssertInitialFields(company, actual);
         Assert.True(actual?.CanBeUpdated);
-        AssertManagerEqual(company, actual);
+        AssertManagerField(company, actual);
         AssertNoOtherFields(actual);
+        AssertNoNameField(actual);
     }
 
     [Theory]
@@ -187,17 +197,18 @@ public class GetCompanyTests : BaseTest
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
-    public async Task User_has_claim_to_set_manager_from_self___Returns_id_and_manager_only(string claim)
+    public async Task User_has_claim_to_set_manager_from_self___Returns_id_and_manager(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync(user.Id);
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFieldsEqual(company, actual);
+        AssertInitialFields(company, actual);
         Assert.True(actual?.CanBeUpdated);
-        AssertManagerEqual(company, actual);
+        AssertManagerField(company, actual);
         AssertNoOtherFields(actual);
+        AssertNoNameField(actual);
     }
 
     [Theory]
@@ -216,17 +227,18 @@ public class GetCompanyTests : BaseTest
     [Theory]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
-    public async Task User_has_claim_to_set_manager_from_none_in_any_company___Returns_id_and_manager_only(string claim)
+    public async Task User_has_claim_to_set_manager_from_none_in_any_company___Returns_id_and_manager(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync();
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFieldsEqual(company, actual);
+        AssertInitialFields(company, actual);
         Assert.True(actual?.CanBeUpdated);
-        AssertManagerEqual(company, actual);
+        AssertManagerField(company, actual);
         AssertNoOtherFields(actual);
+        AssertNoNameField(actual);
     }
 
     [Theory]
@@ -240,7 +252,21 @@ public class GetCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));
     }
 
-    private static void AssertNoManager(CompanyVm? actual)
+    [Fact]
+    public async Task User_has_claim_to_view_name_in_any_company___Returns_name_field()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Name.Get });
+        var company = await _fixture.AddCompanyAsync();
+
+        var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
+
+        AssertInitialFields(company, actual);
+        AssertNameField(company, actual);
+        AssertNoOtherFields(actual);
+        AssertNoManagerField(actual);
+    }
+
+    private static void AssertNoManagerField(CompanyVm? actual)
     {
         Assert.False(actual?.Fields.ContainsKey(nameof(Company.Manager)));
     }
@@ -256,7 +282,7 @@ public class GetCompanyTests : BaseTest
         Assert.False(actual?.Fields.ContainsKey(nameof(Company.Type)));
     }
 
-    private static void AssertOtherFieldsEqual(Company? expected, CompanyVm? actual)
+    private static void AssertOtherFields(Company? expected, CompanyVm? actual)
     {
         Assert.Equal(expected?.TypeId, (actual?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
         Assert.Equal(expected?.Address, actual?.Fields[nameof(Company.Address)]);
@@ -267,15 +293,24 @@ public class GetCompanyTests : BaseTest
         Assert.Equal(expected?.Phone, actual?.Fields[nameof(Company.Phone)]);
     }
 
-    private static void AssertManagerEqual(Company? expected, CompanyVm? actual)
+    private static void AssertManagerField(Company? expected, CompanyVm? actual)
     {
         Assert.Equal(expected?.ManagerId, (actual?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
     }
 
-    private static void AssertInitialFieldsEqual(Company? expected, CompanyVm? actual)
+    private static void AssertInitialFields(Company? expected, CompanyVm? actual)
     {
         Assert.Equal(expected?.Id, actual?.Id);
+    }
+
+    private static void AssertNameField(Company? expected, CompanyVm? actual)
+    {
         Assert.Equal(expected?.Name, actual?.Fields[nameof(Company.Name)]);
+    }
+
+    private static void AssertNoNameField(CompanyVm? actual)
+    {
+        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Name)));
     }
 }
 

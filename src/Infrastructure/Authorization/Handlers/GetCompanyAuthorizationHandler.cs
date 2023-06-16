@@ -19,7 +19,11 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, GetCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        if (accessRights.ContainsAny(Access.Company.Any.Other.Get, Access.Company.Any.Manager.Get))
+        if (accessRights.ContainsAny(
+            Access.Company.Any.Other.Get,
+            Access.Company.Any.Manager.Get,
+            Access.Company.Any.Name.Get
+        ))
         {
             context.Succeed(requirement);
         }

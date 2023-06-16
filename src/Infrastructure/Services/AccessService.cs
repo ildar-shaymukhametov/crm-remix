@@ -149,6 +149,11 @@ public class AccessService : IAccessService
             result.Add(Access.Company.New.Manager.SetToNone);
         }
 
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.Any.Name.Get))
+        {
+            result.Add(Access.Company.Any.Name.Get);
+        }
+
         return result.ToArray();
     }
 

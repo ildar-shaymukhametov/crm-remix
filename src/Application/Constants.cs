@@ -44,6 +44,11 @@ public static class Constants
                     public const string Get = $"{nameof(Company)}.{nameof(Any)}.{nameof(Other)}.{nameof(Get)}";
                     public const string Set = $"{nameof(Company)}.{nameof(Any)}.{nameof(Other)}.{nameof(Set)}";
                 }
+                public static class Name
+                {
+                    public const string Get = $"{nameof(Company)}.{nameof(Any)}.{nameof(Name)}.{nameof(Get)}";
+                    public const string Set = $"{nameof(Company)}.{nameof(Any)}.{nameof(Name)}.{nameof(Set)}";
+                }
             }
 
             public static class WhereUserIsManager
@@ -60,6 +65,11 @@ public static class Constants
                     public const string Get = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(Get)}";
                     public const string SetFromSelfToAny = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(SetFromSelfToAny)}";
                     public const string SetFromSelfToNone = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(SetFromSelfToNone)}";
+                }
+                public static class Name
+                {
+                    public const string Get = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Name)}.{nameof(Get)}";
+                    public const string Set = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Name)}.{nameof(Set)}";
                 }
             }
         }
@@ -137,6 +147,11 @@ public static class Constants
                     public const string Get = $"{nameof(Company)}.{nameof(Any)}.{nameof(Other)}.{nameof(Get)}";
                     public const string Set = $"{nameof(Company)}.{nameof(Any)}.{nameof(Other)}.{nameof(Set)}";
                 }
+                public static class Name
+                {
+                    public const string Get = $"{nameof(Company)}.{nameof(Any)}.{nameof(Name)}.{nameof(Get)}";
+                    public const string Set = $"{nameof(Company)}.{nameof(Any)}.{nameof(Name)}.{nameof(Set)}";
+                }
             }
 
             public static class WhereUserIsManager
@@ -153,6 +168,11 @@ public static class Constants
                     public const string Get = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(Get)}";
                     public const string SetFromSelfToAny = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(SetFromSelfToAny)}";
                     public const string SetFromSelfToNone = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Manager)}.{nameof(SetFromSelfToNone)}";
+                }
+                public static class Name
+                {
+                    public const string Get = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Name)}.{nameof(Get)}";
+                    public const string Set = $"{nameof(Company)}.{nameof(WhereUserIsManager)}.{nameof(Name)}.{nameof(Set)}";
                 }
             }
         }
