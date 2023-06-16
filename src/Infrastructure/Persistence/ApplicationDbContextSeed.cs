@@ -14,6 +14,7 @@ public static class ApplicationDbContextSeed
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Delete, Name = Claims.Company.Any.Delete },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Other.Get, Name = Claims.Company.Any.Other.Get },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Other.Set, Name = Claims.Company.Any.Other.Set },
+            new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.Get, Name = Claims.Company.Any.Manager.Get },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromAnyToAny, Name = Claims.Company.Any.Manager.SetFromAnyToAny },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromAnyToSelf, Name = Claims.Company.Any.Manager.SetFromAnyToSelf },
             new UserClaimType { Id = id++, Value = Claims.Company.Any.Manager.SetFromNoneToSelf, Name = Claims.Company.Any.Manager.SetFromNoneToSelf },
@@ -24,6 +25,7 @@ public static class ApplicationDbContextSeed
             new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Delete, Name = Claims.Company.WhereUserIsManager.Delete },
             new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Other.Get, Name = Claims.Company.WhereUserIsManager.Other.Get },
             new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Other.Set, Name = Claims.Company.WhereUserIsManager.Other.Set },
+            new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Manager.Get, Name = Claims.Company.WhereUserIsManager.Manager.Get },
             new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny, Name = Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny },
             new UserClaimType { Id = id++, Value = Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone, Name = Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone }
         );
