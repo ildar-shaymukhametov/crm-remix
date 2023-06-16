@@ -12,7 +12,7 @@ import type {
   Manager,
   UpdateCompany
 } from "~/utils/companies.server";
-import { getInitData } from "~/utils/companies.server";
+import { getNewCompany } from "~/utils/companies.server";
 import { updateCompany } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
@@ -45,7 +45,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     user.extra?.access_token
   );
 
-  const initData = await getInitData(
+  const initData = await getNewCompany(
     request,
     user.extra?.access_token,
     company.id

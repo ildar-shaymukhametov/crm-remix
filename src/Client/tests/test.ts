@@ -15,6 +15,8 @@ type DefaultUserOptions = {
   familiyName?: string;
 };
 
+let adminAccessToken = "";
+
 const adminUser: NewUser = {
   password: "Administrator1!",
   userName: "administrator@localhost",
@@ -24,11 +26,10 @@ const adminUser: NewUser = {
 };
 
 const defaultUser: NewUser = {
-  password: "Tester1!",
-  userName: "tester@localhost",
-  firstName: "tester",
-  lastName: "tester-localhost",
-  roles: ["Tester"]
+  password: "Default1!",
+  userName: "default@localhost",
+  firstName: "default",
+  lastName: "default-localhost"
 };
 
 export const test = base.extend<{
@@ -88,13 +89,18 @@ async function runAsDefaultUser(
   options: DefaultUserOptions
 ) {
   const user = { ...defaultUser };
-  if (options.claims && options.claims.length > 0) {
+  if (options.claims && options.claims?.length > 0) {
     user.claims = options.claims;
   }
 
   const userId = await createUser(new Request("http://foobar.com"), user);
 
-  const profile = createOidcProfile(userId, user.firstName, user.lastName, user.userName);
+  const profile = createOidcProfile(
+    userId,
+    user.firstName,
+    user.lastName,
+    user.userName
+  );
   profile.extra.access_token =
     options.accessToken ??
     (await getAccessToken(page, user.userName, user.password));
@@ -109,12 +115,18 @@ async function runAsDefaultUser(
 
 async function runAsAdministrator(page: Page, baseURL: string) {
   const adminId = await createUser(new Request("http://foobar.com"), adminUser);
-  const user = createOidcProfile(adminId, adminUser.firstName, adminUser.lastName, adminUser.userName);
+  const user = createOidcProfile(
+    adminId,
+    adminUser.firstName,
+    adminUser.lastName,
+    adminUser.userName
+  );
   user.extra.access_token = await getAccessToken(
     page,
     adminUser.userName,
     adminUser.password
   );
+  adminAccessToken = user.extra.access_token;
 
   await login(page, baseURL, user);
 
@@ -244,4 +256,17 @@ function createOidcProfile(
     },
     provider: ""
   };
+}
+
+export async function getAdminAccessToken(page: Page) {
+  if (adminAccessToken) {
+    console.log("RETURNING EXISTING TOKEN");
+    return adminAccessToken;
+  }
+
+  await createUser(new Request("http://foobar.com"), adminUser);
+
+  adminAccessToken = await getAccessToken(page, adminUser.userName, adminUser.password);
+  console.log("RETURNING NEW TOKEN");
+  return adminAccessToken;
 }

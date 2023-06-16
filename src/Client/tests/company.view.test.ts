@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-import type { Company } from "~/utils/companies.server";
+import type { Company, CompanyType, Manager } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 import { claims } from "~/utils/constants.server";
 import { test } from "./companies-test";
@@ -9,19 +9,19 @@ test.beforeEach(async ({ resetDb }) => {
   await resetDb();
 });
 
-test("should be able to view any company", async ({
+test("should be able to view other fields in any company", async ({
   page,
   runAsDefaultUser,
   createCompany,
   getCompany
 }) => {
-  await runAsDefaultUser({ claims: [claims.company.any.other.view] });
-  const companyId = await createCompany();
+  await runAsDefaultUser({ claims: [claims.company.any.other.get] });
+  const id = await createCompany();
 
-  await page.goto(routes.companies.view(companyId));
+  await page.goto(routes.companies.view(id));
 
-  const company = await getCompany(companyId);
-  await expectMinimalUi(page, company);
+  const company = await getCompany(id);
+  await expectMinimalUi(page, company, { otherFields: true });
 });
 
 test("should be forbidden if no claims", async ({
@@ -37,7 +37,7 @@ test("should be forbidden if no claims", async ({
   const company = await getCompany(companyId);
   await expectMinimalUi(page, company, {
     title: "minimal",
-    companyFields: false,
+    otherFields: false,
     forbidden: true,
     notFound: false
   });
@@ -50,7 +50,7 @@ test("should be able to click edit button in any company", async ({
   getCompany
 }) => {
   await runAsDefaultUser({
-    claims: [claims.company.any.other.update]
+    claims: [claims.company.any.other.set]
   });
 
   const companyId = await createCompany();
@@ -86,18 +86,18 @@ test("should be able to click delete company button in any company", async ({
 });
 
 test("should see not found", async ({ page, runAsDefaultUser }) => {
-  await runAsDefaultUser({ claims: [claims.company.any.other.view] });
+  await runAsDefaultUser({ claims: [claims.company.any.other.get] });
   await page.goto(routes.companies.view("1"));
 
   await expectMinimalUi(page, undefined, {
     title: "minimal",
-    companyFields: false,
+    otherFields: false,
     forbidden: false,
     notFound: true
   });
 });
 
-for (const claim of [claims.company.whereUserIsManager.other.view]) {
+for (const claim of [claims.company.whereUserIsManager.other.get]) {
   test(`should be able to view own company with claim ${claim}`, async ({
     page,
     runAsDefaultUser,
@@ -119,9 +119,9 @@ for (const claim of [claims.company.whereUserIsManager.other.view]) {
 }
 
 for (const claim of [
-  claims.company.whereUserIsManager.other.view,
+  claims.company.whereUserIsManager.other.get,
   claims.company.whereUserIsManager.delete,
-  claims.company.whereUserIsManager.other.update
+  claims.company.whereUserIsManager.other.set
 ]) {
   test(`should not be able to view non-owned company with claim ${claim}`, async ({
     page,
@@ -139,7 +139,7 @@ for (const claim of [
     const company = await getCompany(companyId);
     await expectMinimalUi(page, company, {
       title: "minimal",
-      companyFields: false,
+      otherFields: false,
       forbidden: true,
       notFound: false
     });
@@ -162,7 +162,7 @@ test(`should not be able to view own company without claim`, async ({
   const company = await getCompany(companyId);
   await expectMinimalUi(page, company, {
     title: "minimal",
-    companyFields: false,
+    otherFields: false,
     forbidden: true,
     notFound: false
   });
@@ -175,7 +175,7 @@ test(`should be able to click edit button in own company`, async ({
   getCompany
 }) => {
   const user = await runAsDefaultUser({
-    claims: [claims.company.whereUserIsManager.other.update]
+    claims: [claims.company.whereUserIsManager.other.set]
   });
 
   const companyId = await createCompany({
@@ -228,7 +228,7 @@ test("should not be able to click delete company button in own company without c
 
   await expectMinimalUi(page, company, {
     title: "minimal",
-    companyFields: false,
+    otherFields: false,
     forbidden: true,
     notFound: false
   });
@@ -249,7 +249,7 @@ test("should not be able to click delete company button in non-owned company", a
 
   await expectMinimalUi(page, company, {
     title: "minimal",
-    companyFields: false,
+    otherFields: false,
     forbidden: true,
     notFound: false
   });
@@ -257,11 +257,12 @@ test("should not be able to click delete company button in non-owned company", a
 
 type VisibilityOptions = {
   forbidden?: boolean;
-  companyFields?: boolean;
+  otherFields?: boolean;
   title?: "minimal" | "full";
   editButton?: boolean;
   deleteButton?: boolean;
   notFound?: boolean;
+  managerField?: boolean;
 };
 
 async function expectMinimalUi(
@@ -269,28 +270,59 @@ async function expectMinimalUi(
   company?: Company,
   {
     forbidden = false,
-    companyFields = true,
+    otherFields = false,
     title = "full",
     editButton = false,
     deleteButton = false,
-    notFound = false
+    notFound = false,
+    managerField = false
   }: VisibilityOptions = {}
 ) {
   if (title === "minimal") {
     await expect(page).toHaveTitle("View company");
   } else {
     if (company) {
-      await expect(page).toHaveTitle(company.name);
+      await expect(page).toHaveTitle(company.fields?.Name?.toString());
     }
   }
 
   await expect(page.getByText(/forbidden/i)).toBeVisible({
     visible: forbidden
   });
-  await expectCompanyFieldsToBeVisible(page, companyFields);
-  if (company && companyFields) {
-    await expectCompanyFieldsToValues(page, company);
-  }
+
+  const fields = [
+    { key: /name/i, value: company?.fields.Name, visible: true },
+    {
+      key: /address/i,
+      value: company?.fields.Address,
+      visible: otherFields
+    },
+    { key: /ceo/i, value: company?.fields.Ceo, visible: otherFields },
+    {
+      key: /contacts/i,
+      value: company?.fields.Contacts,
+      visible: otherFields
+    },
+    { key: /email/i, value: company?.fields.Email, visible: otherFields },
+    { key: /inn/i, value: company?.fields.Inn, visible: otherFields },
+    { key: /phone/i, value: company?.fields.Phone, visible: otherFields },
+    {
+      key: /type/i,
+      value: (company?.fields.Type as CompanyType)?.name,
+      visible: otherFields
+    },
+    {
+      key: /manager/i,
+      value: company?.fields.Manager
+        ? `${(company?.fields.Manager as Manager)?.lastName} ${
+            (company?.fields.Manager as Manager)?.firstName
+          }`
+        : "-",
+      visible: managerField
+    }
+  ];
+
+  await expectFieldsToBeVisible(page, fields);
   await expect(page.getByRole("link", { name: /edit/i })).toBeVisible({
     visible: editButton
   });
@@ -302,46 +334,22 @@ async function expectMinimalUi(
   });
 }
 
-async function expectCompanyFieldsToBeVisible(page: Page, visible: boolean) {
-  const fields = [
-    "name",
-    "address",
-    "ceo",
-    "contacts",
-    "email",
-    "inn",
-    "phone",
-    "type",
-    "manager"
-  ];
-
-  for (const field of fields) {
-    await expect(page.getByLabel(field)).toBeVisible({
-      visible
-    });
-  }
-}
-
-async function expectCompanyFieldsToValues(page: Page, company: Company) {
-  const fields = [
-    { key: "name", value: company.name },
-    { key: "address", value: company.address },
-    { key: "ceo", value: company.ceo },
-    { key: "contacts", value: company.contacts },
-    { key: "email", value: company.email },
-    { key: "inn", value: company.inn },
-    { key: "phone", value: company.phone },
-    { key: "type", value: company.type?.name },
-    {
-      key: "manager",
-      value: company.manager
-        ? `${company.manager?.firstName} ${company.manager?.lastName}`
-        : "-"
-    }
-  ];
-
+async function expectFieldsToBeVisible(
+  page: Page,
+  fields: {
+    key: RegExp;
+    value: object | string | undefined;
+    visible: boolean;
+  }[]
+) {
   for (const field of fields) {
     const element = page.getByLabel(field.key);
-    await expect(element).toHaveText(field.value);
+    await expect(element).toBeVisible({
+      visible: field.visible
+    });
+
+    if (field.visible) {
+      await expect(element).toHaveText(field.value?.toString() ?? "");
+    }
   }
 }
