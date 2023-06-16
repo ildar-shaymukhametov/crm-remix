@@ -19,10 +19,7 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
-        AssertOtherFields(company, actual);
-        AssertManagerField(company, actual);
-        AssertNameField(company, actual);
+        AssertFields(company, actual, true, true, true);
     }
 
     [Fact]
@@ -42,10 +39,7 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
-        AssertOtherFields(company, actual);
-        AssertNoManagerField(actual);
-        AssertNoNameField(actual);
+        AssertFields(company, actual, other: true);
     }
 
     [Fact]
@@ -56,10 +50,7 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
-        AssertManagerField(company, actual);
-        AssertNoOtherFields(actual);
-        AssertNoNameField(actual);
+        AssertFields(company, actual, manager: true);
     }
 
     [Fact]
@@ -70,10 +61,7 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
-        AssertOtherFields(company, actual);
-        AssertNoManagerField(actual);
-        AssertNoNameField(actual);
+        AssertFields(company, actual, other: true);
     }
 
     [Fact]
@@ -84,10 +72,7 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
-        AssertManagerField(company, actual);
-        AssertNoOtherFields(actual);
-        AssertNoNameField(actual);
+        AssertFields(company, actual, manager: true);
     }
 
     [Theory]
@@ -110,11 +95,8 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
+        AssertFields(company, actual);
         Assert.True(actual?.CanBeDeleted);
-        AssertNoManagerField(actual);
-        AssertNoOtherFields(actual);
-        AssertNoNameField(actual);
     }
 
     [Fact]
@@ -125,11 +107,8 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
+        AssertFields(company, actual, other: true);
         Assert.True(actual?.CanBeUpdated);
-        AssertNoManagerField(actual);
-        AssertOtherFields(company, actual);
-        AssertNoNameField(actual);
     }
 
     [Fact]
@@ -140,11 +119,8 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
+        AssertFields(company, actual, other: true);
         Assert.True(actual?.CanBeUpdated);
-        AssertNoManagerField(actual);
-        AssertOtherFields(company, actual);
-        AssertNoNameField(actual);
     }
 
     [Fact]
@@ -167,11 +143,8 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
+        AssertFields(company, actual, manager: true);
         Assert.True(actual?.CanBeUpdated);
-        AssertManagerField(company, actual);
-        AssertNoOtherFields(actual);
-        AssertNoNameField(actual);
     }
 
     [Theory]
@@ -185,11 +158,8 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
+        AssertFields(company, actual, manager: true);
         Assert.True(actual?.CanBeUpdated);
-        AssertManagerField(company, actual);
-        AssertNoOtherFields(actual);
-        AssertNoNameField(actual);
     }
 
     [Theory]
@@ -204,11 +174,8 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
+        AssertFields(company, actual, manager: true);
         Assert.True(actual?.CanBeUpdated);
-        AssertManagerField(company, actual);
-        AssertNoOtherFields(actual);
-        AssertNoNameField(actual);
     }
 
     [Theory]
@@ -234,11 +201,8 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
+        AssertFields(company, actual, manager: true);
         Assert.True(actual?.CanBeUpdated);
-        AssertManagerField(company, actual);
-        AssertNoOtherFields(actual);
-        AssertNoNameField(actual);
     }
 
     [Theory]
@@ -260,57 +224,51 @@ public class GetCompanyTests : BaseTest
 
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
-        AssertInitialFields(company, actual);
-        AssertNameField(company, actual);
-        AssertNoOtherFields(actual);
-        AssertNoManagerField(actual);
+        AssertFields(company, actual, name: true);
     }
 
-    private static void AssertNoManagerField(CompanyVm? actual)
-    {
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Manager)));
-    }
-
-    private static void AssertNoOtherFields(CompanyVm? actual)
-    {
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Address)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Ceo)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Contacts)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Email)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Inn)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Phone)));
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Type)));
-    }
-
-    private static void AssertOtherFields(Company? expected, CompanyVm? actual)
-    {
-        Assert.Equal(expected?.TypeId, (actual?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
-        Assert.Equal(expected?.Address, actual?.Fields[nameof(Company.Address)]);
-        Assert.Equal(expected?.Ceo, actual?.Fields[nameof(Company.Ceo)]);
-        Assert.Equal(expected?.Contacts, actual?.Fields[nameof(Company.Contacts)]);
-        Assert.Equal(expected?.Email, actual?.Fields[nameof(Company.Email)]);
-        Assert.Equal(expected?.Inn, actual?.Fields[nameof(Company.Inn)]);
-        Assert.Equal(expected?.Phone, actual?.Fields[nameof(Company.Phone)]);
-    }
-
-    private static void AssertManagerField(Company? expected, CompanyVm? actual)
-    {
-        Assert.Equal(expected?.ManagerId, (actual?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
-    }
-
-    private static void AssertInitialFields(Company? expected, CompanyVm? actual)
+    private static void AssertFields(Company? expected, CompanyVm? actual, bool name = false, bool manager = false, bool other = false)
     {
         Assert.Equal(expected?.Id, actual?.Id);
-    }
 
-    private static void AssertNameField(Company? expected, CompanyVm? actual)
-    {
-        Assert.Equal(expected?.Name, actual?.Fields[nameof(Company.Name)]);
-    }
+        if (other)
+        {
+            Assert.Equal(expected?.TypeId, (actual?.Fields[nameof(Company.Type)] as CompanyTypeDto)?.Id);
+            Assert.Equal(expected?.Address, actual?.Fields[nameof(Company.Address)]);
+            Assert.Equal(expected?.Ceo, actual?.Fields[nameof(Company.Ceo)]);
+            Assert.Equal(expected?.Contacts, actual?.Fields[nameof(Company.Contacts)]);
+            Assert.Equal(expected?.Email, actual?.Fields[nameof(Company.Email)]);
+            Assert.Equal(expected?.Inn, actual?.Fields[nameof(Company.Inn)]);
+            Assert.Equal(expected?.Phone, actual?.Fields[nameof(Company.Phone)]);
+        }
+        else
+        {
+            Assert.False(actual?.Fields.ContainsKey(nameof(Company.Address)));
+            Assert.False(actual?.Fields.ContainsKey(nameof(Company.Ceo)));
+            Assert.False(actual?.Fields.ContainsKey(nameof(Company.Contacts)));
+            Assert.False(actual?.Fields.ContainsKey(nameof(Company.Email)));
+            Assert.False(actual?.Fields.ContainsKey(nameof(Company.Inn)));
+            Assert.False(actual?.Fields.ContainsKey(nameof(Company.Phone)));
+            Assert.False(actual?.Fields.ContainsKey(nameof(Company.Type)));
+        }
 
-    private static void AssertNoNameField(CompanyVm? actual)
-    {
-        Assert.False(actual?.Fields.ContainsKey(nameof(Company.Name)));
+        if (manager)
+        {
+            Assert.Equal(expected?.ManagerId, (actual?.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
+        }
+        else
+        {
+            Assert.False(actual?.Fields.ContainsKey(nameof(Company.Manager)));
+        }
+
+        if (name)
+        {
+            Assert.Equal(expected?.Name, actual?.Fields[nameof(Company.Name)]);
+        }
+        else
+        {
+            Assert.False(actual?.Fields.ContainsKey(nameof(Company.Name)));
+        }
     }
 }
 
