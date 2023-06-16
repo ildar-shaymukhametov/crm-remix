@@ -466,7 +466,8 @@ public class UpdateCompanyTests : BaseTest
     [InlineData(Claims.Company.Any.Manager.SetFromNoneToSelf)]
     [InlineData(Claims.Company.Any.Manager.SetFromSelfToAny)]
     [InlineData(Claims.Company.Any.Manager.SetFromSelfToNone)]
-    public async Task Any_company___Forbidden_to_update_name(string claim)
+    [InlineData(Claims.Company.WhereUserIsManager.Name.Set)]
+    public async Task No_manager_company___Forbidden_to_update_name(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync();

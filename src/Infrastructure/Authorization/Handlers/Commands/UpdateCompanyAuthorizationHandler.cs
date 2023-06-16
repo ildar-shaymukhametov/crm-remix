@@ -75,10 +75,14 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
 
         if (company.Name != request.Name)
         {
-            if (!accessRights.ContainsAny(
+            if (company.ManagerId == userId && !accessRights.ContainsAny(
                 Access.Company.Any.Name.Set,
                 Access.Company.WhereUserIsManager.Name.Set
             ))
+            {
+                return Fail(context, "Update name");
+            }
+            else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Name.Set))
             {
                 return Fail(context, "Update name");
             }
