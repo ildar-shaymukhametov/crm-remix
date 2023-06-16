@@ -22,7 +22,8 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             Access.Company.Any.Other.Set,
             Access.Company.Any.Manager.SetFromAnyToAny,
             Access.Company.Any.Manager.SetFromAnyToNone,
-            Access.Company.Any.Manager.SetFromAnyToSelf
+            Access.Company.Any.Manager.SetFromAnyToSelf,
+            Access.Company.Any.Name.Set
         ))
         {
             return Ok(context, requirement);

@@ -80,6 +80,7 @@ public class GetCompanyRequestHandler : IRequestHandler<GetCompanyQuery, Company
 
         if (accessRights.ContainsAny(
             Constants.Access.Company.Any.Name.Get,
+            Constants.Access.Company.Any.Name.Set,
             Constants.Access.Company.WhereUserIsManager.Name.Get
         ))
         {

@@ -78,6 +78,7 @@ public class GetCompanyTests : BaseTest
     [Theory]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.Get)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.Get)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Name.Get)]
     public async Task User_has_claim_to_view_certain_fields_in_own_company_and_is_not_manager___Forbidden(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -100,7 +101,7 @@ public class GetCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_update_other_fields_in_any_company___Returns_id_and_other_fields()
+    public async Task User_has_claim_to_update_other_fields_in_any_company___Returns_other_fields()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Set });
         var company = await _fixture.AddCompanyAsync();
@@ -112,7 +113,7 @@ public class GetCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_update_other_fields_in_own_company___Returns_id_and_other_fields()
+    public async Task User_has_claim_to_update_other_fields_in_own_company___Returns_other_fields()
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync(user.Id);
@@ -136,7 +137,7 @@ public class GetCompanyTests : BaseTest
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
-    public async Task User_has_claim_to_set_manager_from_any_in_any_company___Returns_id_and_manager(string claim)
+    public async Task User_has_claim_to_set_manager_from_any_in_any_company___Returns_manager(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync();
@@ -151,7 +152,7 @@ public class GetCompanyTests : BaseTest
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
-    public async Task User_has_claim_to_set_manager_from_any_in_any_company_and_is_manager___Returns_id_and_manager(string claim)
+    public async Task User_has_claim_to_set_manager_from_any_in_any_company_and_is_manager___Returns_manager(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync(user.Id);
@@ -167,7 +168,7 @@ public class GetCompanyTests : BaseTest
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
-    public async Task User_has_claim_to_set_manager_from_self___Returns_id_and_manager(string claim)
+    public async Task User_has_claim_to_set_manager_from_self___Returns_manager(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync(user.Id);
@@ -194,7 +195,7 @@ public class GetCompanyTests : BaseTest
     [Theory]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
-    public async Task User_has_claim_to_set_manager_from_none_in_any_company___Returns_id_and_manager(string claim)
+    public async Task User_has_claim_to_set_manager_from_none_in_any_company___Returns_manager(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync();
@@ -236,6 +237,18 @@ public class GetCompanyTests : BaseTest
         var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
 
         AssertFields(company, actual, name: true);
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_update_other_name_in_any_company___Returns_name()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Name.Set });
+        var company = await _fixture.AddCompanyAsync();
+
+        var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
+
+        AssertFields(company, actual, name: true);
+        Assert.True(actual?.CanBeUpdated);
     }
 
     private static void AssertFields(Company? expected, CompanyVm? actual, bool name = false, bool manager = false, bool other = false)
