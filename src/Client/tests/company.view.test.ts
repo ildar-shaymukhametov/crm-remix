@@ -31,15 +31,13 @@ test("should be forbidden if no claims", async ({
   getCompany
 }) => {
   await runAsDefaultUser();
-  const companyId = await createCompany();
-  await page.goto(routes.companies.view(companyId));
+  const id = await createCompany();
+  await page.goto(routes.companies.view(id));
 
-  const company = await getCompany(companyId);
+  const company = await getCompany(id);
   await expectMinimalUi(page, company, {
     title: "minimal",
-    otherFields: false,
-    forbidden: true,
-    notFound: false
+    forbidden: true
   });
 });
 
@@ -291,7 +289,7 @@ async function expectMinimalUi(
   });
 
   const fields = [
-    { key: /name/i, value: company?.fields.Name, visible: true },
+    { key: /name/i, value: company?.fields.Name, visible: otherFields },
     {
       key: /address/i,
       value: company?.fields.Address,

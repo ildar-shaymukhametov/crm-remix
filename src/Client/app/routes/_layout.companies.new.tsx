@@ -13,7 +13,7 @@ import type {
   Manager,
   NewCompany
 } from "~/utils/companies.server";
-import { createCompany, getInitData } from "~/utils/companies.server";
+import { createCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 import { permissions } from "~/utils/constants.server";
 
@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     throw new Response(null, { status: 403 });
   }
 
-  const initData = await getInitData(request, user.extra?.access_token);
+  const initData = { managers: [""], companyTypes: [""] };
 
   return json({
     ...initData

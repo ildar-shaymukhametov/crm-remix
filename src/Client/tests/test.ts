@@ -62,6 +62,7 @@ export const test = base.extend<{
             "X-API-Key": "TestApiKey"
           }
         });
+        adminAccessToken = "";
       });
     },
     { auto: true }
@@ -260,13 +261,11 @@ function createOidcProfile(
 
 export async function getAdminAccessToken(page: Page) {
   if (adminAccessToken) {
-    console.log("RETURNING EXISTING TOKEN");
     return adminAccessToken;
   }
 
   await createUser(new Request("http://foobar.com"), adminUser);
 
   adminAccessToken = await getAccessToken(page, adminUser.userName, adminUser.password);
-  console.log("RETURNING NEW TOKEN");
   return adminAccessToken;
 }
