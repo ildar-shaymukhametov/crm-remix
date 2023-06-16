@@ -39,7 +39,8 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
                 Access.Company.Any.Manager.SetFromSelfToAny,
                 Access.Company.WhereUserIsManager.Other.Set,
                 Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
-                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
+                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
+                Access.Company.WhereUserIsManager.Name.Set
             ))
             {
                 return Fail(context, "Update company");

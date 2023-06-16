@@ -164,6 +164,11 @@ public class AccessService : IAccessService
             result.Add(Access.Company.Any.Name.Set);
         }
 
+        if (IsAdmin(user) || HasAnyClaim(user, Claims.Company.WhereUserIsManager.Name.Set))
+        {
+            result.Add(Access.Company.WhereUserIsManager.Name.Set);
+        }
+
         return result.ToArray();
     }
 

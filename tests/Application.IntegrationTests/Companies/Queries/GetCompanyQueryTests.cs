@@ -251,6 +251,18 @@ public class GetCompanyTests : BaseTest
         Assert.True(actual?.CanBeUpdated);
     }
 
+    [Fact]
+    public async Task User_has_claim_to_update_other_name_in_own_company___Returns_name()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Name.Set });
+        var company = await _fixture.AddCompanyAsync(user.Id);
+
+        var actual = await _fixture.SendAsync(new GetCompanyQuery(company.Id));
+
+        AssertFields(company, actual, name: true);
+        Assert.True(actual?.CanBeUpdated);
+    }
+
     private static void AssertFields(Company? expected, CompanyVm? actual, bool name = false, bool manager = false, bool other = false)
     {
         Assert.Equal(expected?.Id, actual?.Id);
