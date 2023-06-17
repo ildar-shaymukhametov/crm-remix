@@ -3,8 +3,8 @@ export const claims = {
     create: "Company.Create",
     any: {
       delete: "Company.Any.Delete",
-      update: "Company.Any.Update",
       manager: {
+        get: "Company.Any.Manager.Get",
         setFromNoneToSelf: "Company.Any.Manager.SetFromNoneToSelf",
         setFromAnyToNone: "Company.Any.Manager.SetFromAnyToNone",
         setFromNoneToAny: "Company.Any.Manager.SetFromNoneToAny",
@@ -25,6 +25,7 @@ export const claims = {
         set: "Company.WhereUserIsManager.Other.Set"
       },
       manager: {
+        get: "Company.WhereUserIsManager.Manager.Get",
         setFromSelfToAny: "Company.WhereUserIsManager.Manager.SetFromSelfToAny",
         setFromSelfToNone:
           "Company.WhereUserIsManager.Manager.SetFromSelfToNone"

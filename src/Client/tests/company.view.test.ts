@@ -32,8 +32,6 @@ test("should see not found", async ({ page, runAsDefaultUser }) => {
 
   await expectMinimalUi(page, undefined, {
     title: "minimal",
-    otherFields: false,
-    forbidden: false,
     notFound: true
   });
 });
@@ -330,6 +328,57 @@ test.describe("delete button", () => {
       await expect(page).toHaveURL(routes.companies.delete(companyId));
     });
   }
+});
+
+test.describe.only("manager", () => {
+  test(`should be able to view in non-owned company}`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({ claims: [claims.company.any.manager.get] });
+    const id = await createCompany();
+
+    await page.goto(routes.companies.view(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, { managerField: true });
+  });
+
+  test(`forbidden to view in non-owned company}`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.whereUserIsManager.manager.get]
+    });
+    const id = await createCompany();
+
+    await page.goto(routes.companies.view(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, { forbidden: true });
+  });
+
+  test(`should be able to view in own company}`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    const user = await runAsDefaultUser({
+      claims: [claims.company.whereUserIsManager.manager.get]
+    });
+    const id = await createCompany({ managerId: user.id });
+
+    await page.goto(routes.companies.view(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, { managerField: true });
+  });
 });
 
 type VisibilityOptions = {
