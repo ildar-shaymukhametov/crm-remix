@@ -262,6 +262,85 @@ test.describe("edit button", () => {
       });
     }
   });
+
+  test.describe("name, title", () => {
+    test(`should be able to click in non-owned company`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      await runAsDefaultUser({
+        claims: [claims.company.any.name.set]
+      });
+
+      const id = await createCompany();
+      await page.goto(routes.companies.view(id));
+
+      const company = await getCompany(id);
+      await expectMinimalUi(page, company, {
+        editButton: true,
+        nameField: true,
+        title: "full"
+      });
+
+      const button = page.getByRole("link", { name: /edit/i });
+      await button.click();
+      await expect(page).toHaveURL(routes.companies.edit(id));
+    });
+
+    test(`should be forbidden in non-owned company`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      await runAsDefaultUser({
+        claims: [claims.company.whereUserIsManager.name.set]
+      });
+
+      const id = await createCompany();
+      await page.goto(routes.companies.view(id));
+
+      const company = await getCompany(id);
+      await expectMinimalUi(page, company, {
+        forbidden: true
+      });
+    });
+
+    for (const claim of [
+      claims.company.any.name.set,
+      claims.company.whereUserIsManager.name.set
+    ]) {
+      test(`should be able to click in own company with claim ${claim}`, async ({
+        page,
+        runAsDefaultUser,
+        createCompany,
+        getCompany
+      }) => {
+        const user = await runAsDefaultUser({
+          claims: [claim]
+        });
+
+        const companyId = await createCompany({
+          managerId: user.id
+        });
+
+        await page.goto(routes.companies.view(companyId));
+
+        const company = await getCompany(companyId);
+        await expectMinimalUi(page, company, {
+          editButton: true,
+          nameField: true,
+          title: "full"
+        });
+
+        const button = page.getByRole("link", { name: /edit/i });
+        await button.click();
+        await expect(page).toHaveURL(routes.companies.edit(companyId));
+      });
+    }
+  });
 });
 
 test.describe("delete button", () => {
