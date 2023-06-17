@@ -16,6 +16,10 @@ export const claims = {
       other: {
         get: "Company.Any.Other.Get",
         set: "Company.Any.Other.Set"
+      },
+      name: {
+        get: "Company.Any.Name.Get",
+        set: "Company.Any.Name.Set"
       }
     },
     whereUserIsManager: {
@@ -29,6 +33,10 @@ export const claims = {
         setFromSelfToAny: "Company.WhereUserIsManager.Manager.SetFromSelfToAny",
         setFromSelfToNone:
           "Company.WhereUserIsManager.Manager.SetFromSelfToNone"
+      },
+      name: {
+        get: "Company.WhereUserIsManager.Name.Get",
+        set: "Company.WhereUserIsManager.Name.Set"
       }
     }
   }

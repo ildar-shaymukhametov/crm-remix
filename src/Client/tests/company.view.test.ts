@@ -330,7 +330,7 @@ test.describe("delete button", () => {
   }
 });
 
-test.describe.only("manager", () => {
+test.describe("manager", () => {
   test(`should be able to view in non-owned company}`, async ({
     page,
     runAsDefaultUser,
@@ -378,6 +378,57 @@ test.describe.only("manager", () => {
 
     const company = await getCompany(id);
     await expectMinimalUi(page, company, { managerField: true });
+  });
+});
+
+test.describe("name, title", () => {
+  test(`should be able to view in non-owned company}`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({ claims: [claims.company.any.name.get] });
+    const id = await createCompany();
+
+    await page.goto(routes.companies.view(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, { nameField: true, title: "full" });
+  });
+
+  test(`forbidden to view in non-owned company}`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.whereUserIsManager.name.get]
+    });
+    const id = await createCompany();
+
+    await page.goto(routes.companies.view(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, { forbidden: true });
+  });
+
+  test(`should be able to view in own company}`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    const user = await runAsDefaultUser({
+      claims: [claims.company.whereUserIsManager.name.get]
+    });
+    const id = await createCompany({ managerId: user.id });
+
+    await page.goto(routes.companies.view(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, { nameField: true, title: "full" });
   });
 });
 
