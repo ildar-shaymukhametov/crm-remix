@@ -11,10 +11,6 @@ import { routes } from "~/utils/constants";
 
 type LoaderData = {
   company: Company;
-  userPermissions: {
-    canUpdateCompany: boolean;
-    canDeleteCompany: boolean;
-  };
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
