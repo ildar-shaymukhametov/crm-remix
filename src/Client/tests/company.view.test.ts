@@ -44,7 +44,7 @@ for (const claim of [
     const company = await getCompany(id);
     await expectMinimalUi(page, company, { otherFields: true });
   });
-};
+}
 
 for (const claim of [
   claims.company.whereUserIsManager.other.get,
@@ -64,13 +64,13 @@ for (const claim of [
     const company = await getCompany(id);
     await expectMinimalUi(page, company, { otherFields: true });
   });
-};
+}
 
 for (const claim of [
   claims.company.whereUserIsManager.other.get,
   claims.company.whereUserIsManager.other.set
 ]) {
-  test.only(`should be forbidden to view other fields in any company with claim ${claim}`, async ({
+  test(`should be forbidden to view other fields in any company with claim ${claim}`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -86,30 +86,63 @@ for (const claim of [
       forbidden: true
     });
   });
-};
+}
 
-// for (const claim of [claims.company.any.other.set]) {
-//   test.only("should be able to click edit button in any company", async ({
-//     page,
-//     runAsDefaultUser,
-//     createCompany,
-//     getCompany
-//   }) => {
-//     await runAsDefaultUser({
-//       claims: [claim]
-//     });
+test(`should be able to click edit button in any company`, async ({
+  page,
+  runAsDefaultUser,
+  createCompany,
+  getCompany
+}) => {
+  await runAsDefaultUser({
+    claims: [claims.company.any.other.set]
+  });
 
-//     const id = await createCompany();
-//     await page.goto(routes.companies.view(id));
+  const id = await createCompany();
+  await page.goto(routes.companies.view(id));
 
-//     const company = await getCompany(id);
-//     await expectMinimalUi(page, company, { editButton: true });
+  const company = await getCompany(id);
+  await expectMinimalUi(page, company, {
+    editButton: true,
+    otherFields: true
+  });
 
-//     const button = page.getByRole("link", { name: /edit/i });
-//     await button.click();
-//     await expect(page).toHaveURL(routes.companies.edit(id));
-//   });
-// }
+  const button = page.getByRole("link", { name: /edit/i });
+  await button.click();
+  await expect(page).toHaveURL(routes.companies.edit(id));
+});
+
+for (const claim of [
+  claims.company.any.manager.setFromAnyToAny,
+  claims.company.any.manager.setFromAnyToNone,
+  claims.company.any.manager.setFromAnyToSelf,
+  claims.company.any.manager.setFromNoneToAny,
+  claims.company.any.manager.setFromNoneToSelf
+]) {
+  test.only(`should be able to click edit button in any company with claim ${claim}`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({
+      claims: [claim]
+    });
+
+    const id = await createCompany();
+    await page.goto(routes.companies.view(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, {
+      editButton: true,
+      managerField: true
+    });
+
+    const button = page.getByRole("link", { name: /edit/i });
+    await button.click();
+    await expect(page).toHaveURL(routes.companies.edit(id));
+  });
+}
 
 test("should be able to click delete company button in any company", async ({
   page,
@@ -310,6 +343,7 @@ type VisibilityOptions = {
   deleteButton?: boolean;
   notFound?: boolean;
   managerField?: boolean;
+  nameField?: boolean;
 };
 
 async function expectMinimalUi(
@@ -322,13 +356,14 @@ async function expectMinimalUi(
     editButton = false,
     deleteButton = false,
     notFound = false,
-    managerField = false
+    managerField = false,
+    nameField = false
   }: VisibilityOptions = {}
 ) {
   if (title === "minimal") {
     await expect(page).toHaveTitle("View company");
   } else {
-    if (company) {
+    if (company && nameField) {
       await expect(page).toHaveTitle(company.fields?.Name?.toString());
     }
   }
@@ -338,7 +373,7 @@ async function expectMinimalUi(
   });
 
   const fields = [
-    { key: /name/i, value: company?.fields.Name, visible: otherFields },
+    { key: /name/i, value: company?.fields.Name, visible: nameField },
     {
       key: /address/i,
       value: company?.fields.Address,

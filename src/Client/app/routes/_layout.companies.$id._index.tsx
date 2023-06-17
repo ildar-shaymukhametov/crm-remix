@@ -38,10 +38,10 @@ export default function CompanyRoute() {
 
   return (
     <>
-      {false ? (
+      {company.canBeUpdated ? (
         <Link to={routes.companies.edit(id)}>Edit</Link>
       ) : null}
-      {false ? (
+      {company.canBeDeleted ? (
         <Link to={routes.companies.delete(id)}>Delete</Link>
       ) : null}
       <div>
