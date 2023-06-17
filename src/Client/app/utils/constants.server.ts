@@ -23,6 +23,11 @@ export const claims = {
       other: {
         get: "Company.WhereUserIsManager.Other.Get",
         set: "Company.WhereUserIsManager.Other.Set"
+      },
+      manager: {
+        setFromSelfToAny: "Company.WhereUserIsManager.Manager.SetFromSelfToAny",
+        setFromSelfToNone:
+          "Company.WhereUserIsManager.Manager.SetFromSelfToNone"
       }
     }
   }

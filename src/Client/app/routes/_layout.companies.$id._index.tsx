@@ -106,7 +106,7 @@ export default function CompanyRoute() {
               {company.fields.Manager
                 ? `${(company.fields.Manager as Manager)?.lastName} ${
                     (company.fields.Manager as Manager)?.firstName
-                  }}`
+                  }`
                 : "-"}
             </span>
           </p>
