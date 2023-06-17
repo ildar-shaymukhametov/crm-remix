@@ -321,20 +321,10 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Claims.Company.WhereUserIsManager.Other.Set)]
-    [InlineData(Claims.Company.WhereUserIsManager.Name.Set)]
-    public async Task Own_company___Forbidden_to_update_manager(string claim)
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
-        var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateOtherFields(company);
-
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
-
-    [Theory]
-    [InlineData(Claims.Company.WhereUserIsManager.Other.Set)]
-    [InlineData(Claims.Company.WhereUserIsManager.Name.Set)]
+    [InlineData(Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Claims.Company.Any.Manager.SetFromSelfToNone)]
+    [InlineData(Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
+    [InlineData(Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
     public async Task No_manager_in_company___Forbidden_to_update_manager(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
