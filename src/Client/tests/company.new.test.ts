@@ -9,7 +9,7 @@ test.beforeEach(async ({ resetDb }) => {
   await resetDb();
 });
 
-test("should be forbidden", async ({ page, runAsDefaultUser }) => {
+test("forbidden", async ({ page, runAsDefaultUser }) => {
   await runAsDefaultUser();
   await page.goto(routes.companies.new);
 
@@ -20,7 +20,7 @@ test("should be forbidden", async ({ page, runAsDefaultUser }) => {
   });
 });
 
-test("should be able to create company with required fields", async ({
+test("creates company with required fields", async ({
   page,
   runAsDefaultUser
 }) => {
@@ -40,7 +40,7 @@ test("should be able to create company with required fields", async ({
 });
 
 test.describe("manager", () => {
-  test(`should be able to set to self with claim ${claims.company.new.manager.setToAny}`, async ({
+  test(`sets to self with claim ${claims.company.new.manager.setToAny}`, async ({
     page,
     runAsDefaultUser
   }) => {
@@ -66,7 +66,7 @@ test.describe("manager", () => {
     await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
   });
 
-  test(`should be able to set to self with claim ${claims.company.new.manager.setToSelf}`, async ({
+  test(`sets to self with claim ${claims.company.new.manager.setToSelf}`, async ({
     page,
     runAsDefaultUser
   }) => {
@@ -90,7 +90,7 @@ test.describe("manager", () => {
     await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
   });
 
-  test("should not be able to set", async ({ page, runAsDefaultUser }) => {
+  test("cannot set", async ({ page, runAsDefaultUser }) => {
     await runAsDefaultUser({
       claims: [claims.company.create, claims.company.new.manager.setToNone]
     });
@@ -107,33 +107,31 @@ test.describe("manager", () => {
   });
 });
 
-test.describe("other fields", () => {
-  test("should be able to set", async ({ page, runAsDefaultUser }) => {
-    await runAsDefaultUser({
-      claims: [claims.company.create, claims.company.new.other.set]
-    });
-
-    await page.goto(routes.companies.new);
-    await expectMinimalUi(page, { otherFields: true });
-
-    await fillRequiredFields(page, buildCompany());
-
-    const company = buildCompany();
-    await page.getByLabel(/address/i).fill(company.address);
-    await page.getByLabel(/ceo/i).fill(company.ceo);
-    await page.getByLabel(/contacts/i).fill(company.contacts);
-    await page.getByLabel(/email/i).fill(company.email);
-    await page.getByLabel(/inn/i).fill(company.inn);
-    await page.getByLabel(/phone/i).fill(company.phone);
-
-    const type = page.getByLabel(/type/i);
-    await type.selectOption({ index: 1 });
-
-    const submit = page.getByRole("button", { name: /create new company/i });
-    await submit.click();
-
-    await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+test("sets other fields", async ({ page, runAsDefaultUser }) => {
+  await runAsDefaultUser({
+    claims: [claims.company.create, claims.company.new.other.set]
   });
+
+  await page.goto(routes.companies.new);
+  await expectMinimalUi(page, { otherFields: true });
+
+  await fillRequiredFields(page, buildCompany());
+
+  const company = buildCompany();
+  await page.getByLabel(/address/i).fill(company.address);
+  await page.getByLabel(/ceo/i).fill(company.ceo);
+  await page.getByLabel(/contacts/i).fill(company.contacts);
+  await page.getByLabel(/email/i).fill(company.email);
+  await page.getByLabel(/inn/i).fill(company.inn);
+  await page.getByLabel(/phone/i).fill(company.phone);
+
+  const type = page.getByLabel(/type/i);
+  await type.selectOption({ index: 1 });
+
+  const submit = page.getByRole("button", { name: /create new company/i });
+  await submit.click();
+
+  await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
 });
 
 type VisibilityOptions = {
