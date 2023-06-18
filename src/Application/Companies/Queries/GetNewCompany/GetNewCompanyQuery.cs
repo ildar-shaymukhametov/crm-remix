@@ -59,7 +59,7 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
             Constants.Access.Company.New.Manager.SetToNone
         ))
         {
-            result.Fields.Add(nameof(Company.Manager), default);
+            result.Fields.Add(nameof(Company.ManagerId), default);
             result.InitData.Managers = await GetManagersAsync(accessRights);
         }
 

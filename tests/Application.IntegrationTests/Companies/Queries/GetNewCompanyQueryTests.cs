@@ -1,5 +1,4 @@
 using CRM.Application.Common.Exceptions;
-using CRM.Application.Companies.Queries;
 using CRM.Application.Companies.Queries.GetNewCompany;
 using CRM.Domain.Entities;
 using CRM.Infrastructure.Identity;
@@ -178,12 +177,12 @@ public class GetNewCompanyQueryTests : BaseTest
 
     private static void AssertManagerField(NewCompanyVm actual)
     {
-        Assert.Null((actual.Fields[nameof(Company.Manager)] as ManagerDto)?.Id);
+        Assert.Null(actual.Fields[nameof(Company.ManagerId)]);
     }
 
     private static void AssertNoManagerField(NewCompanyVm actual)
     {
-        Assert.False(actual.Fields.ContainsKey(nameof(Company.Manager)));
+        Assert.False(actual.Fields.ContainsKey(nameof(Company.ManagerId)));
     }
 
     private static void AssertRequiredFields(NewCompanyVm actual)
