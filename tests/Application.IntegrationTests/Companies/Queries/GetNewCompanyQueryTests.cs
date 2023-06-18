@@ -34,7 +34,7 @@ public class GetNewCompanyQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_create_company___Includes_initial_fields()
+    public async Task User_has_claim_to_create_company___Includes_required_fields()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
 
@@ -87,7 +87,6 @@ public class GetNewCompanyQueryTests : BaseTest
     [Theory]
     [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
     [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToNone)]
     public async Task User_has_claim_to_set_manager___Includes_manager_field(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -146,11 +145,36 @@ public class GetNewCompanyQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_claim_to_set_manager_to_none___Returns_empty_manager_as_init_data()
+    public async Task User_has_claim_to_set_manager_to_none_only___Forbidden()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToNone });
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetNewCompanyQuery()));
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_set_manager_to_none___Does_not_return_empty_manager_as_init_data()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Constants.Claims.Company.Create,
+            Constants.Claims.Company.New.Manager.SetToNone
+        });
+    
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
-        AssertManagerInitData(actual, new[] { new AspNetUser { Id = string.Empty } });
+        AssertManagerInitData(actual, Array.Empty<AspNetUser>());
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_set_manager_to_none___Does_not_include_manager_field()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[]
+         {
+            Constants.Claims.Company.Create,
+            Constants.Claims.Company.New.Manager.SetToNone
+        });
+
+        var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
+        AssertNoManagerField(actual);
     }
 
     private static void AssertOtherFields(NewCompanyVm actual)
