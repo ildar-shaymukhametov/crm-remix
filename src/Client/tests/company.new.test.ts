@@ -39,13 +39,13 @@ test("should be able to create company with required fields", async ({
   await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
 });
 
-test.describe.only("manager", () => {
-  test(`should be able to set manager to self with claim ${claims.company.new.manager.setToAny}`, async ({
+test.describe("manager", () => {
+  test(`should be able to set to self with claim ${claims.company.new.manager.setToAny}`, async ({
     page,
     runAsDefaultUser
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.new.manager.setToAny]
+      claims: [claims.company.create, claims.company.new.manager.setToAny]
     });
 
     await page.goto(routes.companies.new);
@@ -65,13 +65,13 @@ test.describe.only("manager", () => {
 
     await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
   });
-  
-  test(`should be able to set manager to self with claim ${claims.company.new.manager.setToSelf}`, async ({
+
+  test(`should be able to set to self with claim ${claims.company.new.manager.setToSelf}`, async ({
     page,
     runAsDefaultUser
   }) => {
     const user = await runAsDefaultUser({
-      claims: [claims.company.new.manager.setToSelf]
+      claims: [claims.company.create, claims.company.new.manager.setToSelf]
     });
 
     await page.goto(routes.companies.new);
@@ -83,6 +83,25 @@ test.describe.only("manager", () => {
     await expect(manager.getByRole("option", { selected: true })).toHaveText(
       `${user.lastName} ${user.firstName}`
     );
+
+    const submit = page.getByRole("button", { name: /create new company/i });
+    await submit.click();
+
+    await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+  });
+  
+  test("should not be able to set", async ({
+    page,
+    runAsDefaultUser
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.create, claims.company.new.manager.setToNone]
+    });
+    await page.goto(routes.companies.new);
+    await expectMinimalUi(page);
+
+    const company = buildCompany();
+    await fillRequiredFields(page, company);
 
     const submit = page.getByRole("button", { name: /create new company/i });
     await submit.click();
