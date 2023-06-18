@@ -213,6 +213,13 @@ public class CreateCompanyTests : BaseTest
         AssertManagerField(command, actual);
     }
 
+    [Fact]
+    public async Task User_can_set_manager_to_none___Forbidden()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToNone });
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(CreateMinimumRequiredCommand()));
+    }
+
     public static CreateCompanyCommand CreateCommandWithAllFields(string? managerId = null)
     {
         var command = CreateMinimumRequiredCommand();
