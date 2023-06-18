@@ -56,10 +56,21 @@ public class GetNewCompanyQueryTests : BaseTest
         Assert.Empty(actual.InitData.Managers);
     }
 
+    [Theory]
+    [InlineData(Constants.Claims.Company.New.Other.Set)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToNone)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    public async Task User_has_no_claim_to_create_company___Forbidden(string claim)
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetNewCompanyQuery()));
+    }
+
     [Fact]
     public async Task User_has_claim_to_set_other_fields___Includes_other_fields()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Other.Set });
+        await _fixture.RunAsDefaultUserAsync(new[] {Constants.Claims.Company.Create, Constants.Claims.Company.New.Other.Set });
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
@@ -71,7 +82,7 @@ public class GetNewCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_other_fields___Returns_other_fields_init_data()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Other.Set });
+        await _fixture.RunAsDefaultUserAsync(new[] {Constants.Claims.Company.Create, Constants.Claims.Company.New.Other.Set });
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
         await AssertCompanyTypesInitDataAsync(actual);
     }
@@ -79,7 +90,7 @@ public class GetNewCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_other_fields___Does_not_return_unrelated_init_data()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Other.Set });
+        await _fixture.RunAsDefaultUserAsync(new[] {Constants.Claims.Company.Create, Constants.Claims.Company.New.Other.Set });
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
         Assert.Empty(actual.InitData.Managers);
     }
@@ -89,7 +100,7 @@ public class GetNewCompanyQueryTests : BaseTest
     [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
     public async Task User_has_claim_to_set_manager___Includes_manager_field(string claim)
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        await _fixture.RunAsDefaultUserAsync(new[] {Constants.Claims.Company.Create, claim });
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
 
@@ -101,7 +112,7 @@ public class GetNewCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_manager_to_self___Returns_self_as_init_data()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToSelf });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] {Constants.Claims.Company.Create, Constants.Claims.Company.New.Manager.SetToSelf });
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
         AssertManagerInitData(actual, new[] { user });
     }
@@ -109,7 +120,7 @@ public class GetNewCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_manager_to_self___Does_not_return_other_users()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToSelf });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] {Constants.Claims.Company.Create, Constants.Claims.Company.New.Manager.SetToSelf });
         await _fixture.AddUserAsync();
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
@@ -120,7 +131,7 @@ public class GetNewCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_manager_to_self___Does_not_return_unrelated_init_data()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToSelf });
+        await _fixture.RunAsDefaultUserAsync(new[] {Constants.Claims.Company.Create, Constants.Claims.Company.New.Manager.SetToSelf });
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
         Assert.Empty(actual.InitData.CompanyTypes);
     }
@@ -128,7 +139,7 @@ public class GetNewCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_manager_to_any___Returns_all_users_as_init_data()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToAny });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] {Constants.Claims.Company.Create, Constants.Claims.Company.New.Manager.SetToAny });
         var anotherUser = await _fixture.AddUserAsync();
 
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
@@ -139,16 +150,9 @@ public class GetNewCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_manager_to_any___Does_not_return_unrelated_init_data()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToAny });
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create, Constants.Claims.Company.New.Manager.SetToAny });
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
         Assert.Empty(actual.InitData.CompanyTypes);
-    }
-
-    [Fact]
-    public async Task User_has_claim_to_set_manager_to_none_only___Forbidden()
-    {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToNone });
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetNewCompanyQuery()));
     }
 
     [Fact]
@@ -159,7 +163,7 @@ public class GetNewCompanyQueryTests : BaseTest
             Constants.Claims.Company.Create,
             Constants.Claims.Company.New.Manager.SetToNone
         });
-    
+
         var actual = await _fixture.SendAsync(new GetNewCompanyQuery());
         AssertManagerInitData(actual, Array.Empty<AspNetUser>());
     }

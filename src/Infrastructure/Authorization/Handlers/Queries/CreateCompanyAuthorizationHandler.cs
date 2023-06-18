@@ -1,4 +1,3 @@
-using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using static CRM.Application.Constants;
@@ -16,12 +15,7 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CreateCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        if (!accessRights.ContainsAny(
-            Access.Company.Create,
-            Access.Company.New.Other.Set,
-            Access.Company.New.Manager.SetToAny,
-            Access.Company.New.Manager.SetToSelf
-        ))
+        if (!accessRights.Contains(Access.Company.Create))
         {
             return Fail(context, "Create company");
         }
