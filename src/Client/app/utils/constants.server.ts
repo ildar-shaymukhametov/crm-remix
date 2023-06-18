@@ -6,6 +6,9 @@ export const claims = {
         setToAny: "Company.New.Manager.SetToAny",
         setToSelf: "Company.New.Manager.SetToSelf",
         setToNone: "Company.New.Manager.SetToNone"
+      },
+      other: {
+        set: "Company.New.Other.Set"
       }
     },
     any: {

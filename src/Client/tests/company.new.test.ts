@@ -89,11 +89,8 @@ test.describe("manager", () => {
 
     await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
   });
-  
-  test("should not be able to set", async ({
-    page,
-    runAsDefaultUser
-  }) => {
+
+  test("should not be able to set", async ({ page, runAsDefaultUser }) => {
     await runAsDefaultUser({
       claims: [claims.company.create, claims.company.new.manager.setToNone]
     });
@@ -110,42 +107,34 @@ test.describe("manager", () => {
   });
 });
 
-// for (const claim of [
-//   claims.company.any.manager.setFromAnyToAny,
-//   claims.company.any.manager.setFromNoneToAny
-// ]) {
-//   test(`should be able to set manager to any with claim ${claim}`, async ({
-//     page,
-//     runAsDefaultUser,
-//     createUser
-//   }) => {
-//     await runAsDefaultUser({
-//       claims: [claims.company.create, claims.company.any.other.view, claim]
-//     });
-//     const user = await createUser();
+test.describe("other fields", () => {
+  test("should be able to set", async ({ page, runAsDefaultUser }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.create, claims.company.new.other.set]
+    });
 
-//     await page.goto(routes.companies.new);
-//     await expectMinimalUi(page, { manager: true });
+    await page.goto(routes.companies.new);
+    await expectMinimalUi(page, { otherFields: true });
 
-//     const company = buildCompany();
-//     await page.getByLabel(/name/i).fill(company.name);
+    await fillRequiredFields(page, buildCompany());
 
-//     const manager = page.getByLabel(/manager/i);
-//     await expect(manager.getByRole("option", { selected: true })).toHaveText(
-//       "-"
-//     );
+    const company = buildCompany();
+    await page.getByLabel(/address/i).fill(company.address);
+    await page.getByLabel(/ceo/i).fill(company.ceo);
+    await page.getByLabel(/contacts/i).fill(company.contacts);
+    await page.getByLabel(/email/i).fill(company.email);
+    await page.getByLabel(/inn/i).fill(company.inn);
+    await page.getByLabel(/phone/i).fill(company.phone);
 
-//     await manager.selectOption(user.id);
+    const type = page.getByLabel(/type/i);
+    await type.selectOption({ index: 1 });
 
-//     const submit = page.getByRole("button", { name: /create new company/i });
-//     await submit.click();
+    const submit = page.getByRole("button", { name: /create new company/i });
+    await submit.click();
 
-//     await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
-
-//     const fullName = `${user.firstName} ${user.lastName}`;
-//     await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
-//   });
-// }
+    await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+  });
+});
 
 type VisibilityOptions = {
   forbidden?: boolean;
