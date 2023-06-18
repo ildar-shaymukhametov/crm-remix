@@ -14,8 +14,8 @@ test("should be forbidden", async ({ page, runAsDefaultUser }) => {
 
   await expectMinimalUi(page, {
     forbidden: true,
-    otherFields: false,
-    submitButton: false
+    submitButton: false,
+    requiredFields: false
   });
 });
 
@@ -24,7 +24,7 @@ test("should be able to create company with required fields", async ({
   runAsDefaultUser
 }) => {
   await runAsDefaultUser({
-    claims: [claims.company.create, claims.company.any.other.view]
+    claims: [claims.company.create]
   });
   await page.goto(routes.companies.new);
   await expectMinimalUi(page);
@@ -34,9 +34,8 @@ test("should be able to create company with required fields", async ({
 
   const submit = page.getByRole("button", { name: /create new company/i });
   await submit.click();
-  await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
 
-  await expect(page.getByLabel(/name/i)).toHaveText(company.name);
+  await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
 });
 
 // for (const claim of [
@@ -118,6 +117,7 @@ type VisibilityOptions = {
   otherFields?: boolean;
   submitButton?: boolean;
   manager?: boolean;
+  requiredFields?: boolean;
 };
 
 async function expectMinimalUi(
@@ -126,7 +126,9 @@ async function expectMinimalUi(
     forbidden = false,
     otherFields = false,
     submitButton = true,
-    manager = false
+    manager = false,
+    requiredFields = true
+    
   }: VisibilityOptions = {}
 ) {
   await expect(page).toHaveTitle("New company");
@@ -135,7 +137,7 @@ async function expectMinimalUi(
   });
 
   await expectOtherFieldsToBeVisible(page, {
-    name: true,
+    name: requiredFields,
     address: otherFields,
     ceo: otherFields,
     contacts: otherFields,

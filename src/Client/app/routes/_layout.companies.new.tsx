@@ -8,12 +8,8 @@ import {
   useRouteError
 } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
-import type {
-  CompanyType,
-  Manager,
-  NewCompany
-} from "~/utils/companies.server";
-import { createCompany } from "~/utils/companies.server";
+import type { NewCompany, NewCompanyVm } from "~/utils/companies.server";
+import { createCompany, getNewCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 import { permissions } from "~/utils/constants.server";
 
@@ -26,10 +22,10 @@ export const loader: LoaderFunction = async ({ request }) => {
     throw new Response(null, { status: 403 });
   }
 
-  const initData = { managers: [""], companyTypes: [""] };
+  const newCompanyVm = await getNewCompany(request, user.extra?.access_token);
 
   return json({
-    ...initData
+    newCompanyVm
   });
 };
 
@@ -41,11 +37,7 @@ type ActionData = {
 };
 
 type LoaderData = {
-  managers?: Manager[];
-  userPermissions: {
-    canSetManager: boolean;
-  };
-  companyTypes: CompanyType[];
+  newCompanyVm: NewCompanyVm;
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -68,88 +60,99 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewCompanyRoute() {
   const data = useActionData<ActionData>();
-  const { managers, companyTypes } = useLoaderData<LoaderData>();
+  const { newCompanyVm: vm } = useLoaderData<LoaderData>();
 
   return (
     <form method="post">
-      <div>
-        <label>
-          Name:
-          <input name="name" required maxLength={200} />
-        </label>
-      </div>
-      <div>
-        <label>
-          Type:
-          <select name="typeId">
-            <option value="">-</option>
-            {companyTypes.map(x => (
-              <option key={x.id} value={x.id}>
-                {x.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      <div>
-        <label>
-          Inn:
-          <input name="inn" />
-        </label>
-        {data?.errors?.Inn
-          ? data.errors.Inn.map((error, i) => <p key={i}>{error}</p>)
-          : null}
-      </div>
-      <div>
-        <label>
-          Address:
-          <input name="address" />
-        </label>
-      </div>
-      <div>
-        <label>
-          CEO:
-          <input name="ceo" />
-        </label>
-        {data?.errors?.Ceo
-          ? data.errors.Ceo.map((error, i) => <p key={i}>{error}</p>)
-          : null}
-      </div>
-      <div>
-        <label>
-          Phone:
-          <input name="phone" />
-        </label>
-      </div>
-      <div>
-        <label>
-          Email:
-          <input name="email" />
-        </label>
-        {data?.errors?.Email
-          ? data.errors.Email.map((error, i) => <p key={i}>{error}</p>)
-          : null}
-      </div>
-      <div>
-        <label>
-          Contacts:
-          <input name="contacts" />
-        </label>
-      </div>
-      {managers && managers.length > 0 ? (
+      {"Name" in vm.fields ? (
+        <div>
+          <label>
+            Name:
+            <input name="name" required maxLength={200} />
+          </label>
+        </div>
+      ) : null}
+      {"TypeId" in vm.fields ? (
+        <div>
+          <label>
+            Type:
+            <select name="typeId">
+              <option value="">-</option>
+              {vm.initData.companyTypes.map(x => (
+                <option key={x.id} value={x.id}>
+                  {x.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      ) : null}
+      {"Inn" in vm.fields ? (
+        <div>
+          <label>
+            Inn:
+            <input name="inn" />
+          </label>
+          {data?.errors?.Inn
+            ? data.errors.Inn.map((error, i) => <p key={i}>{error}</p>)
+            : null}
+        </div>
+      ) : null}
+      {"Address" in vm.fields ? (
+        <div>
+          <label>
+            Address:
+            <input name="address" />
+          </label>
+        </div>
+      ) : null}
+      {"Ceo" in vm.fields ? (
+        <div>
+          <label>
+            CEO:
+            <input name="ceo" />
+          </label>
+        </div>
+      ) : null}
+      {"Phone" in vm.fields ? (
+        <div>
+          <label>
+            Phone:
+            <input name="phone" />
+          </label>
+        </div>
+      ) : null}
+      {"Email" in vm.fields ? (
+        <div>
+          <label>
+            Email:
+            <input name="email" />
+          </label>
+          {data?.errors?.Email
+            ? data.errors.Email.map((error, i) => <p key={i}>{error}</p>)
+            : null}
+        </div>
+      ) : null}
+      {"Contacts" in vm.fields ? (
+        <div>
+          <label>
+            Contacts:
+            <input name="contacts" />
+          </label>
+        </div>
+      ) : null}
+      {"ManagerId" in vm.fields ? (
         <div>
           <label>
             Manager:
             <select name="managerId">
-              {managers
-                ? managers.map((x, i) => (
-                    <option key={i} value={x.id}>
-                      {x.firstName && x.lastName
-                        ? `${x.firstName} ${x.lastName}`
-                        : "-"}
-                    </option>
-                  ))
-                : null}
+              {vm.initData.managers.map((x, i) => (
+                <option key={i} value={x.id}>
+                  {x.firstName && x.lastName
+                    ? `${x.firstName} ${x.lastName}`
+                    : "-"}
+                </option>
+              ))}
             </select>
           </label>
         </div>
