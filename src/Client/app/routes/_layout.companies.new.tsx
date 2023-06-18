@@ -11,17 +11,9 @@ import { auth } from "~/utils/auth.server";
 import type { NewCompany, NewCompanyVm } from "~/utils/companies.server";
 import { createCompany, getNewCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
-import { permissions } from "~/utils/constants.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await auth.requireUser(request, {
-    permissions: [permissions.company.create]
-  });
-
-  if (!user.permissions.includes(permissions.company.create)) {
-    throw new Response(null, { status: 403 });
-  }
-
+  const user = await auth.requireUser(request);
   const newCompanyVm = await getNewCompany(request, user.extra?.access_token);
 
   return json({
@@ -149,7 +141,7 @@ export default function NewCompanyRoute() {
               {vm.initData.managers.map((x, i) => (
                 <option key={i} value={x.id}>
                   {x.firstName && x.lastName
-                    ? `${x.firstName} ${x.lastName}`
+                    ? `${x.lastName} ${x.firstName}`
                     : "-"}
                 </option>
               ))}

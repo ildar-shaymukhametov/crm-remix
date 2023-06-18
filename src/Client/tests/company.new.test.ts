@@ -3,6 +3,7 @@ import { expect } from "@playwright/test";
 import { routes } from "~/utils/constants";
 import { claims } from "~/utils/constants.server";
 import { buildCompany, test } from "./companies-test";
+import type { NewCompany } from "~/utils/companies.server";
 
 test.beforeEach(async ({ resetDb }) => {
   await resetDb();
@@ -30,7 +31,7 @@ test("should be able to create company with required fields", async ({
   await expectMinimalUi(page);
 
   const company = buildCompany();
-  await page.getByLabel(/name/i).fill(company.name);
+  await fillRequiredFields(page, company);
 
   const submit = page.getByRole("button", { name: /create new company/i });
   await submit.click();
@@ -38,42 +39,57 @@ test("should be able to create company with required fields", async ({
   await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
 });
 
-// for (const claim of [
-//   claims.company.any.manager.setFromAnyToAny,
-//   claims.company.any.manager.setFromAnyToSelf,
-//   claims.company.any.manager.setFromNoneToSelf,
-//   claims.company.any.manager.setFromNoneToAny
-// ]) {
-//   test(`should be able to set manager to self with claim ${claim}`, async ({
-//     page,
-//     runAsDefaultUser
-//   }) => {
-//     const user = await runAsDefaultUser({
-//       claims: [claims.company.create, claims.company.any.other.view, claim]
-//     });
+test.describe.only("manager", () => {
+  test(`should be able to set manager to self with claim ${claims.company.new.manager.setToAny}`, async ({
+    page,
+    runAsDefaultUser
+  }) => {
+    const user = await runAsDefaultUser({
+      claims: [claims.company.new.manager.setToAny]
+    });
 
-//     await page.goto(routes.companies.new);
-//     await expectMinimalUi(page, { manager: true });
+    await page.goto(routes.companies.new);
+    await expectMinimalUi(page, { manager: true });
 
-//     const company = buildCompany();
-//     await page.getByLabel(/name/i).fill(company.name);
+    await fillRequiredFields(page, buildCompany());
 
-//     const manager = page.getByLabel(/manager/i);
-//     await expect(manager.getByRole("option", { selected: true })).toHaveText(
-//       "-"
-//     );
+    const manager = page.getByLabel(/manager/i);
+    await expect(manager.getByRole("option", { selected: true })).toHaveText(
+      "-"
+    );
 
-//     await manager.selectOption(user.id);
+    await manager.selectOption(user.id);
 
-//     const submit = page.getByRole("button", { name: /create new company/i });
-//     await submit.click();
+    const submit = page.getByRole("button", { name: /create new company/i });
+    await submit.click();
 
-//     await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+    await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+  });
+  
+  test(`should be able to set manager to self with claim ${claims.company.new.manager.setToSelf}`, async ({
+    page,
+    runAsDefaultUser
+  }) => {
+    const user = await runAsDefaultUser({
+      claims: [claims.company.new.manager.setToSelf]
+    });
 
-//     const fullName = `${user.firstName} ${user.lastName}`;
-//     await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
-//   });
-// }
+    await page.goto(routes.companies.new);
+    await expectMinimalUi(page, { manager: true });
+
+    await fillRequiredFields(page, buildCompany());
+
+    const manager = page.getByLabel(/manager/i);
+    await expect(manager.getByRole("option", { selected: true })).toHaveText(
+      `${user.lastName} ${user.firstName}`
+    );
+
+    const submit = page.getByRole("button", { name: /create new company/i });
+    await submit.click();
+
+    await expect(page).toHaveURL(new RegExp(`/companies/[\\d]+`));
+  });
+});
 
 // for (const claim of [
 //   claims.company.any.manager.setFromAnyToAny,
@@ -120,6 +136,10 @@ type VisibilityOptions = {
   requiredFields?: boolean;
 };
 
+async function fillRequiredFields(page: Page, company: NewCompany) {
+  await page.getByLabel(/name/i).fill(company.name);
+}
+
 async function expectMinimalUi(
   page: Page,
   {
@@ -128,7 +148,6 @@ async function expectMinimalUi(
     submitButton = true,
     manager = false,
     requiredFields = true
-    
   }: VisibilityOptions = {}
 ) {
   await expect(page).toHaveTitle("New company");
@@ -136,7 +155,7 @@ async function expectMinimalUi(
     visible: forbidden
   });
 
-  await expectOtherFieldsToBeVisible(page, {
+  await expectFieldsToBeVisible(page, {
     name: requiredFields,
     address: otherFields,
     ceo: otherFields,
@@ -154,7 +173,7 @@ async function expectMinimalUi(
   });
 }
 
-async function expectOtherFieldsToBeVisible(
+async function expectFieldsToBeVisible(
   page: Page,
   data: { [key: string]: boolean }
 ) {
