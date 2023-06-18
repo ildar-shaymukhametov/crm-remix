@@ -38,6 +38,17 @@ public class CreateCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(CreateMinimumRequiredCommand()));
     }
 
+    [Theory]
+    [InlineData(Constants.Claims.Company.New.Other.Set)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToNone)]
+    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    public async Task User_has_no_claim_to_create_company__Throws_forbidden_access(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(CreateMinimumRequiredCommand()));
+    }
+
     [Fact]
     public async Task User_has_claim_to_create_company___Creates_company_with_initial_fields()
     {
@@ -146,7 +157,7 @@ public class CreateCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_other_fields___Creates_company_with_other_fields()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Other.Set });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create, Constants.Claims.Company.New.Other.Set });
         var command = CreateCommandWithOtherFields();
 
         var id = await _fixture.SendAsync(command);
@@ -174,7 +185,7 @@ public class CreateCompanyTests : BaseTest
     [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
     public async Task User_can_set_manager_to_self___Creates_company_with_self_as_manager(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] {Constants.Claims.Company.Create, claim });
         var command = CreateMinimumRequiredCommand();
         command.ManagerId = user.Id;
 
@@ -200,7 +211,7 @@ public class CreateCompanyTests : BaseTest
     [Fact]
     public async Task User_can_set_manager_to_any___Creates_company_with_some_user_as_manager()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToAny });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create, Constants.Claims.Company.New.Manager.SetToAny });
         var someUser = await _fixture.AddUserAsync();
         var command = CreateMinimumRequiredCommand();
         command.ManagerId = someUser.Id;
@@ -211,13 +222,6 @@ public class CreateCompanyTests : BaseTest
         AssertCompanyCreated(user, id, command, actual);
         AssertNoOtherFields(actual);
         AssertManagerField(command, actual);
-    }
-
-    [Fact]
-    public async Task User_can_set_manager_to_none___Forbidden()
-    {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToNone });
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(CreateMinimumRequiredCommand()));
     }
 
     public static CreateCompanyCommand CreateCommandWithAllFields(string? managerId = null)
