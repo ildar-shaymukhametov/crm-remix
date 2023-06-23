@@ -209,6 +209,43 @@ test.describe.only("name field", () => {
       createCompany,
       getCompany
     }) => {
+      await runAsDefaultUser({
+        claims: data.claims
+      });
+
+      const id = await createCompany();
+      await page.goto(routes.companies.index);
+
+      await expectMinimalUi(page, [await getCompany(id)], {
+        nameField: true,
+        ...data.options
+      });
+    });
+  }
+
+  const testData2: Array<TestData> = [
+    { claims: [claims.company.any.name.get], options: { nameField: true } },
+    {
+      claims: [claims.company.any.name.set],
+      options: { nameField: true, editCompanyButton: true }
+    },
+    {
+      claims: [claims.company.whereUserIsManager.name.get],
+      options: { nameField: true }
+    },
+    {
+      claims: [claims.company.whereUserIsManager.name.set],
+      options: { nameField: true, editCompanyButton: true }
+    }
+  ];
+
+  for (const data of testData2) {
+    test(`sees in own company with claim ${data.claims[0]}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
       const user = await runAsDefaultUser({
         claims: data.claims
       });
