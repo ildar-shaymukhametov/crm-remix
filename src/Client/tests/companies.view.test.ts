@@ -193,7 +193,7 @@ test.describe("delete button", () => {
   });
 });
 
-test.describe.only("name field", () => {
+test.describe("name field", () => {
   const testData: Array<TestData> = [
     { claims: [claims.company.any.name.get], options: { nameField: true } },
     {
@@ -256,6 +256,37 @@ test.describe.only("name field", () => {
       await expectMinimalUi(page, [await getCompany(id)], {
         nameField: true,
         ...data.options
+      });
+    });
+  }
+
+  const testData3: Array<TestData> = [
+    {
+      claims: [claims.company.whereUserIsManager.name.get],
+      options: {}
+    },
+    {
+      claims: [claims.company.whereUserIsManager.name.set],
+      options: {}
+    }
+  ];
+
+  for (const data of testData3) {
+    test(`does not see in non-owned company with claim ${data.claims[0]}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      await runAsDefaultUser({
+        claims: data.claims
+      });
+
+      const id = await createCompany();
+      await page.goto(routes.companies.index);
+
+      await expectMinimalUi(page, [await getCompany(id)], {
+        noCompaniesFound: true
       });
     });
   }
