@@ -274,6 +274,17 @@ public class GetCompaniesQueryTests : BaseTest
     }
 
     [Fact]
+    public async Task User_has_claim_to_view_name_in_own_company___Returns_companies_with_name_fields()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Name.Get });
+        var expected = await _fixture.AddCompanyAsync(user.Id);
+
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
+
+        Assert.Collection(actual, x => AssertFields(expected, x, name: true));
+    }
+
+    [Fact]
     public async Task User_has_claim_to_update_name_in_any_company___Returns_companies_with_id_and_name_fields()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Name.Set });

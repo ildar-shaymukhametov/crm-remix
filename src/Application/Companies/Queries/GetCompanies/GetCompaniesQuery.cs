@@ -99,7 +99,9 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
 
             if (accessRights.ContainsAny(
                 Access.Company.Any.Name.Get,
-                Access.Company.Any.Name.Set
+                Access.Company.Any.Name.Set,
+                Access.Company.WhereUserIsManager.Name.Get,
+                Access.Company.WhereUserIsManager.Name.Set
             ))
             {
                 company.Fields.Add(nameof(Company.Name), entity.Name);
@@ -133,15 +135,16 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         }
 
         if (accessRights.ContainsAny(
-            Access.Company.Any.Manager.Get,
-            Access.Company.WhereUserIsManager.Manager.Get,
-            Access.Company.WhereUserIsManager.Other.Get,
             Access.Company.WhereUserIsManager.Delete,
+            Access.Company.WhereUserIsManager.Other.Get,
             Access.Company.WhereUserIsManager.Other.Set,
+            Access.Company.Any.Manager.Get,
             Access.Company.Any.Manager.SetFromSelfToAny,
             Access.Company.Any.Manager.SetFromSelfToNone,
+            Access.Company.WhereUserIsManager.Manager.Get,
             Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
-            Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny
+            Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+            Access.Company.WhereUserIsManager.Name.Get
         ))
         {
             result.Add(x => x.ManagerId == _currentUserService.UserId);
