@@ -44,6 +44,9 @@ export default function CompaniesIndexRoute() {
         {companies.length > 0 ? (
           companies.map((x, i) => (
             <li key={i}>
+              {"Name" in x.fields ? (
+                <span aria-label="name">{x.fields.Name?.toString()}</span>
+              ) : null}
               <Link to={routes.companies.view(x.id)}>""</Link>
               {x.canBeUpdated ? (
                 <Link
