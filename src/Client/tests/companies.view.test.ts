@@ -44,6 +44,11 @@ test("clicks new company butt", async ({
   await expect(page).toHaveURL(routes.companies.new);
 });
 
+type TestData = {
+  claims: string[];
+  options: VisibilityOptions;
+};
+
 test("does not see own company without claim", async ({
   page,
   runAsDefaultUser,
@@ -61,12 +66,7 @@ test("does not see own company without claim", async ({
 });
 
 test.describe("edit button", () => {
-  type SeedData = {
-    claims: string[];
-    options: VisibilityOptions;
-  };
-
-  const seedData: Array<SeedData> = [
+  const testData: Array<TestData> = [
     { claims: [claims.company.any.other.set], options: {} },
     { claims: [claims.company.any.name.set], options: { nameField: true } },
     { claims: [claims.company.any.manager.setFromAnyToAny], options: {} },
@@ -76,7 +76,7 @@ test.describe("edit button", () => {
     { claims: [claims.company.any.manager.setFromNoneToSelf], options: {} }
   ];
 
-  for (const data of seedData) {
+  for (const data of testData) {
     test(`clicks in non-owned company with claim ${data.claims[0]}`, async ({
       page,
       runAsDefaultUser,
@@ -101,7 +101,7 @@ test.describe("edit button", () => {
     });
   }
 
-  const seedData2: Array<SeedData> = [
+  const seedData2: Array<TestData> = [
     { claims: [claims.company.any.other.set], options: {} },
     { claims: [claims.company.whereUserIsManager.other.set], options: {} },
     { claims: [claims.company.any.name.set], options: { nameField: true } },
@@ -193,24 +193,35 @@ test.describe("delete button", () => {
   });
 });
 
-test.describe("name field", () => {
-  test("sees in non-owned company", async ({
-    page,
-    runAsDefaultUser,
-    createCompany,
-    getCompany
-  }) => {
-    const user = await runAsDefaultUser({
-      claims: [claims.company.any.name.get]
-    });
+test.describe.only("name field", () => {
+  const testData: Array<TestData> = [
+    { claims: [claims.company.any.name.get], options: { nameField: true } },
+    {
+      claims: [claims.company.any.name.set],
+      options: { nameField: true, editCompanyButton: true }
+    }
+  ];
 
-    const id = await createCompany({ managerId: user.id });
-    await page.goto(routes.companies.index);
+  for (const data of testData) {
+    test(`sees in non-owned company with claim ${data.claims[0]}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      const user = await runAsDefaultUser({
+        claims: data.claims
+      });
 
-    await expectMinimalUi(page, [await getCompany(id)], {
-      nameField: true
+      const id = await createCompany({ managerId: user.id });
+      await page.goto(routes.companies.index);
+
+      await expectMinimalUi(page, [await getCompany(id)], {
+        nameField: true,
+        ...data.options
+      });
     });
-  });
+  }
 });
 
 type VisibilityOptions = {
