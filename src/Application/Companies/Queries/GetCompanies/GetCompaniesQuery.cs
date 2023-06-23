@@ -144,7 +144,8 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
             Access.Company.WhereUserIsManager.Manager.Get,
             Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
             Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
-            Access.Company.WhereUserIsManager.Name.Get
+            Access.Company.WhereUserIsManager.Name.Get,
+            Access.Company.WhereUserIsManager.Name.Set
         ))
         {
             result.Add(x => x.ManagerId == _currentUserService.UserId);

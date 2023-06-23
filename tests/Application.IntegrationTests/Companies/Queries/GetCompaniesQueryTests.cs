@@ -299,6 +299,21 @@ public class GetCompaniesQueryTests : BaseTest
         });
     }
 
+    [Fact]
+    public async Task User_has_claim_to_update_name_in_own_company___Returns_companies_with_id_and_name_fields()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Name.Set });
+        var expected = await _fixture.AddCompanyAsync(user.Id);
+
+        var actual = await _fixture.SendAsync(new GetCompaniesQuery());
+
+        Assert.Collection(actual, x =>
+        {
+            AssertFields(expected, x, name: true);
+            Assert.True(x.CanBeUpdated);
+        });
+    }
+
     private static void AssertFields(Company? expected, CompanyVm? actual, bool name = false, bool manager = false, bool other = false)
     {
         Assert.Equal(expected?.Id, actual?.Id);
