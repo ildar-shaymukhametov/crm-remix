@@ -79,6 +79,7 @@ public class GetCompaniesQueryTests : BaseTest
     [Theory]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.Get)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.Get)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Name.Get)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Delete)]
     public async Task User_has_claim_to_view_certain_fields_in_own_company_and_is_not_manager___Returns_empty_list(string claim)
     {
