@@ -9,7 +9,7 @@ test.beforeEach(async ({ resetDb }) => {
   await resetDb();
 });
 
-test("should be forbidden if no claims", async ({
+test("forbidden if no claims", async ({
   page,
   runAsDefaultUser,
   createCompany,
@@ -26,7 +26,7 @@ test("should be forbidden if no claims", async ({
   });
 });
 
-test("should see not found", async ({ page, runAsDefaultUser }) => {
+test("not found", async ({ page, runAsDefaultUser }) => {
   await runAsDefaultUser({ claims: [claims.company.any.other.get] });
   await page.goto(routes.companies.view("1"));
 
@@ -37,7 +37,7 @@ test("should see not found", async ({ page, runAsDefaultUser }) => {
 });
 
 test.describe("other fields", () => {
-  test(`should be able to view in non-owned company}`, async ({
+  test(`sees in non-owned company with claim ${claims.company.any.other.get}`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -52,11 +52,29 @@ test.describe("other fields", () => {
     await expectMinimalUi(page, company, { otherFields: true });
   });
 
+  test(`sees in non-owned company with claim ${claims.company.any.other.set}`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({ claims: [claims.company.any.other.set] });
+    const id = await createCompany();
+
+    await page.goto(routes.companies.view(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, {
+      otherFields: true,
+      editButton: true
+    });
+  });
+
   for (const claim of [
     claims.company.any.other.get,
     claims.company.whereUserIsManager.other.get
   ]) {
-    test(`should be able to view in own company with claim ${claim}`, async ({
+    test(`sees in own company with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -72,7 +90,30 @@ test.describe("other fields", () => {
     });
   }
 
-  test("should be forbidden to view in non-owned company", async ({
+  for (const claim of [
+    claims.company.any.other.set,
+    claims.company.whereUserIsManager.other.set
+  ]) {
+    test(`sees in own company with claim ${claim}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      const user = await runAsDefaultUser({ claims: [claim] });
+      const id = await createCompany({ managerId: user.id });
+
+      await page.goto(routes.companies.view(id));
+
+      const company = await getCompany(id);
+      await expectMinimalUi(page, company, {
+        otherFields: true,
+        editButton: true
+      });
+    });
+  }
+
+  test("forbidden to view in non-owned company", async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -94,7 +135,7 @@ test.describe("other fields", () => {
 
 test.describe("edit button", () => {
   test.describe("other fields", () => {
-    test(`should be able to click in non-owned company`, async ({
+    test(`clicks in non-owned company`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -118,7 +159,7 @@ test.describe("edit button", () => {
       await expect(page).toHaveURL(routes.companies.edit(id));
     });
 
-    test(`should be forbidden in non-owned company`, async ({
+    test(`forbidden in non-owned company`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -142,7 +183,7 @@ test.describe("edit button", () => {
       claims.company.any.other.set,
       claims.company.whereUserIsManager.other.set
     ]) {
-      test(`should be able to click in own company with claim ${claim}`, async ({
+      test(`clicks in own company with claim ${claim}`, async ({
         page,
         runAsDefaultUser,
         createCompany,
@@ -179,7 +220,7 @@ test.describe("edit button", () => {
       claims.company.any.manager.setFromNoneToAny,
       claims.company.any.manager.setFromNoneToSelf
     ]) {
-      test(`should be able to click in non-owned company with claim ${claim}`, async ({
+      test(`clicks in non-owned company with claim ${claim}`, async ({
         page,
         runAsDefaultUser,
         createCompany,
@@ -208,7 +249,7 @@ test.describe("edit button", () => {
       claims.company.whereUserIsManager.manager.setFromSelfToAny,
       claims.company.whereUserIsManager.manager.setFromSelfToNone
     ]) {
-      test(`should be forbidden to click in non-owned company with claim ${claim}`, async ({
+      test(`forbidden to click in non-owned company with claim ${claim}`, async ({
         page,
         runAsDefaultUser,
         createCompany,
@@ -235,7 +276,7 @@ test.describe("edit button", () => {
       claims.company.whereUserIsManager.manager.setFromSelfToAny,
       claims.company.whereUserIsManager.manager.setFromSelfToNone
     ]) {
-      test(`should be able to click in own company with claim ${claim}`, async ({
+      test(`clicks in own company with claim ${claim}`, async ({
         page,
         runAsDefaultUser,
         createCompany,
@@ -264,7 +305,7 @@ test.describe("edit button", () => {
   });
 
   test.describe("name, title", () => {
-    test(`should be able to click in non-owned company`, async ({
+    test(`clicks in non-owned company`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -289,7 +330,7 @@ test.describe("edit button", () => {
       await expect(page).toHaveURL(routes.companies.edit(id));
     });
 
-    test(`should be forbidden in non-owned company`, async ({
+    test(`forbidden in non-owned company`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -312,7 +353,7 @@ test.describe("edit button", () => {
       claims.company.any.name.set,
       claims.company.whereUserIsManager.name.set
     ]) {
-      test(`should be able to click in own company with claim ${claim}`, async ({
+      test(`clicks in own company with claim ${claim}`, async ({
         page,
         runAsDefaultUser,
         createCompany,
@@ -344,7 +385,7 @@ test.describe("edit button", () => {
 });
 
 test.describe("delete button", () => {
-  test("should be able to click in non-owned company", async ({
+  test("clicks in non-owned company", async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -365,7 +406,7 @@ test.describe("delete button", () => {
     await expect(page).toHaveURL(routes.companies.delete(companyId));
   });
 
-  test("should be forbidden in non-owned company", async ({
+  test("forbidden in non-owned company", async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -386,7 +427,7 @@ test.describe("delete button", () => {
     claims.company.any.delete,
     claims.company.whereUserIsManager.delete
   ]) {
-    test(`should be able to click in own company with claim ${claim}`, async ({
+    test(`clicks in own company with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -410,7 +451,7 @@ test.describe("delete button", () => {
 });
 
 test.describe("manager", () => {
-  test(`should be able to view in non-owned company}`, async ({
+  test(`sees in non-owned company with claim`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -425,7 +466,33 @@ test.describe("manager", () => {
     await expectMinimalUi(page, company, { managerField: true });
   });
 
-  test(`forbidden to view in non-owned company}`, async ({
+  for (const claim of [
+    claims.company.any.manager.setFromAnyToAny,
+    claims.company.any.manager.setFromAnyToNone,
+    claims.company.any.manager.setFromAnyToSelf,
+    claims.company.any.manager.setFromNoneToAny,
+    claims.company.any.manager.setFromNoneToSelf
+  ]) {
+    test(`sees in non-owned company with claim ${claim}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      await runAsDefaultUser({ claims: [claim] });
+      const id = await createCompany();
+
+      await page.goto(routes.companies.view(id));
+
+      const company = await getCompany(id);
+      await expectMinimalUi(page, company, {
+        managerField: true,
+        editButton: true
+      });
+    });
+  }
+
+  test(`forbidden to view in non-owned company`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -442,7 +509,7 @@ test.describe("manager", () => {
     await expectMinimalUi(page, company, { forbidden: true });
   });
 
-  test(`should be able to view in own company}`, async ({
+  test(`sees in own company`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -458,10 +525,40 @@ test.describe("manager", () => {
     const company = await getCompany(id);
     await expectMinimalUi(page, company, { managerField: true });
   });
+
+  for (const claim of [
+    claims.company.any.manager.setFromAnyToAny,
+    claims.company.any.manager.setFromAnyToNone,
+    claims.company.any.manager.setFromAnyToSelf,
+    claims.company.any.manager.setFromSelfToAny,
+    claims.company.any.manager.setFromSelfToNone,
+    claims.company.whereUserIsManager.manager.setFromSelfToAny,
+    claims.company.whereUserIsManager.manager.setFromSelfToNone
+  ]) {
+    test(`sees in own company with claim ${claim}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      const user = await runAsDefaultUser({
+        claims: [claim]
+      });
+      const id = await createCompany({ managerId: user.id });
+
+      await page.goto(routes.companies.view(id));
+
+      const company = await getCompany(id);
+      await expectMinimalUi(page, company, {
+        managerField: true,
+        editButton: true
+      });
+    });
+  }
 });
 
 test.describe("name, title", () => {
-  test(`should be able to view in non-owned company}`, async ({
+  test(`sees in non-owned company`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -476,7 +573,7 @@ test.describe("name, title", () => {
     await expectMinimalUi(page, company, { nameField: true, title: "full" });
   });
 
-  test(`forbidden to view in non-owned company}`, async ({
+  test(`forbidden to view in non-owned company`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -493,7 +590,7 @@ test.describe("name, title", () => {
     await expectMinimalUi(page, company, { forbidden: true });
   });
 
-  test(`should be able to view in own company}`, async ({
+  test(`sees in own company`, async ({
     page,
     runAsDefaultUser,
     createCompany,
