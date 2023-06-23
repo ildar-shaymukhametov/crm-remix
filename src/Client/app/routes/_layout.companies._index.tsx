@@ -7,13 +7,13 @@ import {
   useRouteError
 } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
-import type { CompanyIndex } from "~/utils/companies.server";
+import type { Company } from "~/utils/companies.server";
 import { getCompanies } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 import { permissions } from "~/utils/constants.server";
 
 type LoaderData = {
-  companies: CompanyIndex[];
+  companies: Company[];
   userPermissions: {
     canCreateCompany: boolean;
   };
@@ -24,9 +24,8 @@ export const loader: LoaderFunction = async ({ request }) => {
     permissions: [permissions.company.create]
   });
 
-  const companies = await getCompanies(request, user.extra.access_token);
   return json({
-    companies,
+    companies: await getCompanies(request, user.extra.access_token),
     userPermissions: {
       canCreateCompany: user.permissions.includes(permissions.company.create)
     }
@@ -45,8 +44,8 @@ export default function CompaniesIndexRoute() {
         {companies.length > 0 ? (
           companies.map((x, i) => (
             <li key={i}>
-              <Link to={routes.companies.view(x.id)}>{x.name}</Link>
-              {x.canBeEdited ? (
+              <Link to={routes.companies.view(x.id)}>""</Link>
+              {x.canBeUpdated ? (
                 <Link
                   to={routes.companies.edit(x.id)}
                   aria-label="edit company"
