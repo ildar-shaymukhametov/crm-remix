@@ -61,11 +61,7 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         {
             var company = new CompanyVm
             {
-                Id = entity.Id,
-                Fields = new Dictionary<string, object?>
-                {
-                    [nameof(Company.Name)] = entity.Name
-                }
+                Id = entity.Id
             };
 
             if (accessRights.ContainsAny(
@@ -101,6 +97,14 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
                 company.Fields.Add(nameof(Company.Type), _mapper.Map<CompanyTypeDto>(entity.Type));
             }
 
+            if (accessRights.ContainsAny(
+                Access.Company.Any.Name.Get,
+                Access.Company.Any.Name.Set
+            ))
+            {
+                company.Fields.Add(nameof(Company.Name), entity.Name);
+            }
+
             company.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Queries.Update);
             company.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Queries.Delete);
 
@@ -115,11 +119,13 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
         var result = new List<Expression<Func<Company, bool>>>();
         if (accessRights.ContainsAny(
             Access.Company.Any.Other.Get,
-            Access.Company.Any.Delete,
             Access.Company.Any.Other.Set,
+            Access.Company.Any.Delete,
             Access.Company.Any.Manager.SetFromAnyToAny,
             Access.Company.Any.Manager.SetFromAnyToNone,
-            Access.Company.Any.Manager.SetFromAnyToSelf
+            Access.Company.Any.Manager.SetFromAnyToSelf,
+            Access.Company.Any.Name.Get,
+            Access.Company.Any.Name.Set
         ))
         {
             result.Add(x => true);
