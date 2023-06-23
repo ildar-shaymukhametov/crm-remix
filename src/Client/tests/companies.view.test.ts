@@ -3,29 +3,38 @@ import { expect } from "@playwright/test";
 import { routes } from "~/utils/constants";
 import { claims } from "~/utils/constants.server";
 import { test } from "./companies-test";
+import type { Company, CompanyType, Manager } from "~/utils/companies.server";
 
 test.beforeEach(async ({ resetDb }) => {
   await resetDb();
 });
 
-test("minimal ui", async ({ page, runAsDefaultUser, createCompany }) => {
-  await runAsDefaultUser();
-  await createCompany();
-  await page.goto(routes.companies.index);
-
-  await expectMinimalUi(page, { noCompaniesFound: true });
-});
-
-test("clicks new company button", async ({
+test("minimal ui", async ({
   page,
   runAsDefaultUser,
-  createCompany
+  createCompany,
+  getCompany
 }) => {
-  await runAsDefaultUser({ claims: [claims.company.create] });
-  await createCompany();
+  await runAsDefaultUser();
+  const id = await createCompany();
   await page.goto(routes.companies.index);
 
-  await expectMinimalUi(page, {
+  await expectMinimalUi(page, [await getCompany(id)], {
+    noCompaniesFound: true
+  });
+});
+
+test("clicks new company butt", async ({
+  page,
+  runAsDefaultUser,
+  createCompany,
+  getCompany
+}) => {
+  await runAsDefaultUser({ claims: [claims.company.create] });
+  const id = await createCompany();
+  await page.goto(routes.companies.index);
+
+  await expectMinimalUi(page, [await getCompany(id)], {
     newCompanyButton: true,
     noCompaniesFound: true
   });
@@ -38,14 +47,17 @@ test("clicks new company button", async ({
 test("does not see own company without claim", async ({
   page,
   runAsDefaultUser,
-  createCompany
+  createCompany,
+  getCompany
 }) => {
   const user = await runAsDefaultUser();
 
-  await createCompany({ managerId: user.id });
+  const id = await createCompany({ managerId: user.id });
   await page.goto(routes.companies.index);
 
-  await expectMinimalUi(page, { noCompaniesFound: true });
+  await expectMinimalUi(page, [await getCompany(id)], {
+    noCompaniesFound: true
+  });
 });
 
 test.describe("edit button", () => {
@@ -61,20 +73,23 @@ test.describe("edit button", () => {
     test(`clicks in non-owned company with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
-      createCompany
+      createCompany,
+      getCompany
     }) => {
       await runAsDefaultUser({
         claims: [claim]
       });
 
-      const companyId = await createCompany();
+      const id = await createCompany();
       await page.goto(routes.companies.index);
 
-      await expectMinimalUi(page, { editCompanyButton: true });
+      await expectMinimalUi(page, [await getCompany(id)], {
+        editCompanyButton: true
+      });
 
       const link = page.getByRole("link", { name: /edit company/i });
       await link.click();
-      await expect(page).toHaveURL(routes.companies.edit(companyId));
+      await expect(page).toHaveURL(routes.companies.edit(id));
     });
   }
 
@@ -91,20 +106,23 @@ test.describe("edit button", () => {
     test(`clicks in own company with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
-      createCompany
+      createCompany,
+      getCompany
     }) => {
       const user = await runAsDefaultUser({
         claims: [claim]
       });
 
-      const companyId = await createCompany({ managerId: user.id });
+      const id = await createCompany({ managerId: user.id });
       await page.goto(routes.companies.index);
 
-      await expectMinimalUi(page, { editCompanyButton: true });
+      await expectMinimalUi(page, [await getCompany(id)], {
+        editCompanyButton: true
+      });
 
       const link = page.getByRole("link", { name: /edit company/i });
       await link.click();
-      await expect(page).toHaveURL(routes.companies.edit(companyId));
+      await expect(page).toHaveURL(routes.companies.edit(id));
     });
   }
 });
@@ -113,39 +131,45 @@ test.describe("delete button", () => {
   test("clicks in own company", async ({
     page,
     runAsDefaultUser,
-    createCompany
+    createCompany,
+    getCompany
   }) => {
     const user = await runAsDefaultUser({
       claims: [claims.company.whereUserIsManager.delete]
     });
 
-    const companyId = await createCompany({ managerId: user.id });
+    const id = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.index);
 
-    await expectMinimalUi(page, { deleteCompanyButton: true });
+    await expectMinimalUi(page, [await getCompany(id)], {
+      deleteCompanyButton: true
+    });
 
     const link = page.getByRole("link", { name: /delete company/i });
     await link.click();
-    await expect(page).toHaveURL(routes.companies.delete(companyId));
+    await expect(page).toHaveURL(routes.companies.delete(id));
   });
 
   test("clicks in non-owned company", async ({
     page,
     runAsDefaultUser,
-    createCompany
+    createCompany,
+    getCompany
   }) => {
     await runAsDefaultUser({
       claims: [claims.company.any.delete]
     });
 
-    const companyId = await createCompany();
+    const id = await createCompany();
     await page.goto(routes.companies.index);
 
-    await expectMinimalUi(page, { deleteCompanyButton: true });
+    await expectMinimalUi(page, [await getCompany(id)], {
+      deleteCompanyButton: true
+    });
 
     const link = page.getByRole("link", { name: /delete company/i });
     await link.click();
-    await expect(page).toHaveURL(routes.companies.delete(companyId));
+    await expect(page).toHaveURL(routes.companies.delete(id));
   });
 });
 
@@ -154,15 +178,22 @@ type VisibilityOptions = {
   noCompaniesFound?: boolean;
   editCompanyButton?: boolean;
   deleteCompanyButton?: boolean;
+  nameField?: boolean;
+  otherFields?: boolean;
+  managerField?: boolean;
 };
 
 async function expectMinimalUi(
   page: Page,
+  companies: Company[],
   {
     newCompanyButton = false,
     noCompaniesFound = false,
     editCompanyButton = false,
-    deleteCompanyButton = false
+    deleteCompanyButton = false,
+    nameField = false,
+    otherFields = false,
+    managerField = false
   }: VisibilityOptions = {}
 ) {
   await expect(page).toHaveTitle(/companies/i);
@@ -178,4 +209,60 @@ async function expectMinimalUi(
 
   const deleteCompany = page.getByRole("link", { name: /delete company/i });
   await expect(deleteCompany).toBeVisible({ visible: deleteCompanyButton });
+
+  for (const company of companies) {
+    const fields = [
+      { key: /name/i, value: company?.fields.Name, visible: nameField },
+      {
+        key: /address/i,
+        value: company?.fields.Address,
+        visible: otherFields
+      },
+      { key: /ceo/i, value: company?.fields.Ceo, visible: otherFields },
+      {
+        key: /contacts/i,
+        value: company?.fields.Contacts,
+        visible: otherFields
+      },
+      { key: /email/i, value: company?.fields.Email, visible: otherFields },
+      { key: /inn/i, value: company?.fields.Inn, visible: otherFields },
+      { key: /phone/i, value: company?.fields.Phone, visible: otherFields },
+      {
+        key: /type/i,
+        value: (company?.fields.Type as CompanyType)?.name,
+        visible: otherFields
+      },
+      {
+        key: /manager/i,
+        value: company?.fields.Manager
+          ? `${(company?.fields.Manager as Manager)?.lastName} ${
+              (company?.fields.Manager as Manager)?.firstName
+            }`
+          : "-",
+        visible: managerField
+      }
+    ];
+
+    await expectFieldsToBeVisible(page, fields);
+  }
+}
+
+async function expectFieldsToBeVisible(
+  page: Page,
+  fields: {
+    key: RegExp;
+    value: object | string | undefined;
+    visible: boolean;
+  }[]
+) {
+  for (const field of fields) {
+    const element = page.getByLabel(field.key);
+    await expect(element).toBeVisible({
+      visible: field.visible
+    });
+
+    if (field.visible) {
+      await expect(element).toHaveText(field.value?.toString() ?? "");
+    }
+  }
 }
