@@ -260,26 +260,18 @@ test.describe("name field", () => {
     });
   }
 
-  const testData3: Array<TestData> = [
-    {
-      claims: [claims.company.whereUserIsManager.name.get],
-      options: {}
-    },
-    {
-      claims: [claims.company.whereUserIsManager.name.set],
-      options: {}
-    }
-  ];
-
-  for (const data of testData3) {
-    test(`does not see in non-owned company with claim ${data.claims[0]}`, async ({
+  for (const claim of [
+    claims.company.whereUserIsManager.name.get,
+    claims.company.whereUserIsManager.name.set
+  ]) {
+    test(`does not see in non-owned company with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createCompany,
       getCompany
     }) => {
       await runAsDefaultUser({
-        claims: data.claims
+        claims: [claim]
       });
 
       const id = await createCompany();
