@@ -62,7 +62,13 @@ public class GetUpdateCompanyRequestHandler : IRequestHandler<GetUpdateCompanyQu
             result.InitData.CompanyTypes = await _dbContext.CompanyTypes.ProjectToListAsync<CompanyTypeDto>(_mapper.ConfigurationProvider);
         }
 
-        if (accessRights.Contains(Constants.Access.Company.Any.Manager.SetFromAnyToAny))
+        if (accessRights.ContainsAny(
+            Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+            Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+            Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
+            Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+            Constants.Access.Company.Any.Manager.SetFromNoneToSelf
+        ))
         {
             result.Fields.Add(nameof(Company.ManagerId), company.ManagerId);
             result.InitData.Managers = await GetManagersAsync(accessRights);

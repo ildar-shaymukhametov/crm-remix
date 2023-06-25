@@ -110,6 +110,24 @@ public class GetUpdateCompanyQueryTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    public async Task User_has_claim_to_set_manager_in_any_company___Includes_manager(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var expected = await _fixture.AddCompanyAsync();
+
+        var actual = await _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id));
+
+        AssertFields(expected, actual, manager: true);
+        AssertManagerInitData(actual, new[] { user, new AspNetUser { Id = string.Empty } });
+        Assert.Empty(actual.InitData.CompanyTypes);
+    }
+
     private static void AssertFields(Company expected, UpdateCompanyVm actual, bool name = false, bool manager = false, bool other = false)
     {
         Assert.Equal(expected.Id, actual.Id);
