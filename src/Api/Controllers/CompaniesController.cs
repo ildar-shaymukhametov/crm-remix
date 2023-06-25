@@ -44,8 +44,7 @@ public class CompaniesController : ApiControllerBase
     [Route("{id}")]
     public async Task<ActionResult> Update(int id, UpdateCompanyCommand command)
     {
-        command.Id = id;
-        await Mediator.Send(command);
+        await Mediator.Send(command with { Id = id });
         return Ok();
     }
 

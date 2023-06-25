@@ -16,7 +16,7 @@ public class UpdateCompanyTests : BaseTest
     {
         await _fixture.RunAsAdministratorAsync();
         var company = await _fixture.AddCompanyAsync();
-        var command = new UpdateCompanyCommand { Id = company.Id };
+        var command = new UpdateCompanyCommand(company.Id);
 
         await Assert.ThrowsAsync<ValidationException>(() => _fixture.SendAsync(command));
     }
@@ -441,9 +441,8 @@ public class UpdateCompanyTests : BaseTest
     private static UpdateCompanyCommand CreateAllFields(int id, string? managerId = null)
     {
         var data = Faker.Builders.Company();
-        return new UpdateCompanyCommand
+        return new UpdateCompanyCommand(id)
         {
-            Id = id,
             Address = data.Address,
             Ceo = data.Ceo,
             Contacts = data.Contacts,
@@ -459,9 +458,8 @@ public class UpdateCompanyTests : BaseTest
     private static UpdateCompanyCommand CreateOtherFields(Company company)
     {
         var data = Faker.Builders.Company();
-        return new UpdateCompanyCommand
+        return new UpdateCompanyCommand(company.Id)
         {
-            Id = company.Id,
             Address = data.Address,
             Ceo = data.Ceo,
             Contacts = data.Contacts,
@@ -475,9 +473,8 @@ public class UpdateCompanyTests : BaseTest
 
     private static UpdateCompanyCommand CreateCopyData(Company data)
     {
-        return new UpdateCompanyCommand
+        return new UpdateCompanyCommand(data.Id)
         {
-            Id = data.Id,
             Address = data.Address,
             Ceo = data.Ceo,
             Contacts = data.Contacts,
