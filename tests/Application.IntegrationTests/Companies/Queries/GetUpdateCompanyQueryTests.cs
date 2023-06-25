@@ -1,3 +1,4 @@
+using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Queries.GetUpdateCompany;
 using CRM.Domain.Entities;
 using CRM.Infrastructure.Identity;
@@ -24,6 +25,14 @@ public class GetUpdateCompanyQueryTests : BaseTest
         AssertManagerField(expected, actual);
         await AssertCompanyTypesInitDataAsync(actual);
         AssertManagerInitData(actual, new[] { user, new AspNetUser { Id = string.Empty } });
+    }
+
+    [Fact]
+    public async Task User_has_no_claim___Forbidden()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync();
+        var company = await _fixture.AddCompanyAsync();
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(company.Id)));
     }
 
     private static void AssertNameField(Company expected, UpdateCompanyVm actual)
