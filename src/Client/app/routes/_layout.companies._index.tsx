@@ -7,7 +7,7 @@ import {
   useRouteError
 } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
-import type { Company } from "~/utils/companies.server";
+import type { Company, CompanyType } from "~/utils/companies.server";
 import { getCompanies } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 import { permissions } from "~/utils/constants.server";
@@ -46,6 +46,31 @@ export default function CompaniesIndexRoute() {
             <li key={i}>
               {"Name" in x.fields ? (
                 <span aria-label="name">{x.fields.Name?.toString()}</span>
+              ) : null}
+              {"Address" in x.fields ? (
+                <span aria-label="address">{x.fields.Address?.toString()}</span>
+              ) : null}
+              {"Ceo" in x.fields ? (
+                <span aria-label="ceo">{x.fields.Ceo?.toString()}</span>
+              ) : null}
+              {"Contacts" in x.fields ? (
+                <span aria-label="contacts">
+                  {x.fields.Contacts?.toString()}
+                </span>
+              ) : null}
+              {"Email" in x.fields ? (
+                <span aria-label="email">{x.fields.Email?.toString()}</span>
+              ) : null}
+              {"Inn" in x.fields ? (
+                <span aria-label="inn">{x.fields.Inn?.toString()}</span>
+              ) : null}
+              {"Phone" in x.fields ? (
+                <span aria-label="phone">{x.fields.Phone?.toString()}</span>
+              ) : null}
+              {"Type" in x.fields ? (
+                <span aria-label="type">
+                  {(x.fields.Type as CompanyType)?.name?.toString()}
+                </span>
               ) : null}
               <Link to={routes.companies.view(x.id)}>""</Link>
               {x.canBeUpdated ? (

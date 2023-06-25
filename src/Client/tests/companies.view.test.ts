@@ -67,7 +67,7 @@ test("does not see own company without claim", async ({
 
 test.describe("edit button", () => {
   const testData: Array<TestData> = [
-    { claims: [claims.company.any.other.set], options: {} },
+    { claims: [claims.company.any.other.set], options: { otherFields: true } },
     { claims: [claims.company.any.name.set], options: { nameField: true } },
     { claims: [claims.company.any.manager.setFromAnyToAny], options: {} },
     { claims: [claims.company.any.manager.setFromAnyToNone], options: {} },
@@ -102,8 +102,11 @@ test.describe("edit button", () => {
   }
 
   const seedData2: Array<TestData> = [
-    { claims: [claims.company.any.other.set], options: {} },
-    { claims: [claims.company.whereUserIsManager.other.set], options: {} },
+    { claims: [claims.company.any.other.set], options: { otherFields: true } },
+    {
+      claims: [claims.company.whereUserIsManager.other.set],
+      options: { otherFields: true }
+    },
     { claims: [claims.company.any.name.set], options: { nameField: true } },
     {
       claims: [claims.company.whereUserIsManager.name.set],
@@ -263,6 +266,97 @@ test.describe("name field", () => {
   for (const claim of [
     claims.company.whereUserIsManager.name.get,
     claims.company.whereUserIsManager.name.set
+  ]) {
+    test(`does not see in non-owned company with claim ${claim}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      await runAsDefaultUser({
+        claims: [claim]
+      });
+
+      const id = await createCompany();
+      await page.goto(routes.companies.index);
+
+      await expectMinimalUi(page, [await getCompany(id)], {
+        noCompaniesFound: true
+      });
+    });
+  }
+});
+
+test.describe("other fields", () => {
+  const testData: Array<TestData> = [
+    { claims: [claims.company.any.other.get], options: { otherFields: true } },
+    {
+      claims: [claims.company.any.other.set],
+      options: { otherFields: true, editCompanyButton: true }
+    }
+  ];
+
+  for (const data of testData) {
+    test(`sees in non-owned company with claim ${data.claims[0]}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      await runAsDefaultUser({
+        claims: data.claims
+      });
+
+      const id = await createCompany();
+      await page.goto(routes.companies.index);
+
+      await expectMinimalUi(page, [await getCompany(id)], {
+        otherFields: true,
+        ...data.options
+      });
+    });
+  }
+
+  const testData2: Array<TestData> = [
+    { claims: [claims.company.any.other.get], options: { otherFields: true } },
+    {
+      claims: [claims.company.any.other.set],
+      options: { otherFields: true, editCompanyButton: true }
+    },
+    {
+      claims: [claims.company.whereUserIsManager.other.get],
+      options: { otherFields: true }
+    },
+    {
+      claims: [claims.company.whereUserIsManager.other.set],
+      options: { otherFields: true, editCompanyButton: true }
+    }
+  ];
+
+  for (const data of testData2) {
+    test(`sees in own company with claim ${data.claims[0]}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      const user = await runAsDefaultUser({
+        claims: data.claims
+      });
+
+      const id = await createCompany({ managerId: user.id });
+      await page.goto(routes.companies.index);
+
+      await expectMinimalUi(page, [await getCompany(id)], {
+        otherFields: true,
+        ...data.options
+      });
+    });
+  }
+
+  for (const claim of [
+    claims.company.whereUserIsManager.other.get,
+    claims.company.whereUserIsManager.other.set
   ]) {
     test(`does not see in non-owned company with claim ${claim}`, async ({
       page,
