@@ -78,7 +78,7 @@ export async function deleteCompany(
   }
 }
 
-export type UpdateCompany = {
+export type UpdateCompanyCommand = {
   typeId?: string;
   name: string;
   inn: string;
@@ -93,7 +93,7 @@ export type UpdateCompany = {
 export async function updateCompany(
   request: Request,
   id: string,
-  data: UpdateCompany,
+  data: UpdateCompanyCommand,
   accessToken: string
 ): Promise<{ errors: string[][] } | undefined> {
   const response = await fetch(`${process.env.API_URL}/companies/${id}`, {
@@ -174,6 +174,38 @@ export async function getNewCompany(
       Authorization: `Bearer ${accessToken}`
     }
   });
+
+  if (!response.ok) {
+    await handleErrorResponse(request, response);
+  }
+
+  return await response.json();
+}
+
+export type UpdateCompanyQuery = {
+  id: number;
+  fields: { [key: string]: object };
+  initData: UpdateCompanyInitData;
+};
+
+type UpdateCompanyInitData = {
+  managers: Manager[];
+  companyTypes: CompanyType[];
+};
+
+export async function getUpdateCompanyData(
+  request: Request,
+  id: string,
+  accessToken: string
+): Promise<UpdateCompanyQuery> {
+  const response = await fetch(
+    `${process.env.API_URL}/companies/${id}/update`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }
+  );
 
   if (!response.ok) {
     await handleErrorResponse(request, response);

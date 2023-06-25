@@ -5,6 +5,7 @@ using CRM.Application.Companies.Queries;
 using CRM.Application.Companies.Queries.GetCompanies;
 using CRM.Application.Companies.Queries.GetCompany;
 using CRM.Application.Companies.Queries.GetNewCompany;
+using CRM.Application.Companies.Queries.GetUpdateCompany;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM.Api.Controllers;
@@ -53,5 +54,12 @@ public class CompaniesController : ApiControllerBase
     public async Task<ActionResult<NewCompanyVm>> GetNew()
     {
         return await Mediator.Send(new GetNewCompanyQuery());
+    }
+
+    [HttpGet]
+    [Route("{id}/Update")]
+    public async Task<ActionResult<UpdateCompanyVm>> GetUpdate(int id)
+    {
+        return await Mediator.Send(new GetUpdateCompanyQuery(id));
     }
 }

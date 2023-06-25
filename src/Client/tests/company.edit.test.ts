@@ -53,14 +53,42 @@ test("not found", async ({ page, runAsDefaultUser }) => {
   });
 });
 
-test.describe.skip("manager", () => {
+test.describe.only("name", () => {
+  test(`sets in non-owned company`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.any.name.set]
+    });
+
+    const id = await createCompany();
+    await page.goto(routes.companies.edit(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, { nameField: true, title: "full" });
+
+    const newData = buildCompany();
+    await page.getByLabel(/name/i).fill(newData.name);
+
+    const submit = page.getByRole("button", { name: /save changes/i });
+    await submit.click();
+
+    await expect(page).toHaveURL(routes.companies.view(id));
+    await expect(page.getByLabel(/name/i)).toHaveText(newData.name);
+  });
+});
+
+test.describe("manager", () => {
   for (const claim of [
     claims.company.any.manager.setFromNoneToSelf,
     claims.company.any.manager.setFromNoneToAny,
     claims.company.any.manager.setFromAnyToSelf,
     claims.company.any.manager.setFromAnyToAny
   ]) {
-    test(`should be able to set manager from none to self in any company with claim ${claim}`, async ({
+    test(`sets manager from none to self in non-owned company with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -70,10 +98,10 @@ test.describe.skip("manager", () => {
         claims: [claim]
       });
 
-      const companyId = await createCompany();
-      await page.goto(routes.companies.edit(companyId));
+      const id = await createCompany();
+      await page.goto(routes.companies.edit(id));
 
-      const company = await getCompany(companyId);
+      const company = await getCompany(id);
       await expectMinimalUi(page, company, { managerField: true });
 
       const manager = page.getByLabel(/manager/i);
@@ -86,7 +114,7 @@ test.describe.skip("manager", () => {
       const submit = page.getByRole("button", { name: /save changes/i });
       await submit.click();
 
-      await expect(page).toHaveURL(routes.companies.view(companyId));
+      await expect(page).toHaveURL(routes.companies.view(id));
 
       const fullName = `${user.firstName} ${user.lastName}`;
       await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
@@ -362,7 +390,7 @@ async function expectMinimalUi(
   company?: Company,
   {
     forbidden = false,
-    otherFields = true,
+    otherFields = false,
     submitButton = true,
     title = "minimal",
     notFound = false,
@@ -374,7 +402,7 @@ async function expectMinimalUi(
     await expect(page).toHaveTitle("Edit company");
   } else {
     if (company) {
-      await expect(page).toHaveTitle(company.name);
+      await expect(page).toHaveTitle(company.fields.Name.toString());
     }
   }
 

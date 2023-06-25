@@ -3,65 +3,34 @@ import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import type { V2_MetaFunction } from "@remix-run/react";
 import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
-import { useActionData, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
 import type {
-  Company,
-  CompanyType,
-  Manager,
-  UpdateCompany
+  UpdateCompanyCommand,
+  UpdateCompanyQuery
 } from "~/utils/companies.server";
-import { getNewCompany } from "~/utils/companies.server";
+import { getUpdateCompanyData } from "~/utils/companies.server";
 import { updateCompany } from "~/utils/companies.server";
-import { getCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
-import { permissions } from "~/utils/constants.server";
 
 type LoaderData = {
-  company: Company;
-  managers?: Manager[];
-  userPermissions: {
-    canSetManager: boolean;
-  };
-  companyTypes: CompanyType[];
+  company: UpdateCompanyQuery;
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   invariant(params.id, "Missing id parameter");
 
-  const user = await auth.requireUser(request, {
-    key: params.id,
-    permissions: [permissions.company.update]
-  });
-
-  if (!user.permissions.includes(permissions.company.update)) {
-    throw new Response(null, { status: 403 });
-  }
-
-  const company = await getCompany(
+  const user = await auth.requireUser(request);
+  const company = await getUpdateCompanyData(
     request,
     params.id,
     user.extra?.access_token
   );
 
-  const initData = await getNewCompany(
-    request,
-    user.extra?.access_token,
-    company.id
-  );
-
   return json({
-    company,
-    ...initData
+    company
   });
-};
-
-type ActionData = {
-  errors?: {
-    [index: string]: string[];
-  };
-  fields?: { [index: string]: string | number | undefined };
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -69,7 +38,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   invariant(params.id, "Missing id parameter");
 
   const formData = await request.formData();
-  const data = Object.fromEntries(formData) as UpdateCompany;
+  const data = Object.fromEntries(formData) as UpdateCompanyCommand;
   if (!data.managerId) {
     delete data.managerId;
   }
@@ -84,104 +53,101 @@ export const action: ActionFunction = async ({ request, params }) => {
 };
 
 export default function EditCompanyRoute() {
-  const actionData = useActionData<ActionData>();
-  const { company, managers, companyTypes } = useLoaderData<LoaderData>();
-  const data: ActionData = {
-    fields: {
-      ...{
-        address: company.address,
-        ceo: company.ceo,
-        contacts: company.contacts,
-        email: company.email,
-        id: company.id,
-        inn: company.inn,
-        phone: company.phone,
-        typeId: company.type?.id,
-        name: company.name,
-        managerId: company.manager?.id
-      },
-      ...actionData?.fields
-    },
-    errors: actionData?.errors
-  };
+  const { company: data } = useLoaderData<LoaderData>();
 
   return (
     <form method="post">
-      <div>
-        <label>
-          Name:
-          <input
-            name="name"
-            required
-            maxLength={200}
-            defaultValue={data?.fields?.name}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Type:
-          <select name="typeId" defaultValue={data?.fields?.typeId}>
-            <option value="">-</option>
-            {companyTypes.map(x => (
-              <option key={x.id} value={x.id}>
-                {x.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      <div>
-        <label>
-          Inn:
-          <input name="inn" defaultValue={data?.fields?.inn} />
-        </label>
-        {data?.errors?.Inn
-          ? data.errors.Inn.map((error, i) => <p key={i}>{error}</p>)
-          : null}
-      </div>
-      <div>
-        <label>
-          Address:
-          <input name="address" defaultValue={data?.fields?.address} />
-        </label>
-      </div>
-      <div>
-        <label>
-          CEO:
-          <input name="ceo" defaultValue={data?.fields?.ceo} />
-        </label>
-        {data?.errors?.Ceo
-          ? data.errors.Ceo.map((error, i) => <p key={i}>{error}</p>)
-          : null}
-      </div>
-      <div>
-        <label>
-          Phone:
-          <input name="phone" defaultValue={data?.fields?.phone} />
-        </label>
-      </div>
-      <div>
-        <label>
-          Email:
-          <input name="email" defaultValue={data?.fields?.email} />
-        </label>
-        {data?.errors?.Email
-          ? data.errors.Email.map((error, i) => <p key={i}>{error}</p>)
-          : null}
-      </div>
-      <div>
-        <label>
-          Contacts:
-          <input name="contacts" defaultValue={data?.fields?.contacts} />
-        </label>
-      </div>
-      {managers && managers?.length > 0 ? (
+      {"Name" in data.fields ? (
+        <div>
+          <label>
+            Name:
+            <input
+              name="name"
+              required
+              maxLength={200}
+              defaultValue={data.fields.Name?.toString()}
+            />
+          </label>
+        </div>
+      ) : null}
+      {"TypeId" in data.fields ? (
+        <div>
+          <label>
+            Type:
+            <select name="typeId" defaultValue={data.fields.typeId?.toString()}>
+              <option value="">-</option>
+              {data.initData.companyTypes.map(x => (
+                <option key={x.id} value={x.id}>
+                  {x.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      ) : null}
+      {"Inn" in data.fields ? (
+        <div>
+          <label>
+            Inn:
+            <input name="inn" defaultValue={data.fields.inn?.toString()} />
+          </label>
+        </div>
+      ) : null}
+      {"Address" in data.fields ? (
+        <div>
+          <label>
+            Address:
+            <input
+              name="address"
+              defaultValue={data.fields.address?.toString()}
+            />
+          </label>
+        </div>
+      ) : null}
+      {"Ceo" in data.fields ? (
+        <div>
+          <label>
+            CEO:
+            <input name="ceo" defaultValue={data.fields.ceo?.toString()} />
+          </label>
+        </div>
+      ) : null}
+      {"Phone" in data.fields ? (
+        <div>
+          <label>
+            Phone:
+            <input name="phone" defaultValue={data.fields.phone?.toString()} />
+          </label>
+        </div>
+      ) : null}
+      {"Email" in data.fields ? (
+        <div>
+          <label>
+            Email:
+            <input name="email" defaultValue={data.fields.email?.toString()} />
+          </label>
+        </div>
+      ) : null}
+      {"Contacts" in data.fields ? (
+        <div>
+          <label>
+            Contacts:
+            <input
+              name="contacts"
+              defaultValue={data.fields.contacts?.toString()}
+            />
+          </label>
+        </div>
+      ) : null}
+      {"ManagerId" in data.fields ? (
         <div>
           <label>
             Manager:
-            <select name="managerId" defaultValue={data?.fields?.managerId}>
-              {managers.map((x, i) => (
+            <select
+              name="managerId"
+              defaultValue={data.fields.managerId?.toString()}
+            >
+              {data.initData.managers.map((x, i) => (
                 <option key={i} value={x.id}>
                   {x.firstName && x.lastName
                     ? `${x.firstName} ${x.lastName}`
@@ -191,9 +157,7 @@ export default function EditCompanyRoute() {
             </select>
           </label>
         </div>
-      ) : (
-        <input name="managerId" type="hidden" value={data?.fields?.managerId} />
-      )}
+      ) : null}
 
       <button type="submit">Save changes</button>
     </form>
@@ -218,17 +182,17 @@ export function ErrorBoundary() {
 }
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
-  if (!data?.company) {
+  if (data.company.fields.Name != undefined) {
     return [
       {
-        title: "Edit company"
+        title: data.company.fields.Name
       }
     ];
   }
 
   return [
     {
-      title: data.company.name
+      title: "Edit company"
     }
   ];
 };
