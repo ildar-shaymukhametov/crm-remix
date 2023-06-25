@@ -220,12 +220,12 @@ public class GetNewCompanyQueryTests : BaseTest
 
     private static void AssertManagerInitData(NewCompanyVm actual, AspNetUser[] expected)
     {
-        expected.Select(x => x.Id).Should().BeEquivalentTo(actual.InitData?.Managers?.Select(x => x.Id));
+        actual.InitData.Managers.Select(x => x.Id).Should().BeEquivalentTo(expected.Select(x => x.Id));
     }
 
     private async Task AssertCompanyTypesInitDataAsync(NewCompanyVm actual)
     {
-        var types = await _fixture.GetCompanyTypesAsync();
-        types.Select(x => x.Id).Should().BeEquivalentTo(actual.InitData?.CompanyTypes?.Select(x => x.Id));
+        var expected = await _fixture.GetCompanyTypesAsync();
+        actual.InitData.CompanyTypes.Select(x => x.Id).Should().BeEquivalentTo(expected.Select(x => x.Id));
     }
 }
