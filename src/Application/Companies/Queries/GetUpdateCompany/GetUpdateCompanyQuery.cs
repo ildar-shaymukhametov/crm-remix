@@ -67,7 +67,11 @@ public class GetUpdateCompanyRequestHandler : IRequestHandler<GetUpdateCompanyQu
             Constants.Access.Company.Any.Manager.SetFromAnyToNone,
             Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
             Constants.Access.Company.Any.Manager.SetFromNoneToAny,
-            Constants.Access.Company.Any.Manager.SetFromNoneToSelf
+            Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
+            Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+            Constants.Access.Company.Any.Manager.SetFromSelfToNone,
+            Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+            Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
         ))
         {
             result.Fields.Add(nameof(Company.ManagerId), company.ManagerId);

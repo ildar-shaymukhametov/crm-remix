@@ -1,5 +1,4 @@
 using CRM.Application.Common.Exceptions;
-using CRM.Application.Companies.Queries;
 using CRM.Application.Companies.Queries.GetUpdateCompany;
 using CRM.Domain.Entities;
 using CRM.Infrastructure.Identity;
@@ -124,7 +123,25 @@ public class GetUpdateCompanyQueryTests : BaseTest
         var actual = await _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id));
 
         AssertFields(expected, actual, manager: true);
-        AssertManagerInitData(actual, new[] { user, new AspNetUser { Id = string.Empty } });
+        Assert.Empty(actual.InitData.CompanyTypes);
+    }
+
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
+    public async Task User_has_claim_to_set_manager_in_own_company___Includes_manager(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var expected = await _fixture.AddCompanyAsync(user.Id);
+
+        var actual = await _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id));
+
+        AssertFields(expected, actual, manager: true);
         Assert.Empty(actual.InitData.CompanyTypes);
     }
 
