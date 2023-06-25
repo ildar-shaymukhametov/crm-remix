@@ -67,8 +67,7 @@ public class GetUpdateCompanyQueryTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Name.Set });
         var expected = await _fixture.AddCompanyAsync();
 
-        var command = new GetUpdateCompanyQuery(expected.Id);
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id)));
     }
 
     [Fact]
@@ -105,8 +104,7 @@ public class GetUpdateCompanyQueryTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Set });
         var expected = await _fixture.AddCompanyAsync();
 
-        var command = new GetUpdateCompanyQuery(expected.Id);
-        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id)));
     }
 
     [Theory]
@@ -143,6 +141,19 @@ public class GetUpdateCompanyQueryTests : BaseTest
 
         AssertFields(expected, actual, manager: true);
         Assert.Empty(actual.InitData.CompanyTypes);
+    }
+
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
+    public async Task User_has_claim_to_set_manager_in_own_company_and_is_not_manager___Forbidden(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var expected = await _fixture.AddCompanyAsync();
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id)));
     }
 
     private static void AssertFields(Company expected, UpdateCompanyVm actual, bool name = false, bool manager = false, bool other = false)
