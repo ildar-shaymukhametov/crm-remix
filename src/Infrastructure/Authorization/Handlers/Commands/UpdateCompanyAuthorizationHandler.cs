@@ -24,69 +24,69 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         var accessRights = _accessService.CheckAccess(context.User);
         var userId = context.User.GetSubjectId();
 
-        var otherFieldChanged = company.Address != request.Address || company.Ceo != request.Ceo || company.Contacts != request.Contacts || company.Email != request.Email || company.Inn != request.Inn || company.Phone != request.Phone || company.TypeId != request.TypeId;
-        if (otherFieldChanged)
-        {
-            if (company.ManagerId == userId && !accessRights.ContainsAny(
-                Access.Company.WhereUserIsManager.Other.Set,
-                Access.Company.Any.Other.Set
-            ))
+            var otherFieldChanged = company.Address != request.Address || company.Ceo != request.Ceo || company.Contacts != request.Contacts || company.Email != request.Email || company.Inn != request.Inn || company.Phone != request.Phone || company.TypeId != request.TypeId;
+            if (otherFieldChanged)
             {
-                return Fail(context, "Update other fields");
-            }
-            else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Other.Set))
-            {
-                return Fail(context, "Update other fields");
-            }
-        }
-
-        if (company.ManagerId != request.ManagerId)
-        {
-            if (company.ManagerId == userId && !accessRights.ContainsAny(
-                Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
-                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
-                Access.Company.Any.Manager.SetFromSelfToAny,
-                Access.Company.Any.Manager.SetFromSelfToNone,
-                Access.Company.Any.Manager.SetFromAnyToAny,
-                Access.Company.Any.Manager.SetFromAnyToNone
-            ))
-            {
-                return Fail(context, "Update manager");
-            }
-            else if (company.ManagerId != userId && !accessRights.ContainsAny(
-                Access.Company.Any.Manager.SetFromAnyToAny,
-                Access.Company.Any.Manager.SetFromAnyToNone,
-                Access.Company.Any.Manager.SetFromAnyToSelf,
-                Access.Company.Any.Manager.SetFromNoneToAny,
-                Access.Company.Any.Manager.SetFromNoneToSelf,
-                Access.Company.Any.Manager.SetFromSelfToAny,
-                Access.Company.Any.Manager.SetFromSelfToNone
-            ))
-            {
-                return Fail(context, "Update manager");
+                if (company.ManagerId == userId && !accessRights.ContainsAny(
+                    Access.Company.WhereUserIsManager.Other.Set,
+                    Access.Company.Any.Other.Set
+                ))
+                {
+                    return Fail(context, "Update other fields");
+                }
+                else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Other.Set))
+                {
+                    return Fail(context, "Update other fields");
+                }
             }
 
-            var managerResult = CheckManager(company, request, userId, accessRights);
-            if (!managerResult.Succeeded)
+            if (company.ManagerId != request.ManagerId)
             {
-                return Fail(context, managerResult.Errors.First());
-            }
-        }
+                if (company.ManagerId == userId && !accessRights.ContainsAny(
+                    Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+                    Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
+                    Access.Company.Any.Manager.SetFromSelfToAny,
+                    Access.Company.Any.Manager.SetFromSelfToNone,
+                    Access.Company.Any.Manager.SetFromAnyToAny,
+                    Access.Company.Any.Manager.SetFromAnyToNone
+                ))
+                {
+                    return Fail(context, "Update manager");
+                }
+                else if (company.ManagerId != userId && !accessRights.ContainsAny(
+                    Access.Company.Any.Manager.SetFromAnyToAny,
+                    Access.Company.Any.Manager.SetFromAnyToNone,
+                    Access.Company.Any.Manager.SetFromAnyToSelf,
+                    Access.Company.Any.Manager.SetFromNoneToAny,
+                    Access.Company.Any.Manager.SetFromNoneToSelf,
+                    Access.Company.Any.Manager.SetFromSelfToAny,
+                    Access.Company.Any.Manager.SetFromSelfToNone
+                ))
+                {
+                    return Fail(context, "Update manager");
+                }
 
-        if (company.Name != request.Name)
-        {
-            if (company.ManagerId == userId && !accessRights.ContainsAny(
-                Access.Company.Any.Name.Set,
-                Access.Company.WhereUserIsManager.Name.Set
-            ))
-            {
-                return Fail(context, "Update name");
+                var managerResult = CheckManager(company, request, userId, accessRights);
+                if (!managerResult.Succeeded)
+                {
+                    return Fail(context, managerResult.Errors.First());
+                }
             }
-            else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Name.Set))
+
+            if (company.Name != request.Name)
             {
-                return Fail(context, "Update name");
+                if (company.ManagerId == userId && !accessRights.ContainsAny(
+                    Access.Company.Any.Name.Set,
+                    Access.Company.WhereUserIsManager.Name.Set
+                ))
+                {
+                    return Fail(context, "Update name");
+                }
+                else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Name.Set))
+                {
+                    return Fail(context, "Update name");
+                }
             }
-        }
 
         return Ok(context, requirement);
     }

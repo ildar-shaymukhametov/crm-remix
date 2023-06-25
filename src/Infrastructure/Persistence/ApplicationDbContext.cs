@@ -46,9 +46,4 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<AspNetUser>, IAppl
 
         return await base.SaveChangesAsync(cancellationToken);
     }
-
-    public void SetValues<T, U>(T entity, U dto) where T : notnull where U : notnull
-    {
-        base.Entry(entity).CurrentValues.SetValues(dto);
-    }
 }

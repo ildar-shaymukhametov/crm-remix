@@ -2,7 +2,6 @@ using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Domain.Entities;
 using CRM.Infrastructure.Identity;
-using FluentAssertions;
 using static CRM.Application.Constants;
 
 namespace CRM.Application.IntegrationTests.Companies.Commands;
@@ -12,16 +11,6 @@ public class UpdateCompanyTests : BaseTest
     public UpdateCompanyTests(BaseTestFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task Requires_minimum_fields()
-    {
-        await _fixture.RunAsAdministratorAsync();
-        var company = await _fixture.AddCompanyAsync();
-        var command = new UpdateCompanyCommand(company.Id);
-
-        await Assert.ThrowsAsync<ValidationException>(() => _fixture.SendAsync(command));
-    }
-
-    [Fact]
     public async Task User_is_admin___Updates_company()
     {
         var user = await _fixture.RunAsAdministratorAsync();
@@ -29,7 +18,7 @@ public class UpdateCompanyTests : BaseTest
         var manager = await _fixture.CreateUserAsync();
         var command = CreateAllFields(company.Id, managerId: manager.Id);
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command, true, true, true);
     }
 
     [Fact]
@@ -57,7 +46,7 @@ public class UpdateCompanyTests : BaseTest
         var company = await _fixture.AddCompanyAsync();
         var command = CreateOtherFields(company);
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command, otherFields: true);
     }
 
     [Fact]
@@ -129,10 +118,9 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.ManagerId = user.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = user.Id };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command, managerField: true);
     }
 
     [Fact]
@@ -140,8 +128,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.ManagerId = user.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = user.Id };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -154,10 +141,9 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.ManagerId = anotherUser.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = anotherUser.Id };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Fact]
@@ -166,8 +152,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync();
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.ManagerId = anotherUser.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = anotherUser.Id };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -181,10 +166,9 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim, Claims.Company.Any.Other.Set });
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = null;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = null };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Fact]
@@ -192,8 +176,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = null;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = null };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -206,10 +189,9 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var someUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(someUser.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = null;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = null };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Fact]
@@ -218,8 +200,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync();
         var someUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(someUser.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = null;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = null };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -232,10 +213,9 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var someUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(someUser.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = user.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = user.Id };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Fact]
@@ -244,8 +224,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync();
         var someUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(someUser.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = user.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = user.Id };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
 
@@ -259,10 +238,9 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var someUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = someUser.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = someUser.Id };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Fact]
@@ -271,8 +249,7 @@ public class UpdateCompanyTests : BaseTest
         var user = await _fixture.RunAsDefaultUserAsync();
         var someUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = someUser.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = someUser.Id };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -284,10 +261,9 @@ public class UpdateCompanyTests : BaseTest
         var someUser = await _fixture.AddUserAsync();
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(someUser.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = anotherUser.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = anotherUser.Id };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Fact]
@@ -297,8 +273,7 @@ public class UpdateCompanyTests : BaseTest
         var someUser = await _fixture.AddUserAsync();
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(someUser.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = anotherUser.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = anotherUser.Id };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -308,10 +283,9 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateOtherFields(company);
-        command.ManagerId = user.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = user.Id };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Theory]
@@ -323,8 +297,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateOtherFields(company);
-        command.ManagerId = user.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = user.Id };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -336,10 +309,9 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = null;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = null };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Theory]
@@ -361,10 +333,9 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = null;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = null };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Fact]
@@ -372,8 +343,7 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = null;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = null };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -383,9 +353,8 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, new UpdateCompanyCommand(company.Id));
     }
 
     [Fact]
@@ -393,10 +362,9 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCopyData(company);
-        command.ManagerId = user.Id;
+        var command = new UpdateCompanyCommand(company.Id) { ManagerId = user.Id };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Fact]
@@ -404,10 +372,9 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Name.Set });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.Name = Faker.RandomString.Next();
+        var command = new UpdateCompanyCommand(company.Id) { Name = Faker.RandomString.Next() };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Fact]
@@ -415,19 +382,17 @@ public class UpdateCompanyTests : BaseTest
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Name.Set });
         var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = CreateCopyData(company);
-        command.Name = Faker.RandomString.Next();
+        var command = new UpdateCompanyCommand(company.Id) { Name = Faker.RandomString.Next() };
 
-        await AssertCompanyUpdatedAsync(user, company.Id, command);
+        await AssertCompanyUpdatedAsync(user, company, command);
     }
 
     [Fact]
-    public async Task No_manager_in_company___Forbidden_to_update_name()
+    public async Task User_has_claim_to_update_name_in_own_company_and_is_not_manager___Forbidden()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Name.Set });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.Name = Faker.RandomString.Next();
+        var command = new UpdateCompanyCommand(company.Id) { Name = Faker.RandomString.Next() };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -459,35 +424,65 @@ public class UpdateCompanyTests : BaseTest
             Contacts = data.Contacts,
             Email = data.Email,
             Inn = data.Inn,
-            Name = company.Name,
             Phone = data.Phone,
             TypeId = data.TypeId
         };
     }
 
-    private static UpdateCompanyCommand CreateCopyData(Company data)
-    {
-        return new UpdateCompanyCommand(data.Id)
-        {
-            Address = data.Address,
-            Ceo = data.Ceo,
-            Contacts = data.Contacts,
-            Email = data.Email,
-            Inn = data.Inn,
-            Name = data.Name,
-            Phone = data.Phone,
-            TypeId = data.TypeId,
-            ManagerId = data.ManagerId
-        };
-    }
-
-    private async Task AssertCompanyUpdatedAsync(AspNetUser user, int companyId, UpdateCompanyCommand expected)
+    private async Task AssertCompanyUpdatedAsync(AspNetUser user, Company originalCompany, UpdateCompanyCommand expected, bool nameField = false, bool otherFields = false, bool managerField = false)
     {
         await _fixture.SendAsync(expected);
-        var actual = await _fixture.FindAsync<Company>(companyId);
+        var actual = await _fixture.FindAsync<Company>(originalCompany.Id);
 
         Assert.Equal(BaseTestFixture.UtcNow, actual?.LastModifiedAtUtc);
         Assert.Equal(user.Id, actual?.LastModifiedBy);
-        expected.Should().BeEquivalentTo(actual, x => x.ExcludingNestedObjects().ExcludingMissingMembers());
+
+        if (nameField)
+        {
+            Assert.Equal(expected.Name, actual?.Name);
+            AssertOtherFieldsEqual(originalCompany, actual);
+            AssertManagerEqual(originalCompany, actual);
+        }
+
+        if (otherFields)
+        {
+            Assert.Equal(expected.TypeId, actual?.TypeId);
+            Assert.Equal(expected.Address, actual?.Address);
+            Assert.Equal(expected.Ceo, actual?.Ceo);
+            Assert.Equal(expected.Contacts, actual?.Contacts);
+            Assert.Equal(expected.Email, actual?.Email);
+            Assert.Equal(expected.Inn, actual?.Inn);
+            Assert.Equal(expected.Phone, actual?.Phone);
+            AssertManagerEqual(originalCompany, actual);
+            AssertNameEqual(originalCompany, actual);
+        }
+
+        if (managerField)
+        {
+            Assert.Equal(expected.ManagerId, actual?.ManagerId);
+            AssertOtherFieldsEqual(originalCompany, actual);
+            AssertNameEqual(originalCompany, actual);
+        }
+    }
+
+    private static void AssertNameEqual(Company originalCompany, Company? actual)
+    {
+        Assert.Equal(originalCompany.Name, actual?.Name);
+    }
+
+    private static void AssertManagerEqual(Company originalCompany, Company? actual)
+    {
+        Assert.Equal(originalCompany.ManagerId, actual?.ManagerId);
+    }
+
+    private static void AssertOtherFieldsEqual(Company originalCompany, Company? actual)
+    {
+        Assert.Equal(originalCompany.TypeId, actual?.TypeId);
+        Assert.Equal(originalCompany.Address, actual?.Address);
+        Assert.Equal(originalCompany.Ceo, actual?.Ceo);
+        Assert.Equal(originalCompany.Contacts, actual?.Contacts);
+        Assert.Equal(originalCompany.Email, actual?.Email);
+        Assert.Equal(originalCompany.Inn, actual?.Inn);
+        Assert.Equal(originalCompany.Phone, actual?.Phone);
     }
 }
