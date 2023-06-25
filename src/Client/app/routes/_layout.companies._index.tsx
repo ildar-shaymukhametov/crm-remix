@@ -7,7 +7,7 @@ import {
   useRouteError
 } from "@remix-run/react";
 import { auth } from "~/utils/auth.server";
-import type { Company, CompanyType } from "~/utils/companies.server";
+import type { Company, CompanyType, Manager } from "~/utils/companies.server";
 import { getCompanies } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 import { permissions } from "~/utils/constants.server";
@@ -71,6 +71,18 @@ export default function CompaniesIndexRoute() {
                 <span aria-label="type">
                   {(x.fields.Type as CompanyType)?.name?.toString()}
                 </span>
+              ) : null}
+              {"Manager" in x.fields ? (
+                <p>
+                  <span>manager</span>:{" "}
+                  <span aria-label="manager">
+                    {x.fields.Manager
+                      ? `${(x.fields.Manager as Manager)?.lastName} ${
+                          (x.fields.Manager as Manager)?.firstName
+                        }`
+                      : "-"}
+                  </span>
+                </p>
               ) : null}
               <Link to={routes.companies.view(x.id)}>""</Link>
               {x.canBeUpdated ? (
