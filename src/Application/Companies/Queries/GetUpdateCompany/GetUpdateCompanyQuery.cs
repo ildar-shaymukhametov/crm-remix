@@ -47,7 +47,10 @@ public class GetUpdateCompanyRequestHandler : IRequestHandler<GetUpdateCompanyQu
             result.Fields.Add(nameof(Company.Name), company.Name);
         }
 
-        if (accessRights.Contains(Constants.Access.Company.Any.Other.Set))
+        if (accessRights.ContainsAny(
+            Constants.Access.Company.Any.Other.Set,
+            Constants.Access.Company.WhereUserIsManager.Other.Set
+        ))
         {
             result.Fields.Add(nameof(Company.Address), company.Address);
             result.Fields.Add(nameof(Company.Ceo), company.Ceo);
