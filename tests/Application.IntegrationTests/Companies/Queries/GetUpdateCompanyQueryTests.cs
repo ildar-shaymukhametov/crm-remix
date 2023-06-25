@@ -47,6 +47,21 @@ public class GetUpdateCompanyQueryTests : BaseTest
         Assert.Empty(actual.InitData.Managers);
     }
 
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Name.Set)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Name.Set)]
+    public async Task User_has_claim_to_set_name_in_own_company___Includes_name(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var expected = await _fixture.AddCompanyAsync(user.Id);
+
+        var actual = await _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id));
+
+        AssertFields(expected, actual, name: true);
+        Assert.Empty(actual.InitData.CompanyTypes);
+        Assert.Empty(actual.InitData.Managers);
+    }
+
     private static void AssertFields(Company expected, UpdateCompanyVm actual, bool name = false, bool manager = false, bool other = false)
     {
         Assert.Equal(expected.Id, actual.Id);

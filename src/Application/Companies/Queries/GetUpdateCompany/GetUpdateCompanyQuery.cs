@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Mappings;
 using CRM.Application.Common.Security;
@@ -38,7 +39,10 @@ public class GetUpdateCompanyRequestHandler : IRequestHandler<GetUpdateCompanyQu
         var result = new UpdateCompanyVm(request.Id);
         var company = _dbContext.Companies.Single(x => x.Id == request.Id);
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
-        if (accessRights.Contains(Constants.Access.Company.Any.Name.Set))
+        if (accessRights.ContainsAny(
+            Constants.Access.Company.Any.Name.Set,
+            Constants.Access.Company.WhereUserIsManager.Name.Set
+        ))
         {
             result.Fields.Add(nameof(Company.Name), company.Name);
         }
