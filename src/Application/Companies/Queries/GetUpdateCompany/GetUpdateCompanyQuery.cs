@@ -35,20 +35,31 @@ public class GetUpdateCompanyRequestHandler : IRequestHandler<GetUpdateCompanyQu
 
     public async Task<UpdateCompanyVm> Handle(GetUpdateCompanyQuery request, CancellationToken cancellationToken)
     {
-        var result = new UpdateCompanyVm();
+        var result = new UpdateCompanyVm(request.Id);
         var company = _dbContext.Companies.Single(x => x.Id == request.Id);
-        result.Fields.Add(nameof(Company.Name), company.Name);
-        result.Fields.Add(nameof(Company.Address), company.Address);
-        result.Fields.Add(nameof(Company.Ceo), company.Ceo);
-        result.Fields.Add(nameof(Company.Contacts), company.Contacts);
-        result.Fields.Add(nameof(Company.Email), company.Email);
-        result.Fields.Add(nameof(Company.Inn), company.Inn);
-        result.Fields.Add(nameof(Company.Phone), company.Phone);
-        result.Fields.Add(nameof(Company.TypeId), company.TypeId);
-        result.Fields.Add(nameof(Company.ManagerId), company.ManagerId);
-        result.InitData.CompanyTypes = await _dbContext.CompanyTypes.ProjectToListAsync<CompanyTypeDto>(_mapper.ConfigurationProvider);
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
-        result.InitData.Managers = await GetManagersAsync(accessRights);
+        if (accessRights.Contains(Constants.Access.Company.Any.Name.Set))
+        {
+            result.Fields.Add(nameof(Company.Name), company.Name);
+        }
+
+        if (accessRights.Contains(Constants.Access.Company.Any.Other.Set))
+        {
+            result.Fields.Add(nameof(Company.Address), company.Address);
+            result.Fields.Add(nameof(Company.Ceo), company.Ceo);
+            result.Fields.Add(nameof(Company.Contacts), company.Contacts);
+            result.Fields.Add(nameof(Company.Email), company.Email);
+            result.Fields.Add(nameof(Company.Inn), company.Inn);
+            result.Fields.Add(nameof(Company.Phone), company.Phone);
+            result.Fields.Add(nameof(Company.TypeId), company.TypeId);
+            result.InitData.CompanyTypes = await _dbContext.CompanyTypes.ProjectToListAsync<CompanyTypeDto>(_mapper.ConfigurationProvider);
+        }
+
+        if (accessRights.Contains(Constants.Access.Company.Any.Manager.SetFromAnyToAny))
+        {
+            result.Fields.Add(nameof(Company.ManagerId), company.ManagerId);
+            result.InitData.Managers = await GetManagersAsync(accessRights);
+        }
 
         return result;
     }

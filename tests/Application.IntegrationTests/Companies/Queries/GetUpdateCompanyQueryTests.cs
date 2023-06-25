@@ -1,4 +1,5 @@
 using CRM.Application.Common.Exceptions;
+using CRM.Application.Companies.Queries;
 using CRM.Application.Companies.Queries.GetUpdateCompany;
 using CRM.Domain.Entities;
 using CRM.Infrastructure.Identity;
@@ -16,13 +17,11 @@ public class GetUpdateCompanyQueryTests : BaseTest
     public async Task User_is_admin___Returns_all_fields_and_init_data()
     {
         var user = await _fixture.RunAsAdministratorAsync();
-        var expected = await _fixture.AddCompanyAsync();
+        var expected = await _fixture.AddCompanyAsync(user.Id);
 
         var actual = await _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id));
 
-        AssertNameField(expected, actual);
-        AssertOtherFields(expected, actual);
-        AssertManagerField(expected, actual);
+        AssertFields(expected, actual, true, true, true);
         await AssertCompanyTypesInitDataAsync(actual);
         AssertManagerInitData(actual, new[] { user, new AspNetUser { Id = string.Empty } });
     }
@@ -35,25 +34,61 @@ public class GetUpdateCompanyQueryTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(company.Id)));
     }
 
-    private static void AssertNameField(Company expected, UpdateCompanyVm actual)
+    [Fact]
+    public async Task User_has_claim_to_set_name_in_any_company___Includes_name()
     {
-        Assert.Equal(expected.Name, actual.Fields[nameof(Company.Name)]);
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Name.Set });
+        var expected = await _fixture.AddCompanyAsync();
+
+        var actual = await _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id));
+
+        AssertFields(expected, actual, name: true);
+        Assert.Empty(actual.InitData.CompanyTypes);
+        Assert.Empty(actual.InitData.Managers);
     }
 
-    private static void AssertManagerField(Company expected, UpdateCompanyVm actual)
+    private static void AssertFields(Company expected, UpdateCompanyVm actual, bool name = false, bool manager = false, bool other = false)
     {
-        Assert.Equal(expected.ManagerId, actual.Fields[nameof(Company.ManagerId)]);
-    }
+        Assert.Equal(expected.Id, actual.Id);
 
-    private static void AssertOtherFields(Company expected, UpdateCompanyVm actual)
-    {
-        Assert.Equal(expected.TypeId, actual.Fields[nameof(Company.TypeId)]);
-        Assert.Equal(expected.Address, actual.Fields[nameof(Company.Address)]);
-        Assert.Equal(expected.Ceo, actual.Fields[nameof(Company.Ceo)]);
-        Assert.Equal(expected.Contacts, actual.Fields[nameof(Company.Contacts)]);
-        Assert.Equal(expected.Email, actual.Fields[nameof(Company.Email)]);
-        Assert.Equal(expected.Inn, actual.Fields[nameof(Company.Inn)]);
-        Assert.Equal(expected.Phone, actual.Fields[nameof(Company.Phone)]);
+        if (other)
+        {
+            Assert.Equal(expected.TypeId, actual.Fields[nameof(Company.TypeId)]);
+            Assert.Equal(expected.Address, actual.Fields[nameof(Company.Address)]);
+            Assert.Equal(expected.Ceo, actual.Fields[nameof(Company.Ceo)]);
+            Assert.Equal(expected.Contacts, actual.Fields[nameof(Company.Contacts)]);
+            Assert.Equal(expected.Email, actual.Fields[nameof(Company.Email)]);
+            Assert.Equal(expected.Inn, actual.Fields[nameof(Company.Inn)]);
+            Assert.Equal(expected.Phone, actual.Fields[nameof(Company.Phone)]);
+        }
+        else
+        {
+            Assert.False(actual.Fields.ContainsKey(nameof(Company.Address)));
+            Assert.False(actual.Fields.ContainsKey(nameof(Company.Ceo)));
+            Assert.False(actual.Fields.ContainsKey(nameof(Company.Contacts)));
+            Assert.False(actual.Fields.ContainsKey(nameof(Company.Email)));
+            Assert.False(actual.Fields.ContainsKey(nameof(Company.Inn)));
+            Assert.False(actual.Fields.ContainsKey(nameof(Company.Phone)));
+            Assert.False(actual.Fields.ContainsKey(nameof(Company.Type)));
+        }
+
+        if (manager)
+        {
+            Assert.Equal(expected.ManagerId, actual.Fields[nameof(Company.ManagerId)]);
+        }
+        else
+        {
+            Assert.False(actual.Fields.ContainsKey(nameof(Company.ManagerId)));
+        }
+
+        if (name)
+        {
+            Assert.Equal(expected.Name, actual.Fields[nameof(Company.Name)]);
+        }
+        else
+        {
+            Assert.False(actual.Fields.ContainsKey(nameof(Company.Name)));
+        }
     }
 
     private static void AssertManagerInitData(UpdateCompanyVm actual, AspNetUser[] expected)
