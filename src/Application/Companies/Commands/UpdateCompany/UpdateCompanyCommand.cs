@@ -2,6 +2,7 @@ using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
+using CRM.Domain.Entities;
 using MediatR;
 
 namespace CRM.Application.Companies.Commands.UpdateCompany;
@@ -9,15 +10,7 @@ namespace CRM.Application.Companies.Commands.UpdateCompany;
 [Authorize(Constants.Policies.Company.Commands.Update)]
 public record UpdateCompanyCommand(int Id) : IRequest
 {
-    public int? TypeId { get; set; }
-    public string Name { get; set; } = default!;
-    public string? Inn { get; set; }
-    public string? Address { get; set; }
-    public string? Ceo { get; set; }
-    public string? Phone { get; set; }
-    public string? Email { get; set; }
-    public string? Contacts { get; set; }
-    public string? ManagerId { get; set; }
+    public Dictionary<string, object?> Fields { get; } = new();
 }
 
 public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
@@ -54,7 +47,7 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
             Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
         ))
         {
-            entity.ManagerId = request.ManagerId;
+            entity.ManagerId = (string?)request.Fields[nameof(Company.ManagerId)];
         }
 
         if (accessRights.ContainsAny(
@@ -62,13 +55,13 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
             Constants.Access.Company.Any.Other.Set
         ))
         {
-            entity.Address = request.Address;
-            entity.Ceo = request.Ceo;
-            entity.Contacts = request.Contacts;
-            entity.Email = request.Email;
-            entity.Inn = request.Inn;
-            entity.Phone = request.Phone;
-            entity.TypeId = request.TypeId;
+            entity.Address = (string?)request.Fields[nameof(Company.Address)];
+            entity.Ceo = (string?)request.Fields[nameof(Company.Ceo)];
+            entity.Contacts = (string?)request.Fields[nameof(Company.Contacts)];
+            entity.Email = (string?)request.Fields[nameof(Company.Email)];
+            entity.Inn = (string?)request.Fields[nameof(Company.Inn)];
+            entity.Phone = (string?)request.Fields[nameof(Company.Phone)];
+            entity.TypeId = (int?)request.Fields[nameof(Company.TypeId)];
         }
 
         if (accessRights.ContainsAny(
@@ -76,7 +69,7 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
             Constants.Access.Company.Any.Name.Set
         ))
         {
-            entity.Name = request.Name;
+            entity.Name = (string)request.Fields[nameof(Company.Name)]!;
         }
 
         await _context.SaveChangesAsync(cancellationToken);

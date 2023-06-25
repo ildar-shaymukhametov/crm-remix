@@ -6,14 +6,14 @@ public class UpdateCompanyCommandValidator : AbstractValidator<UpdateCompanyComm
 {
     public UpdateCompanyCommandValidator()
     {
-        RuleFor(x => x.Name)
-            .MaximumLength(200)
-            .NotEmpty();
-        RuleFor(x => x.Email)
-            .EmailAddress()
-            .When(x => !string.IsNullOrWhiteSpace(x.Email));
-        RuleFor(x => x.Inn)
-            .Length(10)
-            .When(x => !string.IsNullOrWhiteSpace(x.Inn));
+        // RuleFor(x => x.Name)
+        //     .MaximumLength(200)
+        //     .NotEmpty();
+        // RuleFor(x => x.Email)
+        //     .EmailAddress()
+        //     .When(x => !string.IsNullOrWhiteSpace(x.Email));
+        // RuleFor(x => x.Inn)
+        //     .Length(10)
+        //     .When(x => !string.IsNullOrWhiteSpace(x.Inn));
     }
 }
