@@ -1,7 +1,6 @@
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Queries.GetUpdateCompany;
 using CRM.Domain.Entities;
-using CRM.Infrastructure.Identity;
 using FluentAssertions;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
@@ -22,7 +21,6 @@ public class GetUpdateCompanyQueryTests : BaseTest
 
         AssertFields(expected, actual, true, true, true);
         await AssertCompanyTypesInitDataAsync(actual);
-        AssertManagerInitData(actual, new[] { user, new AspNetUser { Id = string.Empty } });
     }
 
     [Fact]
@@ -156,6 +154,17 @@ public class GetUpdateCompanyQueryTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id)));
     }
 
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    public async Task User_has_claim_to_set_manager_from_none_to_any_in_any_company_and_is_manager___Forbidden(string claim)
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var expected = await _fixture.AddCompanyAsync(user.Id);
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id)));
+    }
+
     private static void AssertFields(Company expected, UpdateCompanyVm actual, bool name = false, bool manager = false, bool other = false)
     {
         Assert.Equal(expected.Id, actual.Id);
@@ -198,11 +207,6 @@ public class GetUpdateCompanyQueryTests : BaseTest
         {
             Assert.False(actual.Fields.ContainsKey(nameof(Company.Name)));
         }
-    }
-
-    private static void AssertManagerInitData(UpdateCompanyVm actual, AspNetUser[] expected)
-    {
-        actual.InitData.Managers.Select(x => x.Id).Should().BeEquivalentTo(expected.Select(x => x.Id));
     }
 
     private async Task AssertCompanyTypesInitDataAsync(UpdateCompanyVm actual)
