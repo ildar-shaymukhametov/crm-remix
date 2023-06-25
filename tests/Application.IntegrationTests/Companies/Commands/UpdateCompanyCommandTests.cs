@@ -61,12 +61,11 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task No_manager_in_company___Forbidden_to_update_other_address()
+    public async Task No_manager_in_company___Forbidden_to_update_address()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.Address = Faker.RandomString.Next();
+        var command = new UpdateCompanyCommand(company.Id) { Address = Faker.RandomString.Next() };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -76,8 +75,7 @@ public class UpdateCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.Ceo = Faker.RandomString.Next();
+        var command = new UpdateCompanyCommand(company.Id) { Ceo = Faker.RandomString.Next() };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -87,8 +85,7 @@ public class UpdateCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.Email = Faker.RandomString.Next();
+        var command = new UpdateCompanyCommand(company.Id) { Email = Faker.RandomString.Next() };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -98,8 +95,7 @@ public class UpdateCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.Inn = Faker.RandomString.Next();
+        var command = new UpdateCompanyCommand(company.Id) { Inn = Faker.RandomString.Next() };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -109,8 +105,7 @@ public class UpdateCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.Phone = Faker.RandomString.Next();
+        var command = new UpdateCompanyCommand(company.Id) { Phone = Faker.RandomString.Next() };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
@@ -120,8 +115,7 @@ public class UpdateCompanyTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.WhereUserIsManager.Other.Set });
         var company = await _fixture.AddCompanyAsync();
-        var command = CreateCopyData(company);
-        command.TypeId = null;
+        var command = new UpdateCompanyCommand(company.Id) { TypeId = null };
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
