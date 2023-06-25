@@ -62,6 +62,16 @@ public class GetUpdateCompanyQueryTests : BaseTest
         Assert.Empty(actual.InitData.Managers);
     }
 
+    [Fact]
+    public async Task User_has_claim_to_set_name_in_own_company_and_is_not_manager___Forbidden()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Name.Set });
+        var expected = await _fixture.AddCompanyAsync();
+
+        var command = new GetUpdateCompanyQuery(expected.Id);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
     private static void AssertFields(Company expected, UpdateCompanyVm actual, bool name = false, bool manager = false, bool other = false)
     {
         Assert.Equal(expected.Id, actual.Id);
