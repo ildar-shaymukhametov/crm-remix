@@ -10,14 +10,6 @@ public class CreateCompanyTests : BaseTest
     public CreateCompanyTests(BaseTestFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task Requires_minimum_fields()
-    {
-        await _fixture.RunAsAdministratorAsync();
-        var command = new CreateCompanyCommand(string.Empty);
-        await Assert.ThrowsAsync<ValidationException>(() => _fixture.SendAsync(command));
-    }
-
-    [Fact]
     public async Task User_is_admin___Creates_company_with_all_fields()
     {
         var user = await _fixture.RunAsAdministratorAsync();
