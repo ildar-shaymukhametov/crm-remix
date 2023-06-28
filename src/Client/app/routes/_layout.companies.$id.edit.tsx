@@ -170,7 +170,7 @@ export function ErrorBoundary() {
 }
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
-  if (data.company.fields.name != undefined) {
+  if (data?.company?.fields?.name != undefined) {
     return [
       {
         title: data.company.fields.name

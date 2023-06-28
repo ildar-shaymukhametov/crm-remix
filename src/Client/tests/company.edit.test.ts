@@ -105,6 +105,26 @@ test.describe.only("name", () => {
     await expect(page).toHaveURL(routes.companies.view(id));
     await expect(page.getByLabel(/name/i)).toHaveText(newCompanyData.name);
   });
+
+  test(`forbidden`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.whereUserIsManager.name.set]
+    });
+
+    const id = await createCompany();
+    await page.goto(routes.companies.edit(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, {
+      forbidden: true,
+      submitButton: false
+    });
+  });
 });
 
 test.describe("manager", () => {
