@@ -22,13 +22,22 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
-    public async Task User_has_no_claim___Forbidden()
+    public async Task No_claims_and_some_fields___Forbidden()
     {
         var user = await _fixture.RunAsDefaultUserAsync();
         var company = await _fixture.AddCompanyAsync();
         var command = CreateAllFields(company.Id);
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
+    [Fact]
+    public async Task No_claims_and_no_fields___Forbidden()
+    {
+        await _fixture.RunAsDefaultUserAsync();
+        var company = await _fixture.AddCompanyAsync();
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new UpdateCompanyCommand(company.Id)));
     }
 
     [Fact]
@@ -370,17 +379,6 @@ public class UpdateCompanyTests : BaseTest
         command.Fields.Add(nameof(Company.ManagerId), null);
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
-    }
-
-    [Fact]
-    public async Task From_manager_to_manager_without_claims___Updates_company()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync();
-        var company = await _fixture.AddCompanyAsync(user.Id);
-        var command = new UpdateCompanyCommand(company.Id);
-        command.Fields.Add(nameof(Company.ManagerId), user.Id);
-
-        await AssertCompanyUpdatedAsync(user, company, command, managerField: true);
     }
 
     [Fact]

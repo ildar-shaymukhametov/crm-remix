@@ -20,8 +20,27 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UpdateCompanyRequirement requirement)
     {
-        var (company, request) = GetResources(context);
         var accessRights = _accessService.CheckAccess(context.User);
+        if (!accessRights.ContainsAny(
+            Access.Company.Any.Other.Set,
+            Access.Company.WhereUserIsManager.Other.Set,
+            Access.Company.Any.Name.Set,
+            Access.Company.WhereUserIsManager.Name.Set,
+            Access.Company.Any.Manager.SetFromAnyToAny,
+            Access.Company.Any.Manager.SetFromAnyToNone,
+            Access.Company.Any.Manager.SetFromAnyToSelf,
+            Access.Company.Any.Manager.SetFromNoneToAny,
+            Access.Company.Any.Manager.SetFromNoneToSelf,
+            Access.Company.Any.Manager.SetFromSelfToAny,
+            Access.Company.Any.Manager.SetFromSelfToNone,
+            Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+            Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
+        ))
+        {
+            return Fail(context, "Update company");
+        }
+
+        var (company, request) = GetResources(context);
         var userId = context.User.GetSubjectId();
 
         if (new[] {
