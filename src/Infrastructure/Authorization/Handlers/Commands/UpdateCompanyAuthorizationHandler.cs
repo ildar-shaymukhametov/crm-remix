@@ -1,10 +1,12 @@
 using CRM.Application.Common.Behaviours.Authorization.Resources;
+using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Models;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Domain.Entities;
 using Duende.IdentityServer.Extensions;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using static CRM.Application.Constants;
 
@@ -41,6 +43,11 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         }
 
         var (company, request) = GetResources(context);
+        if (!request.Fields.Any())
+        {
+            throw new ValidationException(new[] { new ValidationFailure(nameof(UpdateCompanyCommand.Fields), "Must provide at least one value") });
+        }
+
         var userId = context.User.GetSubjectId();
 
         if (new[] {
@@ -80,7 +87,14 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             }
             if (request.Fields.TryGetValue(nameof(Company.TypeId), out object? typeId))
             {
-                changes.Add(!Equals(company.TypeId, typeId));
+                try
+                {
+                    changes.Add(!Equals(company.TypeId, Convert.ToInt32(typeId)));
+                }
+                catch
+                {
+                    throw new ValidationException(new[] { new ValidationFailure(nameof(Company.TypeId), "Value must be convertible to a number") });
+                }
             }
 
             if (changes.Any(x => true))

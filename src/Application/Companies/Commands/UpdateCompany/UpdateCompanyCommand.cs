@@ -24,11 +24,6 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
 
     public async Task Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
     {
-        if (!request.Fields.Any())
-        {
-            throw new ValidationException(new[] { new ValidationFailure(nameof(UpdateCompanyCommand.Fields), "Must provide at least one value") });
-        }
-
         var entity = await _context.Companies.FindAsync(new object?[] { request.Id }, cancellationToken);
         if (entity == null)
         {
@@ -76,14 +71,7 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
             }
             if (request.Fields.TryGetValue(nameof(Company.TypeId), out object? typeId))
             {
-                if (int.TryParse((string?)typeId, out int id))
-                {
-                    entity.TypeId = id;
-                }
-                else
-                {
-                    throw new ValidationException(new[] { new ValidationFailure(nameof(Company.TypeId), "Value must be convertible to a number") });
-                }
+                entity.TypeId = (int?)typeId;
             }
         }
 
