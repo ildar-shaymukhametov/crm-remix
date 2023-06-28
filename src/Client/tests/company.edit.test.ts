@@ -53,7 +53,7 @@ test("not found", async ({ page, runAsDefaultUser }) => {
   });
 });
 
-test.describe("name", () => {
+test.describe.only("name", () => {
   test(`sets in non-owned company`, async ({
     page,
     runAsDefaultUser,
@@ -65,6 +65,32 @@ test.describe("name", () => {
     });
 
     const id = await createCompany();
+    await page.goto(routes.companies.edit(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, { nameField: true, title: "full" });
+
+    const newCompanyData = buildCompany();
+    await page.getByLabel(/name/i).fill(newCompanyData.name);
+
+    const submit = page.getByRole("button", { name: /save changes/i });
+    await submit.click();
+
+    await expect(page).toHaveURL(routes.companies.view(id));
+    await expect(page.getByLabel(/name/i)).toHaveText(newCompanyData.name);
+  });
+
+  test(`sets in own company`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    const user = await runAsDefaultUser({
+      claims: [claims.company.whereUserIsManager.name.set]
+    });
+
+    const id = await createCompany({ managerId: user.id });
     await page.goto(routes.companies.edit(id));
 
     const company = await getCompany(id);
