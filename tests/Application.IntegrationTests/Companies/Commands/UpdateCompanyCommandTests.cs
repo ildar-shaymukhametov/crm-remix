@@ -43,10 +43,27 @@ public class UpdateCompanyTests : BaseTest
     [Fact]
     public async Task User_authorized_but_provides_no_fields___Throws()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Name.Set });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Set });
         var company = await _fixture.AddCompanyAsync();
 
         await Assert.ThrowsAsync<ValidationException>(() => _fixture.SendAsync(new UpdateCompanyCommand(company.Id)));
+    }
+
+    [Fact]
+    public async Task User_authorized_but_provides_incomplete_fields___Updates_provided_fields()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[]
+        {
+            Claims.Company.Any.Other.Set,
+            Claims.Company.Any.Name.Set,
+            Claims.Company.Any.Manager.SetFromAnyToAny
+        });
+        var company = await _fixture.AddCompanyAsync();
+        var command = new UpdateCompanyCommand(company.Id);
+        command.Fields.Add(nameof(Company.Name), Faker.RandomString.Next());
+        command.Fields.Add(nameof(Company.ManagerId), user.Id);
+
+        await AssertCompanyUpdatedAsync(user, company, command, nameField: true, managerField: true);
     }
 
     [Fact]

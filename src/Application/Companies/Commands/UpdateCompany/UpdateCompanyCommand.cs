@@ -41,7 +41,7 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
         }
 
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
-        if (accessRights.ContainsAny(
+        if (request.Fields.TryGetValue(nameof(Company.ManagerId), out object? managerId) && accessRights.ContainsAny(
             Constants.Access.Company.Any.Manager.SetFromAnyToAny,
             Constants.Access.Company.Any.Manager.SetFromAnyToNone,
             Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
@@ -53,10 +53,18 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
             Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
         ))
         {
-            entity.ManagerId = (string?)request.Fields[nameof(Company.ManagerId)];
+            entity.ManagerId = (string?)managerId;
         }
 
-        if (accessRights.ContainsAny(
+        if (new[] {
+            nameof(Company.Address),
+            nameof(Company.Ceo),
+            nameof(Company.Contacts),
+            nameof(Company.Email),
+            nameof(Company.Inn),
+            nameof(Company.Phone),
+            nameof(Company.TypeId)
+        }.Any(request.Fields.ContainsKey) && accessRights.ContainsAny(
             Constants.Access.Company.WhereUserIsManager.Other.Set,
             Constants.Access.Company.Any.Other.Set
         ))
@@ -70,12 +78,12 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
             entity.TypeId = (int?)request.Fields[nameof(Company.TypeId)];
         }
 
-        if (accessRights.ContainsAny(
+        if (request.Fields.TryGetValue(nameof(Company.Name), out object? name) && accessRights.ContainsAny(
             Constants.Access.Company.WhereUserIsManager.Name.Set,
             Constants.Access.Company.Any.Name.Set
         ))
         {
-            entity.Name = (string)request.Fields[nameof(Company.Name)]!;
+            entity.Name = (string)name!;
         }
 
         await _context.SaveChangesAsync(cancellationToken);
