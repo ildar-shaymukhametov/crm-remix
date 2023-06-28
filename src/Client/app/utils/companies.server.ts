@@ -78,27 +78,15 @@ export async function deleteCompany(
   }
 }
 
-export type UpdateCompanyCommand = {
-  typeId?: string;
-  name: string;
-  inn: string;
-  address: string;
-  ceo: string;
-  phone: string;
-  email: string;
-  contacts: string;
-  managerId?: string;
-};
-
 export async function updateCompany(
   request: Request,
   id: string,
-  data: UpdateCompanyCommand,
+  data: object,
   accessToken: string
 ): Promise<{ errors: string[][] } | undefined> {
   const response = await fetch(`${process.env.API_URL}/companies/${id}`, {
     method: "put",
-    body: JSON.stringify(data),
+    body: JSON.stringify({ ...data }),
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json"

@@ -637,7 +637,7 @@ async function expectMinimalUi(
     await expect(page).toHaveTitle("View company");
   } else {
     if (company && nameField) {
-      await expect(page).toHaveTitle(company.fields?.Name?.toString());
+      await expect(page).toHaveTitle(company.fields?.name?.toString());
     }
   }
 
@@ -646,31 +646,31 @@ async function expectMinimalUi(
   });
 
   const fields = [
-    { key: /name/i, value: company?.fields.Name, visible: nameField },
+    { key: /name/i, value: company?.fields.name, visible: nameField },
     {
       key: /address/i,
-      value: company?.fields.Address,
+      value: company?.fields.address,
       visible: otherFields
     },
-    { key: /ceo/i, value: company?.fields.Ceo, visible: otherFields },
+    { key: /ceo/i, value: company?.fields.ceo, visible: otherFields },
     {
       key: /contacts/i,
-      value: company?.fields.Contacts,
+      value: company?.fields.contacts,
       visible: otherFields
     },
-    { key: /email/i, value: company?.fields.Email, visible: otherFields },
-    { key: /inn/i, value: company?.fields.Inn, visible: otherFields },
-    { key: /phone/i, value: company?.fields.Phone, visible: otherFields },
+    { key: /email/i, value: company?.fields.email, visible: otherFields },
+    { key: /inn/i, value: company?.fields.inn, visible: otherFields },
+    { key: /phone/i, value: company?.fields.phone, visible: otherFields },
     {
       key: /type/i,
-      value: (company?.fields.Type as CompanyType)?.name,
+      value: (company?.fields.type as CompanyType)?.name,
       visible: otherFields
     },
     {
       key: /manager/i,
-      value: company?.fields.Manager
-        ? `${(company?.fields.Manager as Manager)?.lastName} ${
-            (company?.fields.Manager as Manager)?.firstName
+      value: company?.fields.manager
+        ? `${(company?.fields.manager as Manager)?.lastName} ${
+            (company?.fields.manager as Manager)?.firstName
           }`
         : "-",
       visible: managerField

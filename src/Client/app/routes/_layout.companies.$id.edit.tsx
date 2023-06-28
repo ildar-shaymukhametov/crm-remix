@@ -6,10 +6,7 @@ import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { auth } from "~/utils/auth.server";
-import type {
-  UpdateCompanyCommand,
-  UpdateCompanyQuery
-} from "~/utils/companies.server";
+import type { UpdateCompanyQuery } from "~/utils/companies.server";
 import { getUpdateCompanyData } from "~/utils/companies.server";
 import { updateCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
@@ -37,16 +34,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request);
   invariant(params.id, "Missing id parameter");
 
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData) as UpdateCompanyCommand;
-  if (!data.managerId) {
-    delete data.managerId;
-  }
-
-  if (!data.typeId) {
-    delete data.typeId;
-  }
-
+  const data = Object.fromEntries(await request.formData());
   await updateCompany(request, params.id, data, user.extra?.access_token);
 
   return redirect(routes.companies.view(params.id));
@@ -57,7 +45,7 @@ export default function EditCompanyRoute() {
 
   return (
     <form method="post">
-      {"Name" in data.fields ? (
+      {"name" in data.fields ? (
         <div>
           <label>
             Name:
@@ -65,12 +53,12 @@ export default function EditCompanyRoute() {
               name="name"
               required
               maxLength={200}
-              defaultValue={data.fields.Name?.toString()}
+              defaultValue={data.fields.name?.toString()}
             />
           </label>
         </div>
       ) : null}
-      {"TypeId" in data.fields ? (
+      {"typeId" in data.fields ? (
         <div>
           <label>
             Type:
@@ -85,7 +73,7 @@ export default function EditCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"Inn" in data.fields ? (
+      {"inn" in data.fields ? (
         <div>
           <label>
             Inn:
@@ -93,7 +81,7 @@ export default function EditCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"Address" in data.fields ? (
+      {"address" in data.fields ? (
         <div>
           <label>
             Address:
@@ -104,7 +92,7 @@ export default function EditCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"Ceo" in data.fields ? (
+      {"ceo" in data.fields ? (
         <div>
           <label>
             CEO:
@@ -112,7 +100,7 @@ export default function EditCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"Phone" in data.fields ? (
+      {"phone" in data.fields ? (
         <div>
           <label>
             Phone:
@@ -120,7 +108,7 @@ export default function EditCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"Email" in data.fields ? (
+      {"email" in data.fields ? (
         <div>
           <label>
             Email:
@@ -128,7 +116,7 @@ export default function EditCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"Contacts" in data.fields ? (
+      {"contacts" in data.fields ? (
         <div>
           <label>
             Contacts:
@@ -139,7 +127,7 @@ export default function EditCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"ManagerId" in data.fields ? (
+      {"managerId" in data.fields ? (
         <div>
           <label>
             Manager:
@@ -182,10 +170,10 @@ export function ErrorBoundary() {
 }
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
-  if (data.company.fields.Name != undefined) {
+  if (data.company.fields.name != undefined) {
     return [
       {
-        title: data.company.fields.Name
+        title: data.company.fields.name
       }
     ];
   }

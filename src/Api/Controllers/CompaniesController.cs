@@ -42,9 +42,13 @@ public class CompaniesController : ApiControllerBase
 
     [HttpPut]
     [Route("{id}")]
-    public async Task<ActionResult> Update(int id, UpdateCompanyCommand command)
+    public async Task<ActionResult> Update(int id, Dictionary<string, object?> fields)
     {
-        await Mediator.Send(command with { Id = id });
+        await Mediator.Send(new UpdateCompanyCommand(id)
+        {
+            Fields = new Dictionary<string, object?>(fields, StringComparer.OrdinalIgnoreCase)
+        });
+
         return Ok();
     }
 

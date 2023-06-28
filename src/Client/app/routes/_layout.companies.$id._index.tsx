@@ -41,67 +41,67 @@ export default function CompanyRoute() {
         <Link to={routes.companies.delete(id)}>Delete</Link>
       ) : null}
       <div>
-        {"Name" in company.fields ? (
+        {"name" in company.fields ? (
           <p>
             <span>name</span>:{" "}
-            <span aria-label="name">{company.fields.Name?.toString()}</span>
+            <span aria-label="name">{company.fields.name?.toString()}</span>
           </p>
         ) : null}
-        {"Type" in company.fields ? (
+        {"type" in company.fields ? (
           <p>
             <span>type</span>:{" "}
             <span aria-label="type">
-              {(company.fields.Type as CompanyType)?.name}
+              {(company.fields.type as CompanyType)?.name}
             </span>
           </p>
         ) : null}
-        {"Inn" in company.fields ? (
+        {"inn" in company.fields ? (
           <p>
             <span>inn</span>:{" "}
-            <span aria-label="inn">{company.fields.Inn?.toString()}</span>
+            <span aria-label="inn">{company.fields.inn?.toString()}</span>
           </p>
         ) : null}
-        {"Address" in company.fields ? (
+        {"address" in company.fields ? (
           <p>
             <span>address</span>:{" "}
             <span aria-label="address">
-              {company.fields.Address?.toString()}
+              {company.fields.address?.toString()}
             </span>
           </p>
         ) : null}
-        {"Ceo" in company.fields ? (
+        {"ceo" in company.fields ? (
           <p>
             <span>ceo</span>:{" "}
-            <span aria-label="ceo">{company.fields.Ceo?.toString()}</span>
+            <span aria-label="ceo">{company.fields.ceo?.toString()}</span>
           </p>
         ) : null}
-        {"Phone" in company.fields ? (
+        {"phone" in company.fields ? (
           <p>
             <span>phone</span>:{" "}
-            <span aria-label="phone">{company.fields.Phone?.toString()}</span>
+            <span aria-label="phone">{company.fields.phone?.toString()}</span>
           </p>
         ) : null}
-        {"Email" in company.fields ? (
+        {"email" in company.fields ? (
           <p>
             <span>email</span>:{" "}
-            <span aria-label="email">{company.fields.Email?.toString()}</span>
+            <span aria-label="email">{company.fields.email?.toString()}</span>
           </p>
         ) : null}
-        {"Contacts" in company.fields ? (
+        {"contacts" in company.fields ? (
           <p>
             <span>contacts</span>:{" "}
             <span aria-label="contacts">
-              {company.fields.Contacts?.toString()}
+              {company.fields.contacts?.toString()}
             </span>
           </p>
         ) : null}
-        {"Manager" in company.fields ? (
+        {"manager" in company.fields ? (
           <p>
             <span>manager</span>:{" "}
             <span aria-label="manager">
-              {company.fields.Manager
-                ? `${(company.fields.Manager as Manager)?.lastName} ${
-                    (company.fields.Manager as Manager)?.firstName
+              {company.fields.manager
+                ? `${(company.fields.manager as Manager)?.lastName} ${
+                    (company.fields.manager as Manager)?.firstName
                   }`
                 : "-"}
             </span>
@@ -130,10 +130,10 @@ export function ErrorBoundary() {
 }
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
-  if (data?.company?.fields?.Name != undefined) {
+  if (data?.company?.fields?.name != undefined) {
     return [
       {
-        title: data.company.fields.Name
+        title: data.company.fields.name
       }
     ];
   }

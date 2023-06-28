@@ -10,7 +10,7 @@ namespace CRM.Application.Companies.Commands.UpdateCompany;
 [Authorize(Constants.Policies.Company.Commands.Update)]
 public record UpdateCompanyCommand(int Id) : IRequest
 {
-    public Dictionary<string, object?> Fields { get; } = new();
+    public Dictionary<string, object?> Fields { get; set; } = new();
 }
 
 public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>

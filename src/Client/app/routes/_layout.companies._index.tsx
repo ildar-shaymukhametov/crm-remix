@@ -44,41 +44,41 @@ export default function CompaniesIndexRoute() {
         {companies.length > 0 ? (
           companies.map((x, i) => (
             <li key={i}>
-              {"Name" in x.fields ? (
-                <span aria-label="name">{x.fields.Name?.toString()}</span>
+              {"name" in x.fields ? (
+                <span aria-label="name">{x.fields.name?.toString()}</span>
               ) : null}
-              {"Address" in x.fields ? (
-                <span aria-label="address">{x.fields.Address?.toString()}</span>
+              {"address" in x.fields ? (
+                <span aria-label="address">{x.fields.address?.toString()}</span>
               ) : null}
-              {"Ceo" in x.fields ? (
-                <span aria-label="ceo">{x.fields.Ceo?.toString()}</span>
+              {"ceo" in x.fields ? (
+                <span aria-label="ceo">{x.fields.ceo?.toString()}</span>
               ) : null}
-              {"Contacts" in x.fields ? (
+              {"contacts" in x.fields ? (
                 <span aria-label="contacts">
-                  {x.fields.Contacts?.toString()}
+                  {x.fields.contacts?.toString()}
                 </span>
               ) : null}
-              {"Email" in x.fields ? (
-                <span aria-label="email">{x.fields.Email?.toString()}</span>
+              {"email" in x.fields ? (
+                <span aria-label="email">{x.fields.email?.toString()}</span>
               ) : null}
-              {"Inn" in x.fields ? (
-                <span aria-label="inn">{x.fields.Inn?.toString()}</span>
+              {"inn" in x.fields ? (
+                <span aria-label="inn">{x.fields.inn?.toString()}</span>
               ) : null}
-              {"Phone" in x.fields ? (
-                <span aria-label="phone">{x.fields.Phone?.toString()}</span>
+              {"phone" in x.fields ? (
+                <span aria-label="phone">{x.fields.phone?.toString()}</span>
               ) : null}
-              {"Type" in x.fields ? (
+              {"type" in x.fields ? (
                 <span aria-label="type">
-                  {(x.fields.Type as CompanyType)?.name?.toString()}
+                  {(x.fields.type as CompanyType)?.name?.toString()}
                 </span>
               ) : null}
-              {"Manager" in x.fields ? (
+              {"manager" in x.fields ? (
                 <p>
                   <span>manager</span>:{" "}
                   <span aria-label="manager">
-                    {x.fields.Manager
-                      ? `${(x.fields.Manager as Manager)?.lastName} ${
-                          (x.fields.Manager as Manager)?.firstName
+                    {x.fields.manager
+                      ? `${(x.fields.manager as Manager)?.lastName} ${
+                          (x.fields.manager as Manager)?.firstName
                         }`
                       : "-"}
                   </span>

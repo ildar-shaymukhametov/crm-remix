@@ -53,7 +53,7 @@ test("not found", async ({ page, runAsDefaultUser }) => {
   });
 });
 
-test.describe.only("name", () => {
+test.describe("name", () => {
   test(`sets in non-owned company`, async ({
     page,
     runAsDefaultUser,
@@ -70,14 +70,14 @@ test.describe.only("name", () => {
     const company = await getCompany(id);
     await expectMinimalUi(page, company, { nameField: true, title: "full" });
 
-    const newData = buildCompany();
-    await page.getByLabel(/name/i).fill(newData.name);
+    const newCompanyData = buildCompany();
+    await page.getByLabel(/name/i).fill(newCompanyData.name);
 
     const submit = page.getByRole("button", { name: /save changes/i });
     await submit.click();
 
     await expect(page).toHaveURL(routes.companies.view(id));
-    await expect(page.getByLabel(/name/i)).toHaveText(newData.name);
+    await expect(page.getByLabel(/name/i)).toHaveText(newCompanyData.name);
   });
 });
 
@@ -402,7 +402,7 @@ async function expectMinimalUi(
     await expect(page).toHaveTitle("Edit company");
   } else {
     if (company) {
-      await expect(page).toHaveTitle(company.fields.Name.toString());
+      await expect(page).toHaveTitle(company.fields.name.toString());
     }
   }
 

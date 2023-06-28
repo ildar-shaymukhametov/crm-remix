@@ -4,6 +4,8 @@ using CRM.Api.Services;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using CRM.Api.Converters;
+using System.Text.Json;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -18,7 +20,12 @@ public static class ConfigureServices
         services.AddHttpContextAccessor();
 
         services.AddControllersWithViews(options =>
-            options.Filters.Add<ApiExceptionFilterAttribute>());
+            options.Filters.Add<ApiExceptionFilterAttribute>()).AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new ObjectToInferredTypesConverter());
+                options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
 
         services.AddFluentValidationAutoValidation();
 
