@@ -76,7 +76,14 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
             }
             if (request.Fields.TryGetValue(nameof(Company.TypeId), out object? typeId))
             {
-                entity.TypeId = (int?)typeId;
+                if (int.TryParse((string?)typeId, out int id))
+                {
+                    entity.TypeId = id;
+                }
+                else
+                {
+                    throw new ValidationException(new[] { new ValidationFailure(nameof(Company.TypeId), "Value must be convertible to a number") });
+                }
             }
         }
 

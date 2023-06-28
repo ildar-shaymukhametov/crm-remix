@@ -161,6 +161,17 @@ public class UpdateCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
+    [Fact]
+    public async Task TypeId_is_not_convertible_to_number___Throws()
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Set });
+        var company = await _fixture.AddCompanyAsync();
+        var command = new UpdateCompanyCommand(company.Id);
+        command.Fields.Add(nameof(Company.TypeId), "foo");
+
+        await Assert.ThrowsAsync<ValidationException>(() => _fixture.SendAsync(command));
+    }
+
     [Theory]
     [InlineData(Claims.Company.Any.Manager.SetFromNoneToSelf)]
     [InlineData(Claims.Company.Any.Manager.SetFromNoneToAny)]
