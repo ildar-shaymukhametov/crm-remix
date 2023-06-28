@@ -71,7 +71,7 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
             }
             if (request.Fields.TryGetValue(nameof(Company.TypeId), out object? typeId))
             {
-                entity.TypeId = (int?)typeId;
+                entity.TypeId = Convert.ToInt32(typeId);
             }
         }
 

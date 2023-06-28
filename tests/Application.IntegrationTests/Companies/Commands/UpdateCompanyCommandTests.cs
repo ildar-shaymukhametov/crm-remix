@@ -172,6 +172,17 @@ public class UpdateCompanyTests : BaseTest
         await Assert.ThrowsAsync<ValidationException>(() => _fixture.SendAsync(command));
     }
 
+    [Fact]
+    public async Task TypeId_is_number_string___Updates_type_id()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Set });
+        var company = await _fixture.AddCompanyAsync();
+        var command = new UpdateCompanyCommand(company.Id);
+        command.Fields.Add(nameof(Company.TypeId), "1");
+
+        await AssertCompanyUpdatedAsync(user, command, company, typeId: true);
+    }
+
     [Theory]
     [InlineData(Claims.Company.Any.Manager.SetFromNoneToSelf)]
     [InlineData(Claims.Company.Any.Manager.SetFromNoneToAny)]
@@ -515,7 +526,7 @@ public class UpdateCompanyTests : BaseTest
 
         if (typeId)
         {
-            Assert.Equal(expected.Fields[nameof(Company.TypeId)], actual?.TypeId);
+            Assert.Equal(Convert.ToInt32(expected.Fields[nameof(Company.TypeId)]), actual?.TypeId);
         }
         else
         {
