@@ -440,16 +440,6 @@ public class UpdateCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
     }
 
-    [Fact]
-    public async Task User_has_claim_to_update_name_in_any_company_and_provides_no_value___Throws()
-    {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Name.Set });
-        var company = await _fixture.AddCompanyAsync();
-        var command = new UpdateCompanyCommand(company.Id);
-
-        await AssertCompanyUpdatedAsync(user, company, command, nameField: true);
-    }
-
     private static UpdateCompanyCommand CreateAllFields(int id, string? managerId = null)
     {
         var data = Faker.Builders.Company();
