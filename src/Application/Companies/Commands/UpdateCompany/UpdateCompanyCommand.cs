@@ -50,13 +50,34 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
             nameof(Company.TypeId)
         }.Any(request.Fields.ContainsKey))
         {
-            entity.Address = (string?)request.Fields[nameof(Company.Address)];
-            entity.Ceo = (string?)request.Fields[nameof(Company.Ceo)];
-            entity.Contacts = (string?)request.Fields[nameof(Company.Contacts)];
-            entity.Email = (string?)request.Fields[nameof(Company.Email)];
-            entity.Inn = (string?)request.Fields[nameof(Company.Inn)];
-            entity.Phone = (string?)request.Fields[nameof(Company.Phone)];
-            entity.TypeId = (int?)request.Fields[nameof(Company.TypeId)];
+            if (request.Fields.TryGetValue(nameof(Company.Address), out object? address))
+            {
+                entity.Address = (string?)address;
+            }
+            if (request.Fields.TryGetValue(nameof(Company.Ceo), out object? ceo))
+            {
+                entity.Ceo = (string?)ceo;
+            }
+            if (request.Fields.TryGetValue(nameof(Company.Contacts), out object? contacts))
+            {
+                entity.Contacts = (string?)contacts;
+            }
+            if (request.Fields.TryGetValue(nameof(Company.Email), out object? email))
+            {
+                entity.Email = (string?)email;
+            }
+            if (request.Fields.TryGetValue(nameof(Company.Inn), out object? inn))
+            {
+                entity.Inn = (string?)inn;
+            }
+            if (request.Fields.TryGetValue(nameof(Company.Phone), out object? phone))
+            {
+                entity.Phone = (string?)phone;
+            }
+            if (request.Fields.TryGetValue(nameof(Company.TypeId), out object? typeId))
+            {
+                entity.TypeId = (int?)typeId;
+            }
         }
 
         if (request.Fields.TryGetValue(nameof(Company.Name), out object? name))

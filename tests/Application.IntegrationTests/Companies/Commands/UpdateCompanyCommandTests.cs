@@ -62,8 +62,9 @@ public class UpdateCompanyTests : BaseTest
         var command = new UpdateCompanyCommand(company.Id);
         command.Fields.Add(nameof(Company.Name), Faker.RandomString.Next());
         command.Fields.Add(nameof(Company.ManagerId), user.Id);
+        command.Fields.Add(nameof(Company.Address), Faker.RandomString.Next());
 
-        await AssertCompanyUpdatedAsync(user, company, command, nameField: true, managerField: true);
+        await AssertCompanyUpdatedAsync(user, command, company, name: true, manager: true, address: true);
     }
 
     [Fact]
@@ -172,7 +173,7 @@ public class UpdateCompanyTests : BaseTest
         var command = new UpdateCompanyCommand(company.Id);
         command.Fields.Add(nameof(Company.ManagerId), user.Id);
 
-        await AssertCompanyUpdatedAsync(user, company, command, managerField: true);
+        await AssertCompanyUpdatedAsync(user, company, command, manager: true);
     }
 
     [Fact]
@@ -197,7 +198,7 @@ public class UpdateCompanyTests : BaseTest
         var command = new UpdateCompanyCommand(company.Id);
         command.Fields.Add(nameof(Company.ManagerId), anotherUser.Id);
 
-        await AssertCompanyUpdatedAsync(user, company, command, managerField: true);
+        await AssertCompanyUpdatedAsync(user, company, command, manager: true);
     }
 
     [Fact]
@@ -224,7 +225,7 @@ public class UpdateCompanyTests : BaseTest
         var command = new UpdateCompanyCommand(company.Id);
         command.Fields.Add(nameof(Company.ManagerId), null);
 
-        await AssertCompanyUpdatedAsync(user, company, command, managerField: true);
+        await AssertCompanyUpdatedAsync(user, company, command, manager: true);
     }
 
     [Fact]
@@ -249,7 +250,7 @@ public class UpdateCompanyTests : BaseTest
         var command = new UpdateCompanyCommand(company.Id);
         command.Fields.Add(nameof(Company.ManagerId), null);
 
-        await AssertCompanyUpdatedAsync(user, company, command, managerField: true);
+        await AssertCompanyUpdatedAsync(user, company, command, manager: true);
     }
 
     [Fact]
@@ -275,7 +276,7 @@ public class UpdateCompanyTests : BaseTest
         var command = new UpdateCompanyCommand(company.Id);
         command.Fields.Add(nameof(Company.ManagerId), user.Id);
 
-        await AssertCompanyUpdatedAsync(user, company, command, managerField: true);
+        await AssertCompanyUpdatedAsync(user, company, command, manager: true);
     }
 
     [Fact]
@@ -302,7 +303,7 @@ public class UpdateCompanyTests : BaseTest
         var command = new UpdateCompanyCommand(company.Id);
         command.Fields.Add(nameof(Company.ManagerId), someUser.Id);
 
-        await AssertCompanyUpdatedAsync(user, company, command, managerField: true);
+        await AssertCompanyUpdatedAsync(user, company, command, manager: true);
     }
 
     [Fact]
@@ -327,7 +328,7 @@ public class UpdateCompanyTests : BaseTest
         var command = new UpdateCompanyCommand(company.Id);
         command.Fields.Add(nameof(Company.ManagerId), anotherUser.Id);
 
-        await AssertCompanyUpdatedAsync(user, company, command, managerField: true);
+        await AssertCompanyUpdatedAsync(user, company, command, manager: true);
     }
 
     [Fact]
@@ -368,7 +369,7 @@ public class UpdateCompanyTests : BaseTest
         var command = new UpdateCompanyCommand(company.Id);
         command.Fields.Add(nameof(Company.ManagerId), null);
 
-        await AssertCompanyUpdatedAsync(user, company, command, managerField: true);
+        await AssertCompanyUpdatedAsync(user, company, command, manager: true);
     }
 
     [Theory]
@@ -393,7 +394,7 @@ public class UpdateCompanyTests : BaseTest
         var command = new UpdateCompanyCommand(company.Id);
         command.Fields.Add(nameof(Company.ManagerId), null);
 
-        await AssertCompanyUpdatedAsync(user, company, command, managerField: true);
+        await AssertCompanyUpdatedAsync(user, company, command, manager: true);
     }
 
     [Fact]
@@ -415,7 +416,7 @@ public class UpdateCompanyTests : BaseTest
         var command = new UpdateCompanyCommand(company.Id);
         command.Fields.Add(nameof(Company.Name), Faker.RandomString.Next());
 
-        await AssertCompanyUpdatedAsync(user, company, command, nameField: true);
+        await AssertCompanyUpdatedAsync(user, company, command, name: true);
     }
 
     [Fact]
@@ -426,7 +427,7 @@ public class UpdateCompanyTests : BaseTest
         var command = new UpdateCompanyCommand(company.Id);
         command.Fields.Add(nameof(Company.Name), Faker.RandomString.Next());
 
-        await AssertCompanyUpdatedAsync(user, company, command, nameField: true);
+        await AssertCompanyUpdatedAsync(user, company, command, name: true);
     }
 
     [Fact]
@@ -472,7 +473,19 @@ public class UpdateCompanyTests : BaseTest
         return result;
     }
 
-    private async Task AssertCompanyUpdatedAsync(AspNetUser user, Company currentCompany, UpdateCompanyCommand expected, bool nameField = false, bool otherFields = false, bool managerField = false)
+    private async Task AssertCompanyUpdatedAsync(AspNetUser user, Company currentCompany, UpdateCompanyCommand expected, bool name = false, bool manager = false, bool otherFields = false)
+    {
+        if (otherFields)
+        {
+            await AssertCompanyUpdatedAsync(user, expected, currentCompany, name, manager, true, true, true, true, true, true, true);
+        }
+        else
+        {
+            await AssertCompanyUpdatedAsync(user, expected, currentCompany, name, manager, false, false, false, false, false, false, false);
+        }
+    }
+
+    private async Task AssertCompanyUpdatedAsync(AspNetUser user, UpdateCompanyCommand expected, Company currentCompany, bool name = false, bool manager = false, bool typeId = false, bool address = false, bool ceo = false, bool contacts = false, bool email = false, bool inn = false, bool phone = false)
     {
         await _fixture.SendAsync(expected);
         var actual = await _fixture.FindAsync<Company>(currentCompany.Id);
@@ -480,7 +493,7 @@ public class UpdateCompanyTests : BaseTest
         Assert.Equal(BaseTestFixture.UtcNow, actual?.LastModifiedAtUtc);
         Assert.Equal(user.Id, actual?.LastModifiedBy);
 
-        if (nameField)
+        if (name)
         {
             Assert.Equal(expected.Fields[nameof(Company.Name)], actual?.Name);
         }
@@ -489,28 +502,70 @@ public class UpdateCompanyTests : BaseTest
             Assert.Equal(currentCompany.Name, actual?.Name);
         }
 
-        if (otherFields)
+        if (typeId)
         {
             Assert.Equal(expected.Fields[nameof(Company.TypeId)], actual?.TypeId);
-            Assert.Equal(expected.Fields[nameof(Company.Address)], actual?.Address);
-            Assert.Equal(expected.Fields[nameof(Company.Ceo)], actual?.Ceo);
-            Assert.Equal(expected.Fields[nameof(Company.Contacts)], actual?.Contacts);
-            Assert.Equal(expected.Fields[nameof(Company.Email)], actual?.Email);
-            Assert.Equal(expected.Fields[nameof(Company.Inn)], actual?.Inn);
-            Assert.Equal(expected.Fields[nameof(Company.Phone)], actual?.Phone);
         }
         else
         {
             Assert.Equal(currentCompany.TypeId, actual?.TypeId);
+        }
+
+        if (address)
+        {
+            Assert.Equal(expected.Fields[nameof(Company.Address)], actual?.Address);
+        }
+        else
+        {
             Assert.Equal(currentCompany.Address, actual?.Address);
+        }
+
+        if (ceo)
+        {
+            Assert.Equal(expected.Fields[nameof(Company.Ceo)], actual?.Ceo);
+        }
+        else
+        {
             Assert.Equal(currentCompany.Ceo, actual?.Ceo);
+        }
+
+        if (contacts)
+        {
+            Assert.Equal(expected.Fields[nameof(Company.Contacts)], actual?.Contacts);
+        }
+        else
+        {
             Assert.Equal(currentCompany.Contacts, actual?.Contacts);
+        }
+
+        if (email)
+        {
+            Assert.Equal(expected.Fields[nameof(Company.Email)], actual?.Email);
+        }
+        else
+        {
             Assert.Equal(currentCompany.Email, actual?.Email);
+        }
+
+        if (inn)
+        {
+            Assert.Equal(expected.Fields[nameof(Company.Inn)], actual?.Inn);
+        }
+        else
+        {
             Assert.Equal(currentCompany.Inn, actual?.Inn);
+        }
+
+        if (phone)
+        {
+            Assert.Equal(expected.Fields[nameof(Company.Phone)], actual?.Phone);
+        }
+        else
+        {
             Assert.Equal(currentCompany.Phone, actual?.Phone);
         }
 
-        if (managerField)
+        if (manager)
         {
             Assert.Equal(expected.Fields[nameof(Company.ManagerId)], actual?.ManagerId);
         }
