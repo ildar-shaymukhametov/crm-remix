@@ -41,6 +41,15 @@ public class UpdateCompanyTests : BaseTest
     }
 
     [Fact]
+    public async Task User_authorized_but_provides_no_fields___Throws()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Name.Set });
+        var company = await _fixture.AddCompanyAsync();
+
+        await Assert.ThrowsAsync<ValidationException>(() => _fixture.SendAsync(new UpdateCompanyCommand(company.Id)));
+    }
+
+    [Fact]
     public async Task Not_found()
     {
         await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Other.Set });
@@ -412,6 +421,16 @@ public class UpdateCompanyTests : BaseTest
         command.Fields.Add(nameof(Company.Name), Faker.RandomString.Next());
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(command));
+    }
+
+    [Fact]
+    public async Task User_has_claim_to_update_name_in_any_company_and_provides_no_value___Throws()
+    {
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Claims.Company.Any.Name.Set });
+        var company = await _fixture.AddCompanyAsync();
+        var command = new UpdateCompanyCommand(company.Id);
+
+        await AssertCompanyUpdatedAsync(user, company, command, nameField: true);
     }
 
     private static UpdateCompanyCommand CreateAllFields(int id, string? managerId = null)

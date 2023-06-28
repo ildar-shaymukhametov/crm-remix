@@ -3,6 +3,7 @@ using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
 using CRM.Domain.Entities;
+using FluentValidation.Results;
 using MediatR;
 
 namespace CRM.Application.Companies.Commands.UpdateCompany;
@@ -28,6 +29,11 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
 
     public async Task Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
     {
+        if (!request.Fields.Any())
+        {
+            throw new ValidationException(new[] { new ValidationFailure(nameof(UpdateCompanyCommand.Fields), "Must provide at least one value") });
+        }
+
         var entity = await _context.Companies.FindAsync(new object?[] { request.Id }, cancellationToken);
         if (entity == null)
         {
