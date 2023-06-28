@@ -56,7 +56,7 @@ export default function NewCompanyRoute() {
 
   return (
     <form method="post">
-      {"Name" in vm.fields ? (
+      {"name" in vm.fields ? (
         <div>
           <label>
             Name:
@@ -64,7 +64,7 @@ export default function NewCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"TypeId" in vm.fields ? (
+      {"typeId" in vm.fields ? (
         <div>
           <label>
             Type:
@@ -79,7 +79,7 @@ export default function NewCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"Inn" in vm.fields ? (
+      {"inn" in vm.fields ? (
         <div>
           <label>
             Inn:
@@ -90,7 +90,7 @@ export default function NewCompanyRoute() {
             : null}
         </div>
       ) : null}
-      {"Address" in vm.fields ? (
+      {"address" in vm.fields ? (
         <div>
           <label>
             Address:
@@ -98,7 +98,7 @@ export default function NewCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"Ceo" in vm.fields ? (
+      {"ceo" in vm.fields ? (
         <div>
           <label>
             CEO:
@@ -106,7 +106,7 @@ export default function NewCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"Phone" in vm.fields ? (
+      {"phone" in vm.fields ? (
         <div>
           <label>
             Phone:
@@ -114,7 +114,7 @@ export default function NewCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"Email" in vm.fields ? (
+      {"email" in vm.fields ? (
         <div>
           <label>
             Email:
@@ -125,7 +125,7 @@ export default function NewCompanyRoute() {
             : null}
         </div>
       ) : null}
-      {"Contacts" in vm.fields ? (
+      {"contacts" in vm.fields ? (
         <div>
           <label>
             Contacts:
@@ -133,7 +133,7 @@ export default function NewCompanyRoute() {
           </label>
         </div>
       ) : null}
-      {"ManagerId" in vm.fields ? (
+      {"managerId" in vm.fields ? (
         <div>
           <label>
             Manager:

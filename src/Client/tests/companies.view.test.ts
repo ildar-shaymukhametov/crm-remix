@@ -652,7 +652,7 @@ async function expectMinimalUi(
       { key: /ceo/i, value: company?.fields.ceo, visible: otherFields },
       {
         key: /contacts/i,
-        value: company?.fields.Contacts,
+        value: company?.fields.contacts,
         visible: otherFields
       },
       { key: /email/i, value: company?.fields.email, visible: otherFields },
