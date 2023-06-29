@@ -53,7 +53,7 @@ test("not found", async ({ page, runAsDefaultUser }) => {
   });
 });
 
-test.describe.only("name", () => {
+test.describe("name", () => {
   test(`sets in non-owned company`, async ({
     page,
     runAsDefaultUser,
@@ -68,7 +68,7 @@ test.describe.only("name", () => {
     await page.goto(routes.companies.edit(id));
 
     const company = await getCompany(id);
-    await expectMinimalUi(page, company, { nameField: true, title: "full" });
+    await expectMinimalUi(page, company, { nameField: true });
 
     const newCompanyData = buildCompany();
     await page.getByLabel(/name/i).fill(newCompanyData.name);
@@ -94,7 +94,7 @@ test.describe.only("name", () => {
     await page.goto(routes.companies.edit(id));
 
     const company = await getCompany(id);
-    await expectMinimalUi(page, company, { nameField: true, title: "full" });
+    await expectMinimalUi(page, company, { nameField: true });
 
     const newCompanyData = buildCompany();
     await page.getByLabel(/name/i).fill(newCompanyData.name);
@@ -122,9 +122,108 @@ test.describe.only("name", () => {
     const company = await getCompany(id);
     await expectMinimalUi(page, company, {
       forbidden: true,
-      submitButton: false
+      submitButton: false,
+      title: "minimal"
     });
   });
+});
+
+test.describe("other", () => {
+  test.only(`sets in non-owned company`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.any.other.set]
+    });
+
+    const id = await createCompany();
+    await page.goto(routes.companies.edit(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, {
+      otherFields: true,
+      title: "minimal"
+    });
+
+    const newCompanyData = buildCompany();
+    await page.getByLabel(/address/i).fill(newCompanyData.address);
+    await page.getByLabel(/ceo/i).fill(newCompanyData.ceo);
+    await page.getByLabel(/contacts/i).fill(newCompanyData.contacts);
+    await page.getByLabel(/email/i).fill(newCompanyData.email);
+    await page.getByLabel(/inn/i).fill(newCompanyData.inn);
+    await page.getByLabel(/phone/i).fill(newCompanyData.phone);
+    let type = page.getByLabel(/type/i);
+    await type.selectOption(newCompanyData.typeId?.toString() ?? null);
+    const typeName =
+      (await type.getByRole("option", { selected: true }).textContent()) ?? "";
+
+    const submit = page.getByRole("button", { name: /save changes/i });
+    await submit.click();
+
+    await expect(page).toHaveURL(routes.companies.view(id));
+    await expect(page.getByLabel(/address/i)).toHaveText(
+      newCompanyData.address
+    );
+    await expect(page.getByLabel(/ceo/i)).toHaveText(newCompanyData.ceo);
+    await expect(page.getByLabel(/contacts/i)).toHaveText(
+      newCompanyData.contacts
+    );
+    await expect(page.getByLabel(/email/i)).toHaveText(newCompanyData.email);
+    await expect(page.getByLabel(/inn/i)).toHaveText(newCompanyData.inn);
+    await expect(page.getByLabel(/phone/i)).toHaveText(newCompanyData.phone);
+    type = page.getByLabel(/type/i);
+    const selectedOption = type.getByRole("option", { selected: true });
+    await expect(selectedOption).toHaveText(typeName);
+  });
+
+  // test(`sets in own company`, async ({
+  //   page,
+  //   runAsDefaultUser,
+  //   createCompany,
+  //   getCompany
+  // }) => {
+  //   const user = await runAsDefaultUser({
+  //     claims: [claims.company.whereUserIsManager.name.set]
+  //   });
+
+  //   const id = await createCompany({ managerId: user.id });
+  //   await page.goto(routes.companies.edit(id));
+
+  //   const company = await getCompany(id);
+  //   await expectMinimalUi(page, company, { nameField: true, title: "full" });
+
+  //   const newCompanyData = buildCompany();
+  //   await page.getByLabel(/name/i).fill(newCompanyData.name);
+
+  //   const submit = page.getByRole("button", { name: /save changes/i });
+  //   await submit.click();
+
+  //   await expect(page).toHaveURL(routes.companies.view(id));
+  //   await expect(page.getByLabel(/name/i)).toHaveText(newCompanyData.name);
+  // });
+
+  // test(`forbidden`, async ({
+  //   page,
+  //   runAsDefaultUser,
+  //   createCompany,
+  //   getCompany
+  // }) => {
+  //   await runAsDefaultUser({
+  //     claims: [claims.company.whereUserIsManager.name.set]
+  //   });
+
+  //   const id = await createCompany();
+  //   await page.goto(routes.companies.edit(id));
+
+  //   const company = await getCompany(id);
+  //   await expectMinimalUi(page, company, {
+  //     forbidden: true,
+  //     submitButton: false
+  //   });
+  // });
 });
 
 test.describe("manager", () => {
@@ -397,30 +496,6 @@ test.describe("manager", () => {
   }
 });
 
-// test.describe("other fields", () => {
-//   test("forbidden if non-owned company but has claim to edit other fields in own company", async ({
-//     page,
-//     runAsDefaultUser,
-//     createCompany,
-//     getCompany
-//   }) => {
-//     await runAsDefaultUser({
-//       claims: [claims.company.whereUserIsManager.other.set]
-//     });
-
-//     const companyId = await createCompany();
-//     await page.goto(routes.companies.edit(companyId));
-
-//     const company = await getCompany(companyId);
-//     await expectMinimalUi(page, company, {
-//       forbidden: true,
-//       otherFields: false,
-//       submitButton: false,
-//       title: "minimal"
-//     });
-//   });
-// });
-
 type VisibilityOptions = {
   forbidden?: boolean;
   otherFields?: boolean;
@@ -438,7 +513,7 @@ async function expectMinimalUi(
     forbidden = false,
     otherFields = false,
     submitButton = true,
-    title = "minimal",
+    title = "full",
     notFound = false,
     managerField = false,
     nameField = false
@@ -447,7 +522,7 @@ async function expectMinimalUi(
   if (title === "minimal") {
     await expect(page).toHaveTitle("Edit company");
   } else {
-    if (company) {
+    if (company?.fields?.name != undefined) {
       await expect(page).toHaveTitle(company.fields.name.toString());
     }
   }
@@ -456,7 +531,7 @@ async function expectMinimalUi(
     visible: forbidden
   });
 
-  await expectotherFieldsToBeVisible(page, {
+  await expectOtherFieldsToBeVisible(page, {
     name: nameField,
     address: otherFields,
     ceo: otherFields,
@@ -478,7 +553,7 @@ async function expectMinimalUi(
   });
 }
 
-async function expectotherFieldsToBeVisible(
+async function expectOtherFieldsToBeVisible(
   page: Page,
   data: { [key: string]: boolean }
 ) {

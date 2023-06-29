@@ -1,8 +1,7 @@
 using CRM.Application.Common.Exceptions;
+using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
-using CRM.Domain.Entities;
-using FluentValidation.Results;
 using MediatR;
 
 namespace CRM.Application.Companies.Commands.UpdateCompany;
@@ -10,16 +9,31 @@ namespace CRM.Application.Companies.Commands.UpdateCompany;
 [Authorize(Constants.Policies.Company.Commands.Update)]
 public record UpdateCompanyCommand(int Id) : IRequest
 {
-    public Dictionary<string, object?> Fields { get; set; } = new();
+    public int? TypeId { get; set; }
+    public string Name { get; set; } = default!;
+    public string? Inn { get; set; }
+    public string? Address { get; set; }
+    public string? Ceo { get; set; }
+    public string? Phone { get; set; }
+    public string? Email { get; set; }
+    public string? Contacts { get; set; }
+    public string? ManagerId { get; set; }
+
 }
 
 public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAccessService _accessService;
+    private readonly ICurrentUserService _currentUserService;
 
-    public UpdateCompanyCommandHandler(IApplicationDbContext context)
+
+    public UpdateCompanyCommandHandler(IApplicationDbContext context, IAccessService accessService, ICurrentUserService currentUserService)
     {
         _context = context;
+        _accessService = accessService;
+        _currentUserService = currentUserService;
+
     }
 
     public async Task Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
@@ -30,54 +44,43 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
             throw new NotFoundException("Company", request.Id);
         }
 
-        if (request.Fields.TryGetValue(nameof(Company.ManagerId), out object? managerId))
+        var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
+        if (accessRights.ContainsAny(
+            Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+            Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+            Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
+            Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+            Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
+            Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+            Constants.Access.Company.Any.Manager.SetFromSelfToNone,
+            Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+            Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
+        ))
         {
-            entity.ManagerId = (string?)managerId;
+            entity.ManagerId = request.ManagerId;
         }
 
-        if (new[] {
-            nameof(Company.Address),
-            nameof(Company.Ceo),
-            nameof(Company.Contacts),
-            nameof(Company.Email),
-            nameof(Company.Inn),
-            nameof(Company.Phone),
-            nameof(Company.TypeId)
-        }.Any(request.Fields.ContainsKey))
+        if (accessRights.ContainsAny(
+            Constants.Access.Company.WhereUserIsManager.Other.Set,
+            Constants.Access.Company.Any.Other.Set
+        ))
         {
-            if (request.Fields.TryGetValue(nameof(Company.Address), out object? address))
-            {
-                entity.Address = (string?)address;
-            }
-            if (request.Fields.TryGetValue(nameof(Company.Ceo), out object? ceo))
-            {
-                entity.Ceo = (string?)ceo;
-            }
-            if (request.Fields.TryGetValue(nameof(Company.Contacts), out object? contacts))
-            {
-                entity.Contacts = (string?)contacts;
-            }
-            if (request.Fields.TryGetValue(nameof(Company.Email), out object? email))
-            {
-                entity.Email = (string?)email;
-            }
-            if (request.Fields.TryGetValue(nameof(Company.Inn), out object? inn))
-            {
-                entity.Inn = (string?)inn;
-            }
-            if (request.Fields.TryGetValue(nameof(Company.Phone), out object? phone))
-            {
-                entity.Phone = (string?)phone;
-            }
-            if (request.Fields.TryGetValue(nameof(Company.TypeId), out object? typeId))
-            {
-                entity.TypeId = Convert.ToInt32(typeId);
-            }
+            entity.Address = request.Address;
+            entity.Ceo = request.Ceo;
+            entity.Contacts = request.Contacts;
+            entity.Email = request.Email;
+            entity.Inn = request.Inn;
+            entity.Phone = request.Phone;
+            entity.TypeId = request.TypeId;
+
         }
 
-        if (request.Fields.TryGetValue(nameof(Company.Name), out object? name))
+        if (accessRights.ContainsAny(
+            Constants.Access.Company.WhereUserIsManager.Name.Set,
+            Constants.Access.Company.Any.Name.Set
+        ))
         {
-            entity.Name = (string)name!;
+            entity.Name = request.Name;
         }
 
         await _context.SaveChangesAsync(cancellationToken);
