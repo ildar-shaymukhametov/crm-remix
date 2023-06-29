@@ -155,9 +155,9 @@ test.describe("other", () => {
     await page.getByLabel(/email/i).fill(newCompanyData.email);
     await page.getByLabel(/inn/i).fill(newCompanyData.inn);
     await page.getByLabel(/phone/i).fill(newCompanyData.phone);
-    let type = page.getByLabel(/type/i);
+    const type = page.getByLabel(/type/i);
     await type.selectOption(newCompanyData.typeId?.toString() ?? null);
-    const typeName =
+    const expectedTypeName =
       (await type.getByRole("option", { selected: true }).textContent()) ?? "";
 
     const submit = page.getByRole("button", { name: /save changes/i });
@@ -174,9 +174,7 @@ test.describe("other", () => {
     await expect(page.getByLabel(/email/i)).toHaveText(newCompanyData.email);
     await expect(page.getByLabel(/inn/i)).toHaveText(newCompanyData.inn);
     await expect(page.getByLabel(/phone/i)).toHaveText(newCompanyData.phone);
-    type = page.getByLabel(/type/i);
-    const selectedOption = type.getByRole("option", { selected: true });
-    await expect(selectedOption).toHaveText(typeName);
+    await expect(page.getByLabel(/type/i)).toHaveText(expectedTypeName);
   });
 
   // test(`sets in own company`, async ({
