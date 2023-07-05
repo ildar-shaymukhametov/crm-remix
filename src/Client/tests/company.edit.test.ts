@@ -129,7 +129,7 @@ test.describe("name", () => {
 });
 
 test.describe("other", () => {
-  test.only(`sets in non-owned company`, async ({
+  test(`sets in non-owned company`, async ({
     page,
     runAsDefaultUser,
     createCompany,
@@ -148,6 +148,53 @@ test.describe("other", () => {
       title: "minimal"
     });
 
+    await assertUpdated(page, id);
+  });
+
+  test(`sets in own company`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    const user = await runAsDefaultUser({
+      claims: [claims.company.whereUserIsManager.other.set]
+    });
+
+    const id = await createCompany({ managerId: user.id });
+    await page.goto(routes.companies.edit(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, {
+      otherFields: true,
+      title: "minimal"
+    });
+
+    await assertUpdated(page, id);
+  });
+
+  test(`forbidden`, async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.whereUserIsManager.other.set]
+    });
+
+    const id = await createCompany();
+    await page.goto(routes.companies.edit(id));
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, company, {
+      forbidden: true,
+      submitButton: false,
+      title: "minimal"
+    });
+  });
+
+  async function assertUpdated(page: Page, id: number) {
     const newCompanyData = buildCompany();
     await page.getByLabel(/address/i).fill(newCompanyData.address);
     await page.getByLabel(/ceo/i).fill(newCompanyData.ceo);
@@ -175,7 +222,7 @@ test.describe("other", () => {
     await expect(page.getByLabel(/inn/i)).toHaveText(newCompanyData.inn);
     await expect(page.getByLabel(/phone/i)).toHaveText(newCompanyData.phone);
     await expect(page.getByLabel(/type/i)).toHaveText(expectedTypeName);
-  });
+  }
 
   // test(`sets in own company`, async ({
   //   page,
