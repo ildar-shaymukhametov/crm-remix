@@ -35,6 +35,10 @@ export const action: ActionFunction = async ({ request, params }) => {
   invariant(params.id, "Missing id parameter");
 
   const data = Object.fromEntries(await request.formData());
+  if (!data.managerId) {
+    delete data.managerId;
+  }
+
   await updateCompany(request, params.id, data, user.extra?.access_token);
 
   return redirect(routes.companies.view(params.id));
