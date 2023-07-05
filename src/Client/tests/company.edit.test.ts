@@ -223,62 +223,14 @@ test.describe("other", () => {
     await expect(page.getByLabel(/phone/i)).toHaveText(newCompanyData.phone);
     await expect(page.getByLabel(/type/i)).toHaveText(expectedTypeName);
   }
-
-  // test(`sets in own company`, async ({
-  //   page,
-  //   runAsDefaultUser,
-  //   createCompany,
-  //   getCompany
-  // }) => {
-  //   const user = await runAsDefaultUser({
-  //     claims: [claims.company.whereUserIsManager.name.set]
-  //   });
-
-  //   const id = await createCompany({ managerId: user.id });
-  //   await page.goto(routes.companies.edit(id));
-
-  //   const company = await getCompany(id);
-  //   await expectMinimalUi(page, company, { nameField: true, title: "full" });
-
-  //   const newCompanyData = buildCompany();
-  //   await page.getByLabel(/name/i).fill(newCompanyData.name);
-
-  //   const submit = page.getByRole("button", { name: /save changes/i });
-  //   await submit.click();
-
-  //   await expect(page).toHaveURL(routes.companies.view(id));
-  //   await expect(page.getByLabel(/name/i)).toHaveText(newCompanyData.name);
-  // });
-
-  // test(`forbidden`, async ({
-  //   page,
-  //   runAsDefaultUser,
-  //   createCompany,
-  //   getCompany
-  // }) => {
-  //   await runAsDefaultUser({
-  //     claims: [claims.company.whereUserIsManager.name.set]
-  //   });
-
-  //   const id = await createCompany();
-  //   await page.goto(routes.companies.edit(id));
-
-  //   const company = await getCompany(id);
-  //   await expectMinimalUi(page, company, {
-  //     forbidden: true,
-  //     submitButton: false
-  //   });
-  // });
 });
 
 test.describe("manager", () => {
   for (const claim of [
-    claims.company.any.manager.setFromNoneToSelf,
-    claims.company.any.manager.setFromNoneToAny,
     claims.company.any.manager.setFromAnyToSelf,
     claims.company.any.manager.setFromAnyToAny
   ]) {
-    test(`sets manager from none to self in non-owned company with claim ${claim}`, async ({
+    test(`sets from none to self in non-owned company with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -306,8 +258,47 @@ test.describe("manager", () => {
 
       await expect(page).toHaveURL(routes.companies.view(id));
 
-      const fullName = `${user.firstName} ${user.lastName}`;
-      await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
+      await expect(page.getByLabel(/manager/i)).toHaveText(
+        `${user.lastName} ${user.firstName}`
+      );
+    });
+  }
+  
+  for (const claim of [
+    claims.company.any.manager.setFromNoneToSelf,
+    claims.company.any.manager.setFromNoneToAny
+  ]) {
+    test(`sets from none to self in non-owned company with claim ${claim}`, async ({
+      page,
+      runAsDefaultUser,
+      createCompany,
+      getCompany
+    }) => {
+      const user = await runAsDefaultUser({
+        claims: [claim, claims.company.any.manager.get]
+      });
+
+      const id = await createCompany();
+      await page.goto(routes.companies.edit(id));
+
+      const company = await getCompany(id);
+      await expectMinimalUi(page, company, { managerField: true });
+
+      const manager = page.getByLabel(/manager/i);
+      await expect(manager.getByRole("option", { selected: true })).toHaveText(
+        "-"
+      );
+
+      await manager.selectOption(user.id);
+
+      const submit = page.getByRole("button", { name: /save changes/i });
+      await submit.click();
+
+      await expect(page).toHaveURL(routes.companies.view(id));
+
+      await expect(page.getByLabel(/manager/i)).toHaveText(
+        `${user.lastName} ${user.firstName}`
+      );
     });
   }
 
@@ -315,7 +306,7 @@ test.describe("manager", () => {
     claims.company.any.manager.setFromNoneToAny,
     claims.company.any.manager.setFromAnyToAny
   ]) {
-    test(`should be able to set manager from none to any in any company with claim ${claim}`, async ({
+    test(`sets from none to any in any company with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -346,8 +337,9 @@ test.describe("manager", () => {
 
       await expect(page).toHaveURL(routes.companies.view(companyId));
 
-      const fullName = `${user.firstName} ${user.lastName}`;
-      await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
+      await expect(page.getByLabel(/manager/i)).toHaveText(
+        `${user.lastName} ${user.firstName}`
+      );
     });
   }
 
@@ -448,10 +440,10 @@ test.describe("manager", () => {
 
       const manager = page.getByLabel(/manager/i);
       await expect(manager.getByRole("option", { selected: true })).toHaveText(
-        `${user.firstName} ${user.lastName}`
+        `${user.lastName} ${user.firstName}`
       );
 
-      const fullName = `${anotherUser.firstName} ${anotherUser.lastName}`;
+      const fullName = `${anotherUser.lastName} ${anotherUser.firstName}`;
       await manager.selectOption(fullName);
 
       const submit = page.getByRole("button", { name: /save changes/i });
@@ -487,10 +479,10 @@ test.describe("manager", () => {
 
       const manager = page.getByLabel(/manager/i);
       await expect(manager.getByRole("option", { selected: true })).toHaveText(
-        `${user.firstName} ${user.lastName}`
+        `${user.lastName} ${user.firstName}`
       );
 
-      const fullName = `${anotherUser.firstName} ${anotherUser.lastName}`;
+      const fullName = `${anotherUser.lastName} ${anotherUser.firstName}`;
       await manager.selectOption(fullName);
 
       const submit = page.getByRole("button", { name: /save changes/i });
@@ -526,10 +518,10 @@ test.describe("manager", () => {
 
       const manager = page.getByLabel(/manager/i);
       await expect(manager.getByRole("option", { selected: true })).toHaveText(
-        `${anotherUser.firstName} ${anotherUser.lastName}`
+        `${anotherUser.lastName} ${anotherUser.firstName}`
       );
 
-      const fullName = `${user.firstName} ${user.lastName}`;
+      const fullName = `${user.lastName} ${user.firstName}`;
       await manager.selectOption(fullName);
 
       const submit = page.getByRole("button", { name: /save changes/i });
@@ -558,7 +550,7 @@ async function expectMinimalUi(
     forbidden = false,
     otherFields = false,
     submitButton = true,
-    title = "full",
+    title = "minimal",
     notFound = false,
     managerField = false,
     nameField = false
