@@ -41,10 +41,11 @@ public class GetCompanyTests : BaseTest
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Name.Get)]
     [InlineData(Constants.Claims.Company.WhereUserIsManager.Name.Set)]
-    public async Task User_has_certain_claims_for_own_company_and_is_not_manager___Forbidden(string claim)
+    public async Task User_has_certain_claims_for_own_company_and_another_user_is_manager___Forbidden(string claim)
     {
         await _fixture.RunAsDefaultUserAsync(new[] { claim });
-        var company = await _fixture.AddCompanyAsync();
+        var anotherUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(anotherUser.Id);
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));
     }
