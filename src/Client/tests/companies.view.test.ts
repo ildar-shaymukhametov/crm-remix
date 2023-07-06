@@ -107,7 +107,7 @@ test.describe("edit button", () => {
 
     await expectMinimalUi(page, [await getCompany(id)], {
       editCompanyButton: true,
-      nameField: true
+      name: "full"
     });
 
     const link = page.getByRole("link", { name: /edit company/i });
@@ -185,7 +185,7 @@ test.describe("edit button", () => {
 
       await expectMinimalUi(page, [await getCompany(id)], {
         editCompanyButton: true,
-        nameField: true
+        name: "full"
       });
 
       const link = page.getByRole("link", { name: /edit company/i });
@@ -286,7 +286,7 @@ test.describe("name field", () => {
     await page.goto(routes.companies.index);
 
     await expectMinimalUi(page, [await getCompany(id)], {
-      nameField: true
+      name: "full"
     });
   });
 
@@ -304,7 +304,7 @@ test.describe("name field", () => {
     await page.goto(routes.companies.index);
 
     await expectMinimalUi(page, [await getCompany(id)], {
-      nameField: true,
+      name: "full",
       editCompanyButton: true
     });
   });
@@ -327,7 +327,7 @@ test.describe("name field", () => {
       await page.goto(routes.companies.index);
 
       await expectMinimalUi(page, [await getCompany(id)], {
-        nameField: true
+        name: "full"
       });
     });
   }
@@ -350,7 +350,7 @@ test.describe("name field", () => {
       await page.goto(routes.companies.index);
 
       await expectMinimalUi(page, [await getCompany(id)], {
-        nameField: true,
+        name: "full",
         editCompanyButton: true
       });
     });
@@ -609,7 +609,7 @@ type VisibilityOptions = {
   noCompaniesFound?: boolean;
   editCompanyButton?: boolean;
   deleteCompanyButton?: boolean;
-  nameField?: boolean;
+  name?: "full" | "minimal";
   otherFields?: boolean;
   managerField?: boolean;
 };
@@ -622,7 +622,7 @@ async function expectMinimalUi(
     noCompaniesFound = false,
     editCompanyButton = false,
     deleteCompanyButton = false,
-    nameField = false,
+    name = "minimal",
     otherFields = false,
     managerField = false
   }: VisibilityOptions = {}
@@ -641,9 +641,20 @@ async function expectMinimalUi(
   const deleteCompany = page.getByRole("link", { name: /delete company/i });
   await expect(deleteCompany).toBeVisible({ visible: deleteCompanyButton });
 
+  if (companiesNotFound) {
+    return;
+  }
+
   for (const company of companies) {
     const fields = [
-      { key: /name/i, value: company?.fields.name, visible: nameField },
+      {
+        key: /name/i,
+        value:
+          name === "full"
+            ? company?.fields.name
+            : "<forbidden to see the name>",
+        visible: true
+      },
       {
         key: /address/i,
         value: company?.fields.address,
