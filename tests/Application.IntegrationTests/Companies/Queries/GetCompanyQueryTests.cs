@@ -50,6 +50,24 @@ public class GetCompanyTests : BaseTest
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));
     }
 
+    [Theory]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.Get)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.Set)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.Get)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Name.Get)]
+    [InlineData(Constants.Claims.Company.WhereUserIsManager.Name.Set)]
+    public async Task User_has_certain_claims_for_own_company_and_no_manager___Forbidden(string claim)
+    {
+        await _fixture.RunAsDefaultUserAsync(new[] { claim });
+        var company = await _fixture.AddCompanyAsync();
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));
+    }
+
     [Fact]
     public async Task User_has_claim_to_view_other_fields_in_any_company___Returns_other_fields()
     {
@@ -194,10 +212,22 @@ public class GetCompanyTests : BaseTest
     [Theory]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
     [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
-    public async Task User_has_claim_to_set_manager_from_none_in_any_company_and_company_has_manager___Forbidden(string claim)
+    public async Task User_has_claim_to_set_manager_from_none_in_any_company_and_is_manager___Forbidden(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(claim);
         var company = await _fixture.AddCompanyAsync(user.Id);
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));
+    }
+
+    [Theory]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    public async Task User_has_claim_to_set_manager_from_none_in_any_company_and_another_user_is_manager___Forbidden(string claim)
+    {
+        await _fixture.RunAsDefaultUserAsync(claim);
+        var anotherUser = await _fixture.AddUserAsync();
+        var company = await _fixture.AddCompanyAsync(anotherUser.Id);
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetCompanyQuery(company.Id)));
     }
