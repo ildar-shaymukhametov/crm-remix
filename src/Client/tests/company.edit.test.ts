@@ -418,7 +418,7 @@ test.describe("manager", () => {
   }
 
   for (const claim of [claims.company.any.manager.setFromAnyToAny]) {
-    test(`should be able to set manager from any to any in any company with claim ${claim}`, async ({
+    test(`sets from any to any in any company with claim ${claim}`, async ({
       page,
       runAsDefaultUser,
       createCompany,
@@ -432,10 +432,10 @@ test.describe("manager", () => {
       const user = await createUser();
       const anotherUser = await createUser();
 
-      const companyId = await createCompany({ managerId: user.id });
-      await page.goto(routes.companies.edit(companyId));
+      const id = await createCompany({ managerId: user.id });
+      await page.goto(routes.companies.edit(id));
 
-      const company = await getCompany(companyId);
+      const company = await getCompany(id);
       await expectMinimalUi(page, company, { managerField: true });
 
       const manager = page.getByLabel(/manager/i);
@@ -449,7 +449,7 @@ test.describe("manager", () => {
       const submit = page.getByRole("button", { name: /save changes/i });
       await submit.click();
 
-      await expect(page).toHaveURL(routes.companies.view(companyId));
+      await expect(page).toHaveURL(routes.companies.view(id));
       await expect(page.getByLabel(/manager/i)).toHaveText(fullName);
     });
   }

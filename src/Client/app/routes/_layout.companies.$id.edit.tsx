@@ -142,7 +142,7 @@ export default function EditCompanyRoute() {
               {data.initData.managers.map((x, i) => (
                 <option key={i} value={x.id}>
                   {x.firstName && x.lastName
-                    ? `${x.firstName} ${x.lastName}`
+                    ? `${x.lastName} ${x.firstName}`
                     : "-"}
                 </option>
               ))}
