@@ -68,7 +68,7 @@ test.describe("name", () => {
     await page.goto(routes.companies.edit(id));
 
     const company = await getCompany(id);
-    await expectMinimalUi(page, company, { nameField: true });
+    await expectMinimalUi(page, company, { nameField: true, title: "full" });
 
     const newCompanyData = buildCompany();
     await page.getByLabel(/name/i).fill(newCompanyData.name);
@@ -94,7 +94,7 @@ test.describe("name", () => {
     await page.goto(routes.companies.edit(id));
 
     const company = await getCompany(id);
-    await expectMinimalUi(page, company, { nameField: true });
+    await expectMinimalUi(page, company, { nameField: true, title: "full" });
 
     const newCompanyData = buildCompany();
     await page.getByLabel(/name/i).fill(newCompanyData.name);
@@ -263,7 +263,7 @@ test.describe("manager", () => {
       );
     });
   }
-  
+
   for (const claim of [
     claims.company.any.manager.setFromNoneToSelf,
     claims.company.any.manager.setFromNoneToAny
@@ -314,7 +314,7 @@ test.describe("manager", () => {
       createUser
     }) => {
       await runAsDefaultUser({
-        claims: [claim]
+        claims: [claim, claims.company.any.manager.get]
       });
 
       const user = await createUser();
@@ -366,7 +366,7 @@ test.describe("manager", () => {
 
       const manager = page.getByLabel(/manager/i);
       await expect(manager.getByRole("option", { selected: true })).toHaveText(
-        `${user.firstName} ${user.lastName}`
+        `${user.lastName} ${user.firstName}`
       );
 
       await manager.selectOption("");
@@ -404,7 +404,7 @@ test.describe("manager", () => {
 
       const manager = page.getByLabel(/manager/i);
       await expect(manager.getByRole("option", { selected: true })).toHaveText(
-        `${user.firstName} ${user.lastName}`
+        `${user.lastName} ${user.firstName}`
       );
 
       await manager.selectOption("");
@@ -598,53 +598,3 @@ async function expectOtherFieldsToBeVisible(
     await expect(page.getByLabel(key)).toBeVisible({ visible: data[key] });
   }
 }
-
-// async function checkAndFillFields(
-//   page: Page,
-//   company: Company
-// ): Promise<Company> {
-//   const name = page.getByLabel(/name/i);
-//   const address = page.getByLabel(/address/i);
-//   const ceo = page.getByLabel(/ceo/i);
-//   const contacts = page.getByLabel(/contacts/i);
-//   const email = page.getByLabel(/email/i);
-//   const inn = page.getByLabel(/inn/i);
-//   const phone = page.getByLabel(/phone/i);
-//   const type = page.getByLabel(/type/i);
-
-//   await expect(name).toHaveValue(company.name);
-//   await expect(address).toHaveValue(company.address);
-//   await expect(ceo).toHaveValue(company.ceo);
-//   await expect(contacts).toHaveValue(company.contacts);
-//   await expect(email).toHaveValue(company.email);
-//   await expect(inn).toHaveValue(company.inn);
-//   await expect(phone).toHaveValue(company.phone);
-//   const selectedOption = type.getByRole("option", { selected: true });
-//   await expect(selectedOption).toHaveText(company.type?.name);
-
-//   const newCompany = buildCompany();
-//   await name.fill(newCompany.name);
-//   await address.fill(newCompany.address);
-//   await ceo.fill(newCompany.ceo);
-//   await contacts.fill(newCompany.contacts);
-//   await email.fill(newCompany.email);
-//   await inn.fill(newCompany.inn);
-//   await phone.fill(newCompany.phone);
-//   await type.selectOption(newCompany.typeId?.toString() ?? null);
-//   const typeName =
-//     (await type.getByRole("option", { selected: true }).textContent()) ?? "";
-//   return {
-//     address: newCompany.address,
-//     ceo: newCompany.ceo,
-//     contacts: newCompany.contacts,
-//     email: newCompany.email,
-//     id: newCompany.id,
-//     inn: newCompany.inn,
-//     name: newCompany.name,
-//     phone: newCompany.phone,
-//     type: {
-//       id: newCompany.typeId ?? 0,
-//       name: typeName
-//     }
-//   };
-// }
