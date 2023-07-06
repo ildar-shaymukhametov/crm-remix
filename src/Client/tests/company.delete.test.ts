@@ -9,45 +9,43 @@ test.beforeEach(async ({ resetDb }) => {
   await resetDb();
 });
 
-test("should be forbidden if no claims", async ({
+test("forbidden", async ({
   page,
   runAsDefaultUser,
   createCompany,
   getCompany
 }) => {
   await runAsDefaultUser();
-  const companyId = await createCompany();
-  await page.goto(routes.companies.delete(companyId));
+  const id = await createCompany();
+  await page.goto(routes.companies.delete(id));
 
-  const company = await getCompany(companyId);
+  const company = await getCompany(id);
   await expectMinimalUi(page, company, {
     cancelButton: false,
     forbidden: true,
     okButton: false,
-    title: "minimal"
   });
 });
 
-test("should be forbidden if own company but no claims", async ({
+test("forbidden if own company but no claims", async ({
   page,
   runAsDefaultUser,
   createCompany,
   getCompany
 }) => {
   const user = await runAsDefaultUser();
-  const companyId = await createCompany({ managerId: user.id });
-  await page.goto(routes.companies.delete(companyId));
+  const id = await createCompany({ managerId: user.id });
+  await page.goto(routes.companies.delete(id));
 
-  const company = await getCompany(companyId);
+  const company = await getCompany(id);
   await expectMinimalUi(page, company, {
     cancelButton: false,
     forbidden: true,
     okButton: false,
-    title: "minimal"
   });
 });
 
-test("should be forbidden if non-owned company but with claim", async ({
+test("forbidden if non-owned company but with claim", async ({
   page,
   runAsDefaultUser,
   createCompany,
@@ -56,19 +54,18 @@ test("should be forbidden if non-owned company but with claim", async ({
   await runAsDefaultUser({
     claims: [claims.company.whereUserIsManager.delete]
   });
-  const companyId = await createCompany();
-  await page.goto(routes.companies.delete(companyId));
+  const id = await createCompany();
+  await page.goto(routes.companies.delete(id));
 
-  const company = await getCompany(companyId);
+  const company = await getCompany(id);
   await expectMinimalUi(page, company, {
     cancelButton: false,
     forbidden: true,
     okButton: false,
-    title: "minimal"
   });
 });
 
-test("should be able to click delete company in any company", async ({
+test("deletes any company", async ({
   page,
   runAsDefaultUser,
   createCompany,
@@ -77,10 +74,10 @@ test("should be able to click delete company in any company", async ({
   await runAsDefaultUser({
     claims: [claims.company.any.delete]
   });
-  const companyId = await createCompany();
-  await page.goto(routes.companies.delete(companyId));
+  const id = await createCompany();
+  await page.goto(routes.companies.delete(id));
 
-  const company = await getCompany(companyId);
+  const company = await getCompany(id);
   await expectMinimalUi(page, company);
 
   const deleteButton = page.getByRole("button", {
@@ -91,7 +88,7 @@ test("should be able to click delete company in any company", async ({
   await expect(page).toHaveURL(routes.companies.index);
 });
 
-test("should be able to click delete own company with claim", async ({
+test("deletes own company", async ({
   page,
   runAsDefaultUser,
   createCompany,
@@ -101,10 +98,10 @@ test("should be able to click delete own company with claim", async ({
     claims: [claims.company.whereUserIsManager.delete]
   });
 
-  const companyId = await createCompany({ managerId: user.id });
-  await page.goto(routes.companies.delete(companyId));
+  const id = await createCompany({ managerId: user.id });
+  await page.goto(routes.companies.delete(id));
 
-  const company = await getCompany(companyId);
+  const company = await getCompany(id);
   await expectMinimalUi(page, company);
 
   const deleteButton = page.getByRole("button", {
@@ -115,7 +112,7 @@ test("should be able to click delete own company with claim", async ({
   await expect(page).toHaveURL(routes.companies.index);
 });
 
-test("should be able to cancel", async ({
+test("cancels", async ({
   page,
   runAsDefaultUser,
   createCompany,
@@ -124,28 +121,48 @@ test("should be able to cancel", async ({
   await runAsDefaultUser({
     claims: [claims.company.any.delete]
   });
-  const companyId = await createCompany();
-  await page.goto(routes.companies.delete(companyId));
+  const id = await createCompany();
+  await page.goto(routes.companies.delete(id));
 
-  const company = await getCompany(companyId);
+  const company = await getCompany(id);
   await expectMinimalUi(page, company);
 
   const cancel = page.getByRole("link", { name: /cancel/i });
   await cancel.click();
 
-  await expect(page).toHaveURL(routes.companies.view(companyId));
+  await expect(page).toHaveURL(routes.companies.view(id));
 });
 
-test("should see not found", async ({ page, runAsDefaultUser }) => {
+test("not found", async ({ page, runAsDefaultUser }) => {
   await runAsDefaultUser({ claims: [claims.company.any.delete] });
   await page.goto(routes.companies.delete(1));
 
   await expectMinimalUi(page, undefined, {
     cancelButton: false,
     okButton: false,
-    title: "minimal",
     notFound: true
   });
+});
+
+test("title", async ({
+  page,
+  runAsDefaultUser,
+  createCompany,
+  getCompany
+}) => {
+  await runAsDefaultUser({
+    claims: [claims.company.any.delete, claims.company.any.name.get]
+  });
+  const id = await createCompany();
+  await page.goto(routes.companies.delete(id));
+
+  const company = await getCompany(id);
+  await expectMinimalUi(page, company, { title: "full" });
+
+  const cancel = page.getByRole("link", { name: /cancel/i });
+  await cancel.click();
+
+  await expect(page).toHaveURL(routes.companies.view(id));
 });
 
 type VisibilityOptions = {
@@ -163,15 +180,15 @@ async function expectMinimalUi(
     forbidden = false,
     okButton = true,
     cancelButton = true,
-    title = "full",
+    title = "minimal",
     notFound = false
   }: VisibilityOptions = {}
 ) {
   if (title === "minimal") {
     await expect(page).toHaveTitle("Delete company");
   } else {
-    if (company) {
-      await expect(page).toHaveTitle(`${company.name} • Delete`);
+    if (company?.fields?.name != undefined) {
+      await expect(page).toHaveTitle(company.fields.name.toString());
     }
   }
   await expect(page.getByText(/forbidden/i)).toBeVisible({
