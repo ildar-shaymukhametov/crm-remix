@@ -67,19 +67,3 @@ export async function getClaimTypes(
   return claims;
 }
 
-export async function getTestClaimTypes(
-  request: Request
-): Promise<ClaimType[]> {
-  const response = await fetch(`${process.env.API_URL}/Test/UserClaimTypes`, {
-    headers: {
-      "X-API-Key": "TestApiKey"
-    }
-  });
-
-  if (!response.ok) {
-    await handleErrorResponse(request, response);
-  }
-
-  const claims = await response.json();
-  return claims;
-}

@@ -1,5 +1,4 @@
 using AwesomeApi.Filters;
-using CRM.Application.Companies.Queries.GetUserClaimsTypes;
 using CRM.Application.Tests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,12 +13,5 @@ public class TestController : ApiControllerBase
     {
         await Mediator.Send(new ResetDbCommand());
         return Ok();
-    }
-
-    [HttpGet]
-    [Route("UserClaimTypes")]
-    public async Task<ActionResult<UserClaimTypeVm[]>> GetClaimTypes()
-    {
-        return await Mediator.Send(new GetTestUserClaimTypesQuery());
     }
 }
