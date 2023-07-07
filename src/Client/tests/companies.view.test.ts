@@ -24,7 +24,7 @@ test("minimal ui", async ({
   });
 });
 
-test("clicks new company butt", async ({
+test("clicks new company button", async ({
   page,
   runAsDefaultUser,
   createCompany,
@@ -378,6 +378,56 @@ test.describe("name field", () => {
       });
     });
   }
+
+  test("clicks if can see name", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.any.name.get]
+    });
+
+    const id = await createCompany();
+    await page.goto(routes.companies.index);
+
+    const company = await getCompany(id);
+    await expectMinimalUi(page, [company], {
+      name: "full",
+      managerField: true
+    });
+
+    await page
+      .getByRole("link", { name: company.fields.name as unknown as string })
+      .click();
+
+    await expect(page).toHaveURL(routes.companies.view(id));
+  });
+
+  test("clicks if forbidden to see name", async ({
+    page,
+    runAsDefaultUser,
+    createCompany,
+    getCompany
+  }) => {
+    await runAsDefaultUser({
+      claims: [claims.company.any.other.get]
+    });
+
+    const id = await createCompany();
+    await page.goto(routes.companies.index);
+
+    await expectMinimalUi(page, [await getCompany(id)], {
+      managerField: true
+    });
+
+    await page
+      .getByRole("link", { name: "<forbidden to see the name>" })
+      .click({ timeout: 5000 });
+
+    await expect(page).toHaveURL(routes.companies.view(id));
+  });
 });
 
 test.describe("other fields", () => {
@@ -648,7 +698,7 @@ async function expectMinimalUi(
   for (const company of companies) {
     const fields = [
       {
-        key: /name/i,
+        key: "name",
         value:
           name === "full"
             ? company?.fields.name
@@ -656,26 +706,26 @@ async function expectMinimalUi(
         visible: true
       },
       {
-        key: /address/i,
+        key: "address",
         value: company?.fields.address,
         visible: otherFields
       },
-      { key: /ceo/i, value: company?.fields.ceo, visible: otherFields },
+      { key: "ceo", value: company?.fields.ceo, visible: otherFields },
       {
-        key: /contacts/i,
+        key: "contacts",
         value: company?.fields.contacts,
         visible: otherFields
       },
-      { key: /email/i, value: company?.fields.email, visible: otherFields },
-      { key: /inn/i, value: company?.fields.inn, visible: otherFields },
-      { key: /phone/i, value: company?.fields.phone, visible: otherFields },
+      { key: "email", value: company?.fields.email, visible: otherFields },
+      { key: "inn", value: company?.fields.inn, visible: otherFields },
+      { key: "phone", value: company?.fields.phone, visible: otherFields },
       {
-        key: /type/i,
+        key: "type",
         value: (company?.fields.type as CompanyType)?.name,
         visible: otherFields
       },
       {
-        key: /manager/i,
+        key: "manager",
         value: company?.fields.manager
           ? `${(company?.fields.manager as Manager)?.lastName} ${
               (company?.fields.manager as Manager)?.firstName
@@ -685,20 +735,24 @@ async function expectMinimalUi(
       }
     ];
 
-    await expectFieldsToBeVisible(page, fields);
+    await expectFieldsToBeVisible(page, fields, company);
   }
 }
 
 async function expectFieldsToBeVisible(
   page: Page,
   fields: {
-    key: RegExp;
+    key: string;
     value: object | string | undefined;
     visible: boolean;
-  }[]
+  }[],
+  company: Company
 ) {
   for (const field of fields) {
-    const element = page.getByLabel(field.key);
+    const element = field.key === "name"
+      ? page.getByRole("link", { name: company.fields.name as unknown as string })
+      : page.getByLabel(field.key);
+
     await expect(element).toBeVisible({
       visible: field.visible
     });
