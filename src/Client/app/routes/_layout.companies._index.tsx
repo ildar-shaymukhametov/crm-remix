@@ -50,29 +50,25 @@ export default function CompaniesIndexRoute() {
                   : "<forbidden to see the name>"}
               </Link>
               {"address" in x.fields ? (
-                <span aria-label="address">{x.fields.address?.toString()}</span>
+                <span>{x.fields.address?.toString()}</span>
               ) : null}
               {"ceo" in x.fields ? (
-                <span aria-label="ceo">{x.fields.ceo?.toString()}</span>
+                <span>{x.fields.ceo?.toString()}</span>
               ) : null}
               {"contacts" in x.fields ? (
-                <span aria-label="contacts">
-                  {x.fields.contacts?.toString()}
-                </span>
+                <span>{x.fields.contacts?.toString()}</span>
               ) : null}
               {"email" in x.fields ? (
-                <span aria-label="email">{x.fields.email?.toString()}</span>
+                <span>{x.fields.email?.toString()}</span>
               ) : null}
               {"inn" in x.fields ? (
-                <span aria-label="inn">{x.fields.inn?.toString()}</span>
+                <span>{x.fields.inn?.toString()}</span>
               ) : null}
               {"phone" in x.fields ? (
-                <span aria-label="phone">{x.fields.phone?.toString()}</span>
+                <span>{x.fields.phone?.toString()}</span>
               ) : null}
               {"type" in x.fields ? (
-                <span aria-label="type">
-                  {(x.fields.type as CompanyType)?.name?.toString()}
-                </span>
+                <span>{(x.fields.type as CompanyType)?.name?.toString()}</span>
               ) : null}
               {"manager" in x.fields ? (
                 <p>

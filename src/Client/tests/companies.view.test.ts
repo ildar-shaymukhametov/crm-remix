@@ -743,22 +743,19 @@ async function expectFieldsToBeVisible(
   page: Page,
   fields: {
     key: string;
-    value: object | string | undefined;
+    value: string | object;
     visible: boolean;
   }[],
   company: Company
 ) {
   for (const field of fields) {
-    const element = field.key === "name"
-      ? page.getByRole("link", { name: company.fields.name as unknown as string })
-      : page.getByLabel(field.key);
+    const element =
+      field.key === "name"
+        ? page.getByRole("link", { name: field.value as unknown as string })
+        : page.getByText(field.value as unknown as string);
 
     await expect(element).toBeVisible({
       visible: field.visible
     });
-
-    if (field.visible) {
-      await expect(element).toHaveText(field.value?.toString() ?? "");
-    }
   }
 }
