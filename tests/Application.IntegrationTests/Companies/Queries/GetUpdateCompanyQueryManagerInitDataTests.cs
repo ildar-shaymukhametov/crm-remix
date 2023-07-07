@@ -1,3 +1,4 @@
+using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Queries.GetUpdateCompany;
 using FluentAssertions;
 using static CRM.Application.Constants;
@@ -43,9 +44,7 @@ public class GetUpdateCompanyQueryManagerInitDataTests : BaseTest
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(anotherUser.Id);
 
-        var result = await _fixture.SendAsync(new GetUpdateCompanyQuery(company.Id));
-
-        Assert.Empty(result.InitData.Managers);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(company.Id)));
     }
 
     [Fact]
@@ -62,21 +61,21 @@ public class GetUpdateCompanyQueryManagerInitDataTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_set_manager_from_none_to_any_in_any_company_with_any_manager___Returns_empty_list()
+    public async Task User_can_set_manager_from_none_to_any_in_any_company_with_any_manager___Throws()
     {
         await _fixture.RunAsDefaultUserAsync(Claims.Company.Any.Manager.SetFromNoneToAny);
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(anotherUser.Id);
 
-        var result = await _fixture.SendAsync(new GetUpdateCompanyQuery(company.Id));
-
-        Assert.Empty(result.InitData.Managers);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(company.Id)));
     }
 
-    [Fact]
-    public async Task User_can_set_manager_from_any_to_none_in_any_company_with_self_as_manager___Returns_self_and_empty_manager()
+    [Theory]
+    [InlineData(Claims.Company.Any.Manager.SetFromAnyToNone)]
+    [InlineData(Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
+    public async Task User_can_set_manager_from_any_to_none_in_any_company_with_self_as_manager___Returns_self_and_empty_manager(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(Claims.Company.Any.Manager.SetFromAnyToNone);
+        var user = await _fixture.RunAsDefaultUserAsync(claim);
         await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(user.Id);
 
@@ -165,21 +164,21 @@ public class GetUpdateCompanyQueryManagerInitDataTests : BaseTest
     }
 
     [Fact]
-    public async Task User_can_set_manager_from_self_to_none_in_any_company_with_any_manager___Returns_empty_list()
+    public async Task User_can_set_manager_from_self_to_none_in_any_company_with_another_user_as_manager___Returns_empty_list()
     {
         await _fixture.RunAsDefaultUserAsync(Claims.Company.Any.Manager.SetFromSelfToNone);
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(anotherUser.Id);
 
-        var result = await _fixture.SendAsync(new GetUpdateCompanyQuery(company.Id));
-
-        Assert.Empty(result.InitData.Managers);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(company.Id)));
     }
 
-    [Fact]
-    public async Task User_can_set_manager_from_self_to_any_in_any_company_with_self_as_manager___Returns_all_users()
+    [Theory]
+    [InlineData(Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
+    public async Task User_can_set_manager_from_self_to_any_in_any_company_with_self_as_manager___Returns_all_users(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(Claims.Company.Any.Manager.SetFromSelfToAny);
+        var user = await _fixture.RunAsDefaultUserAsync(claim);
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(user.Id);
 
@@ -196,9 +195,7 @@ public class GetUpdateCompanyQueryManagerInitDataTests : BaseTest
         var anotherUser = await _fixture.AddUserAsync();
         var company = await _fixture.AddCompanyAsync(anotherUser.Id);
 
-        var result = await _fixture.SendAsync(new GetUpdateCompanyQuery(company.Id));
-
-        Assert.Empty(result.InitData.Managers);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(company.Id)));
     }
 
     [Fact]

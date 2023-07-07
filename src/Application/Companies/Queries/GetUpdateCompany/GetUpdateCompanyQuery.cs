@@ -132,7 +132,8 @@ public class GetUpdateCompanyRequestHandler : IRequestHandler<GetUpdateCompanyQu
                 Constants.Access.Company.Any.Manager.SetFromAnyToAny) && managerId == null
             || accessRights.ContainsAny(
                 Constants.Access.Company.Any.Manager.SetFromSelfToAny,
-                Constants.Access.Company.Any.Manager.SetFromAnyToAny) && managerId == _currentUserService.UserId)
+                Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+                Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny) && managerId == _currentUserService.UserId)
         {
             result.Add(_allManagers);
             return result;
@@ -149,7 +150,8 @@ public class GetUpdateCompanyRequestHandler : IRequestHandler<GetUpdateCompanyQu
                 Constants.Access.Company.Any.Manager.SetFromSelfToAny,
                 Constants.Access.Company.Any.Manager.SetFromAnyToAny,
                 Constants.Access.Company.Any.Manager.SetFromSelfToNone,
-                Constants.Access.Company.Any.Manager.SetFromAnyToNone) && managerId == _currentUserService.UserId)
+                Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+                Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone) && managerId == _currentUserService.UserId)
         {
             result.Add(x => x.Id == _currentUserService.UserId);
         }
@@ -166,7 +168,8 @@ public class GetUpdateCompanyRequestHandler : IRequestHandler<GetUpdateCompanyQu
                 Constants.Access.Company.Any.Manager.SetFromSelfToAny,
                 Constants.Access.Company.Any.Manager.SetFromAnyToAny,
                 Constants.Access.Company.Any.Manager.SetFromSelfToNone,
-                Constants.Access.Company.Any.Manager.SetFromAnyToNone) && managerId == _currentUserService.UserId
+                Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+                Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone) && managerId == _currentUserService.UserId
             || accessRights.ContainsAny(
                 Constants.Access.Company.Any.Manager.SetFromNoneToAny,
                 Constants.Access.Company.Any.Manager.SetFromNoneToSelf,

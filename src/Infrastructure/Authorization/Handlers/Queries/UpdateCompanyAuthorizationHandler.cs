@@ -58,14 +58,7 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         }
         else
         {
-            if (!accessRights.ContainsAny(
-                Access.Company.Any.Manager.SetFromAnyToAny,
-                Access.Company.Any.Manager.SetFromAnyToNone,
-                Access.Company.Any.Manager.SetFromAnyToSelf
-            ))
-            {
-                return Fail(context, "Update company");
-            }
+            return Fail(context, "Update company");
         }
 
         return Ok(context, requirement);
