@@ -394,8 +394,7 @@ test.describe("name field", () => {
 
     const company = await getCompany(id);
     await expectMinimalUi(page, [company], {
-      name: "full",
-      managerField: true
+      name: "full"
     });
 
     await page
@@ -419,7 +418,7 @@ test.describe("name field", () => {
     await page.goto(routes.companies.index);
 
     await expectMinimalUi(page, [await getCompany(id)], {
-      managerField: true
+      otherFields: true
     });
 
     await page
@@ -691,9 +690,53 @@ async function expectMinimalUi(
   const deleteCompany = page.getByRole("link", { name: /delete company/i });
   await expect(deleteCompany).toBeVisible({ visible: deleteCompanyButton });
 
-  if (companiesNotFound) {
+  if (noCompaniesFound) {
     return;
   }
+
+  await expect(
+    page.getByRole("cell", { name: "Name", exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("cell", { name: "Address", exact: true })
+  ).toBeVisible({
+    visible: otherFields
+  });
+  await expect(
+    page.getByRole("cell", { name: "Ceo", exact: true })
+  ).toBeVisible({
+    visible: otherFields
+  });
+  await expect(
+    page.getByRole("cell", { name: "Contacts", exact: true })
+  ).toBeVisible({
+    visible: otherFields
+  });
+  await expect(
+    page.getByRole("cell", { name: "Email", exact: true })
+  ).toBeVisible({
+    visible: otherFields
+  });
+  await expect(
+    page.getByRole("cell", { name: "Inn", exact: true })
+  ).toBeVisible({
+    visible: otherFields
+  });
+  await expect(
+    page.getByRole("cell", { name: "Phone", exact: true })
+  ).toBeVisible({
+    visible: otherFields
+  });
+  await expect(
+    page.getByRole("cell", { name: "Type", exact: true })
+  ).toBeVisible({
+    visible: otherFields
+  });
+  await expect(
+    page.getByRole("cell", { name: "Manager", exact: true })
+  ).toBeVisible({
+    visible: managerField
+  });
 
   for (const company of companies) {
     const fields = [
@@ -750,8 +793,11 @@ async function expectFieldsToBeVisible(
   for (const field of fields) {
     const element =
       field.key === "name"
-        ? page.getByRole("link", { name: field.value as unknown as string })
-        : page.getByText(field.value as unknown as string);
+        ? page.getByRole("link", {
+            name: field.value as unknown as string,
+            exact: true
+          })
+        : page.getByText(field.value as unknown as string, { exact: true });
 
     await expect(element).toBeVisible({
       visible: field.visible

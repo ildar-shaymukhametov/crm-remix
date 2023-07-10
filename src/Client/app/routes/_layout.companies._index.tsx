@@ -41,70 +41,108 @@ export default function CompaniesIndexRoute() {
       {userPermissions.canCreateCompany ? (
         <Link to={routes.companies.new}>New company</Link>
       ) : null}
-      <ul>
-        {companies.length > 0 ? (
-          companies.map((x, i) => (
-            <li key={i}>
-              <Link to={routes.companies.view(x.id)}>
-                {"name" in x.fields
-                  ? x.fields.name?.toString()
-                  : "<forbidden to see the name>"}
-              </Link>
-              {"address" in x.fields ? (
-                <span>{x.fields.address?.toString()}</span>
-              ) : null}
-              {"ceo" in x.fields ? (
-                <span>{x.fields.ceo?.toString()}</span>
-              ) : null}
-              {"contacts" in x.fields ? (
-                <span>{x.fields.contacts?.toString()}</span>
-              ) : null}
-              {"email" in x.fields ? (
-                <span>{x.fields.email?.toString()}</span>
-              ) : null}
-              {"inn" in x.fields ? (
-                <span>{x.fields.inn?.toString()}</span>
-              ) : null}
-              {"phone" in x.fields ? (
-                <span>{x.fields.phone?.toString()}</span>
-              ) : null}
-              {"type" in x.fields ? (
-                <span>{(x.fields.type as CompanyType)?.name?.toString()}</span>
-              ) : null}
-              {"manager" in x.fields ? (
-                <p>
-                  <span>manager</span>:{" "}
-                  <span aria-label="manager">
-                    {x.fields.manager
-                      ? `${(x.fields.manager as Manager)?.lastName} ${
-                          (x.fields.manager as Manager)?.firstName
-                        }`
-                      : "-"}
-                  </span>
-                </p>
-              ) : null}
-              {x.canBeUpdated ? (
-                <Link
-                  to={routes.companies.edit(x.id)}
-                  aria-label="edit company"
-                >
-                  <PencilIcon className="h-5 w-5" />
-                </Link>
-              ) : null}
-              {x.canBeDeleted ? (
-                <Link
-                  to={routes.companies.delete(x.id)}
-                  aria-label="delete company"
-                >
-                  <TrashIcon className="h-5 w-5" />
-                </Link>
-              ) : null}
-            </li>
-          ))
-        ) : (
-          <div>No companies found</div>
-        )}
-      </ul>
+      <table>
+        <thead>
+          <th>Name</th>
+          {companies.some(x => "address" in x.fields) ? <th>Address</th> : null}
+          {companies.some(x => "ceo" in x.fields) ? <th>Ceo</th> : null}
+          {companies.some(x => "contacts" in x.fields) ? (
+            <th>Contacts</th>
+          ) : null}
+          {companies.some(x => "email" in x.fields) ? <th>Email</th> : null}
+          {companies.some(x => "inn" in x.fields) ? <th>Inn</th> : null}
+          {companies.some(x => "phone" in x.fields) ? <th>Phone</th> : null}
+          {companies.some(x => "type" in x.fields) ? <th>Type</th> : null}
+          {companies.some(x => "manager" in x.fields) ? <th>Manager</th> : null}
+          <th></th>
+        </thead>
+        <tbody>
+          {companies.length > 0 ? (
+            companies.map((x, i) => (
+              <tr key={i}>
+                <td>
+                  <Link to={routes.companies.view(x.id)}>
+                    {"name" in x.fields
+                      ? x.fields.name?.toString()
+                      : "<forbidden to see the name>"}
+                  </Link>
+                </td>
+                <td>
+                  {"address" in x.fields ? (
+                    <span>{x.fields.address?.toString()}</span>
+                  ) : null}
+                </td>
+                <td>
+                  {"ceo" in x.fields ? (
+                    <span>{x.fields.ceo?.toString()}</span>
+                  ) : null}
+                </td>
+                <td>
+                  {"contacts" in x.fields ? (
+                    <span>{x.fields.contacts?.toString()}</span>
+                  ) : null}
+                </td>
+                <td>
+                  {"email" in x.fields ? (
+                    <span>{x.fields.email?.toString()}</span>
+                  ) : null}
+                </td>
+                <td>
+                  {"inn" in x.fields ? (
+                    <span>{x.fields.inn?.toString()}</span>
+                  ) : null}
+                </td>
+                <td>
+                  {"phone" in x.fields ? (
+                    <span>{x.fields.phone?.toString()}</span>
+                  ) : null}
+                </td>
+                <td>
+                  {"type" in x.fields ? (
+                    <span>
+                      {(x.fields.type as CompanyType)?.name?.toString()}
+                    </span>
+                  ) : null}
+                </td>
+                <td>
+                  {"manager" in x.fields ? (
+                    <p>
+                      <span>manager</span>:{" "}
+                      <span aria-label="manager">
+                        {x.fields.manager
+                          ? `${(x.fields.manager as Manager)?.lastName} ${
+                              (x.fields.manager as Manager)?.firstName
+                            }`
+                          : "-"}
+                      </span>
+                    </p>
+                  ) : null}
+                </td>
+                <td className="flex">
+                  {x.canBeUpdated ? (
+                    <Link
+                      to={routes.companies.edit(x.id)}
+                      aria-label="edit company"
+                    >
+                      <PencilIcon className="h-5 w-5" />
+                    </Link>
+                  ) : null}
+                  {x.canBeDeleted ? (
+                    <Link
+                      to={routes.companies.delete(x.id)}
+                      aria-label="delete company"
+                    >
+                      <TrashIcon className="h-5 w-5" />
+                    </Link>
+                  ) : null}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <div>No companies found</div>
+          )}
+        </tbody>
+      </table>
     </>
   );
 }
