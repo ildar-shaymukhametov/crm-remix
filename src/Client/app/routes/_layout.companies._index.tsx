@@ -11,6 +11,7 @@ import type { Company, CompanyType, Manager } from "~/utils/companies.server";
 import { getCompanies } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 import { permissions } from "~/utils/constants.server";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 type LoaderData = {
   companies: Company[];
@@ -87,7 +88,7 @@ export default function CompaniesIndexRoute() {
                   to={routes.companies.edit(x.id)}
                   aria-label="edit company"
                 >
-                  ✏
+                  <PencilIcon className="h-5 w-5" />
                 </Link>
               ) : null}
               {x.canBeDeleted ? (
@@ -95,7 +96,7 @@ export default function CompaniesIndexRoute() {
                   to={routes.companies.delete(x.id)}
                   aria-label="delete company"
                 >
-                  🗑
+                  <TrashIcon className="h-5 w-5" />
                 </Link>
               ) : null}
             </li>
