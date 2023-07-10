@@ -735,7 +735,7 @@ async function expectMinimalUi(
       }
     ];
 
-    await expectFieldsToBeVisible(page, fields, company);
+    await expectFieldsToBeVisible(page, fields);
   }
 }
 
@@ -745,8 +745,7 @@ async function expectFieldsToBeVisible(
     key: string;
     value: string | object;
     visible: boolean;
-  }[],
-  company: Company
+  }[]
 ) {
   for (const field of fields) {
     const element =
