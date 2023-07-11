@@ -7,6 +7,7 @@ import {
   useLoaderData,
   useRouteError
 } from "@remix-run/react";
+import { ButtonSuccess } from "~/components/buttons";
 import { auth } from "~/utils/auth.server";
 import type { NewCompany, NewCompanyVm } from "~/utils/companies.server";
 import { createCompany, getNewCompany } from "~/utils/companies.server";
@@ -150,7 +151,7 @@ export default function NewCompanyRoute() {
         </div>
       ) : null}
 
-      <button type="submit">Create new company</button>
+      <ButtonSuccess type="submit">Create new company</ButtonSuccess>
     </form>
   );
 }

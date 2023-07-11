@@ -12,6 +12,7 @@ import { getCompanies } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 import { permissions } from "~/utils/constants.server";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { LinkSuccess } from "~/components/buttons";
 
 type LoaderData = {
   companies: Company[];
@@ -48,12 +49,7 @@ export default function CompaniesIndexRoute() {
   return (
     <>
       {userPermissions.canCreateCompany ? (
-        <Link
-          className="bg-green-700 text-white py-2 px-3 rounded hover:bg-green-800"
-          to={routes.companies.new}
-        >
-          New company
-        </Link>
+        <LinkSuccess to={routes.companies.new}>New company</LinkSuccess>
       ) : null}
       {companies.length > 0 ? (
         <table className="w-full mt-3" aria-label="companies-table">
@@ -158,6 +154,7 @@ export default function CompaniesIndexRoute() {
                 <td className="flex justify-end p-1">
                   {x.canBeUpdated ? (
                     <Link
+                      className="text-black"
                       to={routes.companies.edit(x.id)}
                       aria-label="edit company"
                     >
