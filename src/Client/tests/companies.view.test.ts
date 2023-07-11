@@ -690,6 +690,10 @@ async function expectMinimalUi(
   const deleteCompany = page.getByRole("link", { name: /delete company/i });
   await expect(deleteCompany).toBeVisible({ visible: deleteCompanyButton });
 
+  await expect(page.getByLabel("companies-table")).toBeVisible({
+    visible: !noCompaniesFound
+  });
+
   if (noCompaniesFound) {
     return;
   }

@@ -55,28 +55,28 @@ export default function CompaniesIndexRoute() {
           New company
         </Link>
       ) : null}
-      <table className="w-full">
-        <thead>
-          <th className="text-left p-1">Name</th>
-          {addressColVisible ? (
-            <th className="text-left  p-1">Address</th>
-          ) : null}
-          {ceoColVisible ? <th className="text-left  p-1">Ceo</th> : null}
-          {contactsColVisible ? (
-            <th className="text-left  p-1">Contacts</th>
-          ) : null}
-          {emailColVisible ? <th className="text-left  p-1">Email</th> : null}
-          {innColVisible ? <th className="text-left  p-1">Inn</th> : null}
-          {phoneColVisible ? <th className="text-left  p-1">Phone</th> : null}
-          {typeColVisible ? <th className="text-left  p-1">Type</th> : null}
-          {managerColVisible ? (
-            <th className="text-left  p-1">Manager</th>
-          ) : null}
-          <th></th>
-        </thead>
-        <tbody>
-          {companies.length > 0 ? (
-            companies.map((x, i) => (
+      {companies.length > 0 ? (
+        <table className="w-full" aria-label="companies-table">
+          <thead>
+            <th className="text-left p-1">Name</th>
+            {addressColVisible ? (
+              <th className="text-left  p-1">Address</th>
+            ) : null}
+            {ceoColVisible ? <th className="text-left  p-1">Ceo</th> : null}
+            {contactsColVisible ? (
+              <th className="text-left  p-1">Contacts</th>
+            ) : null}
+            {emailColVisible ? <th className="text-left  p-1">Email</th> : null}
+            {innColVisible ? <th className="text-left  p-1">Inn</th> : null}
+            {phoneColVisible ? <th className="text-left  p-1">Phone</th> : null}
+            {typeColVisible ? <th className="text-left  p-1">Type</th> : null}
+            {managerColVisible ? (
+              <th className="text-left  p-1">Manager</th>
+            ) : null}
+            <th></th>
+          </thead>
+          <tbody>
+            {companies.map((x, i) => (
               <tr key={i}>
                 <td className="p-1">
                   <Link to={routes.companies.view(x.id)}>
@@ -169,12 +169,12 @@ export default function CompaniesIndexRoute() {
                   ) : null}
                 </td>
               </tr>
-            ))
-          ) : (
-            <div>No companies found</div>
-          )}
-        </tbody>
-      </table>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div>No companies found</div>
+      )}
     </>
   );
 }
