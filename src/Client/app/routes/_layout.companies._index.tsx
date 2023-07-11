@@ -36,37 +36,41 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function CompaniesIndexRoute() {
   const { companies, userPermissions } = useLoaderData<LoaderData>();
 
+  const addressColVisible = companies.some(x => "address" in x.fields);
+  const ceoColVisible = companies.some(x => "ceo" in x.fields);
+  const contactsColVisible = companies.some(x => "contacts" in x.fields);
+  const emailColVisible = companies.some(x => "email" in x.fields);
+  const innColVisible = companies.some(x => "inn" in x.fields);
+  const phoneColVisible = companies.some(x => "phone" in x.fields);
+  const typeColVisible = companies.some(x => "type" in x.fields);
+  const managerColVisible = companies.some(x => "manager" in x.fields);
+
   return (
     <>
       {userPermissions.canCreateCompany ? (
-        <Link to={routes.companies.new}>New company</Link>
+        <Link
+          className="bg-green-600 p-2 rounded text-white"
+          to={routes.companies.new}
+        >
+          New company
+        </Link>
       ) : null}
       <table className="w-full">
         <thead>
-          <th className="text-left">Name</th>
-          {companies.some(x => "address" in x.fields) ? (
-            <th className="text-left">Address</th>
+          <th className="text-left p-1">Name</th>
+          {addressColVisible ? (
+            <th className="text-left  p-1">Address</th>
           ) : null}
-          {companies.some(x => "ceo" in x.fields) ? (
-            <th className="text-left">Ceo</th>
+          {ceoColVisible ? <th className="text-left  p-1">Ceo</th> : null}
+          {contactsColVisible ? (
+            <th className="text-left  p-1">Contacts</th>
           ) : null}
-          {companies.some(x => "contacts" in x.fields) ? (
-            <th className="text-left">Contacts</th>
-          ) : null}
-          {companies.some(x => "email" in x.fields) ? (
-            <th className="text-left">Email</th>
-          ) : null}
-          {companies.some(x => "inn" in x.fields) ? (
-            <th className="text-left">Inn</th>
-          ) : null}
-          {companies.some(x => "phone" in x.fields) ? (
-            <th className="text-left">Phone</th>
-          ) : null}
-          {companies.some(x => "type" in x.fields) ? (
-            <th className="text-left">Type</th>
-          ) : null}
-          {companies.some(x => "manager" in x.fields) ? (
-            <th className="text-left">Manager</th>
+          {emailColVisible ? <th className="text-left  p-1">Email</th> : null}
+          {innColVisible ? <th className="text-left  p-1">Inn</th> : null}
+          {phoneColVisible ? <th className="text-left  p-1">Phone</th> : null}
+          {typeColVisible ? <th className="text-left  p-1">Type</th> : null}
+          {managerColVisible ? (
+            <th className="text-left  p-1">Manager</th>
           ) : null}
           <th></th>
         </thead>
@@ -81,33 +85,69 @@ export default function CompaniesIndexRoute() {
                       : "<forbidden to see the name>"}
                   </Link>
                 </td>
-                {"address" in x.fields ? (
-                  <td className="p-1">{x.fields.address?.toString()}</td>
+                {addressColVisible ? (
+                  "address" in x.fields ? (
+                    <td className="p-1">{x.fields.address?.toString()}</td>
+                  ) : (
+                    <td></td>
+                  )
                 ) : null}
-                {"ceo" in x.fields ? <td>{x.fields.ceo?.toString()}</td> : null}
-                {"contacts" in x.fields ? (
-                  <td className="p-1">{x.fields.contacts?.toString()}</td>
+                {ceoColVisible ? (
+                  "ceo" in x.fields ? (
+                    <td className="p-1">{x.fields.ceo?.toString()}</td>
+                  ) : (
+                    <td></td>
+                  )
                 ) : null}
-                {"email" in x.fields ? (
-                  <td className="p-1">{x.fields.email?.toString()}</td>
+                {contactsColVisible ? (
+                  "contacts" in x.fields ? (
+                    <td className="p-1">{x.fields.contacts?.toString()}</td>
+                  ) : (
+                    <td></td>
+                  )
                 ) : null}
-                {"inn" in x.fields ? <td>{x.fields.inn?.toString()}</td> : null}
-                {"phone" in x.fields ? (
-                  <td className="p-1">{x.fields.phone?.toString()}</td>
+                {emailColVisible ? (
+                  "email" in x.fields ? (
+                    <td className="p-1">{x.fields.email?.toString()}</td>
+                  ) : (
+                    <td></td>
+                  )
                 ) : null}
-                {"type" in x.fields ? (
-                  <td className="p-1">
-                    {(x.fields.type as CompanyType)?.name?.toString()}
-                  </td>
+                {innColVisible ? (
+                  "inn" in x.fields ? (
+                    <td className="p-1">{x.fields.inn?.toString()}</td>
+                  ) : (
+                    <td></td>
+                  )
                 ) : null}
-                {"manager" in x.fields ? (
-                  <td className="p-1">
-                    {x.fields.manager
-                      ? `${(x.fields.manager as Manager)?.lastName} ${
-                          (x.fields.manager as Manager)?.firstName
-                        }`
-                      : "-"}
-                  </td>
+                {phoneColVisible ? (
+                  "phone" in x.fields ? (
+                    <td className="p-1">{x.fields.phone?.toString()}</td>
+                  ) : (
+                    <td></td>
+                  )
+                ) : null}
+                {typeColVisible ? (
+                  "type" in x.fields ? (
+                    <td className="p-1">
+                      {(x.fields.type as CompanyType)?.name?.toString()}
+                    </td>
+                  ) : (
+                    <td></td>
+                  )
+                ) : null}
+                {managerColVisible ? (
+                  "manager" in x.fields ? (
+                    <td className="p-1">
+                      {x.fields.manager
+                        ? `${(x.fields.manager as Manager)?.lastName} ${
+                            (x.fields.manager as Manager)?.firstName
+                          }`
+                        : "-"}
+                    </td>
+                  ) : (
+                    <td></td>
+                  )
                 ) : null}
                 <td className="flex justify-end p-1">
                   {x.canBeUpdated ? (
