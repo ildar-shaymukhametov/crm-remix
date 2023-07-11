@@ -49,17 +49,18 @@ export default function AccessRoute() {
       {claimTypes.map((x, i) => (
         <p key={x.id}>
           <label>
-            {x.name}
             <input
               type="checkbox"
               name={`claims[${i}]`}
               value={x.value}
               defaultChecked={claims.includes(x.value)}
+              className="mr-1"
             />
+            {x.name}
           </label>
         </p>
       ))}
-      <ButtonPrimary type="submit">Save</ButtonPrimary>
+      <ButtonPrimary type="submit" className="mt-3">Save</ButtonPrimary>
     </form>
   );
 }

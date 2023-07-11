@@ -53,6 +53,7 @@ export function LinkDanger({ to, children, className }: LinkProps) {
 type ButtonProps = {
   type: "button" | "submit";
   children: React.ReactNode;
+  className?: string;
 };
 
 export function ButtonSuccess({ type, children }: ButtonProps) {
@@ -77,11 +78,11 @@ export function ButtonDanger({ type, children }: ButtonProps) {
   );
 }
 
-export function ButtonPrimary({ type, children }: ButtonProps) {
+export function ButtonPrimary({ type, children, className }: ButtonProps) {
   return (
     <button
       type={type}
-      className="bg-blue-700 text-white py-2 px-3 rounded hover:bg-blue-800"
+      className={`bg-blue-700 text-white py-2 px-3 rounded hover:bg-blue-800 ${className}`}
     >
       {children}
     </button>
