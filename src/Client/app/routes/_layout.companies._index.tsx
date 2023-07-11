@@ -41,84 +41,75 @@ export default function CompaniesIndexRoute() {
       {userPermissions.canCreateCompany ? (
         <Link to={routes.companies.new}>New company</Link>
       ) : null}
-      <table>
+      <table className="w-full">
         <thead>
-          <th>Name</th>
-          {companies.some(x => "address" in x.fields) ? <th>Address</th> : null}
-          {companies.some(x => "ceo" in x.fields) ? <th>Ceo</th> : null}
-          {companies.some(x => "contacts" in x.fields) ? (
-            <th>Contacts</th>
+          <th className="text-left">Name</th>
+          {companies.some(x => "address" in x.fields) ? (
+            <th className="text-left">Address</th>
           ) : null}
-          {companies.some(x => "email" in x.fields) ? <th>Email</th> : null}
-          {companies.some(x => "inn" in x.fields) ? <th>Inn</th> : null}
-          {companies.some(x => "phone" in x.fields) ? <th>Phone</th> : null}
-          {companies.some(x => "type" in x.fields) ? <th>Type</th> : null}
-          {companies.some(x => "manager" in x.fields) ? <th>Manager</th> : null}
+          {companies.some(x => "ceo" in x.fields) ? (
+            <th className="text-left">Ceo</th>
+          ) : null}
+          {companies.some(x => "contacts" in x.fields) ? (
+            <th className="text-left">Contacts</th>
+          ) : null}
+          {companies.some(x => "email" in x.fields) ? (
+            <th className="text-left">Email</th>
+          ) : null}
+          {companies.some(x => "inn" in x.fields) ? (
+            <th className="text-left">Inn</th>
+          ) : null}
+          {companies.some(x => "phone" in x.fields) ? (
+            <th className="text-left">Phone</th>
+          ) : null}
+          {companies.some(x => "type" in x.fields) ? (
+            <th className="text-left">Type</th>
+          ) : null}
+          {companies.some(x => "manager" in x.fields) ? (
+            <th className="text-left">Manager</th>
+          ) : null}
           <th></th>
         </thead>
         <tbody>
           {companies.length > 0 ? (
             companies.map((x, i) => (
               <tr key={i}>
-                <td>
+                <td className="p-1">
                   <Link to={routes.companies.view(x.id)}>
                     {"name" in x.fields
                       ? x.fields.name?.toString()
                       : "<forbidden to see the name>"}
                   </Link>
                 </td>
-                <td>
-                  {"address" in x.fields ? (
-                    <span>{x.fields.address?.toString()}</span>
-                  ) : null}
-                </td>
-                <td>
-                  {"ceo" in x.fields ? (
-                    <span>{x.fields.ceo?.toString()}</span>
-                  ) : null}
-                </td>
-                <td>
-                  {"contacts" in x.fields ? (
-                    <span>{x.fields.contacts?.toString()}</span>
-                  ) : null}
-                </td>
-                <td>
-                  {"email" in x.fields ? (
-                    <span>{x.fields.email?.toString()}</span>
-                  ) : null}
-                </td>
-                <td>
-                  {"inn" in x.fields ? (
-                    <span>{x.fields.inn?.toString()}</span>
-                  ) : null}
-                </td>
-                <td>
-                  {"phone" in x.fields ? (
-                    <span>{x.fields.phone?.toString()}</span>
-                  ) : null}
-                </td>
-                <td>
-                  {"type" in x.fields ? (
-                    <span>
-                      {(x.fields.type as CompanyType)?.name?.toString()}
-                    </span>
-                  ) : null}
-                </td>
-                <td>
-                  {"manager" in x.fields ? (
-                    <p>
-                      <span>manager</span>:{" "}
-                      <span aria-label="manager">
-                        {x.fields.manager
-                          ? `${(x.fields.manager as Manager)?.lastName} ${
-                              (x.fields.manager as Manager)?.firstName
-                            }`
-                          : "-"}
-                      </span>
-                    </p>
-                  ) : null}
-                </td>
-                <td className="flex">
+                {"address" in x.fields ? (
+                  <td className="p-1">{x.fields.address?.toString()}</td>
+                ) : null}
+                {"ceo" in x.fields ? <td>{x.fields.ceo?.toString()}</td> : null}
+                {"contacts" in x.fields ? (
+                  <td className="p-1">{x.fields.contacts?.toString()}</td>
+                ) : null}
+                {"email" in x.fields ? (
+                  <td className="p-1">{x.fields.email?.toString()}</td>
+                ) : null}
+                {"inn" in x.fields ? <td>{x.fields.inn?.toString()}</td> : null}
+                {"phone" in x.fields ? (
+                  <td className="p-1">{x.fields.phone?.toString()}</td>
+                ) : null}
+                {"type" in x.fields ? (
+                  <td className="p-1">
+                    {(x.fields.type as CompanyType)?.name?.toString()}
+                  </td>
+                ) : null}
+                {"manager" in x.fields ? (
+                  <td className="p-1">
+                    {x.fields.manager
+                      ? `${(x.fields.manager as Manager)?.lastName} ${
+                          (x.fields.manager as Manager)?.firstName
+                        }`
+                      : "-"}
+                  </td>
+                ) : null}
+                <td className="flex justify-end p-1">
                   {x.canBeUpdated ? (
                     <Link
                       to={routes.companies.edit(x.id)}
@@ -129,6 +120,7 @@ export default function CompaniesIndexRoute() {
                   ) : null}
                   {x.canBeDeleted ? (
                     <Link
+                      className="ml-1 text-red-600"
                       to={routes.companies.delete(x.id)}
                       aria-label="delete company"
                     >
