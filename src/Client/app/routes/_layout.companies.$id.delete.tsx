@@ -1,10 +1,13 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
 import type { V2_MetaFunction } from "@remix-run/react";
-import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
-import { Link, useParams } from "@remix-run/react";
+import {
+  isRouteErrorResponse,
+  useRouteError,
+  useParams
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
+import { ButtonDanger, LinkDefault } from "~/components/buttons";
 import { auth } from "~/utils/auth.server";
 import { getCompany, deleteCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
@@ -36,13 +39,13 @@ export default function DeleteCompany() {
 
   return (
     <>
-      <p>Company will be deleted.</p>
-      <div>
-        <Link to={routes.companies.view(params.id)} className="mr-2">
+      <p className="mb-3">Company will be deleted.</p>
+      <div className="flex">
+        <LinkDefault to={routes.companies.view(params.id)} className="mr-2">
           Cancel
-        </Link>
+        </LinkDefault>
         <form method="post">
-          <button type="submit">Delete company</button>
+          <ButtonDanger type="submit">Delete company</ButtonDanger>
         </form>
       </div>
     </>
