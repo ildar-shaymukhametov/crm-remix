@@ -52,23 +52,28 @@ export default function EditCompanyRoute() {
   return (
     <form method="post">
       {"name" in data.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Name:
             <input
               name="name"
               required
               maxLength={200}
+              className="rounded border border-gray-300 w-full p-1"
               defaultValue={data.fields.name?.toString()}
             />
           </label>
         </div>
       ) : null}
       {"typeId" in data.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Type:
-            <select name="typeId" defaultValue={data.fields.typeId?.toString()}>
+            <select
+              name="typeId"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.typeId?.toString()}
+            >
               <option value="">-</option>
               {data.initData.companyTypes.map(x => (
                 <option key={x.id} value={x.id}>
@@ -80,65 +85,84 @@ export default function EditCompanyRoute() {
         </div>
       ) : null}
       {"inn" in data.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Inn:
-            <input name="inn" defaultValue={data.fields.inn?.toString()} />
+            <input
+              name="inn"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.inn?.toString()}
+            />
           </label>
         </div>
       ) : null}
       {"address" in data.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Address:
             <input
               name="address"
+              className="rounded border border-gray-300 w-full p-1"
               defaultValue={data.fields.address?.toString()}
             />
           </label>
         </div>
       ) : null}
       {"ceo" in data.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             CEO:
-            <input name="ceo" defaultValue={data.fields.ceo?.toString()} />
+            <input
+              name="ceo"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.ceo?.toString()}
+            />
           </label>
         </div>
       ) : null}
       {"phone" in data.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Phone:
-            <input name="phone" defaultValue={data.fields.phone?.toString()} />
+            <input
+              name="phone"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.phone?.toString()}
+            />
           </label>
         </div>
       ) : null}
       {"email" in data.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Email:
-            <input name="email" defaultValue={data.fields.email?.toString()} />
+            <input
+              name="email"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.email?.toString()}
+            />
           </label>
         </div>
       ) : null}
       {"contacts" in data.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Contacts:
             <input
               name="contacts"
+              className="rounded border border-gray-300 w-full p-1"
               defaultValue={data.fields.contacts?.toString()}
             />
           </label>
         </div>
       ) : null}
       {"managerId" in data.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Manager:
             <select
               name="managerId"
+              className="rounded border border-gray-300 w-full p-1"
               defaultValue={data.fields.managerId?.toString()}
             >
               {data.initData.managers.map((x, i) => (
@@ -153,7 +177,9 @@ export default function EditCompanyRoute() {
         </div>
       ) : null}
 
-      <ButtonPrimary type="submit">Save changes</ButtonPrimary>
+      <ButtonPrimary type="submit" className="mt-3">
+        Save changes
+      </ButtonPrimary>
     </form>
   );
 }

@@ -57,18 +57,26 @@ export default function NewCompanyRoute() {
   return (
     <form method="post">
       {"name" in vm.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Name:
-            <input name="name" required maxLength={200} />
+            <input
+              name="name"
+              required
+              maxLength={200}
+              className="rounded border border-gray-300 w-full p-1"
+            />
           </label>
         </div>
       ) : null}
       {"typeId" in vm.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Type:
-            <select name="typeId">
+            <select
+              name="typeId"
+              className="rounded border border-gray-300 w-full p-1"
+            >
               <option value="">-</option>
               {vm.initData.companyTypes.map(x => (
                 <option key={x.id} value={x.id}>
@@ -80,10 +88,13 @@ export default function NewCompanyRoute() {
         </div>
       ) : null}
       {"inn" in vm.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Inn:
-            <input name="inn" />
+            <input
+              name="inn"
+              className="rounded border border-gray-300 w-full p-1"
+            />
           </label>
           {data?.errors?.Inn
             ? data.errors.Inn.map((error, i) => <p key={i}>{error}</p>)
@@ -91,34 +102,46 @@ export default function NewCompanyRoute() {
         </div>
       ) : null}
       {"address" in vm.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Address:
-            <input name="address" />
+            <input
+              name="address"
+              className="rounded border border-gray-300 w-full p-1"
+            />
           </label>
         </div>
       ) : null}
       {"ceo" in vm.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             CEO:
-            <input name="ceo" />
+            <input
+              name="ceo"
+              className="rounded border border-gray-300 w-full p-1"
+            />
           </label>
         </div>
       ) : null}
       {"phone" in vm.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Phone:
-            <input name="phone" />
+            <input
+              name="phone"
+              className="rounded border border-gray-300 w-full p-1"
+            />
           </label>
         </div>
       ) : null}
       {"email" in vm.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Email:
-            <input name="email" />
+            <input
+              name="email"
+              className="rounded border border-gray-300 w-full p-1"
+            />
           </label>
           {data?.errors?.Email
             ? data.errors.Email.map((error, i) => <p key={i}>{error}</p>)
@@ -126,18 +149,24 @@ export default function NewCompanyRoute() {
         </div>
       ) : null}
       {"contacts" in vm.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Contacts:
-            <input name="contacts" />
+            <input
+              name="contacts"
+              className="rounded border border-gray-300 w-full p-1"
+            />
           </label>
         </div>
       ) : null}
       {"managerId" in vm.fields ? (
-        <div>
+        <div className="mb-3">
           <label>
             Manager:
-            <select name="managerId">
+            <select
+              name="managerId"
+              className="rounded border border-gray-300 w-full p-1"
+            >
               {vm.initData.managers.map((x, i) => (
                 <option key={i} value={x.id}>
                   {x.firstName && x.lastName
@@ -149,7 +178,9 @@ export default function NewCompanyRoute() {
           </label>
         </div>
       ) : null}
-      <ButtonSuccess type="submit" className="mt-3">Create new company</ButtonSuccess>
+      <ButtonSuccess type="submit" className="mt-3">
+        Create new company
+      </ButtonSuccess>
     </form>
   );
 }
