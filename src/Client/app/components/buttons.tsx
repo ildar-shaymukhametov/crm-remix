@@ -28,6 +28,28 @@ export function LinkSuccess({ to, children }: LinkProps) {
   );
 }
 
+export function LinkPrimary({ to, children }: LinkProps) {
+  return (
+    <Link
+      className="bg-blue-700 text-white py-2 px-3 rounded hover:bg-blue-800"
+      to={to}
+    >
+      {children}
+    </Link>
+  );
+}
+
+export function LinkDanger({ to, children, className }: LinkProps) {
+  return (
+    <Link
+      className={`bg-red-700 text-white py-2 px-3 rounded hover:bg-red-800 ${className}`}
+      to={to}
+    >
+      {children}
+    </Link>
+  );
+}
+
 type ButtonProps = {
   type: "button" | "submit";
   children: React.ReactNode;
@@ -49,6 +71,17 @@ export function ButtonDanger({ type, children }: ButtonProps) {
     <button
       type={type}
       className="bg-red-700 text-white py-2 px-3 rounded hover:bg-red-800"
+    >
+      {children}
+    </button>
+  );
+}
+
+export function ButtonPrimary({ type, children }: ButtonProps) {
+  return (
+    <button
+      type={type}
+      className="bg-blue-700 text-white py-2 px-3 rounded hover:bg-blue-800"
     >
       {children}
     </button>

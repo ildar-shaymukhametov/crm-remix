@@ -1,9 +1,14 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import type { V2_MetaFunction } from "@remix-run/react";
-import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
-import { Link, useLoaderData, useParams } from "@remix-run/react";
+import {
+  isRouteErrorResponse,
+  useRouteError,
+  useLoaderData,
+  useParams
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
+import { LinkDanger, LinkPrimary } from "~/components/buttons";
 import { auth } from "~/utils/auth.server";
 import type { Company, CompanyType, Manager } from "~/utils/companies.server";
 import { getCompany } from "~/utils/companies.server";
@@ -35,10 +40,12 @@ export default function CompanyRoute() {
   return (
     <>
       {company.canBeUpdated ? (
-        <Link to={routes.companies.edit(id)}>Edit</Link>
+        <LinkPrimary to={routes.companies.edit(id)}>Edit</LinkPrimary>
       ) : null}
       {company.canBeDeleted ? (
-        <Link to={routes.companies.delete(id)}>Delete</Link>
+        <LinkDanger to={routes.companies.delete(id)} className="ml-2">
+          Delete
+        </LinkDanger>
       ) : null}
       <div>
         {"name" in company.fields ? (

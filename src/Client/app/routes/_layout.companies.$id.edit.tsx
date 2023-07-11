@@ -1,14 +1,16 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
 import type { V2_MetaFunction } from "@remix-run/react";
-import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
-import { useLoaderData } from "@remix-run/react";
+import {
+  isRouteErrorResponse,
+  useRouteError,
+  useLoaderData
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
+import { ButtonPrimary } from "~/components/buttons";
 import { auth } from "~/utils/auth.server";
 import type { UpdateCompanyQuery } from "~/utils/companies.server";
-import { getUpdateCompanyData } from "~/utils/companies.server";
-import { updateCompany } from "~/utils/companies.server";
+import { getUpdateCompanyData, updateCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
 
 type LoaderData = {
@@ -151,7 +153,7 @@ export default function EditCompanyRoute() {
         </div>
       ) : null}
 
-      <button type="submit">Save changes</button>
+      <ButtonPrimary type="submit">Save changes</ButtonPrimary>
     </form>
   );
 }

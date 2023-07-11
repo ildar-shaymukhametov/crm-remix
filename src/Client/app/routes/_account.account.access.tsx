@@ -5,11 +5,12 @@ import {
   useLoaderData,
   useRouteError
 } from "@remix-run/react";
+import { ButtonPrimary } from "~/components/buttons";
 import type { ClaimType } from "~/utils/account.server";
-import { getClaimTypes } from "~/utils/account.server";
 import {
   getAuthorizationClaims,
-  updateAuthorizationClaims
+  updateAuthorizationClaims,
+  getClaimTypes
 } from "~/utils/account.server";
 import { auth } from "~/utils/auth.server";
 
@@ -58,7 +59,7 @@ export default function AccessRoute() {
           </label>
         </p>
       ))}
-      <button type="submit">Save</button>
+      <ButtonPrimary type="submit">Save</ButtonPrimary>
     </form>
   );
 }
