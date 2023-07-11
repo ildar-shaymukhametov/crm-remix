@@ -49,31 +49,37 @@ export default function CompaniesIndexRoute() {
     <>
       {userPermissions.canCreateCompany ? (
         <Link
-          className="bg-green-600 p-2 rounded text-white"
+          className="bg-green-700 text-white py-2 px-3 rounded hover:bg-green-800"
           to={routes.companies.new}
         >
           New company
         </Link>
       ) : null}
       {companies.length > 0 ? (
-        <table className="w-full" aria-label="companies-table">
+        <table className="w-full mt-3" aria-label="companies-table">
           <thead>
-            <th className="text-left p-1">Name</th>
-            {addressColVisible ? (
-              <th className="text-left  p-1">Address</th>
-            ) : null}
-            {ceoColVisible ? <th className="text-left  p-1">Ceo</th> : null}
-            {contactsColVisible ? (
-              <th className="text-left  p-1">Contacts</th>
-            ) : null}
-            {emailColVisible ? <th className="text-left  p-1">Email</th> : null}
-            {innColVisible ? <th className="text-left  p-1">Inn</th> : null}
-            {phoneColVisible ? <th className="text-left  p-1">Phone</th> : null}
-            {typeColVisible ? <th className="text-left  p-1">Type</th> : null}
-            {managerColVisible ? (
-              <th className="text-left  p-1">Manager</th>
-            ) : null}
-            <th></th>
+            <tr>
+              <th className="text-left px-1">Name</th>
+              {addressColVisible ? (
+                <th className="text-left px-1">Address</th>
+              ) : null}
+              {ceoColVisible ? <th className="text-left px-1">Ceo</th> : null}
+              {contactsColVisible ? (
+                <th className="text-left px-1">Contacts</th>
+              ) : null}
+              {emailColVisible ? (
+                <th className="text-left px-1">Email</th>
+              ) : null}
+              {innColVisible ? <th className="text-left px-1">Inn</th> : null}
+              {phoneColVisible ? (
+                <th className="text-left px-1">Phone</th>
+              ) : null}
+              {typeColVisible ? <th className="text-left px-1">Type</th> : null}
+              {managerColVisible ? (
+                <th className="text-left px-1">Manager</th>
+              ) : null}
+              <th></th>
+            </tr>
           </thead>
           <tbody>
             {companies.map((x, i) => (
