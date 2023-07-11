@@ -149,8 +149,7 @@ export default function NewCompanyRoute() {
           </label>
         </div>
       ) : null}
-
-      <ButtonSuccess type="submit">Create new company</ButtonSuccess>
+      <ButtonSuccess type="submit" className="mt-3">Create new company</ButtonSuccess>
     </form>
   );
 }

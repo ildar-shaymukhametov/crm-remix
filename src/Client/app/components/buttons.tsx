@@ -56,11 +56,11 @@ type ButtonProps = {
   className?: string;
 };
 
-export function ButtonSuccess({ type, children }: ButtonProps) {
+export function ButtonSuccess({ type, children, className }: ButtonProps) {
   return (
     <button
       type={type}
-      className="bg-green-700 text-white py-2 px-3 rounded hover:bg-green-800"
+      className={`bg-green-700 text-white py-2 px-3 rounded hover:bg-green-800 ${className}`}
     >
       {children}
     </button>

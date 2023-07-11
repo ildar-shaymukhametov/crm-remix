@@ -39,14 +39,16 @@ export default function CompanyRoute() {
 
   return (
     <>
-      {company.canBeUpdated ? (
-        <LinkPrimary to={routes.companies.edit(id)}>Edit</LinkPrimary>
-      ) : null}
-      {company.canBeDeleted ? (
-        <LinkDanger to={routes.companies.delete(id)} className="ml-2">
-          Delete
-        </LinkDanger>
-      ) : null}
+      <div className="mb-3">
+        {company.canBeUpdated ? (
+          <LinkPrimary to={routes.companies.edit(id)}>Edit</LinkPrimary>
+        ) : null}
+        {company.canBeDeleted ? (
+          <LinkDanger to={routes.companies.delete(id)} className="ml-2">
+            Delete
+          </LinkDanger>
+        ) : null}
+      </div>
       <div>
         {"name" in company.fields ? (
           <p>
