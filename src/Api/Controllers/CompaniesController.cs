@@ -1,9 +1,11 @@
 using CRM.Application.Companies.Commands.CreateCompany;
 using CRM.Application.Companies.Commands.DeleteCompany;
 using CRM.Application.Companies.Commands.UpdateCompany;
+using CRM.Application.Companies.Queries;
 using CRM.Application.Companies.Queries.GetCompanies;
 using CRM.Application.Companies.Queries.GetCompany;
-using CRM.Application.Companies.Queries.GetCompanyManagers;
+using CRM.Application.Companies.Queries.GetNewCompany;
+using CRM.Application.Companies.Queries.GetUpdateCompany;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM.Api.Controllers;
@@ -14,11 +16,11 @@ public class CompaniesController : ApiControllerBase
     [Route("{id}")]
     public async Task<ActionResult<CompanyVm>> Get(int id)
     {
-        return await Mediator.Send(new GetCompanyQuery { Id = id });
+        return await Mediator.Send(new GetCompanyQuery(id));
     }
 
     [HttpGet]
-    public async Task<ActionResult<CompanyDto[]>> Get()
+    public async Task<ActionResult<CompanyVm[]>> Get()
     {
         return await Mediator.Send(new GetCompaniesQuery());
     }
@@ -40,17 +42,23 @@ public class CompaniesController : ApiControllerBase
 
     [HttpPut]
     [Route("{id}")]
-    public async Task<ActionResult> Update(int id, UpdateCompanyCommand command)
+    public async Task<ActionResult> Update(int id, UpdateCompanyCommand request)
     {
-        command.Id = id;
-        await Mediator.Send(command);
+        await Mediator.Send(request with { Id = id });
         return Ok();
     }
 
     [HttpGet]
-    [Route("InitData")]
-    public async Task<ActionResult<GetCompanyInitDataResponse>> InitData(int? id)
+    [Route("New")]
+    public async Task<ActionResult<NewCompanyVm>> GetNew()
     {
-        return await Mediator.Send(new GetCompanyInitDataQuery { Id = id });
+        return await Mediator.Send(new GetNewCompanyQuery());
+    }
+
+    [HttpGet]
+    [Route("{id}/Update")]
+    public async Task<ActionResult<UpdateCompanyVm>> GetUpdate(int id)
+    {
+        return await Mediator.Send(new GetUpdateCompanyQuery(id));
     }
 }

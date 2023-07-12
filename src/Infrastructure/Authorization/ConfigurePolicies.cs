@@ -8,16 +8,25 @@ public static class ConfigurePolicies
 {
     public static void AddPolicies(this AuthorizationOptions options)
     {
-        options.AddPolicy(Policies.Company.Create, policy =>
-                policy.AddRequirements(new CreateCompanyRequirement()));
+        options.AddPolicy(Policies.Company.Commands.Create, policy =>
+            policy.AddRequirements(new Handlers.Commands.CreateCompanyRequirement()));
 
-        options.AddPolicy(Policies.Company.View, policy =>
+        options.AddPolicy(Policies.Company.Queries.Create, policy =>
+            policy.AddRequirements(new Handlers.Queries.CreateCompanyRequirement()));
+
+        options.AddPolicy(Policies.Company.Queries.View, policy =>
             policy.AddRequirements(new GetCompanyRequirement()));
 
-        options.AddPolicy(Policies.Company.Update, policy =>
-            policy.AddRequirements(new UpdateCompanyRequirement()));
+        options.AddPolicy(Policies.Company.Commands.Update, policy =>
+            policy.AddRequirements(new Handlers.Commands.UpdateCompanyRequirement()));
 
-        options.AddPolicy(Policies.Company.Delete, policy =>
+        options.AddPolicy(Policies.Company.Commands.Delete, policy =>
             policy.AddRequirements(new DeleteCompanyRequirement()));
+
+        options.AddPolicy(Policies.Company.Queries.Delete, policy =>
+            policy.AddRequirements(new DeleteCompanyRequirement()));
+
+        options.AddPolicy(Policies.Company.Queries.Update, policy =>
+            policy.AddRequirements(new Handlers.Queries.UpdateCompanyRequirement()));
     }
 }

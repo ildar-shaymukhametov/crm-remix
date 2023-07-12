@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
+using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
 using CRM.Domain.Entities;
@@ -11,71 +11,152 @@ using static CRM.Application.Constants;
 namespace CRM.Application.Companies.Queries.GetCompanies;
 
 [Authorize]
-public record GetCompaniesQuery : IRequest<CompanyDto[]>;
+public record GetCompaniesQuery : IRequest<CompanyVm[]>;
 
-public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, CompanyDto[]>
+public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, CompanyVm[]>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly ICurrentUserService _currentUserService;
     private readonly IAccessService _accessService;
-    private readonly IPermissionsVerifier _permissionsVerifier;
+    private readonly IIdentityService _identityService;
 
-    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IAccessService accessService, IPermissionsVerifier permissionsVerifier)
+    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IAccessService accessService, IIdentityService identityService)
     {
         _currentUserService = currentUserService;
         _accessService = accessService;
-        _permissionsVerifier = permissionsVerifier;
+        _identityService = identityService;
         _dbContext = dbContext;
         _mapper = mapper;
     }
 
-    public async Task<CompanyDto[]> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
+    public async Task<CompanyVm[]> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
     {
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
         if (!accessRights.Any())
         {
-            return Array.Empty<CompanyDto>();
+            return Array.Empty<CompanyVm>();
         }
 
         var expressions = GetExpressions(accessRights);
         if (!expressions.Any())
         {
-            return Array.Empty<CompanyDto>();
+            return Array.Empty<CompanyVm>();
         }
 
-        var query = _dbContext.Companies.AsNoTracking();
+        var query = _dbContext.Companies
+            .AsNoTracking()
+            .Include(x => x.Type)
+            .Include(x => x.Manager)
+            .AsQueryable();
+
         foreach (var expression in expressions)
         {
             query = query.Where(expression);
         }
 
-        var result = await query
-            .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
-            .ToArrayAsync(cancellationToken);
-
-        var permissions = await _permissionsVerifier.VerifyCompanyPermissionsAsync(_currentUserService.UserId!, result.Select(x => x.Id).ToArray(), new[] { Permissions.Company.Update, Permissions.Company.Delete });
-        foreach (var item in result)
+        var result = new List<CompanyVm>();
+        var entities = await query.ToArrayAsync(cancellationToken);
+        foreach (var entity in entities)
         {
-            if (!permissions.ContainsKey(item.Id))
+            var company = new CompanyVm
             {
-                continue;
+                Id = entity.Id
+            };
+
+            if (accessRights.ContainsAny(
+                Access.Company.Any.Manager.Get,
+                Access.Company.WhereUserIsManager.Manager.Get,
+                Access.Company.Any.Manager.SetFromAnyToAny,
+                Access.Company.Any.Manager.SetFromAnyToNone,
+                Access.Company.Any.Manager.SetFromAnyToSelf,
+                Access.Company.Any.Manager.SetFromSelfToAny,
+                Access.Company.Any.Manager.SetFromSelfToNone,
+                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
+                Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+                Access.Company.Any.Manager.SetFromNoneToAny,
+                Access.Company.Any.Manager.SetFromNoneToSelf
+            ))
+            {
+                company.Fields.Add(nameof(Company.Manager), _mapper.Map<ManagerDto>(entity.Manager));
             }
 
-            item.CanBeEdited = permissions[item.Id].Contains(Permissions.Company.Update);
-            item.CanBeDeleted = permissions[item.Id].Contains(Permissions.Company.Delete);
+            if (accessRights.ContainsAny(
+                Access.Company.Any.Other.Get,
+                Access.Company.Any.Other.Set,
+                Access.Company.WhereUserIsManager.Other.Get,
+                Access.Company.WhereUserIsManager.Other.Set
+            ))
+            {
+                company.Fields.Add(nameof(Company.Address), entity.Address);
+                company.Fields.Add(nameof(Company.Ceo), entity.Ceo);
+                company.Fields.Add(nameof(Company.Contacts), entity.Contacts);
+                company.Fields.Add(nameof(Company.Email), entity.Email);
+                company.Fields.Add(nameof(Company.Inn), entity.Inn);
+                company.Fields.Add(nameof(Company.Phone), entity.Phone);
+                company.Fields.Add(nameof(Company.Type), _mapper.Map<CompanyTypeDto>(entity.Type));
+            }
+
+            if (accessRights.ContainsAny(
+                Access.Company.Any.Name.Get,
+                Access.Company.Any.Name.Set,
+                Access.Company.WhereUserIsManager.Name.Get,
+                Access.Company.WhereUserIsManager.Name.Set
+            ))
+            {
+                company.Fields.Add(nameof(Company.Name), entity.Name);
+            }
+
+            company.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Queries.Update);
+            company.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Policies.Company.Queries.Delete);
+
+            result.Add(company);
         }
 
-        return result;
+        return result.ToArray();
     }
 
-    private static List<Expression<Func<Company, bool>>> GetExpressions(string[] accessRights)
+    private List<Expression<Func<Company, bool>>> GetExpressions(string[] accessRights)
     {
         var result = new List<Expression<Func<Company, bool>>>();
-        if (accessRights.Contains(Access.Company.Any.View))
+        if (accessRights.ContainsAny(
+            Access.Company.Any.Delete,
+            Access.Company.Any.Other.Get,
+            Access.Company.Any.Other.Set,
+            Access.Company.Any.Manager.Get,
+            Access.Company.Any.Manager.SetFromAnyToAny,
+            Access.Company.Any.Manager.SetFromAnyToNone,
+            Access.Company.Any.Manager.SetFromAnyToSelf,
+            Access.Company.Any.Name.Get,
+            Access.Company.Any.Name.Set
+        ))
         {
             result.Add(x => true);
             return result;
+        }
+
+        if (accessRights.ContainsAny(
+            Access.Company.Any.Manager.SetFromSelfToAny,
+            Access.Company.Any.Manager.SetFromSelfToNone,
+            Access.Company.WhereUserIsManager.Delete,
+            Access.Company.WhereUserIsManager.Other.Get,
+            Access.Company.WhereUserIsManager.Other.Set,
+            Access.Company.WhereUserIsManager.Manager.Get,
+            Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
+            Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+            Access.Company.WhereUserIsManager.Name.Get,
+            Access.Company.WhereUserIsManager.Name.Set
+        ))
+        {
+            result.Add(x => x.ManagerId == _currentUserService.UserId);
+        }
+
+        if (accessRights.ContainsAny(
+            Access.Company.Any.Manager.SetFromNoneToAny,
+            Access.Company.Any.Manager.SetFromNoneToSelf
+        ))
+        {
+            result.Add(x => x.ManagerId == null);
         }
 
         return result;

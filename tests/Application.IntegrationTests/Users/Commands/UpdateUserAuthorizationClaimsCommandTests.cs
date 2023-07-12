@@ -1,7 +1,6 @@
-using CRM.Application.IntegrationTests;
 using CRM.Application.Users.Commands.UpdateUserAuthorizationClaims;
 
-namespace Application.IntegrationTests.Users.Commands;
+namespace CRM.Application.IntegrationTests.Users.Commands;
 
 public class UpdateUserAuthorizationClaimsTests : BaseTest
 {

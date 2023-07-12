@@ -1,7 +1,7 @@
-import { test as base } from "./test";
+import { test as base, getAdminAccessToken } from "./test";
 import { faker } from "@faker-js/faker";
 import type { Company, NewCompany } from "~/utils/companies.server";
-import { createTestCompany, getTestCompany } from "~/utils/companies.server";
+import { createCompany, getCompany } from "~/utils/companies.server";
 
 type CreateCompanyOptions = {
   managerId?: string
@@ -14,9 +14,10 @@ export const test = base.extend<{
   createCompany: [
     async ({ page }, use) => {
       use(async (options = {}) => {
-        return await createTestCompany(
+        return await createCompany(
           new Request("http://foobar.com"),
-          buildCompany(options)
+          buildCompany(options),
+          await getAdminAccessToken(page)
         );
       });
     },
@@ -25,9 +26,10 @@ export const test = base.extend<{
   getCompany: [
     async ({ page }, use) => {
       use(async (id) => {
-        return await getTestCompany(
+        return await getCompany(
           new Request("http://foobar.com"),
-          id.toString()
+          id.toString(),
+          await getAdminAccessToken(page)
         );
       });
     },
@@ -45,7 +47,7 @@ export function buildCompany(options: CreateCompanyOptions = {}): NewCompany {
     inn: faker.string.numeric(10),
     name: faker.company.name(),
     phone: faker.phone.number(),
-    typeId: faker.helpers.arrayElement([1, 2, 3, 4]).toString(),
+    typeId: faker.helpers.arrayElement([1, 2, 3, 4]),
     managerId: options.managerId
   };
 }

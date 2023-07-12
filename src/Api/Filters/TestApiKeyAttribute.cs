@@ -13,7 +13,6 @@ public class TestApiKeyAttribute : Attribute, IAuthorizationFilter
     public void OnAuthorization(AuthorizationFilterContext context)
     {
         var submittedApiKey = GetSubmittedApiKey(context.HttpContext);
-
         var apiKey = GetApiKey(context.HttpContext);
 
         if (!IsApiKeyValid(apiKey, submittedApiKey))
@@ -22,19 +21,19 @@ public class TestApiKeyAttribute : Attribute, IAuthorizationFilter
         }
     }
 
-    private static string GetSubmittedApiKey(HttpContext context)
+    private static string? GetSubmittedApiKey(HttpContext context)
     {
         return context.Request.Headers[API_KEY_HEADER_NAME];
     }
 
-    private static string GetApiKey(HttpContext context)
+    private static string? GetApiKey(HttpContext context)
     {
         var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
 
         return configuration.GetValue<string>($"TestApiKey");
     }
 
-    private static bool IsApiKeyValid(string apiKey, string submittedApiKey)
+    private static bool IsApiKeyValid(string? apiKey, string? submittedApiKey)
     {
         if (string.IsNullOrEmpty(submittedApiKey))
         {

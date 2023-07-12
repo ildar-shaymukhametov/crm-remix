@@ -1,81 +1,44 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
 import type { V2_MetaFunction } from "@remix-run/react";
-import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
-import { useActionData, useLoaderData } from "@remix-run/react";
+import {
+  isRouteErrorResponse,
+  useRouteError,
+  useLoaderData
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
+import { ButtonPrimary } from "~/components/buttons";
 import { auth } from "~/utils/auth.server";
-import type {
-  Company,
-  CompanyType,
-  Manager,
-  UpdateCompany
-} from "~/utils/companies.server";
-import { getInitData } from "~/utils/companies.server";
-import { updateCompany } from "~/utils/companies.server";
-import { getCompany } from "~/utils/companies.server";
+import type { UpdateCompanyQuery } from "~/utils/companies.server";
+import { getUpdateCompanyData, updateCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
-import { permissions } from "~/utils/constants.server";
 
 type LoaderData = {
-  company: Company;
-  managers?: Manager[];
-  userPermissions: {
-    canSetManager: boolean;
-  };
-  companyTypes: CompanyType[];
+  company: UpdateCompanyQuery;
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   invariant(params.id, "Missing id parameter");
 
-  const user = await auth.requireUser(request, {
-    key: params.id,
-    permissions: [permissions.company.update]
-  });
-
-  if (!user.permissions.includes(permissions.company.update)) {
-    throw new Response(null, { status: 403 });
-  }
-
-  const company = await getCompany(
+  const user = await auth.requireUser(request);
+  const company = await getUpdateCompanyData(
     request,
     params.id,
     user.extra?.access_token
   );
 
-  const initData = await getInitData(
-    request,
-    user.extra?.access_token,
-    company.id
-  );
-
   return json({
-    company,
-    ...initData
+    company
   });
-};
-
-type ActionData = {
-  errors?: {
-    [index: string]: string[];
-  };
-  fields?: { [index: string]: string | number | undefined };
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
   const user = await auth.requireUser(request);
   invariant(params.id, "Missing id parameter");
 
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData) as UpdateCompany;
+  const data = Object.fromEntries(await request.formData());
   if (!data.managerId) {
     delete data.managerId;
-  }
-
-  if (!data.typeId) {
-    delete data.typeId;
   }
 
   await updateCompany(request, params.id, data, user.extra?.access_token);
@@ -84,118 +47,139 @@ export const action: ActionFunction = async ({ request, params }) => {
 };
 
 export default function EditCompanyRoute() {
-  const actionData = useActionData<ActionData>();
-  const { company, managers, companyTypes } = useLoaderData<LoaderData>();
-  const data: ActionData = {
-    fields: {
-      ...{
-        address: company.address,
-        ceo: company.ceo,
-        contacts: company.contacts,
-        email: company.email,
-        id: company.id,
-        inn: company.inn,
-        phone: company.phone,
-        typeId: company.type?.id,
-        name: company.name,
-        managerId: company.manager?.id
-      },
-      ...actionData?.fields
-    },
-    errors: actionData?.errors
-  };
+  const { company: data } = useLoaderData<LoaderData>();
 
   return (
     <form method="post">
-      <div>
-        <label>
-          Name:
-          <input
-            name="name"
-            required
-            maxLength={200}
-            defaultValue={data?.fields?.name}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Type:
-          <select name="typeId" defaultValue={data?.fields?.typeId}>
-            <option value="">-</option>
-            {companyTypes.map(x => (
-              <option key={x.id} value={x.id}>
-                {x.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      <div>
-        <label>
-          Inn:
-          <input name="inn" defaultValue={data?.fields?.inn} />
-        </label>
-        {data?.errors?.Inn
-          ? data.errors.Inn.map((error, i) => <p key={i}>{error}</p>)
-          : null}
-      </div>
-      <div>
-        <label>
-          Address:
-          <input name="address" defaultValue={data?.fields?.address} />
-        </label>
-      </div>
-      <div>
-        <label>
-          CEO:
-          <input name="ceo" defaultValue={data?.fields?.ceo} />
-        </label>
-        {data?.errors?.Ceo
-          ? data.errors.Ceo.map((error, i) => <p key={i}>{error}</p>)
-          : null}
-      </div>
-      <div>
-        <label>
-          Phone:
-          <input name="phone" defaultValue={data?.fields?.phone} />
-        </label>
-      </div>
-      <div>
-        <label>
-          Email:
-          <input name="email" defaultValue={data?.fields?.email} />
-        </label>
-        {data?.errors?.Email
-          ? data.errors.Email.map((error, i) => <p key={i}>{error}</p>)
-          : null}
-      </div>
-      <div>
-        <label>
-          Contacts:
-          <input name="contacts" defaultValue={data?.fields?.contacts} />
-        </label>
-      </div>
-      {managers && managers?.length > 0 ? (
-        <div>
+      {"name" in data.fields ? (
+        <div className="mb-3">
+          <label>
+            Name:
+            <input
+              name="name"
+              required
+              maxLength={200}
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.name?.toString()}
+            />
+          </label>
+        </div>
+      ) : null}
+      {"typeId" in data.fields ? (
+        <div className="mb-3">
+          <label>
+            Type:
+            <select
+              name="typeId"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.typeId?.toString()}
+            >
+              <option value="">-</option>
+              {data.initData.companyTypes.map(x => (
+                <option key={x.id} value={x.id}>
+                  {x.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      ) : null}
+      {"inn" in data.fields ? (
+        <div className="mb-3">
+          <label>
+            Inn:
+            <input
+              name="inn"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.inn?.toString()}
+            />
+          </label>
+        </div>
+      ) : null}
+      {"address" in data.fields ? (
+        <div className="mb-3">
+          <label>
+            Address:
+            <input
+              name="address"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.address?.toString()}
+            />
+          </label>
+        </div>
+      ) : null}
+      {"ceo" in data.fields ? (
+        <div className="mb-3">
+          <label>
+            CEO:
+            <input
+              name="ceo"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.ceo?.toString()}
+            />
+          </label>
+        </div>
+      ) : null}
+      {"phone" in data.fields ? (
+        <div className="mb-3">
+          <label>
+            Phone:
+            <input
+              name="phone"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.phone?.toString()}
+            />
+          </label>
+        </div>
+      ) : null}
+      {"email" in data.fields ? (
+        <div className="mb-3">
+          <label>
+            Email:
+            <input
+              name="email"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.email?.toString()}
+            />
+          </label>
+        </div>
+      ) : null}
+      {"contacts" in data.fields ? (
+        <div className="mb-3">
+          <label>
+            Contacts:
+            <input
+              name="contacts"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.contacts?.toString()}
+            />
+          </label>
+        </div>
+      ) : null}
+      {"managerId" in data.fields ? (
+        <div className="mb-3">
           <label>
             Manager:
-            <select name="managerId" defaultValue={data?.fields?.managerId}>
-              {managers
-                ? managers.map((x, i) => (
-                    <option key={i} value={x.id}>
-                      {x.firstName && x.lastName
-                        ? `${x.firstName} ${x.lastName}`
-                        : "-"}
-                    </option>
-                  ))
-                : null}
+            <select
+              name="managerId"
+              className="rounded border border-gray-300 w-full p-1"
+              defaultValue={data.fields.managerId?.toString()}
+            >
+              {data.initData.managers.map((x, i) => (
+                <option key={i} value={x.id}>
+                  {x.firstName && x.lastName
+                    ? `${x.lastName} ${x.firstName}`
+                    : "-"}
+                </option>
+              ))}
             </select>
           </label>
         </div>
       ) : null}
 
-      <button type="submit">Save changes</button>
+      <ButtonPrimary type="submit" className="mt-3">
+        Save changes
+      </ButtonPrimary>
     </form>
   );
 }
@@ -218,17 +202,17 @@ export function ErrorBoundary() {
 }
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
-  if (!data?.company) {
+  if (data?.company?.fields?.name != undefined) {
     return [
       {
-        title: "Edit company"
+        title: data.company.fields.name
       }
     ];
   }
 
   return [
     {
-      title: data.company.name
+      title: "Edit company"
     }
   ];
 };

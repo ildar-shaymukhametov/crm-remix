@@ -1,10 +1,8 @@
-using CRM.Application;
-using CRM.Application.IntegrationTests;
-using CRM.Application.IntegrationTests.Companies;
+using CRM.Application.IntegrationTests.Companies.Commands;
 using CRM.Application.Tests;
 using CRM.Domain.Entities;
 
-namespace Application.IntegrationTests.Tests;
+namespace CRM.Application.IntegrationTests.Tests;
 
 public class ResetDbCommandTests : BaseTest
 {
@@ -16,9 +14,9 @@ public class ResetDbCommandTests : BaseTest
         await _fixture.RunAsDefaultUserAsync(new[]
         {
             Constants.Claims.Company.Create
-        }, new [] { Constants.Roles.Tester });
+        });
 
-        var createCompanyCommand = CreateCompanyTests.CreateCommand();
+        var createCompanyCommand = CreateCompanyTests.CreateMinimumRequiredCommand();
         var companyId = await _fixture.SendAsync(createCompanyCommand);
         var newCompany = await _fixture.FindAsync<Company>(companyId);
         Assert.NotNull(newCompany);

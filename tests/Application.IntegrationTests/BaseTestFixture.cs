@@ -26,9 +26,11 @@ public class DatabaseCollection : ICollectionFixture<BaseTestFixture>
 public class BaseTestFixture
 {
     private static WebApplicationFactory<Program> _factory = null!;
+    private static WebApplicationFactory<Program>? _modifiedFactory;
+    private static WebApplicationFactory<Program> Factory => _modifiedFactory ?? _factory;
     private static IConfiguration _configuration = null!;
     private readonly string _connectionString;
-    private static IServiceScopeFactory _scopeFactory = null!;
+    private static IServiceScopeFactory ScopeFactory => Factory.Services.GetRequiredService<IServiceScopeFactory>();
     private static Respawner _respawner = null!;
     private static string? _currentUserId;
     public static DateTime UtcNow = Faker.Date.RandomDateTimeUtc();
@@ -37,21 +39,20 @@ public class BaseTestFixture
     public BaseTestFixture()
     {
         _factory = new CustomWebApplicationFactory();
-        _scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
-        _configuration = _factory.Services.GetRequiredService<IConfiguration>();
+        _configuration = Factory.Services.GetRequiredService<IConfiguration>();
         _connectionString = _configuration.GetConnectionString("DefaultConnection") ?? throw new NullReferenceException("Connection string");
     }
 
     public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
     {
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = ScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<ISender>();
         return await mediator.Send(request);
     }
 
     public async Task SendAsync(IRequest request)
     {
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = ScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<ISender>();
         await mediator.Send(request);
     }
@@ -103,7 +104,7 @@ public class BaseTestFixture
 
     public async Task<AspNetUser> RunAsUserAsync(string userName, string password, string[] roles, string[] claims, string firstName, string lastName)
     {
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = ScopeFactory.CreateScope();
 
         var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
         var (result, userId) = await identityService.CreateUserAsync(userName, password, firstName, lastName);
@@ -151,7 +152,7 @@ public class BaseTestFixture
 
     public async Task<AspNetUser> AddUserAsync(string firstName, string lastName)
     {
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = ScopeFactory.CreateScope();
 
         var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
         var (result, userId) = await identityService.CreateUserAsync(Faker.Internet.UserName(), $"{Faker.Internet.UserName()}Z1!", firstName, lastName);
@@ -172,6 +173,7 @@ public class BaseTestFixture
         await _respawner.ResetAsync(_connectionString);
 
         _currentUserId = null;
+        _modifiedFactory = null;
     }
 
     public async Task InitStateAsync()
@@ -196,7 +198,7 @@ public class BaseTestFixture
 
     public async Task<TEntity?> FindAsync<TEntity>(params object[] keyValues) where TEntity : class
     {
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = ScopeFactory.CreateScope();
 
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
@@ -205,7 +207,7 @@ public class BaseTestFixture
 
     public async Task<TEntity?> FindAsync<TEntity>(object key, params string[] inlcudePropertyNames) where TEntity : class
     {
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = ScopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var result = await context.FindAsync<TEntity>(key);
         if (result == null)
@@ -223,7 +225,7 @@ public class BaseTestFixture
 
     public async Task<List<Claim>> GetAuthorizationClaimsAsync(AspNetUser user)
     {
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = ScopeFactory.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
         var claims = await userManager.GetClaimsAsync(user);
         return claims.Where(x => x.Type == Constants.Claims.ClaimType).ToList();
@@ -231,7 +233,7 @@ public class BaseTestFixture
 
     public async Task<List<string>> GetUserRolesAsync(AspNetUser user)
     {
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = ScopeFactory.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
         var roles = await userManager.GetRolesAsync(user);
         return roles.ToList();
@@ -239,7 +241,7 @@ public class BaseTestFixture
 
     public async Task AddAsync<TEntity>(TEntity entity) where TEntity : class
     {
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = ScopeFactory.CreateScope();
 
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
@@ -257,7 +259,7 @@ public class BaseTestFixture
 
     public async Task<int> CountAsync<TEntity>() where TEntity : class
     {
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = ScopeFactory.CreateScope();
 
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
@@ -266,19 +268,47 @@ public class BaseTestFixture
 
     public IServiceScope GetServiceScope()
     {
-        return _scopeFactory.CreateScope();
+        return ScopeFactory.CreateScope();
     }
 
     public async Task<ApplicationUser> CreateUserAsync()
     {
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = ScopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IIdentityService>();
         var (result, userId) = await service.CreateUserAsync(Faker.Internet.Email(), "Foobar1!");
         return await FindAsync<ApplicationUser>(userId) ?? throw new InvalidOperationException("Failed to create a user");
     }
 
-    internal Task RunAsDefaultUserAsync(object setManagerFromAnyToNone)
+    public void ReplaceService<T>(object replacement)
     {
-        throw new NotImplementedException();
+        _modifiedFactory = Factory.WithWebHostBuilder(builder => builder.ConfigureServices(services =>
+        {
+            var serviceDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(T));
+            if (serviceDescriptor != null)
+            {
+                services.Remove(serviceDescriptor);
+                services.AddTransient(typeof(T), x => replacement);
+            }
+        }));
+    }
+
+    public void ReplaceService<TServiceType, TImplementationType>(object replacement)
+    {
+        _modifiedFactory = Factory.WithWebHostBuilder(builder => builder.ConfigureServices(services =>
+        {
+            var serviceDescriptor = services.FirstOrDefault(d => d.ImplementationType == typeof(TImplementationType));
+            if (serviceDescriptor != null)
+            {
+                services.Remove(serviceDescriptor);
+                services.AddTransient(typeof(TServiceType), x => replacement);
+            }
+        }));
+    }
+
+    internal async Task<List<CompanyType>> GetCompanyTypesAsync()
+    {
+        using var scope = ScopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        return await context.CompanyTypes.AsNoTracking().ToListAsync();
     }
 }

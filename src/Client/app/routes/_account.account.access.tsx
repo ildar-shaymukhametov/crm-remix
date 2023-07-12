@@ -5,11 +5,12 @@ import {
   useLoaderData,
   useRouteError
 } from "@remix-run/react";
+import { ButtonPrimary } from "~/components/buttons";
 import type { ClaimType } from "~/utils/account.server";
-import { getClaimTypes } from "~/utils/account.server";
 import {
   getAuthorizationClaims,
-  updateAuthorizationClaims
+  updateAuthorizationClaims,
+  getClaimTypes
 } from "~/utils/account.server";
 import { auth } from "~/utils/auth.server";
 
@@ -48,17 +49,18 @@ export default function AccessRoute() {
       {claimTypes.map((x, i) => (
         <p key={x.id}>
           <label>
-            {x.name}
             <input
               type="checkbox"
               name={`claims[${i}]`}
               value={x.value}
               defaultChecked={claims.includes(x.value)}
+              className="mr-1"
             />
+            {x.name}
           </label>
         </p>
       ))}
-      <button type="submit">Save</button>
+      <ButtonPrimary type="submit" className="mt-3">Save</ButtonPrimary>
     </form>
   );
 }

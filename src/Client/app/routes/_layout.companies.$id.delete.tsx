@@ -1,31 +1,27 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
 import type { V2_MetaFunction } from "@remix-run/react";
-import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
-import { Link, useParams } from "@remix-run/react";
+import {
+  isRouteErrorResponse,
+  useRouteError,
+  useParams
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
+import { ButtonDanger, LinkDefault } from "~/components/buttons";
 import { auth } from "~/utils/auth.server";
 import { getCompany, deleteCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
-import { permissions } from "~/utils/constants.server";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
+  const user = await auth.requireUser(request);
   invariant(params.id, "Missing id parameter");
-
-  const user = await auth.requireUser(request, {
-    key: params.id,
-    permissions: [permissions.company.delete]
-  });
-  if (!user.permissions.includes(permissions.company.delete)) {
-    throw new Response(null, { status: 403 });
-  }
 
   const company = await getCompany(
     request,
     params.id,
     user.extra?.access_token
   );
+
   return json({ company });
 };
 
@@ -43,13 +39,13 @@ export default function DeleteCompany() {
 
   return (
     <>
-      <p>Company will be deleted.</p>
-      <div>
-        <Link to={routes.companies.view(params.id)} className="mr-2">
+      <p className="mb-3">Company will be deleted.</p>
+      <div className="flex">
+        <LinkDefault to={routes.companies.view(params.id)} className="mr-2">
           Cancel
-        </Link>
+        </LinkDefault>
         <form method="post">
-          <button type="submit">Delete company</button>
+          <ButtonDanger type="submit">Delete company</ButtonDanger>
         </form>
       </div>
     </>
@@ -74,17 +70,17 @@ export function ErrorBoundary() {
 }
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
-  if (!data?.company) {
+  if (data?.company?.fields?.name != undefined) {
     return [
       {
-        title: "Delete company"
+        title: data.company.fields.name
       }
     ];
   }
 
   return [
     {
-      title: `${data.company.name} • Delete`
+      title: "Delete company"
     }
   ];
 };

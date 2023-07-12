@@ -1,35 +1,23 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   isRouteErrorResponse,
   useActionData,
   useLoaderData,
   useRouteError
 } from "@remix-run/react";
+import { ButtonSuccess } from "~/components/buttons";
 import { auth } from "~/utils/auth.server";
-import type {
-  CompanyType,
-  Manager,
-  NewCompany
-} from "~/utils/companies.server";
-import { createCompany, getInitData } from "~/utils/companies.server";
+import type { NewCompany, NewCompanyVm } from "~/utils/companies.server";
+import { createCompany, getNewCompany } from "~/utils/companies.server";
 import { routes } from "~/utils/constants";
-import { permissions } from "~/utils/constants.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await auth.requireUser(request, {
-    permissions: [permissions.company.create]
-  });
-
-  if (!user.permissions.includes(permissions.company.create)) {
-    throw new Response(null, { status: 403 });
-  }
-
-  const initData = await getInitData(request, user.extra?.access_token);
+  const user = await auth.requireUser(request);
+  const newCompanyVm = await getNewCompany(request, user.extra?.access_token);
 
   return json({
-    ...initData
+    newCompanyVm
   });
 };
 
@@ -41,11 +29,7 @@ type ActionData = {
 };
 
 type LoaderData = {
-  managers?: Manager[];
-  userPermissions: {
-    canSetManager: boolean;
-  };
-  companyTypes: CompanyType[];
+  newCompanyVm: NewCompanyVm;
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -68,94 +52,135 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewCompanyRoute() {
   const data = useActionData<ActionData>();
-  const { managers, companyTypes } = useLoaderData<LoaderData>();
+  const { newCompanyVm: vm } = useLoaderData<LoaderData>();
 
   return (
     <form method="post">
-      <div>
-        <label>
-          Name:
-          <input name="name" required maxLength={200} />
-        </label>
-      </div>
-      <div>
-        <label>
-          Type:
-          <select name="typeId">
-            <option value="">-</option>
-            {companyTypes.map(x => (
-              <option key={x.id} value={x.id}>
-                {x.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      <div>
-        <label>
-          Inn:
-          <input name="inn" />
-        </label>
-        {data?.errors?.Inn
-          ? data.errors.Inn.map((error, i) => <p key={i}>{error}</p>)
-          : null}
-      </div>
-      <div>
-        <label>
-          Address:
-          <input name="address" />
-        </label>
-      </div>
-      <div>
-        <label>
-          CEO:
-          <input name="ceo" />
-        </label>
-        {data?.errors?.Ceo
-          ? data.errors.Ceo.map((error, i) => <p key={i}>{error}</p>)
-          : null}
-      </div>
-      <div>
-        <label>
-          Phone:
-          <input name="phone" />
-        </label>
-      </div>
-      <div>
-        <label>
-          Email:
-          <input name="email" />
-        </label>
-        {data?.errors?.Email
-          ? data.errors.Email.map((error, i) => <p key={i}>{error}</p>)
-          : null}
-      </div>
-      <div>
-        <label>
-          Contacts:
-          <input name="contacts" />
-        </label>
-      </div>
-      {managers && managers.length > 0 ? (
-        <div>
+      {"name" in vm.fields ? (
+        <div className="mb-3">
           <label>
-            Manager:
-            <select name="managerId">
-              {managers
-                ? managers.map((x, i) => (
-                    <option key={i} value={x.id}>
-                      {x.firstName && x.lastName
-                        ? `${x.firstName} ${x.lastName}`
-                        : "-"}
-                    </option>
-                  ))
-                : null}
+            Name:
+            <input
+              name="name"
+              required
+              maxLength={200}
+              className="rounded border border-gray-300 w-full p-1"
+            />
+          </label>
+        </div>
+      ) : null}
+      {"typeId" in vm.fields ? (
+        <div className="mb-3">
+          <label>
+            Type:
+            <select
+              name="typeId"
+              className="rounded border border-gray-300 w-full p-1"
+            >
+              <option value="">-</option>
+              {vm.initData.companyTypes.map(x => (
+                <option key={x.id} value={x.id}>
+                  {x.name}
+                </option>
+              ))}
             </select>
           </label>
         </div>
       ) : null}
-
-      <button type="submit">Create new company</button>
+      {"inn" in vm.fields ? (
+        <div className="mb-3">
+          <label>
+            Inn:
+            <input
+              name="inn"
+              className="rounded border border-gray-300 w-full p-1"
+            />
+          </label>
+          {data?.errors?.Inn
+            ? data.errors.Inn.map((error, i) => <p key={i}>{error}</p>)
+            : null}
+        </div>
+      ) : null}
+      {"address" in vm.fields ? (
+        <div className="mb-3">
+          <label>
+            Address:
+            <input
+              name="address"
+              className="rounded border border-gray-300 w-full p-1"
+            />
+          </label>
+        </div>
+      ) : null}
+      {"ceo" in vm.fields ? (
+        <div className="mb-3">
+          <label>
+            CEO:
+            <input
+              name="ceo"
+              className="rounded border border-gray-300 w-full p-1"
+            />
+          </label>
+        </div>
+      ) : null}
+      {"phone" in vm.fields ? (
+        <div className="mb-3">
+          <label>
+            Phone:
+            <input
+              name="phone"
+              className="rounded border border-gray-300 w-full p-1"
+            />
+          </label>
+        </div>
+      ) : null}
+      {"email" in vm.fields ? (
+        <div className="mb-3">
+          <label>
+            Email:
+            <input
+              name="email"
+              className="rounded border border-gray-300 w-full p-1"
+            />
+          </label>
+          {data?.errors?.Email
+            ? data.errors.Email.map((error, i) => <p key={i}>{error}</p>)
+            : null}
+        </div>
+      ) : null}
+      {"contacts" in vm.fields ? (
+        <div className="mb-3">
+          <label>
+            Contacts:
+            <input
+              name="contacts"
+              className="rounded border border-gray-300 w-full p-1"
+            />
+          </label>
+        </div>
+      ) : null}
+      {"managerId" in vm.fields ? (
+        <div className="mb-3">
+          <label>
+            Manager:
+            <select
+              name="managerId"
+              className="rounded border border-gray-300 w-full p-1"
+            >
+              {vm.initData.managers.map((x, i) => (
+                <option key={i} value={x.id}>
+                  {x.firstName && x.lastName
+                    ? `${x.lastName} ${x.firstName}`
+                    : "-"}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      ) : null}
+      <ButtonSuccess type="submit" className="mt-3">
+        Create new company
+      </ButtonSuccess>
     </form>
   );
 }

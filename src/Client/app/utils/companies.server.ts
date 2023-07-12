@@ -2,7 +2,7 @@ import { handleErrorResponse } from "./utils";
 
 export type NewCompany = {
   id: number;
-  typeId?: string;
+  typeId?: number;
   name: string;
   inn: string;
   address: string;
@@ -35,38 +35,11 @@ export async function createCompany(
   return id as number;
 }
 
-export async function createTestCompany(
-  request: Request,
-  data: NewCompany
-): Promise<number> {
-  const response = await fetch(`${process.env.API_URL}/test/companies`, {
-    method: "post",
-    body: JSON.stringify(data),
-    headers: {
-      "X-API-Key": "TestApiKey",
-      "Content-Type": "application/json"
-    }
-  });
-
-  if (!response.ok) {
-    await handleErrorResponse(request, response);
-  }
-
-  const { id } = await response.json();
-  return id as number;
-}
-
 export type Company = {
   id: number;
-  type: CompanyType;
-  name: string;
-  inn: string;
-  address: string;
-  ceo: string;
-  phone: string;
-  email: string;
-  contacts: string;
-  manager?: Manager;
+  fields: { [key: string]: object };
+  canBeDeleted: boolean;
+  canBeUpdated: boolean;
 };
 
 export async function getCompany(
@@ -77,24 +50,6 @@ export async function getCompany(
   const response = await fetch(`${process.env.API_URL}/companies/${id}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`
-    }
-  });
-
-  if (!response.ok) {
-    await handleErrorResponse(request, response);
-  }
-
-  const company = await response.json();
-  return company;
-}
-
-export async function getTestCompany(
-  request: Request,
-  id: string
-): Promise<Company> {
-  const response = await fetch(`${process.env.API_URL}/test/companies/${id}`, {
-    headers: {
-      "X-API-Key": "TestApiKey"
     }
   });
 
@@ -123,22 +78,10 @@ export async function deleteCompany(
   }
 }
 
-export type UpdateCompany = {
-  typeId?: string;
-  name: string;
-  inn: string;
-  address: string;
-  ceo: string;
-  phone: string;
-  email: string;
-  contacts: string;
-  managerId?: string;
-};
-
 export async function updateCompany(
   request: Request,
   id: string,
-  data: UpdateCompany,
+  data: object,
   accessToken: string
 ): Promise<{ errors: string[][] } | undefined> {
   const response = await fetch(`${process.env.API_URL}/companies/${id}`, {
@@ -189,32 +132,68 @@ export async function getCompanies(
   return companies;
 }
 
-type CompanyInitData = {
-  managers: Manager[],
-  companyTypes: CompanyType[],
+export type NewCompanyVm = {
+  fields: { [key: string]: object };
+  initData: NewCompanyInitData;
+};
+
+type NewCompanyInitData = {
+  managers: Manager[];
+  companyTypes: CompanyType[];
 };
 
 export type Manager = {
-  id: string,
-  firstName?: string,
-  lastName?: number
-}
+  id: string;
+  firstName?: string;
+  lastName?: number;
+};
 
 export type CompanyType = {
   id: number;
   name: string;
 };
 
-export async function getInitData(
+export async function getNewCompany(
   request: Request,
-  accessToken: string,
-  companyId?: number
-): Promise<CompanyInitData> {
-  const response = await fetch(`${process.env.API_URL}/companies/initData?id=${companyId}`, {
+  accessToken: string
+): Promise<NewCompanyVm> {
+  const response = await fetch(`${process.env.API_URL}/companies/new`, {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
   });
+
+  if (!response.ok) {
+    await handleErrorResponse(request, response);
+  }
+
+  return await response.json();
+}
+
+export type UpdateCompanyQuery = {
+  id: number;
+  fields: { [key: string]: object };
+  initData: UpdateCompanyInitData;
+};
+
+type UpdateCompanyInitData = {
+  managers: Manager[];
+  companyTypes: CompanyType[];
+};
+
+export async function getUpdateCompanyData(
+  request: Request,
+  id: string,
+  accessToken: string
+): Promise<UpdateCompanyQuery> {
+  const response = await fetch(
+    `${process.env.API_URL}/companies/${id}/update`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }
+  );
 
   if (!response.ok) {
     await handleErrorResponse(request, response);

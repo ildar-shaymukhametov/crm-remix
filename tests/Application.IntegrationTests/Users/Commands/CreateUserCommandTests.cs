@@ -1,9 +1,7 @@
-using CRM.Application;
-using CRM.Application.IntegrationTests;
 using CRM.Application.Users.Commands.CreateUser;
 using CRM.Infrastructure.Identity;
 
-namespace Application.IntegrationTests.Users.Commands;
+namespace CRM.Application.IntegrationTests.Users.Commands;
 
 public class CreateUserCommandTests : BaseTest
 {
@@ -15,8 +13,8 @@ public class CreateUserCommandTests : BaseTest
         var command = CreateCommand(new[] { Constants.Claims.Company.Create }, new[] { Constants.Roles.Administrator });
         var userId = await _fixture.SendAsync(command);
         var user = await _fixture.FindAsync<AspNetUser>(userId, nameof(AspNetUser.ApplicationUser));
-        var userClaims = await _fixture.GetAuthorizationClaimsAsync(user);
-        var userRoles = await _fixture.GetUserRolesAsync(user);
+        var userClaims = await _fixture.GetAuthorizationClaimsAsync(user!);
+        var userRoles = await _fixture.GetUserRolesAsync(user!);
 
         Assert.Equal(userId, user?.Id);
         Assert.Equal(command.FirstName, user?.ApplicationUser?.FirstName);

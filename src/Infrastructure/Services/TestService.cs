@@ -12,7 +12,7 @@ public class TestService : ITestService
 
     public TestService(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
+        _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("DefaultConnection");
     }
 
     public async Task CreateCheckpointAsync()
