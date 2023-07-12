@@ -1,4 +1,5 @@
 ﻿using CRM.Application.Common.Interfaces;
+using CRM.Domain.Interfaces;
 using MediatR.Pipeline;
 using Microsoft.Extensions.Logging;
 

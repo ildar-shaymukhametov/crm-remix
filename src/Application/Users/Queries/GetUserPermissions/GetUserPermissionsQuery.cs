@@ -1,6 +1,7 @@
 using System.Text;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
+using CRM.Domain.Interfaces;
 using MediatR;
 
 namespace CRM.Application.Users.Queries.GetUserPermissions;

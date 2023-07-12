@@ -1,5 +1,6 @@
 ﻿using CRM.Application.Common.Interfaces;
 using CRM.Domain.Common;
+using CRM.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;

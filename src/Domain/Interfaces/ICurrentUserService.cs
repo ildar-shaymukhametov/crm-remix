@@ -1,4 +1,4 @@
-﻿namespace CRM.Application.Common.Interfaces;
+﻿namespace CRM.Domain.Interfaces;
 
 public interface ICurrentUserService
 {

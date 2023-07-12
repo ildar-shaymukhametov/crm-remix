@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using CRM.Application.Common.Interfaces;
+using CRM.Domain.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

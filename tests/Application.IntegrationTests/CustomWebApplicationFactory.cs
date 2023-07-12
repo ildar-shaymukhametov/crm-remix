@@ -1,4 +1,5 @@
 ﻿using CRM.Application.Common.Interfaces;
+using CRM.Domain.Interfaces;
 using CRM.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

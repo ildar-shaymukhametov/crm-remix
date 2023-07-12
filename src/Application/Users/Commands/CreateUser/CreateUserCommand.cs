@@ -15,18 +15,16 @@ public record CreateUserCommand : IRequest<string>
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, string>
 {
-    private readonly ICurrentUserService _currentUserService;
     private readonly IIdentityService _identityService;
 
-    public CreateUserCommandHandler(ICurrentUserService currentUserService, IIdentityService identityService)
+    public CreateUserCommandHandler(IIdentityService identityService)
     {
-        _currentUserService = currentUserService;
         _identityService = identityService;
     }
 
     public async Task<string> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var (result, userId) = await _identityService.CreateUserAsync(request.UserName, request.Password, request.FirstName!, request.LastName!, request.Claims, request.Roles);
+        var (_, userId) = await _identityService.CreateUserAsync(request.UserName, request.Password, request.FirstName!, request.LastName!, request.Claims, request.Roles);
         return userId;
     }
 }
