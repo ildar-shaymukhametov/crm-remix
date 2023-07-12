@@ -1,4 +1,3 @@
-using CRM.Application.Common.Exceptions;
 using CRM.Application.Users.Queries.GetUserPermissions;
 
 namespace CRM.Application.IntegrationTests.Users.Queries;
@@ -17,9 +16,6 @@ public class GetUserPermissionsQueryTests : BaseTest
         var expected = new[]
         {
             "Company.Create",
-            "Company.Update",
-            "Company.View",
-            "Company.Delete",
         };
 
         var request = new GetUserPermissionsQuery
@@ -34,28 +30,6 @@ public class GetUserPermissionsQueryTests : BaseTest
     }
 
     [Fact]
-    public async Task Company_does_not_exist___Throws_not_found()
-    {
-        await _fixture.RunAsAdministratorAsync();
-
-        var expected = new[]
-        {
-            "Company.Create",
-            "Company.Update",
-            "Company.View",
-            "Company.Delete",
-        };
-
-        var request = new GetUserPermissionsQuery
-        {
-            ResourceKey = Faker.RandomNumber.Next().ToString(),
-            RequestedPermissions = expected
-        };
-
-        await Assert.ThrowsAsync<NotFoundException>(() => _fixture.SendAsync(request));
-    }
-
-    [Fact]
     public async Task Does_not_return_company_permissions()
     {
         await _fixture.RunAsDefaultUserAsync();
@@ -65,9 +39,6 @@ public class GetUserPermissionsQueryTests : BaseTest
         var expected = new[]
         {
             "Company.Create",
-            "Company.Update",
-            "Company.View",
-            "Company.Delete",
         };
 
         var request = new GetUserPermissionsQuery

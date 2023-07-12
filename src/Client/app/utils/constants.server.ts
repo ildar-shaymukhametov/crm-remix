@@ -55,9 +55,6 @@ export const claims = {
 // High level authorization data
 export const permissions = {
   company: {
-    create: "Company.Create",
-    delete: "Company.Delete",
-    update: "Company.Update",
-    view: "Company.View"
+    create: "Company.Create"
   }
 };
