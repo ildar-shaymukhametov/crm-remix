@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace CRM.Application.Common.Interfaces;
+namespace CRM.Domain.Interfaces;
 
 public interface IAccessService
 {

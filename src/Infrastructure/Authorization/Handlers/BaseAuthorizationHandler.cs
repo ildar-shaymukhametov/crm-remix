@@ -1,4 +1,4 @@
-using CRM.Application.Common.Interfaces;
+using CRM.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using static CRM.Application.Constants;
 

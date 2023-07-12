@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using CRM.Application.Common.Interfaces;
+using CRM.Domain.Interfaces;
 using CRM.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using static CRM.Application.Constants;

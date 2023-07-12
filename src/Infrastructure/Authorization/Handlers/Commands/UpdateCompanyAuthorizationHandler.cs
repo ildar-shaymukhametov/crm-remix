@@ -1,12 +1,10 @@
 using CRM.Application.Common.Behaviours.Authorization.Resources;
-using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Extensions;
-using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Models;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Domain.Entities;
+using CRM.Domain.Interfaces;
 using Duende.IdentityServer.Extensions;
-using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using static CRM.Application.Constants;
 
