@@ -7,7 +7,6 @@ public interface IIdentityService
 {
     Task<string?> GetUserNameAsync(string userId);
     Task<bool> IsInRoleAsync(string userId, string role);
-    Task<Result> AuthorizeAsync(string userId, string policyName);
     Task<Result> AuthorizeAsync(ClaimsPrincipal principal, string policyName);
     Task<Result> AuthorizeAsync(string userId, object? resource, string policyName);
     Task<Result> AuthorizeAsync(ClaimsPrincipal principal, object? resource, string policyName);
@@ -17,5 +16,4 @@ public interface IIdentityService
     Task<Result> DeleteUserAsync(string userId);
     Task<Result> UpdateAuthorizationClaimsAsync(string userId, string[] claims);
     Task<string[]> GetUserAuthorizationClaimsAsync(string userId);
-    Task<bool> IsAdminAsync(string userId);
 }

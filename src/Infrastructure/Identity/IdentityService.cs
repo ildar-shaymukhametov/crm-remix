@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using CRM.Application;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Models;
@@ -130,11 +129,6 @@ public class IdentityService : IIdentityService
         return user != null && await _userManager.IsInRoleAsync(user, role);
     }
 
-    public async Task<Result> AuthorizeAsync(string userId, string policyName)
-    {
-        return await AuthorizeAsync(userId, null, policyName);
-    }
-
     public async Task<Result> AuthorizeAsync(ClaimsPrincipal principal, string policyName)
     {
         var result = await _authorizationService.AuthorizeAsync(principal, policyName);
@@ -198,8 +192,14 @@ public class IdentityService : IIdentityService
         return principal.Claims.Where(x => x.Type == Domain.Constants.Claims.ClaimType).Select(x => x.Value).ToArray();
     }
 
-    public async Task<bool> IsAdminAsync(string userId)
+    public async Task<ClaimsPrincipal> CreateClaimsPrincipalAsync(string userId)
     {
-        return await IsInRoleAsync(userId, Domain.Constants.Roles.Administrator);
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            throw new NotFoundException(nameof(AspNetUser), nameof(AspNetUser.Id));
+        }
+
+        return await _userClaimsPrincipalFactory.CreateAsync(user);
     }
 }
