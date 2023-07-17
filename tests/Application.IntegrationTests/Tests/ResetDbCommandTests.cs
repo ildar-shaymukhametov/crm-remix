@@ -13,7 +13,7 @@ public class ResetDbCommandTests : BaseTest
     {
         await _fixture.RunAsDefaultUserAsync(new[]
         {
-            Constants.Claims.Company.Create
+            Domain.Constants.Claims.Company.Create
         });
 
         var createCompanyCommand = CreateCompanyTests.CreateMinimumRequiredCommand();

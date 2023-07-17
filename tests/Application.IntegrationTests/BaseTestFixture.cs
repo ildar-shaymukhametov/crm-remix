@@ -94,7 +94,7 @@ public class BaseTestFixture
 
     public async Task<AspNetUser> RunAsAdministratorAsync(string firstName, string lastName)
     {
-        return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Constants.Roles.Administrator }, Array.Empty<string>(), firstName, lastName);
+        return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Domain.Constants.Roles.Administrator }, Array.Empty<string>(), firstName, lastName);
     }
 
     public async Task<AspNetUser> RunAsUserAsync(string userName, string password, string[] roles, string[] claims)
@@ -125,7 +125,7 @@ public class BaseTestFixture
 
         if (claims.Any())
         {
-            await userManager.AddClaimsAsync(user, claims.Select(x => new Claim(Constants.Claims.ClaimType, x)));
+            await userManager.AddClaimsAsync(user, claims.Select(x => new Claim(Domain.Constants.Claims.ClaimType, x)));
         }
 
         if (result.Succeeded)
@@ -228,7 +228,7 @@ public class BaseTestFixture
         using var scope = ScopeFactory.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
         var claims = await userManager.GetClaimsAsync(user);
-        return claims.Where(x => x.Type == Constants.Claims.ClaimType).ToList();
+        return claims.Where(x => x.Type == Domain.Constants.Claims.ClaimType).ToList();
     }
 
     public async Task<List<string>> GetUserRolesAsync(AspNetUser user)

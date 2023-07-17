@@ -2,7 +2,7 @@ using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Domain.Entities;
 using CRM.Infrastructure.Identity;
-using static CRM.Application.Constants;
+using static CRM.Domain.Constants;
 
 namespace CRM.Application.IntegrationTests.Companies.Commands;
 

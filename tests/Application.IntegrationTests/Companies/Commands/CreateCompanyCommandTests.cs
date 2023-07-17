@@ -31,10 +31,10 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.New.Other.Set)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToNone)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.New.Other.Set)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToNone)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToSelf)]
     public async Task User_has_no_claim_to_create_company__Throws_forbidden_access(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -44,7 +44,7 @@ public class CreateCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_create_company___Creates_company_with_initial_fields()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Domain.Constants.Claims.Company.Create });
         var command = CreateMinimumRequiredCommand();
 
         var id = await _fixture.SendAsync(command);
@@ -56,9 +56,9 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Create)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.Create)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToSelf)]
     public async Task Forbidden_to_set_address(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -69,9 +69,9 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Create)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.Create)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToSelf)]
     public async Task Forbidden_to_set_ceo(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -82,9 +82,9 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Create)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.Create)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToSelf)]
     public async Task Forbidden_to_set_contacts(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -95,9 +95,9 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Create)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.Create)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToSelf)]
     public async Task Forbidden_to_set_email(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -108,9 +108,9 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Create)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.Create)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToSelf)]
     public async Task Forbidden_to_set_inn(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -121,9 +121,9 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Create)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.Create)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToSelf)]
     public async Task Forbidden_to_set_phone(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -134,9 +134,9 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Create)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.Create)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToSelf)]
     public async Task Forbidden_to_set_type(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -149,7 +149,7 @@ public class CreateCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_other_fields___Creates_company_with_other_fields()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create, Constants.Claims.Company.New.Other.Set });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Domain.Constants.Claims.Company.Create, Domain.Constants.Claims.Company.New.Other.Set });
         var command = CreateCommandWithOtherFields();
 
         var id = await _fixture.SendAsync(command);
@@ -161,8 +161,8 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Create)]
-    [InlineData(Constants.Claims.Company.New.Other.Set)]
+    [InlineData(Domain.Constants.Claims.Company.Create)]
+    [InlineData(Domain.Constants.Claims.Company.New.Other.Set)]
     public async Task Forbidden_to_set_manager(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -173,11 +173,11 @@ public class CreateCompanyTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToAny)]
-    [InlineData(Constants.Claims.Company.New.Manager.SetToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToAny)]
+    [InlineData(Domain.Constants.Claims.Company.New.Manager.SetToSelf)]
     public async Task User_can_set_manager_to_self___Creates_company_with_self_as_manager(string claim)
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] {Constants.Claims.Company.Create, claim });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Domain.Constants.Claims.Company.Create, claim });
         var command = CreateMinimumRequiredCommand();
         command.ManagerId = user.Id;
 
@@ -192,7 +192,7 @@ public class CreateCompanyTests : BaseTest
     [Fact]
     public async Task User_can_set_manager_to_self___Forbidden_to_set_someone_else_as_manager()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.New.Manager.SetToSelf });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Domain.Constants.Claims.Company.New.Manager.SetToSelf });
         var someUser = await _fixture.AddUserAsync();
         var command = CreateMinimumRequiredCommand();
         command.ManagerId = someUser.Id;
@@ -203,7 +203,7 @@ public class CreateCompanyTests : BaseTest
     [Fact]
     public async Task User_can_set_manager_to_any___Creates_company_with_some_user_as_manager()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Create, Constants.Claims.Company.New.Manager.SetToAny });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Domain.Constants.Claims.Company.Create, Domain.Constants.Claims.Company.New.Manager.SetToAny });
         var someUser = await _fixture.AddUserAsync();
         var command = CreateMinimumRequiredCommand();
         command.ManagerId = someUser.Id;

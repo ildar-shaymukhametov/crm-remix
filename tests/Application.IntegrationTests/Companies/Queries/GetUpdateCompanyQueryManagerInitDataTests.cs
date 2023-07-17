@@ -1,7 +1,7 @@
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Companies.Queries.GetUpdateCompany;
 using FluentAssertions;
-using static CRM.Application.Constants;
+using static CRM.Domain.Constants;
 
 namespace CRM.Application.IntegrationTests.Companies.Queries;
 

@@ -3,7 +3,6 @@ using CRM.Domain.Entities;
 using CRM.Domain.Interfaces;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Authorization.Handlers.Queries;
 
@@ -19,11 +18,11 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
     {
         var accessRights = _accessService.CheckAccess(context.User);
         if (accessRights.ContainsAny(
-            Access.Company.Any.Other.Set,
-            Access.Company.Any.Manager.SetFromAnyToAny,
-            Access.Company.Any.Manager.SetFromAnyToNone,
-            Access.Company.Any.Manager.SetFromAnyToSelf,
-            Access.Company.Any.Name.Set
+            Domain.Constants.Access.Company.Any.Other.Set,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
+            Domain.Constants.Access.Company.Any.Name.Set
         ))
         {
             return Ok(context, requirement);
@@ -35,12 +34,12 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         if (company.ManagerId == userId)
         {
             if (!accessRights.ContainsAny(
-                Access.Company.Any.Manager.SetFromSelfToNone,
-                Access.Company.Any.Manager.SetFromSelfToAny,
-                Access.Company.WhereUserIsManager.Other.Set,
-                Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
-                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
-                Access.Company.WhereUserIsManager.Name.Set
+                Domain.Constants.Access.Company.Any.Manager.SetFromSelfToNone,
+                Domain.Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+                Domain.Constants.Access.Company.WhereUserIsManager.Other.Set,
+                Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+                Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
+                Domain.Constants.Access.Company.WhereUserIsManager.Name.Set
             ))
             {
                 return Fail(context, "Update company");
@@ -49,8 +48,8 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         else if (company.ManagerId == null)
         {
             if (!accessRights.ContainsAny(
-                Access.Company.Any.Manager.SetFromNoneToAny,
-                Access.Company.Any.Manager.SetFromNoneToSelf
+                Domain.Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromNoneToSelf
             ))
             {
                 return Fail(context, "Update company");

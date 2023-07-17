@@ -47,23 +47,23 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
 
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
         if (accessRights.ContainsAny(
-            Constants.Access.Company.Any.Manager.SetFromAnyToAny,
-            Constants.Access.Company.Any.Manager.SetFromAnyToNone,
-            Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
-            Constants.Access.Company.Any.Manager.SetFromNoneToAny,
-            Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
-            Constants.Access.Company.Any.Manager.SetFromSelfToAny,
-            Constants.Access.Company.Any.Manager.SetFromSelfToNone,
-            Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
-            Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
+            Domain.Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
+            Domain.Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromSelfToNone,
+            Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+            Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
         ))
         {
             entity.ManagerId = request.ManagerId;
         }
 
         if (accessRights.ContainsAny(
-            Constants.Access.Company.WhereUserIsManager.Other.Set,
-            Constants.Access.Company.Any.Other.Set
+            Domain.Constants.Access.Company.WhereUserIsManager.Other.Set,
+            Domain.Constants.Access.Company.Any.Other.Set
         ))
         {
             entity.Address = request.Address;
@@ -77,8 +77,8 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand>
         }
 
         if (accessRights.ContainsAny(
-            Constants.Access.Company.WhereUserIsManager.Name.Set,
-            Constants.Access.Company.Any.Name.Set
+            Domain.Constants.Access.Company.WhereUserIsManager.Name.Set,
+            Domain.Constants.Access.Company.Any.Name.Set
         ))
         {
             entity.Name = request.Name;

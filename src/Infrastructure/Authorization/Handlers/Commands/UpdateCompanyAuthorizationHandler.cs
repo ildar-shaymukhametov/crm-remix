@@ -6,7 +6,6 @@ using CRM.Domain.Entities;
 using CRM.Domain.Interfaces;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Authorization.Handlers.Commands;
 
@@ -22,19 +21,19 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
     {
         var accessRights = _accessService.CheckAccess(context.User);
         if (!accessRights.ContainsAny(
-            Access.Company.Any.Other.Set,
-            Access.Company.WhereUserIsManager.Other.Set,
-            Access.Company.Any.Name.Set,
-            Access.Company.WhereUserIsManager.Name.Set,
-            Access.Company.Any.Manager.SetFromAnyToAny,
-            Access.Company.Any.Manager.SetFromAnyToNone,
-            Access.Company.Any.Manager.SetFromAnyToSelf,
-            Access.Company.Any.Manager.SetFromNoneToAny,
-            Access.Company.Any.Manager.SetFromNoneToSelf,
-            Access.Company.Any.Manager.SetFromSelfToAny,
-            Access.Company.Any.Manager.SetFromSelfToNone,
-            Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
-            Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
+            Domain.Constants.Access.Company.Any.Other.Set,
+            Domain.Constants.Access.Company.WhereUserIsManager.Other.Set,
+            Domain.Constants.Access.Company.Any.Name.Set,
+            Domain.Constants.Access.Company.WhereUserIsManager.Name.Set,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
+            Domain.Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
+            Domain.Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromSelfToNone,
+            Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+            Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
         ))
         {
             return Fail(context, "Update company");
@@ -44,54 +43,54 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         var userId = context.User.GetSubjectId();
 
         if (accessRights.ContainsAny(
-            Access.Company.WhereUserIsManager.Other.Set,
-            Access.Company.Any.Other.Set
+            Domain.Constants.Access.Company.WhereUserIsManager.Other.Set,
+            Domain.Constants.Access.Company.Any.Other.Set
         ))
         {
             if (company.ManagerId == userId && !accessRights.ContainsAny(
-                Access.Company.WhereUserIsManager.Other.Set,
-                Access.Company.Any.Other.Set
+                Domain.Constants.Access.Company.WhereUserIsManager.Other.Set,
+                Domain.Constants.Access.Company.Any.Other.Set
             ))
             {
                 return Fail(context, "Update other fields");
             }
-            else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Other.Set))
+            else if (company.ManagerId != userId && !accessRights.Contains(Domain.Constants.Access.Company.Any.Other.Set))
             {
                 return Fail(context, "Update other fields");
             }
         }
 
         if (accessRights.ContainsAny(
-            Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
-            Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
-            Access.Company.Any.Manager.SetFromAnyToAny,
-            Access.Company.Any.Manager.SetFromAnyToNone,
-            Access.Company.Any.Manager.SetFromAnyToSelf,
-            Access.Company.Any.Manager.SetFromNoneToAny,
-            Access.Company.Any.Manager.SetFromNoneToSelf,
-            Access.Company.Any.Manager.SetFromSelfToAny,
-            Access.Company.Any.Manager.SetFromSelfToNone
+            Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+            Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
+            Domain.Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
+            Domain.Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromSelfToNone
         ))
         {
             if (company.ManagerId == userId && !accessRights.ContainsAny(
-                Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
-                Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
-                Access.Company.Any.Manager.SetFromSelfToAny,
-                Access.Company.Any.Manager.SetFromSelfToNone,
-                Access.Company.Any.Manager.SetFromAnyToAny,
-                Access.Company.Any.Manager.SetFromAnyToNone
+                Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+                Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
+                Domain.Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromSelfToNone,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone
             ))
             {
                 return Fail(context, "Update manager");
             }
             else if (company.ManagerId != userId && !accessRights.ContainsAny(
-                Access.Company.Any.Manager.SetFromAnyToAny,
-                Access.Company.Any.Manager.SetFromAnyToNone,
-                Access.Company.Any.Manager.SetFromAnyToSelf,
-                Access.Company.Any.Manager.SetFromNoneToAny,
-                Access.Company.Any.Manager.SetFromNoneToSelf,
-                Access.Company.Any.Manager.SetFromSelfToAny,
-                Access.Company.Any.Manager.SetFromSelfToNone
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
+                Domain.Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
+                Domain.Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromSelfToNone
             ))
             {
                 return Fail(context, "Update manager");
@@ -105,18 +104,18 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         }
 
         if (accessRights.ContainsAny(
-            Access.Company.Any.Name.Set,
-            Access.Company.WhereUserIsManager.Name.Set
+            Domain.Constants.Access.Company.Any.Name.Set,
+            Domain.Constants.Access.Company.WhereUserIsManager.Name.Set
         ))
         {
             if (company.ManagerId == userId && !accessRights.ContainsAny(
-                Access.Company.Any.Name.Set,
-                Access.Company.WhereUserIsManager.Name.Set
+                Domain.Constants.Access.Company.Any.Name.Set,
+                Domain.Constants.Access.Company.WhereUserIsManager.Name.Set
             ))
             {
                 return Fail(context, "Update name");
             }
-            else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Name.Set))
+            else if (company.ManagerId != userId && !accessRights.Contains(Domain.Constants.Access.Company.Any.Name.Set))
             {
                 return Fail(context, "Update name");
             }
@@ -145,10 +144,10 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
                 if (Equals(newManagerId, userId)) // ...to self
                 {
                     if (!accessRights.ContainsAny(
-                        Access.Company.Any.Manager.SetFromNoneToSelf,
-                        Access.Company.Any.Manager.SetFromNoneToAny,
-                        Access.Company.Any.Manager.SetFromAnyToAny,
-                        Access.Company.Any.Manager.SetFromAnyToSelf
+                        Domain.Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
+                        Domain.Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+                        Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+                        Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf
                     ))
                     {
                         return Result.Failure(new[] { "Set manager from none to self in any company" });
@@ -157,10 +156,10 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
                 else // ...to any
                 {
                     if (!accessRights.ContainsAny(
-                        Access.Company.Any.Manager.SetFromNoneToSelf,
-                        Access.Company.Any.Manager.SetFromNoneToAny,
-                        Access.Company.Any.Manager.SetFromAnyToSelf,
-                        Access.Company.Any.Manager.SetFromAnyToAny
+                        Domain.Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
+                        Domain.Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+                        Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
+                        Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny
                     ))
                     {
                         return Result.Failure(new[] { "Set manager from none to any in any company" });
@@ -173,13 +172,13 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             if (newManagerId == null) // ...to none
             {
                 if (!accessRights.ContainsAny(
-                    Access.Company.Any.Manager.SetFromSelfToAny,
-                    Access.Company.Any.Manager.SetFromSelfToNone,
-                    Access.Company.Any.Manager.SetFromAnyToAny,
-                    Access.Company.Any.Manager.SetFromAnyToNone
+                    Domain.Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+                    Domain.Constants.Access.Company.Any.Manager.SetFromSelfToNone,
+                    Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+                    Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone
                 ) && !accessRights.ContainsAny(
-                    Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
-                    Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny
+                    Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone,
+                    Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny
                 ))
                 {
                     return Result.Failure(new[] { "Set manager from self to none" });
@@ -188,9 +187,9 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
             else // ...to any
             {
                 if (!accessRights.ContainsAny(
-                    Access.Company.Any.Manager.SetFromSelfToAny,
-                    Access.Company.Any.Manager.SetFromAnyToAny,
-                    Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny
+                    Domain.Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+                    Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+                    Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny
                 ))
                 {
                     return Result.Failure(new[] { "Set manager from self to any" });
@@ -201,21 +200,21 @@ public class UpdateCompanyAuthorizationHandler : BaseAuthorizationHandler<Update
         {
             if (Equals(newManagerId, userId)) // ...to self
             {
-                if (!accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToSelf, Access.Company.Any.Manager.SetFromAnyToAny))
+                if (!accessRights.ContainsAny(Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf, Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny))
                 {
                     return Result.Failure(new[] { "Set manager from any to self in any company" });
                 }
             }
             else if (newManagerId == null) // ...to none
             {
-                if (!accessRights.ContainsAny(Access.Company.Any.Manager.SetFromAnyToNone, Access.Company.Any.Manager.SetFromAnyToAny))
+                if (!accessRights.ContainsAny(Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone, Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny))
                 {
                     return Result.Failure(new[] { "Set manager from any to none in any company" });
                 }
             }
             else // ...to any
             {
-                if (!accessRights.Contains(Access.Company.Any.Manager.SetFromAnyToAny))
+                if (!accessRights.Contains(Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny))
                 {
                     return Result.Failure(new[] { "Set manager from any to any in any company" });
                 }

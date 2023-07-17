@@ -41,16 +41,16 @@ public class GetUpdateCompanyRequestHandler : IRequestHandler<GetUpdateCompanyQu
         var company = _dbContext.Companies.Single(x => x.Id == request.Id);
         var accessRights = await _accessService.CheckAccessAsync(_currentUserService.UserId!);
         if (accessRights.ContainsAny(
-            Constants.Access.Company.Any.Name.Set,
-            Constants.Access.Company.WhereUserIsManager.Name.Set
+            Domain.Constants.Access.Company.Any.Name.Set,
+            Domain.Constants.Access.Company.WhereUserIsManager.Name.Set
         ))
         {
             result.Fields.Add(nameof(Company.Name), company.Name);
         }
 
         if (accessRights.ContainsAny(
-            Constants.Access.Company.Any.Other.Set,
-            Constants.Access.Company.WhereUserIsManager.Other.Set
+            Domain.Constants.Access.Company.Any.Other.Set,
+            Domain.Constants.Access.Company.WhereUserIsManager.Other.Set
         ))
         {
             result.Fields.Add(nameof(Company.Address), company.Address);
@@ -64,15 +64,15 @@ public class GetUpdateCompanyRequestHandler : IRequestHandler<GetUpdateCompanyQu
         }
 
         if (accessRights.ContainsAny(
-            Constants.Access.Company.Any.Manager.SetFromAnyToAny,
-            Constants.Access.Company.Any.Manager.SetFromAnyToNone,
-            Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
-            Constants.Access.Company.Any.Manager.SetFromNoneToAny,
-            Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
-            Constants.Access.Company.Any.Manager.SetFromSelfToAny,
-            Constants.Access.Company.Any.Manager.SetFromSelfToNone,
-            Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
-            Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
+            Domain.Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
+            Domain.Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+            Domain.Constants.Access.Company.Any.Manager.SetFromSelfToNone,
+            Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny,
+            Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone
         ))
         {
             result.Fields.Add(nameof(Company.ManagerId), company.ManagerId);
@@ -117,7 +117,7 @@ public class GetUpdateCompanyRequestHandler : IRequestHandler<GetUpdateCompanyQu
     private async Task<List<Expression<Func<ApplicationUser, bool>>>> GetManagerExpressionsAsync(GetUpdateCompanyQuery request, string[] accessRights)
     {
         var result = new List<Expression<Func<ApplicationUser, bool>>>();
-        if (accessRights.Contains(Constants.Access.Company.Any.Manager.SetFromAnyToAny))
+        if (accessRights.Contains(Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny))
         {
             result.Add(_allManagers);
             return result;
@@ -129,55 +129,55 @@ public class GetUpdateCompanyRequestHandler : IRequestHandler<GetUpdateCompanyQu
                 .SingleAsync();
 
         if (accessRights.ContainsAny(
-                Constants.Access.Company.Any.Manager.SetFromNoneToAny,
-                Constants.Access.Company.Any.Manager.SetFromAnyToAny) && managerId == null
+                Domain.Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny) && managerId == null
             || accessRights.ContainsAny(
-                Constants.Access.Company.Any.Manager.SetFromSelfToAny,
-                Constants.Access.Company.Any.Manager.SetFromAnyToAny,
-                Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny) && managerId == _currentUserService.UserId)
+                Domain.Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+                Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToAny) && managerId == _currentUserService.UserId)
         {
             result.Add(_allManagers);
             return result;
         }
         if (accessRights.ContainsAny(
-                Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
-                Constants.Access.Company.Any.Manager.SetFromAnyToAny) && managerId != null
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny) && managerId != null
             || accessRights.ContainsAny(
-                Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
-                Constants.Access.Company.Any.Manager.SetFromNoneToAny,
-                Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
-                Constants.Access.Company.Any.Manager.SetFromAnyToAny) && managerId == null
+                Domain.Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
+                Domain.Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny) && managerId == null
             || accessRights.ContainsAny(
-                Constants.Access.Company.Any.Manager.SetFromSelfToAny,
-                Constants.Access.Company.Any.Manager.SetFromAnyToAny,
-                Constants.Access.Company.Any.Manager.SetFromSelfToNone,
-                Constants.Access.Company.Any.Manager.SetFromAnyToNone,
-                Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone) && managerId == _currentUserService.UserId)
+                Domain.Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromSelfToNone,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+                Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone) && managerId == _currentUserService.UserId)
         {
             result.Add(x => x.Id == _currentUserService.UserId);
         }
 
         if (accessRights.ContainsAny(
-            Constants.Access.Company.Any.Manager.SetFromAnyToNone,
-            Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
-            Constants.Access.Company.Any.Manager.SetFromAnyToAny) && managerId != null)
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf,
+            Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny) && managerId != null)
         {
             result.Add(x => x.Id == managerId);
         }
 
         if (accessRights.ContainsAny(
-                Constants.Access.Company.Any.Manager.SetFromSelfToAny,
-                Constants.Access.Company.Any.Manager.SetFromAnyToAny,
-                Constants.Access.Company.Any.Manager.SetFromSelfToNone,
-                Constants.Access.Company.Any.Manager.SetFromAnyToNone,
-                Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone) && managerId == _currentUserService.UserId
+                Domain.Constants.Access.Company.Any.Manager.SetFromSelfToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromSelfToNone,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+                Domain.Constants.Access.Company.WhereUserIsManager.Manager.SetFromSelfToNone) && managerId == _currentUserService.UserId
             || accessRights.ContainsAny(
-                Constants.Access.Company.Any.Manager.SetFromNoneToAny,
-                Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
-                Constants.Access.Company.Any.Manager.SetFromAnyToAny,
-                Constants.Access.Company.Any.Manager.SetFromAnyToNone,
-                Constants.Access.Company.Any.Manager.SetFromAnyToSelf) && managerId == null
-            || accessRights.Contains(Constants.Access.Company.Any.Manager.SetFromAnyToNone) && managerId != null)
+                Domain.Constants.Access.Company.Any.Manager.SetFromNoneToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromNoneToSelf,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToAny,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone,
+                Domain.Constants.Access.Company.Any.Manager.SetFromAnyToSelf) && managerId == null
+            || accessRights.Contains(Domain.Constants.Access.Company.Any.Manager.SetFromAnyToNone) && managerId != null)
         {
             result.Add(_emptyManager);
         }

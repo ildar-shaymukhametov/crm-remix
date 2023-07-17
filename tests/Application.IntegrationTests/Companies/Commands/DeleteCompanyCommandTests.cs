@@ -26,7 +26,7 @@ public class DeleteCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_delete_any_company___Deletes_company()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Delete });
+        await _fixture.RunAsDefaultUserAsync(new[] { Domain.Constants.Claims.Company.Any.Delete });
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);
@@ -61,7 +61,7 @@ public class DeleteCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_delete_own_company_and_is_manager___Deletes_company()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Delete });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Domain.Constants.Claims.Company.WhereUserIsManager.Delete });
 
         var company = Faker.Builders.Company(user.Id);
         await _fixture.AddAsync(company);
@@ -76,7 +76,7 @@ public class DeleteCompanyTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_delete_own_company_and_is_not_manager___Throws_fobidden_access()
     {
-        var user = await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Delete });
+        var user = await _fixture.RunAsDefaultUserAsync(new[] { Domain.Constants.Claims.Company.WhereUserIsManager.Delete });
 
         var company = Faker.Builders.Company();
         await _fixture.AddAsync(company);

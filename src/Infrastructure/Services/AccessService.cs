@@ -2,7 +2,7 @@ using System.Security.Claims;
 using CRM.Domain.Interfaces;
 using CRM.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
-using static CRM.Application.Constants;
+using static CRM.Domain.Constants;
 
 namespace CRM.Infrastructure.Services;
 

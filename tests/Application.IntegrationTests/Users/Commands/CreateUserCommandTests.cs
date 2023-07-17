@@ -10,7 +10,7 @@ public class CreateUserCommandTests : BaseTest
     [Fact]
     public async Task User_is_admin___Creates_user()
     {
-        var command = CreateCommand(new[] { Constants.Claims.Company.Create }, new[] { Constants.Roles.Administrator });
+        var command = CreateCommand(new[] { Domain.Constants.Claims.Company.Create }, new[] { Domain.Constants.Roles.Administrator });
         var userId = await _fixture.SendAsync(command);
         var user = await _fixture.FindAsync<AspNetUser>(userId, nameof(AspNetUser.ApplicationUser));
         var userClaims = await _fixture.GetAuthorizationClaimsAsync(user!);

@@ -20,9 +20,9 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
     {
         var accessRights = _accessService.CheckAccess(context.User);
         if (accessRights.ContainsAny(
-            Access.Company.Any.Other.Get,
-            Access.Company.Any.Manager.Get,
-            Access.Company.Any.Name.Get
+            Domain.Constants.Access.Company.Any.Other.Get,
+            Domain.Constants.Access.Company.Any.Manager.Get,
+            Domain.Constants.Access.Company.Any.Name.Get
         ))
         {
             context.Succeed(requirement);
@@ -30,9 +30,9 @@ public class GetCompanyAuthorizationHandler : BaseAuthorizationHandler<GetCompan
         else if (context.Resource is Company company)
         {
             if (company.ManagerId == context.User.GetSubjectId() && accessRights.ContainsAny(
-                Access.Company.WhereUserIsManager.Other.Get,
-                Access.Company.WhereUserIsManager.Manager.Get,
-                Access.Company.WhereUserIsManager.Name.Get
+                Domain.Constants.Access.Company.WhereUserIsManager.Other.Get,
+                Domain.Constants.Access.Company.WhereUserIsManager.Manager.Get,
+                Domain.Constants.Access.Company.WhereUserIsManager.Name.Get
             ))
             {
                 context.Succeed(requirement);

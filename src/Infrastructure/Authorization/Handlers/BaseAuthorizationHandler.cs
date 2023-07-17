@@ -1,6 +1,5 @@
 using CRM.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Authorization.Handlers;
 
@@ -15,7 +14,7 @@ public abstract class BaseAuthorizationHandler<TRequirement> : AuthorizationHand
 
     protected bool IsAdmin(AuthorizationHandlerContext context)
     {
-        return context.User.IsInRole(Roles.Administrator);
+        return context.User.IsInRole(Domain.Constants.Roles.Administrator);
     }
 
     protected bool HasClaim(AuthorizationHandlerContext context, string claimValue)

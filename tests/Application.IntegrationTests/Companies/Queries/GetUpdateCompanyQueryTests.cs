@@ -34,7 +34,7 @@ public class GetUpdateCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_name_in_any_company___Includes_name()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Name.Set });
+        await _fixture.RunAsDefaultUserAsync(new[] { Domain.Constants.Claims.Company.Any.Name.Set });
         var expected = await _fixture.AddCompanyAsync();
 
         var actual = await _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id));
@@ -45,8 +45,8 @@ public class GetUpdateCompanyQueryTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Any.Name.Set)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Name.Set)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Name.Set)]
+    [InlineData(Domain.Constants.Claims.Company.WhereUserIsManager.Name.Set)]
     public async Task User_has_claim_to_set_name_in_own_company___Includes_name(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -62,7 +62,7 @@ public class GetUpdateCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_name_in_own_company_and_is_not_manager___Forbidden()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Name.Set });
+        await _fixture.RunAsDefaultUserAsync(new[] { Domain.Constants.Claims.Company.WhereUserIsManager.Name.Set });
         var expected = await _fixture.AddCompanyAsync();
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id)));
@@ -71,7 +71,7 @@ public class GetUpdateCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_other_fields_in_any_company___Includes_other_fields()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.Any.Other.Set });
+        await _fixture.RunAsDefaultUserAsync(new[] { Domain.Constants.Claims.Company.Any.Other.Set });
         var expected = await _fixture.AddCompanyAsync();
 
         var actual = await _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id));
@@ -82,8 +82,8 @@ public class GetUpdateCompanyQueryTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Any.Other.Set)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Other.Set)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Other.Set)]
+    [InlineData(Domain.Constants.Claims.Company.WhereUserIsManager.Other.Set)]
     public async Task User_has_claim_to_set_other_fields_in_own_company___Includes_other_fields(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -99,18 +99,18 @@ public class GetUpdateCompanyQueryTests : BaseTest
     [Fact]
     public async Task User_has_claim_to_set_other_fields_in_own_company_and_is_not_manager___Forbidden()
     {
-        await _fixture.RunAsDefaultUserAsync(new[] { Constants.Claims.Company.WhereUserIsManager.Other.Set });
+        await _fixture.RunAsDefaultUserAsync(new[] { Domain.Constants.Claims.Company.WhereUserIsManager.Other.Set });
         var expected = await _fixture.AddCompanyAsync();
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => _fixture.SendAsync(new GetUpdateCompanyQuery(expected.Id)));
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
     public async Task User_has_claim_to_set_manager_in_any_company___Includes_manager(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -123,13 +123,13 @@ public class GetUpdateCompanyQueryTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromAnyToAny)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromAnyToNone)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromAnyToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
+    [InlineData(Domain.Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
+    [InlineData(Domain.Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
     public async Task User_has_claim_to_set_manager_in_own_company___Includes_manager(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -142,10 +142,10 @@ public class GetUpdateCompanyQueryTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
-    [InlineData(Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromSelfToAny)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromSelfToNone)]
+    [InlineData(Domain.Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToAny)]
+    [InlineData(Domain.Constants.Claims.Company.WhereUserIsManager.Manager.SetFromSelfToNone)]
     public async Task User_has_claim_to_set_manager_in_own_company_and_is_not_manager___Forbidden(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });
@@ -155,8 +155,8 @@ public class GetUpdateCompanyQueryTests : BaseTest
     }
 
     [Theory]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
-    [InlineData(Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromNoneToAny)]
+    [InlineData(Domain.Constants.Claims.Company.Any.Manager.SetFromNoneToSelf)]
     public async Task User_has_claim_to_set_manager_from_none_to_any_in_any_company_and_is_manager___Forbidden(string claim)
     {
         var user = await _fixture.RunAsDefaultUserAsync(new[] { claim });

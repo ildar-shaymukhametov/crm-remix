@@ -2,7 +2,6 @@ using CRM.Domain.Entities;
 using CRM.Domain.Interfaces;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Authorization.Handlers;
 
@@ -17,7 +16,7 @@ public class DeleteCompanyAuthorizationHandler : BaseAuthorizationHandler<Delete
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DeleteCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        if (accessRights.Contains(Access.Company.Any.Delete))
+        if (accessRights.Contains(Domain.Constants.Access.Company.Any.Delete))
         {
             return Ok(context, requirement);
         }
@@ -25,11 +24,11 @@ public class DeleteCompanyAuthorizationHandler : BaseAuthorizationHandler<Delete
         var company = GetResources(context);
         var userId = context.User.GetSubjectId();
 
-        if (company.ManagerId == userId && !accessRights.Contains(Access.Company.WhereUserIsManager.Delete))
+        if (company.ManagerId == userId && !accessRights.Contains(Domain.Constants.Access.Company.WhereUserIsManager.Delete))
         {
             return Fail(context, "Delete own company");
         }
-        else if (company.ManagerId != userId && !accessRights.Contains(Access.Company.Any.Delete))
+        else if (company.ManagerId != userId && !accessRights.Contains(Domain.Constants.Access.Company.Any.Delete))
         {
             return Fail(context, "Delete any company");
         }

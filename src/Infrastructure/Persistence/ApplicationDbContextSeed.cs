@@ -1,6 +1,6 @@
 using CRM.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using static CRM.Application.Constants;
+using static CRM.Domain.Constants;
 
 namespace CRM.Infrastructure.Persistence;
 

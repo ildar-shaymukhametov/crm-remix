@@ -1,6 +1,5 @@
 using CRM.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Authorization.Handlers.Queries;
 
@@ -15,7 +14,7 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CreateCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        if (!accessRights.Contains(Access.Company.Create))
+        if (!accessRights.Contains(Domain.Constants.Access.Company.Create))
         {
             return Fail(context, "Create company");
         }

@@ -41,7 +41,7 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
         var result = new NewCompanyVm();
         result.Fields.Add(nameof(Company.Name), default);
 
-        if (accessRights.Contains(Constants.Access.Company.New.Other.Set))
+        if (accessRights.Contains(Domain.Constants.Access.Company.New.Other.Set))
         {
             result.Fields.Add(nameof(Company.Address), default);
             result.Fields.Add(nameof(Company.Ceo), default);
@@ -54,8 +54,8 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
         }
 
         if (accessRights.ContainsAny(
-            Constants.Access.Company.New.Manager.SetToAny,
-            Constants.Access.Company.New.Manager.SetToSelf
+            Domain.Constants.Access.Company.New.Manager.SetToAny,
+            Domain.Constants.Access.Company.New.Manager.SetToSelf
         ))
         {
             result.Fields.Add(nameof(Company.ManagerId), default);
@@ -68,18 +68,18 @@ public class GetNewCompanyRequestHandler : IRequestHandler<GetNewCompanyQuery, N
     private List<Expression<Func<ApplicationUser, bool>>> GetManagerExpressions(string[] accessRights)
     {
         var result = new List<Expression<Func<ApplicationUser, bool>>>();
-        if (accessRights.Contains(Constants.Access.Company.New.Manager.SetToAny))
+        if (accessRights.Contains(Domain.Constants.Access.Company.New.Manager.SetToAny))
         {
             result.Add(_allManagers);
             return result;
         }
 
-        if (accessRights.Contains(Constants.Access.Company.New.Manager.SetToSelf))
+        if (accessRights.Contains(Domain.Constants.Access.Company.New.Manager.SetToSelf))
         {
             result.Add(x => x.Id == _currentUserService.UserId);
         }
 
-        if (accessRights.Contains(Constants.Access.Company.New.Manager.SetToNone))
+        if (accessRights.Contains(Domain.Constants.Access.Company.New.Manager.SetToNone))
         {
             result.Add(_emptyManager);
         }

@@ -3,7 +3,6 @@ using CRM.Application.Companies.Commands.CreateCompany;
 using CRM.Domain.Interfaces;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Authorization.Handlers.Commands;
 
@@ -18,7 +17,7 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CreateCompanyRequirement requirement)
     {
         var accessRights = _accessService.CheckAccess(context.User);
-        if (!accessRights.Contains(Access.Company.Create))
+        if (!accessRights.Contains(Domain.Constants.Access.Company.Create))
         {
             return Fail(context, "Create company");
         }
@@ -29,7 +28,7 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
         }
 
         var otherFieldChanged = company.Address != default || company.Ceo != default || company.Contacts != default || company.Email != default || company.Inn != default || company.Phone != default || company.TypeId != default;
-        if (otherFieldChanged && !accessRights.Contains(Access.Company.New.Other.Set))
+        if (otherFieldChanged && !accessRights.Contains(Domain.Constants.Access.Company.New.Other.Set))
         {
             return Fail(context, "Set other fields");
         }
@@ -37,8 +36,8 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
         if (company.ManagerId == context.User.GetSubjectId())
         {
             if (!accessRights.ContainsAny(
-                Access.Company.New.Manager.SetToAny,
-                Access.Company.New.Manager.SetToSelf
+                Domain.Constants.Access.Company.New.Manager.SetToAny,
+                Domain.Constants.Access.Company.New.Manager.SetToSelf
             ))
             {
                 return Fail(context, "Set manager to self");
@@ -46,7 +45,7 @@ public class CreateCompanyAuthorizationHandler : BaseAuthorizationHandler<Create
         }
         else if (company.ManagerId != null)
         {
-            if (!accessRights.Contains(Access.Company.New.Manager.SetToAny))
+            if (!accessRights.Contains(Domain.Constants.Access.Company.New.Manager.SetToAny))
             {
                 return Fail(context, "Set manager to any");
             }

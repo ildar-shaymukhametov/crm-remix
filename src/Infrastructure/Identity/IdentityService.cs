@@ -65,9 +65,9 @@ public class IdentityService : IIdentityService
         if (claims.Any())
         {
             var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
-            var authorizationClaims = principal.Claims.Where(x => x.Type == Constants.Claims.ClaimType);
+            var authorizationClaims = principal.Claims.Where(x => x.Type == Domain.Constants.Claims.ClaimType);
             var removeClaimsResult = await _userManager.RemoveClaimsAsync(user, authorizationClaims);
-            var newAuthorizationClaims = claims.Select(x => new Claim(Constants.Claims.ClaimType, x));
+            var newAuthorizationClaims = claims.Select(x => new Claim(Domain.Constants.Claims.ClaimType, x));
             var addClaimsResult = await _userManager.AddClaimsAsync(user, newAuthorizationClaims);
             if (!addClaimsResult.Succeeded)
             {
@@ -179,14 +179,14 @@ public class IdentityService : IIdentityService
     {
         var user = await _userManager.FindByIdAsync(userId) ?? throw new NotFoundException(userId);
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
-        var authorizationClaims = principal.Claims.Where(x => x.Type == Constants.Claims.ClaimType);
+        var authorizationClaims = principal.Claims.Where(x => x.Type == Domain.Constants.Claims.ClaimType);
         var removeClaimsResult = await _userManager.RemoveClaimsAsync(user, authorizationClaims);
         if (!claims.Any())
         {
             return removeClaimsResult.ToApplicationResult();
         }
 
-        var newAuthorizationClaims = claims.Select(x => new Claim(Constants.Claims.ClaimType, x));
+        var newAuthorizationClaims = claims.Select(x => new Claim(Domain.Constants.Claims.ClaimType, x));
         var result = await _userManager.AddClaimsAsync(user, newAuthorizationClaims);
         return result.ToApplicationResult();
     }
@@ -195,11 +195,11 @@ public class IdentityService : IIdentityService
     {
         var user = await _userManager.FindByIdAsync(userId) ?? throw new NotFoundException(userId);
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
-        return principal.Claims.Where(x => x.Type == Constants.Claims.ClaimType).Select(x => x.Value).ToArray();
+        return principal.Claims.Where(x => x.Type == Domain.Constants.Claims.ClaimType).Select(x => x.Value).ToArray();
     }
 
     public async Task<bool> IsAdminAsync(string userId)
     {
-        return await IsInRoleAsync(userId, Constants.Roles.Administrator);
+        return await IsInRoleAsync(userId, Domain.Constants.Roles.Administrator);
     }
 }
