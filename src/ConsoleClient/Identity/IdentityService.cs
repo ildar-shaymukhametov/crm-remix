@@ -1,21 +1,24 @@
 using ConsoleClient.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ConsoleClient.Identity;
 
 internal class IdentityService
 {
     public static IdentityUser User = default!;
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public IdentityService(ApplicationDbContext dbContext)
+    public IdentityService(IServiceScopeFactory scopeFactory)
     {
-        _dbContext = dbContext;
+        _scopeFactory = scopeFactory;
     }
 
     public async Task<(bool, IdentityUser?)> AuthenticateAsync(string? userName, string? password)
     {
-        var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.UserName == userName);
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var user = await dbContext.Users.SingleOrDefaultAsync(x => x.UserName == userName);
         if (user is null)
         {
             return (false, null);

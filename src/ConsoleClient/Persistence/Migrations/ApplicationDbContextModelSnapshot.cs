@@ -21,7 +21,7 @@ namespace ConsoleClient.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ConsoleClient.Identity.IdentityUser", b =>
+            modelBuilder.Entity("ConsoleClient.Security.IdentityUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");

@@ -1,5 +1,6 @@
 ﻿using ConsoleClient.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace ConsoleClient.Persistence;
@@ -7,21 +8,24 @@ namespace ConsoleClient.Persistence;
 public class ApplicationDbContextInitialiser
 {
     private readonly ILogger<ApplicationDbContextInitialiser> _logger;
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext dbContext)
+    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, IServiceScopeFactory scopeFactory)
     {
         _logger = logger;
-        _dbContext = dbContext;
+        _scopeFactory = scopeFactory;
     }
 
     public async Task InitialiseAsync()
     {
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
         try
         {
-            if (_dbContext.Database.IsSqlServer())
+            if (dbContext.Database.IsSqlServer())
             {
-                await _dbContext.Database.MigrateAsync();
+                await dbContext.Database.MigrateAsync();
             }
         }
         catch (Exception ex)
@@ -46,9 +50,12 @@ public class ApplicationDbContextInitialiser
 
     public async Task TrySeedAsync()
     {
-        if (!await _dbContext.Users.AnyAsync(x => x.UserName == "default@user"))
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        if (!await dbContext.Users.AnyAsync(x => x.UserName == "default@user"))
         {
-            await _dbContext.Users.AddAsync(new IdentityUser
+            await dbContext.Users.AddAsync(new IdentityUser
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = "default@user",
@@ -58,7 +65,7 @@ public class ApplicationDbContextInitialiser
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("default")
             });
 
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
     }
 }

@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using ConsoleClient.Identity;
 using ConsoleClient.Persistence;
+using CRM.Domain.Interfaces;
+using CRM.Domain;
 
 var builder = Host.CreateApplicationBuilder(args);
 var configuration = builder.Configuration
@@ -15,8 +17,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), builder =>
         builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-builder.Services.AddTransient<IdentityService>();
-builder.Services.AddTransient<ApplicationDbContextInitialiser>();
+builder.Services.AddSingleton<IdentityService>();
+builder.Services.AddSingleton<ApplicationDbContextInitialiser>();
 
 using var host = builder.Build();
 
@@ -32,6 +34,18 @@ await host.StartAsync();
 
 var identityService = host.Services.GetRequiredService<IdentityService>();
 await App.AuthenticateAsync(identityService);
+
+Console.WriteLine($"Welcome, {IdentityService.User.LastName}!");
+Console.WriteLine("What do you want to do?");
+
+var accessService = host.Services.GetRequiredService<IAccessService>();
+var accessRights = await accessService.CheckAccessAsync(IdentityService.User.Id);
+if (accessRights.Contains(Constants.Access.Company.Create))
+{
+    Console.WriteLine("1. Create company");
+}
+
+Console.ReadKey();
 
 class App
 {
@@ -50,8 +64,5 @@ class App
         }
 
         IdentityService.User = user!;
-
-        Console.WriteLine("Press any key to continue");
-        Console.ReadKey();
     }
 }
