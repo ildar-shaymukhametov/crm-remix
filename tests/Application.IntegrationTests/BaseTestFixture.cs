@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using CRM.Application.Common.Exceptions;
-using CRM.Application.Common.Interfaces;
 using CRM.Domain.Entities;
+using CRM.Domain.Interfaces;
 using CRM.Infrastructure.Identity;
 using CRM.Infrastructure.Persistence;
 using MediatR;
@@ -106,7 +106,7 @@ public class BaseTestFixture
     {
         using var scope = ScopeFactory.CreateScope();
 
-        var identityService = scope.ServiceProvider.GetRequiredService<IAppIdentityService>();
+        var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
         var (result, userId) = await identityService.CreateUserAsync(userName, password, firstName, lastName);
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
         var user = await userManager.FindByIdAsync(userId) ?? throw new NotFoundException(userId);
@@ -154,7 +154,7 @@ public class BaseTestFixture
     {
         using var scope = ScopeFactory.CreateScope();
 
-        var identityService = scope.ServiceProvider.GetRequiredService<IAppIdentityService>();
+        var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
         var (result, userId) = await identityService.CreateUserAsync(Faker.Internet.UserName(), $"{Faker.Internet.UserName()}Z1!", firstName, lastName);
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AspNetUser>>();
         var user = await userManager.FindByIdAsync(userId) ?? throw new NotFoundException(userId);
@@ -274,7 +274,7 @@ public class BaseTestFixture
     public async Task<ApplicationUser> CreateUserAsync()
     {
         using var scope = ScopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetRequiredService<IAppIdentityService>();
+        var service = scope.ServiceProvider.GetRequiredService<IIdentityService>();
         var (result, userId) = await service.CreateUserAsync(Faker.Internet.Email(), "Foobar1!");
         return await FindAsync<ApplicationUser>(userId) ?? throw new InvalidOperationException("Failed to create a user");
     }

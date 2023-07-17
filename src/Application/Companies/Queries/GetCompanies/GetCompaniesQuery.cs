@@ -19,13 +19,13 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
     private readonly IMapper _mapper;
     private readonly ICurrentUserService _currentUserService;
     private readonly IAccessService _accessService;
-    private readonly IAppIdentityService _identityService;
+    private readonly IAppAuthorizationService _authorizationService;
 
-    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IAccessService accessService, IAppIdentityService identityService)
+    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IAccessService accessService, IAppAuthorizationService authorizationService)
     {
         _currentUserService = currentUserService;
         _accessService = accessService;
-        _identityService = identityService;
+        _authorizationService = authorizationService;
         _dbContext = dbContext;
         _mapper = mapper;
     }
@@ -107,8 +107,8 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
                 company.Fields.Add(nameof(Company.Name), entity.Name);
             }
 
-            company.CanBeUpdated = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Queries.Update);
-            company.CanBeDeleted = await _identityService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Queries.Delete);
+            company.CanBeUpdated = await _authorizationService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Queries.Update);
+            company.CanBeDeleted = await _authorizationService.AuthorizeAsync(_currentUserService.UserId!, entity, Constants.Policies.Company.Queries.Delete);
 
             result.Add(company);
         }

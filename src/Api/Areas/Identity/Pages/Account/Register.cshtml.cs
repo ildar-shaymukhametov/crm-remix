@@ -5,7 +5,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
-using CRM.Application.Common.Interfaces;
+using CRM.Domain.Interfaces;
 using CRM.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -24,7 +24,7 @@ namespace CRM.Api.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<AspNetUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly IAppIdentityService _identityService;
+        private readonly IIdentityService _identityService;
 
         public RegisterModel(
             UserManager<AspNetUser> userManager,
@@ -32,7 +32,7 @@ namespace CRM.Api.Areas.Identity.Pages.Account
             SignInManager<AspNetUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            IAppIdentityService identityService)
+            IIdentityService identityService)
         {
             _userManager = userManager;
             _userStore = userStore;

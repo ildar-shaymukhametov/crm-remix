@@ -1,5 +1,5 @@
-using CRM.Application.Common.Interfaces;
 using CRM.Domain.Entities;
+using CRM.Domain.Interfaces;
 using CRM.Infrastructure.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +13,7 @@ public class IdentityServiceTests : BaseTest
     public async Task Creates_both_app_user_and_asp_net_user()
     {
         using var scope = _fixture.GetServiceScope();
-        var sut = scope.ServiceProvider.GetRequiredService<IAppIdentityService>();
+        var sut = scope.ServiceProvider.GetRequiredService<IIdentityService>();
 
         var firstName = Faker.Name.First();
         var lastName = Faker.Name.Last();
@@ -35,7 +35,7 @@ public class IdentityServiceTests : BaseTest
     public async Task Deleting_user_deletes_both_app_user_and_asp_net_user()
     {
         using var scope = _fixture.GetServiceScope();
-        var sut = scope.ServiceProvider.GetRequiredService<IAppIdentityService>();
+        var sut = scope.ServiceProvider.GetRequiredService<IIdentityService>();
 
         var (result, userId) = await sut.CreateUserAsync(Faker.Internet.UserName(), "Foobar1!");
         Assert.True(result.Succeeded);

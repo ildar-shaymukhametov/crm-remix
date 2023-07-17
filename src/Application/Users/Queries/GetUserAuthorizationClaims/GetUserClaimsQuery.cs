@@ -1,4 +1,3 @@
-using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
 using CRM.Domain.Interfaces;
 using MediatR;
@@ -10,10 +9,10 @@ public record GetUserAuthorizationClaimsQuery : IRequest<string[]>;
 
 public class GetUserAuthorizationClaimsQueryHandler : IRequestHandler<GetUserAuthorizationClaimsQuery, string[]>
 {
-    private readonly IAppIdentityService _identityService;
+    private readonly IIdentityService _identityService;
     private readonly ICurrentUserService _currentUserService;
 
-    public GetUserAuthorizationClaimsQueryHandler(IAppIdentityService identityService, ICurrentUserService currentUserService)
+    public GetUserAuthorizationClaimsQueryHandler(IIdentityService identityService, ICurrentUserService currentUserService)
     {
         _identityService = identityService;
         _currentUserService = currentUserService;

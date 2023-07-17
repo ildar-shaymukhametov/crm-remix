@@ -1,5 +1,4 @@
-﻿using CRM.Application.Common.Interfaces;
-using CRM.Domain.Interfaces;
+﻿using CRM.Domain.Interfaces;
 using MediatR.Pipeline;
 using Microsoft.Extensions.Logging;
 
@@ -9,9 +8,9 @@ public class PostRequestLoggingBehaviour<TRequest, TResponse> : IRequestPostProc
 {
     private readonly ILogger _logger;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IAppIdentityService _identityService;
+    private readonly IIdentityService _identityService;
 
-    public PostRequestLoggingBehaviour(ILogger<TRequest> logger, ICurrentUserService currentUserService, IAppIdentityService identityService)
+    public PostRequestLoggingBehaviour(ILogger<TRequest> logger, ICurrentUserService currentUserService, IIdentityService identityService)
     {
         _logger = logger;
         _currentUserService = currentUserService;

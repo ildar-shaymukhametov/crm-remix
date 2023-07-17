@@ -41,7 +41,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                         builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
             services.Remove<IDateTime>()
-                .AddTransient(provider =>
+                .AddSingleton(provider =>
                 {
                     var service = Substitute.For<IDateTime>();
                     service.Now.Returns(BaseTestFixture.Now);

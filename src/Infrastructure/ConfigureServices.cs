@@ -43,20 +43,17 @@ public static class ConfigureServices
                 options.Events.RaiseInformationEvents = true;
             })
             .AddApiAuthorization<AspNetUser, ApplicationDbContext>(options =>
-            {
-                options.Clients.AddRange(Config.Clients.ToArray());
-            });
+                options.Clients.AddRange(Config.Clients.ToArray()));
 
-        services.AddTransient<IDateTime, DateTimeService>();
-        services.AddTransient<IAppIdentityService, IdentityService>();
+        services.AddSingleton<IDateTime, DateTimeService>();
+        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IAppAuthorizationService, AppAuthorizationService>();
+        services.AddScoped<IClaimsPrincipalProvider, ClaimsPrincipalProvider>();
 
         services.AddAuthentication()
             .AddIdentityServerJwt();
 
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicies();
-        });
+        services.AddAuthorization(options => options.AddPolicies());
 
         return services;
     }

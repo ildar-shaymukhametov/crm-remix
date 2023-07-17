@@ -1,4 +1,4 @@
-using CRM.Application.Common.Interfaces;
+using CRM.Domain.Interfaces;
 using MediatR;
 
 namespace CRM.Application.Users.Commands.CreateUser;
@@ -15,9 +15,9 @@ public record CreateUserCommand : IRequest<string>
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, string>
 {
-    private readonly IAppIdentityService _identityService;
+    private readonly IIdentityService _identityService;
 
-    public CreateUserCommandHandler(IAppIdentityService identityService)
+    public CreateUserCommandHandler(IIdentityService identityService)
     {
         _identityService = identityService;
     }

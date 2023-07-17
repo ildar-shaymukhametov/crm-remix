@@ -3,27 +3,25 @@ using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
 using CRM.Domain.Common;
 using CRM.Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
+using CRM.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CRM.Infrastructure.Identity;
 
-public class IdentityService : IAppIdentityService
+public class IdentityService : IIdentityService
 {
     private readonly UserManager<AspNetUser> _userManager;
     private readonly IUserClaimsPrincipalFactory<AspNetUser> _userClaimsPrincipalFactory;
-    private readonly IAuthorizationService _authorizationService;
     private readonly IApplicationDbContext _dbContext;
     private readonly ILogger<IdentityService> _logger;
     private readonly RoleManager<IdentityRole> _roleManager;
 
-    public IdentityService(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory, IAuthorizationService authorizationService, IApplicationDbContext dbContext, ILogger<IdentityService> logger, RoleManager<IdentityRole> roleManager)
+    public IdentityService(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory, IApplicationDbContext dbContext, ILogger<IdentityService> logger, RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
-        _authorizationService = authorizationService;
         _dbContext = dbContext;
         _logger = logger;
         _roleManager = roleManager;
@@ -127,32 +125,6 @@ public class IdentityService : IAppIdentityService
         var user = await _userManager.FindByIdAsync(userId);
 
         return user != null && await _userManager.IsInRoleAsync(user, role);
-    }
-
-    public async Task<Result> AuthorizeAsync(ClaimsPrincipal principal, string policyName)
-    {
-        var result = await _authorizationService.AuthorizeAsync(principal, policyName);
-        return result.ToApplicationResult();
-    }
-
-    public async Task<Result> AuthorizeAsync(string userId, object? resource, string policyName)
-    {
-        var user = await _userManager.FindByIdAsync(userId);
-
-        if (user == null)
-        {
-            return Result.Failure(new[] { "User is null" });
-        }
-
-        var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
-
-        return await AuthorizeAsync(principal, resource, policyName);
-    }
-
-    public async Task<Result> AuthorizeAsync(ClaimsPrincipal principal, object? resource, string policyName)
-    {
-        var result = await _authorizationService.AuthorizeAsync(principal, resource, policyName);
-        return result.ToApplicationResult();
     }
 
     public async Task<Result> DeleteUserAsync(string userId)

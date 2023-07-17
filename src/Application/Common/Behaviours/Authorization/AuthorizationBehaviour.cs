@@ -11,14 +11,16 @@ namespace CRM.Application.Common.Behaviours;
 public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
     private readonly ICurrentUserService _currentUserService;
-    private readonly IAppIdentityService _identityService;
+    private readonly IIdentityService _identityService;
     private readonly IRequestResourceProvider _requestResourceProvider;
+    private readonly IAppAuthorizationService _authorizationService;
 
-    public AuthorizationBehaviour(ICurrentUserService currentUserService, IAppIdentityService identityService, IRequestResourceProvider requestResourceProvider)
+    public AuthorizationBehaviour(ICurrentUserService currentUserService, IIdentityService identityService, IRequestResourceProvider requestResourceProvider, IAppAuthorizationService authorizationService)
     {
         _currentUserService = currentUserService;
         _identityService = identityService;
         _requestResourceProvider = requestResourceProvider;
+        _authorizationService = authorizationService;
     }
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
@@ -74,7 +76,7 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
                     throw new NotFoundException($"Resource request: {typeof(TRequest)}", key);
                 }
 
-                var result = await _identityService.AuthorizeAsync(_currentUserService.UserId, resource, policy);
+                var result = await _authorizationService.AuthorizeAsync(_currentUserService.UserId, resource, policy);
                 if (!result.Succeeded)
                 {
                     throw new ForbiddenAccessException(result.Errors.FirstOrDefault() ?? string.Empty);

@@ -1,6 +1,5 @@
 using System.Text;
 using CRM.Application.Common.Exceptions;
-using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
 using CRM.Domain.Interfaces;
 using MediatR;
@@ -22,9 +21,9 @@ public record UpdateUserAuthorizationClaimsCommand : IRequest
 public class UpdateUserAuthorizationClaimsCommandHandler : IRequestHandler<UpdateUserAuthorizationClaimsCommand>
 {
     private readonly ICurrentUserService _currentUserService;
-    private readonly IAppIdentityService _identityService;
+    private readonly IIdentityService _identityService;
 
-    public UpdateUserAuthorizationClaimsCommandHandler(ICurrentUserService currentUserService, IAppIdentityService identityService)
+    public UpdateUserAuthorizationClaimsCommandHandler(ICurrentUserService currentUserService, IIdentityService identityService)
     {
         _currentUserService = currentUserService;
         _identityService = identityService;

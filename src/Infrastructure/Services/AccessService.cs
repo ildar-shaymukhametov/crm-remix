@@ -1,32 +1,21 @@
 using System.Security.Claims;
 using CRM.Domain.Interfaces;
-using CRM.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
 using static CRM.Domain.Constants;
 
 namespace CRM.Infrastructure.Services;
 
 public class AccessService : IAccessService
 {
-    private readonly UserManager<AspNetUser> _userManager;
-    private readonly IUserClaimsPrincipalFactory<AspNetUser> _userClaimsPrincipalFactory;
+    private readonly IClaimsPrincipalProvider _claimsPrincipalProvider;
 
-    public AccessService(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory)
+    public AccessService(IClaimsPrincipalProvider claimsPrincipalProvider)
     {
-        _userManager = userManager;
-        _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
+        _claimsPrincipalProvider = claimsPrincipalProvider;
     }
 
     public async Task<string[]> CheckAccessAsync(string userId)
     {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-        {
-            return Array.Empty<string>();
-        }
-
-        var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
-
+        var principal = await _claimsPrincipalProvider.CreateClaimsPrincipalAsync(userId);
         return CheckAccess(principal);
     }
 

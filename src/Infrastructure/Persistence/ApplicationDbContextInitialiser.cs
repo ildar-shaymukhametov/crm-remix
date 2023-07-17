@@ -1,5 +1,5 @@
 ﻿using CRM.Application.Common.Exceptions;
-using CRM.Application.Common.Interfaces;
+using CRM.Domain.Interfaces;
 using CRM.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +13,9 @@ public class ApplicationDbContextInitialiser
     private readonly ApplicationDbContext _context;
     private readonly UserManager<AspNetUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly IAppIdentityService _identityService;
+    private readonly IIdentityService _identityService;
 
-    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<AspNetUser> userManager, RoleManager<IdentityRole> roleManager, IAppIdentityService identityService)
+    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<AspNetUser> userManager, RoleManager<IdentityRole> roleManager, IIdentityService identityService)
     {
         _logger = logger;
         _context = context;

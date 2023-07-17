@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using CRM.Application.Common.Interfaces;
 using CRM.Domain.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -11,9 +10,9 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
     private readonly Stopwatch _timer;
     private readonly ILogger<TRequest> _logger;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IAppIdentityService _identityService;
+    private readonly IIdentityService _identityService;
 
-    public PerformanceBehaviour(ILogger<TRequest> logger, ICurrentUserService currentUserService, IAppIdentityService identityService)
+    public PerformanceBehaviour(ILogger<TRequest> logger, ICurrentUserService currentUserService, IIdentityService identityService)
     {
         _timer = new Stopwatch();
 
