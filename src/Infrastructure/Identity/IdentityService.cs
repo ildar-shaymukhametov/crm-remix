@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using CRM.Application.Common.Exceptions;
 using CRM.Application.Common.Interfaces;
-using CRM.Application.Common.Models;
+using CRM.Domain.Common;
 using CRM.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CRM.Infrastructure.Identity;
 
-public class IdentityService : IIdentityService
+public class IdentityService : IAppIdentityService
 {
     private readonly UserManager<AspNetUser> _userManager;
     private readonly IUserClaimsPrincipalFactory<AspNetUser> _userClaimsPrincipalFactory;

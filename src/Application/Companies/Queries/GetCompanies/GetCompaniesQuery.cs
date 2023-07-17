@@ -19,9 +19,9 @@ public class GetCompaniesRequestHandler : IRequestHandler<GetCompaniesQuery, Com
     private readonly IMapper _mapper;
     private readonly ICurrentUserService _currentUserService;
     private readonly IAccessService _accessService;
-    private readonly IIdentityService _identityService;
+    private readonly IAppIdentityService _identityService;
 
-    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IAccessService accessService, IIdentityService identityService)
+    public GetCompaniesRequestHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, IAccessService accessService, IAppIdentityService identityService)
     {
         _currentUserService = currentUserService;
         _accessService = accessService;

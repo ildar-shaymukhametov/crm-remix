@@ -11,10 +11,10 @@ namespace CRM.Application.Common.Behaviours;
 public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
     private readonly ICurrentUserService _currentUserService;
-    private readonly IIdentityService _identityService;
+    private readonly IAppIdentityService _identityService;
     private readonly IRequestResourceProvider _requestResourceProvider;
 
-    public AuthorizationBehaviour(ICurrentUserService currentUserService, IIdentityService identityService, IRequestResourceProvider requestResourceProvider)
+    public AuthorizationBehaviour(ICurrentUserService currentUserService, IAppIdentityService identityService, IRequestResourceProvider requestResourceProvider)
     {
         _currentUserService = currentUserService;
         _identityService = identityService;

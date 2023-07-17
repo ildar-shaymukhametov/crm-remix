@@ -1,7 +1,7 @@
 using CRM.Application.Common.Behaviours.Authorization.Resources;
 using CRM.Application.Common.Extensions;
-using CRM.Application.Common.Models;
 using CRM.Application.Companies.Commands.UpdateCompany;
+using CRM.Domain.Common;
 using CRM.Domain.Entities;
 using CRM.Domain.Interfaces;
 using Duende.IdentityServer.Extensions;

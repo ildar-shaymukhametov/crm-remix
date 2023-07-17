@@ -10,10 +10,10 @@ public record GetUserAuthorizationClaimsQuery : IRequest<string[]>;
 
 public class GetUserAuthorizationClaimsQueryHandler : IRequestHandler<GetUserAuthorizationClaimsQuery, string[]>
 {
-    private readonly IIdentityService _identityService;
+    private readonly IAppIdentityService _identityService;
     private readonly ICurrentUserService _currentUserService;
 
-    public GetUserAuthorizationClaimsQueryHandler(IIdentityService identityService, ICurrentUserService currentUserService)
+    public GetUserAuthorizationClaimsQueryHandler(IAppIdentityService identityService, ICurrentUserService currentUserService)
     {
         _identityService = identityService;
         _currentUserService = currentUserService;

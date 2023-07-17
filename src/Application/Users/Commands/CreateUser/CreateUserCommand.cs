@@ -15,9 +15,9 @@ public record CreateUserCommand : IRequest<string>
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, string>
 {
-    private readonly IIdentityService _identityService;
+    private readonly IAppIdentityService _identityService;
 
-    public CreateUserCommandHandler(IIdentityService identityService)
+    public CreateUserCommandHandler(IAppIdentityService identityService)
     {
         _identityService = identityService;
     }

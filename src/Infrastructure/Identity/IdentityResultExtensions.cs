@@ -1,4 +1,4 @@
-﻿using CRM.Application.Common.Models;
+﻿using CRM.Domain.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 

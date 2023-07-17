@@ -9,9 +9,9 @@ public class PermissionsVerifier : IPermissionsVerifier
 {
     private readonly UserManager<AspNetUser> _userManager;
     private readonly IUserClaimsPrincipalFactory<AspNetUser> _userClaimsPrincipalFactory;
-    private readonly IIdentityService _identityService;
+    private readonly IAppIdentityService _identityService;
 
-    public PermissionsVerifier(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory, IIdentityService identityService)
+    public PermissionsVerifier(UserManager<AspNetUser> userManager, IUserClaimsPrincipalFactory<AspNetUser> userClaimsPrincipalFactory, IAppIdentityService identityService)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;

@@ -9,9 +9,9 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
 {
     private readonly ILogger _logger;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IIdentityService _identityService;
+    private readonly IAppIdentityService _identityService;
 
-    public LoggingBehaviour(ILogger<TRequest> logger, ICurrentUserService currentUserService, IIdentityService identityService)
+    public LoggingBehaviour(ILogger<TRequest> logger, ICurrentUserService currentUserService, IAppIdentityService identityService)
     {
         _logger = logger;
         _currentUserService = currentUserService;

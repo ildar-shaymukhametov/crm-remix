@@ -9,9 +9,9 @@ public class PostRequestLoggingBehaviour<TRequest, TResponse> : IRequestPostProc
 {
     private readonly ILogger _logger;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IIdentityService _identityService;
+    private readonly IAppIdentityService _identityService;
 
-    public PostRequestLoggingBehaviour(ILogger<TRequest> logger, ICurrentUserService currentUserService, IIdentityService identityService)
+    public PostRequestLoggingBehaviour(ILogger<TRequest> logger, ICurrentUserService currentUserService, IAppIdentityService identityService)
     {
         _logger = logger;
         _currentUserService = currentUserService;

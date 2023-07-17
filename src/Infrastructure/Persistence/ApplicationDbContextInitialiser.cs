@@ -13,9 +13,9 @@ public class ApplicationDbContextInitialiser
     private readonly ApplicationDbContext _context;
     private readonly UserManager<AspNetUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly IIdentityService _identityService;
+    private readonly IAppIdentityService _identityService;
 
-    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<AspNetUser> userManager, RoleManager<IdentityRole> roleManager, IIdentityService identityService)
+    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<AspNetUser> userManager, RoleManager<IdentityRole> roleManager, IAppIdentityService identityService)
     {
         _logger = logger;
         _context = context;

@@ -24,7 +24,7 @@ namespace CRM.Api.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<AspNetUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly IIdentityService _identityService;
+        private readonly IAppIdentityService _identityService;
 
         public RegisterModel(
             UserManager<AspNetUser> userManager,
@@ -32,7 +32,7 @@ namespace CRM.Api.Areas.Identity.Pages.Account
             SignInManager<AspNetUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            IIdentityService identityService)
+            IAppIdentityService identityService)
         {
             _userManager = userManager;
             _userStore = userStore;

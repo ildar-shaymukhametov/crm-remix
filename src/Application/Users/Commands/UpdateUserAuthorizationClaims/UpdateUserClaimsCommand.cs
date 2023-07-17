@@ -22,9 +22,9 @@ public record UpdateUserAuthorizationClaimsCommand : IRequest
 public class UpdateUserAuthorizationClaimsCommandHandler : IRequestHandler<UpdateUserAuthorizationClaimsCommand>
 {
     private readonly ICurrentUserService _currentUserService;
-    private readonly IIdentityService _identityService;
+    private readonly IAppIdentityService _identityService;
 
-    public UpdateUserAuthorizationClaimsCommandHandler(ICurrentUserService currentUserService, IIdentityService identityService)
+    public UpdateUserAuthorizationClaimsCommandHandler(ICurrentUserService currentUserService, IAppIdentityService identityService)
     {
         _currentUserService = currentUserService;
         _identityService = identityService;
