@@ -191,15 +191,4 @@ public class IdentityService : IIdentityService
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
         return principal.Claims.Where(x => x.Type == Domain.Constants.Claims.ClaimType).Select(x => x.Value).ToArray();
     }
-
-    public async Task<ClaimsPrincipal> CreateClaimsPrincipalAsync(string userId)
-    {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-        {
-            throw new NotFoundException(nameof(AspNetUser), nameof(AspNetUser.Id));
-        }
-
-        return await _userClaimsPrincipalFactory.CreateAsync(user);
-    }
 }
