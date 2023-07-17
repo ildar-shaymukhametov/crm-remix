@@ -1,4 +1,4 @@
-using CRM.Domain.Interfaces;
+using CRM.Domain.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace CRM.Infrastructure.Authorization.Handlers.Queries;

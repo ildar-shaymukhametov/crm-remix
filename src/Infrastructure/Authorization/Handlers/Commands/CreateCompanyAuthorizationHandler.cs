@@ -1,6 +1,6 @@
 using CRM.Application.Common.Extensions;
 using CRM.Application.Companies.Commands.CreateCompany;
-using CRM.Domain.Interfaces;
+using CRM.Domain.Services;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 

@@ -1,5 +1,5 @@
 using CRM.Domain.Entities;
-using CRM.Domain.Interfaces;
+using CRM.Domain.Services;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 

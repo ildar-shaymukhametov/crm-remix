@@ -2,7 +2,13 @@ using System.Security.Claims;
 using CRM.Domain.Interfaces;
 using static CRM.Domain.Constants;
 
-namespace CRM.Infrastructure.Services;
+namespace CRM.Domain.Services;
+
+public interface IAccessService
+{
+    Task<string[]> CheckAccessAsync(string userId);
+    string[] CheckAccess(ClaimsPrincipal user);
+}
 
 public class AccessService : IAccessService
 {

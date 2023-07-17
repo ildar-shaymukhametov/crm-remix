@@ -8,6 +8,7 @@ using CRM.Application.Common.Security;
 using CRM.Application.Utils;
 using CRM.Domain.Entities;
 using CRM.Domain.Interfaces;
+using CRM.Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

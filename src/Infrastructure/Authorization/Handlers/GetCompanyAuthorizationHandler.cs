@@ -1,10 +1,9 @@
 using CRM.Application.Common.Extensions;
 using CRM.Domain.Entities;
-using CRM.Domain.Interfaces;
+using CRM.Domain.Services;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using static CRM.Application.Constants;
 
 namespace CRM.Infrastructure.Authorization.Handlers;
 

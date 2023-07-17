@@ -3,7 +3,7 @@ using CRM.Application.Common.Extensions;
 using CRM.Application.Companies.Commands.UpdateCompany;
 using CRM.Domain.Common;
 using CRM.Domain.Entities;
-using CRM.Domain.Interfaces;
+using CRM.Domain.Services;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 

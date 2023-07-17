@@ -3,6 +3,7 @@ using CRM.Application.Common.Extensions;
 using CRM.Application.Common.Interfaces;
 using CRM.Application.Common.Security;
 using CRM.Domain.Interfaces;
+using CRM.Domain.Services;
 using MediatR;
 
 namespace CRM.Application.Companies.Commands.UpdateCompany;

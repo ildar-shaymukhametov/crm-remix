@@ -4,8 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using ConsoleClient.Identity;
 using ConsoleClient.Persistence;
-using CRM.Domain.Interfaces;
 using CRM.Domain;
+using CRM.Domain.Services;
 
 var builder = Host.CreateApplicationBuilder(args);
 var configuration = builder.Configuration
