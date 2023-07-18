@@ -1,4 +1,7 @@
-﻿using ConsoleClient.Identity;
+﻿using System.Security.Claims;
+using ConsoleClient.Identity;
+using CRM.Domain;
+using CRM.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -53,16 +56,43 @@ public class ApplicationDbContextInitialiser
         using var scope = _scopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        if (!await dbContext.Users.AnyAsync(x => x.UserName == "default@user"))
+        if (!await dbContext.IdentityUsers.AnyAsync(x => x.UserName == "default@user"))
         {
-            await dbContext.Users.AddAsync(new IdentityUser
+            await dbContext.IdentityUsers.AddAsync(new IdentityUser
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = "default@user",
-                Email = "default@user",
-                FirstName = "Default",
-                LastName = "User",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("default")
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("default"),
+                ApplicationUser = new ApplicationUser
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Email = "default@user",
+                    FirstName = "Default",
+                    LastName = "User",
+                }
+            });
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        if (!await dbContext.IdentityUsers.AnyAsync(x => x.UserName == "admin@user"))
+        {
+            await dbContext.IdentityUsers.AddAsync(new IdentityUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = "admin@user",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("default"),
+                Claims = new[]
+                {
+                    new IdentityClaim(ClaimTypes.Role, Constants.Roles.Administrator)
+                },
+                ApplicationUser = new ApplicationUser
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Email = "admin@user",
+                    FirstName = "Admin",
+                    LastName = "User",
+                }
             });
 
             await dbContext.SaveChangesAsync();

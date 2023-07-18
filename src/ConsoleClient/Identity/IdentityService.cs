@@ -1,35 +1,47 @@
-using ConsoleClient.Persistence;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using CRM.Domain.Common;
+using CRM.Domain.Interfaces;
 
 namespace ConsoleClient.Identity;
 
-internal class IdentityService
+internal class IdentityService : IIdentityService
 {
-    public static IdentityUser User = default!;
-    private readonly IServiceScopeFactory _scopeFactory;
-
-    public IdentityService(IServiceScopeFactory scopeFactory)
+    public Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
     {
-        _scopeFactory = scopeFactory;
+        throw new NotImplementedException();
     }
 
-    public async Task<(bool, IdentityUser?)> AuthenticateAsync(string? userName, string? password)
+    public Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password, string firstName, string lastName)
     {
-        using var scope = _scopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var user = await dbContext.Users.SingleOrDefaultAsync(x => x.UserName == userName);
-        if (user is null)
-        {
-            return (false, null);
-        }
+        throw new NotImplementedException();
+    }
 
-        var ok = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
-        if (!ok)
-        {
-            return (false, null);
-        }
+    public Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password, string firstName, string lastName, string[] claims, string[] roles)
+    {
+        throw new NotImplementedException();
+    }
 
-        return (true, user);
+    public Task<Result> DeleteUserAsync(string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<string[]> GetUserAuthorizationClaimsAsync(string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<string?> GetUserNameAsync(string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> IsInRoleAsync(string userId, string role)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Result> UpdateAuthorizationClaimsAsync(string userId, string[] claims)
+    {
+        throw new NotImplementedException();
     }
 }

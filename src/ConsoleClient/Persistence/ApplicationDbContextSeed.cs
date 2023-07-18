@@ -2,7 +2,7 @@ using CRM.Domain;
 using CRM.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace CRM.Infrastructure.Persistence;
+namespace ConsoleClient.Persistence;
 
 public static class ApplicationDbContextSeed
 {
